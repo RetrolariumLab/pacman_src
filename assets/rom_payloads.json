@@ -1,0 +1,129 @@
+{
+  "images": [
+    {
+      "id": "japan-v10",
+      "file": "Pac-Man (J) (V1.0) [!].nes",
+      "size": 24592,
+      "sha1": "adb4d7d7d28c89ca177aad231e0fdad992c0fbfb"
+    },
+    {
+      "id": "japan-v11",
+      "file": "Pac-Man (J) (V1.1) [!].nes",
+      "size": 24592,
+      "sha1": "b8be2bffb4592873cc211becb529bf64071c7f90"
+    },
+    {
+      "id": "japan-revb",
+      "file": "Pac-Man (Japan) (En) (Rev B).nes",
+      "size": 24592,
+      "sha1": "8b874a704e37557941179b232bac41644f6d01fc"
+    },
+    {
+      "id": "usa-tengen-unlicensed",
+      "file": "Pac-Man (Unl) (Tengen) [!].nes",
+      "size": 24592,
+      "sha1": "f1d9eb92f931ed925bd6119d00d1023a45da583f"
+    },
+    {
+      "id": "usa-tengen",
+      "file": "Pac-Man (U) (Tengen) [!].nes",
+      "size": 24592,
+      "sha1": "727176933c25de055e7daa92e8b943f67cae4d9b"
+    },
+    {
+      "id": "usa-namco",
+      "file": "Pac-Man (U) (Namco) [!].nes",
+      "size": 24592,
+      "sha1": "e7d818e128593109b5c480497a050facc0744f1b"
+    },
+    {
+      "id": "europe",
+      "file": "Pac-Man (E) [!].nes",
+      "size": 24592,
+      "sha1": "feb45bcbcd2326c14280db17330b665ec6adc0cc"
+    }
+  ],
+  "output": "assets/generated",
+  "assets": [
+    {
+      "path": "palettes/attract-namco.bin",
+      "size": 32,
+      "sha1": "2ea21de027701c59a6ece5b276aa6d26cf1bcaff",
+      "sources": {
+        "japan-v10": 1475,
+        "japan-v11": 1475,
+        "japan-revb": 1579,
+        "usa-namco": 1655,
+        "europe": 1610
+      }
+    },
+    {
+      "path": "palettes/intermission-sprites.bin",
+      "size": 16,
+      "sha1": "b42defaad586242cededcab18d77d4c0df1545b3",
+      "sources": {
+        "japan-v10": 10059,
+        "japan-v11": 10059,
+        "japan-revb": 10113,
+        "usa-tengen-unlicensed": 10110,
+        "usa-tengen": 10110,
+        "usa-namco": 10175,
+        "europe": 10147
+      }
+    },
+    {
+      "path": "palettes/title-background.bin",
+      "size": 16,
+      "sha1": "ec25cd088056307b15869ede32e09480ed07142a",
+      "sources": {
+        "japan-v10": 933,
+        "japan-v11": 933,
+        "japan-revb": 1027,
+        "usa-tengen-unlicensed": 1058,
+        "usa-tengen": 1058,
+        "usa-namco": 1103,
+        "europe": 1058
+      }
+    },
+    {
+      "path": "title/logo-tiles.bin",
+      "size": 138,
+      "sha1": "42099a7bf62e02a54e70705d6823cc308900ecea",
+      "sources": {
+        "japan-v10": 687,
+        "japan-v11": 687,
+        "japan-revb": 781,
+        "usa-tengen-unlicensed": 781,
+        "usa-tengen": 781,
+        "usa-namco": 822,
+        "europe": 801
+      }
+    }
+  ],
+  "c_includes": [
+    {
+      "path": "assets/generated/c/ec25cd088056307b.inc",
+      "asset": "palettes/title-background.bin",
+      "offset": 0,
+      "size": 16
+    },
+    {
+      "path": "assets/generated/c/42099a7bf62e02a5.inc",
+      "asset": "title/logo-tiles.bin",
+      "offset": 0,
+      "size": 138
+    },
+    {
+      "path": "assets/generated/c/2ea21de027701c59.inc",
+      "asset": "palettes/attract-namco.bin",
+      "offset": 0,
+      "size": 32
+    },
+    {
+      "path": "assets/generated/c/b42defaad586242c.inc",
+      "asset": "palettes/intermission-sprites.bin",
+      "offset": 0,
+      "size": 16
+    }
+  ]
+}

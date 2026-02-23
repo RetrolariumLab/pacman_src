@@ -1,0 +1,27 @@
+# Build outputs
+*.o
+*.s.*.o
+*.map
+*.dbg
+*.lbl
+
+# Runtime/build temp workspace
+tmp/
+*.nes
+*.chr
+/pacman_c.nes
+/pacman.chr
+
+# Optional local analysis dump
+listing.asm
+
+# Python
+__pycache__/
+*.pyc
+
+# OS/editor
+.DS_Store
+Thumbs.db
+
+# Payloads generated locally from the reference ROM
+/assets/generated/
