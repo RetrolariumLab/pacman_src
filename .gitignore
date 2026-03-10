@@ -9,8 +9,6 @@
 tmp/
 *.nes
 *.chr
-/pacman_c.nes
-/pacman.chr
 
 # Optional local analysis dump
 listing.asm
@@ -22,6 +20,14 @@ __pycache__/
 # OS/editor
 .DS_Store
 Thumbs.db
+
+reference
+diffs
+
+/cc65-snapshot-win64
+/reports
+/workflow
+/reference_projects
 
 # Payloads generated locally from the reference ROM
 /assets/generated/

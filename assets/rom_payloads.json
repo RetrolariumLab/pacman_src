@@ -46,6 +46,134 @@
   "output": "assets/generated",
   "assets": [
     {
+      "path": "audio/slot00_player_ready_channel_a.bin",
+      "size": 73,
+      "sha1": "61d00aa2d29897a8ba3ba526b58d0701fc9a0e0e",
+      "sources": {
+        "japan-v10": 13159
+      }
+    },
+    {
+      "path": "audio/slot01_player_ready_channel_b.bin",
+      "size": 43,
+      "sha1": "f5eb941fb8a277fece9bccb3623959ca3a7f1e04",
+      "sources": {
+        "japan-v10": 13232
+      }
+    },
+    {
+      "path": "audio/slot02_extra_life.bin",
+      "size": 21,
+      "sha1": "02559cea99dca72bfc6d71372f628c52708e7cf2",
+      "sources": {
+        "japan-v10": 12478
+      }
+    },
+    {
+      "path": "audio/slot03_death.bin",
+      "size": 143,
+      "sha1": "3e1348fdc92ced363c4c09dbd879d47955131b6a",
+      "sources": {
+        "japan-v10": 13016
+      }
+    },
+    {
+      "path": "audio/slot04_pellet_even.bin",
+      "size": 17,
+      "sha1": "8ae630e4d5551ca3ab7b89760d2a888985e7cfdc",
+      "sources": {
+        "japan-v10": 13275
+      }
+    },
+    {
+      "path": "audio/slot05_pellet_odd.bin",
+      "size": 17,
+      "sha1": "3b6feb300fcce8204b1a873eba6d11a1b1906afa",
+      "sources": {
+        "japan-v10": 13292
+      }
+    },
+    {
+      "path": "audio/slot06_fruit.bin",
+      "size": 43,
+      "sha1": "bbc36fd670e8f94ba555819ff93aa1f5e18effed",
+      "sources": {
+        "japan-v10": 12499
+      }
+    },
+    {
+      "path": "audio/slot07_eat_ghost.bin",
+      "size": 35,
+      "sha1": "b1de03e6f56d84a9af4a8ada7d8d472bc5222803",
+      "sources": {
+        "japan-v10": 12672
+      }
+    },
+    {
+      "path": "audio/slot08_ghost_house_state6_marker.bin",
+      "size": 31,
+      "sha1": "63bd01654f58df414ec9002232ed4498b7b3e94a",
+      "sources": {
+        "japan-v10": 12985
+      }
+    },
+    {
+      "path": "audio/slot09_ghost_house_release_marker.bin",
+      "size": 21,
+      "sha1": "0ec572675bc67c19b42099b1625051fefa2b3bb8",
+      "sources": {
+        "japan-v10": 12651
+      }
+    },
+    {
+      "path": "audio/slot0a_release_counter_hi.bin",
+      "size": 43,
+      "sha1": "9acde125daaf2a550b74c94567cbbe5e24fea013",
+      "sources": {
+        "japan-v10": 12542
+      }
+    },
+    {
+      "path": "audio/slot0b_release_counter_mid.bin",
+      "size": 35,
+      "sha1": "4ffe59ffaad0a89f089fa2959cd2a2bbb679fe96",
+      "sources": {
+        "japan-v10": 12585
+      }
+    },
+    {
+      "path": "audio/slot0c_release_counter_lo.bin",
+      "size": 31,
+      "sha1": "f8c055fa7c17a9ac1300a26e8e520f88916514eb",
+      "sources": {
+        "japan-v10": 12620
+      }
+    },
+    {
+      "path": "audio/slot0d_intermission_flag_a.bin",
+      "size": 115,
+      "sha1": "add1b15ec35c2486066c0ff4e304451fec3c9687",
+      "sources": {
+        "japan-v10": 12707
+      }
+    },
+    {
+      "path": "audio/slot0e_intermission_flag_b.bin",
+      "size": 163,
+      "sha1": "4cc966dc22215368b4db8d7bd72fc465ff78ab5f",
+      "sources": {
+        "japan-v10": 12822
+      }
+    },
+    {
+      "path": "audio/slot0f_pause_toggle.bin",
+      "size": 59,
+      "sha1": "8288cae3927ee26d0dd5414897d0aa473f25532a",
+      "sources": {
+        "japan-v10": 13309
+      }
+    },
+    {
       "path": "palettes/attract-namco.bin",
       "size": 32,
       "sha1": "2ea21de027701c59a6ece5b276aa6d26cf1bcaff",
@@ -69,6 +197,20 @@
         "usa-tengen": 10110,
         "usa-namco": 10175,
         "europe": 10147
+      }
+    },
+    {
+      "path": "palettes/round.bin",
+      "size": 32,
+      "sha1": "d1255c3b4d259ccacea58a784d504080211ab24e",
+      "sources": {
+        "japan-v10": 4208,
+        "japan-v11": 4208,
+        "japan-revb": 4323,
+        "usa-tengen-unlicensed": 4320,
+        "usa-tengen": 4320,
+        "usa-namco": 4385,
+        "europe": 4357
       }
     },
     {
@@ -118,12 +260,6 @@
       "asset": "palettes/attract-namco.bin",
       "offset": 0,
       "size": 32
-    },
-    {
-      "path": "assets/generated/c/b42defaad586242c.inc",
-      "asset": "palettes/intermission-sprites.bin",
-      "offset": 0,
-      "size": 16
     }
   ]
 }

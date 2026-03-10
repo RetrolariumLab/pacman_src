@@ -1,113 +1,80 @@
 #!/usr/bin/env python3
-from __future__ import annotations
+"""
+ROM Comparison Tool
 
+Compares built ROM with original ROM to verify they are identical.
+"""
+
+import sys
 import argparse
-import hashlib
 from pathlib import Path
 
 
-def parse_ines(data: bytes) -> dict[str, int]:
-    if len(data) < 16 or data[:4] != b"NES\x1a":
-        raise ValueError("Not a valid iNES ROM")
-    prg_banks = data[4]
-    chr_banks = data[5]
-    mapper = (data[6] >> 4) | (data[7] & 0xF0)
-    has_trainer = 1 if (data[6] & 0x04) else 0
-    return {
-        "prg_banks": prg_banks,
-        "chr_banks": chr_banks,
-        "mapper": mapper,
-        "has_trainer": has_trainer,
-        "prg_size": prg_banks * 16_384,
-        "chr_size": chr_banks * 8_192,
-    }
+def compare_files(file1, file2):
+    """Compare two binary files byte-by-byte."""
+    with open(file1, 'rb') as f1, open(file2, 'rb') as f2:
+        data1 = f1.read()
+        data2 = f2.read()
+
+    if len(data1) != len(data2):
+        return False, f"Size mismatch: {len(data1)} vs {len(data2)} bytes"
+
+    if data1 == data2:
+        return True, "Files are identical"
+
+    # Find first difference
+    for i, (b1, b2) in enumerate(zip(data1, data2)):
+        if b1 != b2:
+            return False, f"First difference at offset 0x{i:X}: 0x{b1:02X} vs 0x{b2:02X}"
+
+    return True, "Files are identical"
 
 
-def sha1_hex(data: bytes) -> str:
-    return hashlib.sha1(data).hexdigest()
+def main():
+    parser = argparse.ArgumentParser(description='Compare built ROM with original')
+    parser.add_argument('--built', default='asbuilt.bin', help='Built ROM file')
+    parser.add_argument('--original', default='Pac-Man (J) (V1.0) [!].nes', help='Original ROM file')
+    parser.add_argument('--project-dir', default='.', help='Project directory')
 
-
-def byte_diff_count(a: bytes, b: bytes) -> int:
-    n = min(len(a), len(b))
-    diff = sum(1 for i in range(n) if a[i] != b[i])
-    diff += abs(len(a) - len(b))
-    return diff
-
-
-def first_diffs(a: bytes, b: bytes, limit: int = 16) -> list[int]:
-    n = min(len(a), len(b))
-    out: list[int] = []
-    for i in range(n):
-        if a[i] != b[i]:
-            out.append(i)
-            if len(out) >= limit:
-                return out
-    if len(a) != len(b):
-        out.append(n)
-    return out
-
-
-def split_ines(data: bytes) -> tuple[bytes, bytes, bytes]:
-    info = parse_ines(data)
-    offset = 16 + (512 if info["has_trainer"] else 0)
-    prg = data[offset : offset + info["prg_size"]]
-    chr_ = data[
-        offset + info["prg_size"] : offset + info["prg_size"] + info["chr_size"]
-    ]
-    return data[:16], prg, chr_
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser(description="Compare two NES ROM files (iNES).")
-    parser.add_argument(
-        "--original",
-        default="Pac-Man (J) (V1.0) [!].nes",
-        help="Path to original ROM",
-    )
-    parser.add_argument(
-        "--candidate",
-        default="pacman_c.nes",
-        help="Path to built ROM",
-    )
     args = parser.parse_args()
 
-    orig_path = Path(args.original)
-    cand_path = Path(args.candidate)
+    project_dir = Path(args.project_dir).resolve()
+    built_file = project_dir / args.built
+    original_file = project_dir / args.original
 
-    orig = orig_path.read_bytes()
-    cand = cand_path.read_bytes()
+    # Check files exist
+    if not built_file.exists():
+        print(f"Error: Built ROM not found: {built_file}")
+        print("Run 'make build' first")
+        return 1
 
-    orig_info = parse_ines(orig)
-    cand_info = parse_ines(cand)
+    if not original_file.exists():
+        print(f"Error: Original ROM not found: {original_file}")
+        return 1
 
-    oh, op, oc = split_ines(orig)
-    ch, cp, cc = split_ines(cand)
+    # Compare files
+    identical, message = compare_files(built_file, original_file)
 
-    print(f"Original : {orig_path.name} ({len(orig)} bytes)")
-    print(f"Candidate: {cand_path.name} ({len(cand)} bytes)")
-    print()
-    print(
-        "Header  : "
-        f"orig(PRG={orig_info['prg_banks']}, CHR={orig_info['chr_banks']}, mapper={orig_info['mapper']}) "
-        f"cand(PRG={cand_info['prg_banks']}, CHR={cand_info['chr_banks']}, mapper={cand_info['mapper']})"
-    )
-    print(f"SHA1    : orig={sha1_hex(orig)} cand={sha1_hex(cand)}")
-    print()
-
-    print(f"Diff(header) : {byte_diff_count(oh, ch)} bytes")
-    print(f"Diff(PRG)    : {byte_diff_count(op, cp)} bytes")
-    print(f"Diff(CHR)    : {byte_diff_count(oc, cc)} bytes")
-    print(f"Diff(total)  : {byte_diff_count(orig, cand)} bytes")
-
-    offs = first_diffs(orig, cand, limit=16)
-    if offs:
-        pretty = ", ".join(f"0x{x:04X}" for x in offs)
-        print(f"First diffs  : {pretty}")
+    if identical:
+        print("=" * 60)
+        print("SUCCESS: ROMs are identical!")
+        print("=" * 60)
+        print(f"  Built:    {built_file.name} ({built_file.stat().st_size:,} bytes)")
+        print(f"  Original: {original_file.name} ({original_file.stat().st_size:,} bytes)")
+        print()
+        print("[OK] Assembly source matches original ROM perfectly")
+        print("[OK] All procedure renames preserve binary output")
+        return 0
     else:
-        print("First diffs  : none (identical)")
+        print("=" * 60)
+        print("MISMATCH: ROMs differ!")
+        print("=" * 60)
+        print(f"  Built:    {built_file.name} ({built_file.stat().st_size:,} bytes)")
+        print(f"  Original: {original_file.name} ({original_file.stat().st_size:,} bytes)")
+        print()
+        print(f"Difference: {message}")
+        return 1
 
-    return 0
 
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+if __name__ == '__main__':
+    sys.exit(main())
