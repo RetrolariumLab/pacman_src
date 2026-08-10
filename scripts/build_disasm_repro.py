@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -35,7 +36,13 @@ def parse_ines(data: bytes) -> tuple[bytes, bytes, bytes]:
     return data[:16], prg, chr_
 
 
-def run_cmd(cmd: list[str]) -> None:
+def run_tool(tool: Path, args: list[str]) -> None:
+    """Run a bundled cc65 .exe, going through wine when not on Windows."""
+    cmd = [str(tool), *args]
+    if os.name != "nt":
+        if not shutil.which("wine"):
+            fail("wine not found in PATH (needed to run the bundled ca65/ld65)")
+        cmd.insert(0, "wine")
     print("[RUN]", " ".join(cmd))
     r = subprocess.run(cmd, check=False)
     if r.returncode != 0:
@@ -107,19 +114,9 @@ def main() -> int:
         prg_path = Path(tmp_name)
         cleanup_prg = True
 
-    print("[INFO] Assembling PRG with wine + ca65/ld65...")
-    run_cmd(["wine", str(ca65), str(asm_path), "-o", str(obj_path)])
-    run_cmd(
-        [
-            "wine",
-            str(ld65),
-            "-C",
-            str(cfg_path),
-            str(obj_path),
-            "-o",
-            str(prg_path),
-        ]
-    )
+    print("[INFO] Assembling PRG with ca65/ld65...")
+    run_tool(ca65, [str(asm_path), "-o", str(obj_path)])
+    run_tool(ld65, ["-C", str(cfg_path), str(obj_path), "-o", str(prg_path)])
 
     prg = prg_path.read_bytes()
     if len(prg) != 16_384:

@@ -16,10 +16,9 @@ export XDG_CACHE_HOME="${XDG_CACHE_HOME:-/tmp}"
 
 LISTING_PATH="${1:-$REPO_DIR/bank_FF.asm}"
 ROM_PATH="${2:-$REPO_DIR/pacman_bank_ff_ref.nes}"
-OUT_C_PATH="${3:-$REPO_DIR/decomp_bank_ff.c}"
-PROJECT_DIR="${4:-/tmp}"
-PROJECT_NAME="${5:-ghidra_pacman_ff_rom}"
-CHR_PATH="${6:-$REPO_DIR/pacman.chr}"
+PROJECT_DIR="${3:-/tmp}"
+PROJECT_NAME="${4:-ghidra_pacman_ff_rom}"
+CHR_PATH="${5:-$REPO_DIR/pacman.chr}"
 
 if [[ ! -x "$ANALYZE" ]]; then
   echo "ERROR: analyzeHeadless not found. Set GHIDRA_HOME or add analyzeHeadless to PATH." >&2
@@ -51,8 +50,7 @@ python3 "${ROM_BUILD_ARGS[@]}"
   -loader-length 0x4000 \
   -loader-baseAddr 0xC000 \
   -scriptPath "$SCRIPT_DIR" \
-  -postScript ImportBankFfListing.java "$LISTING_PATH" \
-  -postScript ExportDecompC.java "$OUT_C_PATH"
+  -postScript ImportBankFfListing.java "$LISTING_PATH"
 
 echo "Done. Reference ROM: $ROM_PATH"
-echo "Done. Decompiled C: $OUT_C_PATH"
+echo "Done. Ghidra project: $PROJECT_DIR/$PROJECT_NAME"

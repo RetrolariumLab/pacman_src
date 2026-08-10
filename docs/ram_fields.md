@@ -4,7 +4,7 @@
 Working glossary for the most important RAM fields used in `bank_FF.asm`.
 
 ## Fields
-| Field | Hypothesized Meaning | Key Usage Sites | Confidence | Notes for C Port |
+| Field | Hypothesized Meaning | Key Usage Sites | Confidence | Notes |
 |---|---|---|---|---|
 | `ram_script` | Current gameplay script state | `bra_C9FE_dispatch_current_script`, `tbl_CA0D_gameplay_script_handlers` | High | Model as enum (`SCRIPT_00`, `SCRIPT_02`, ...). |
 | `ram_flag_demo` | Demo/autoplay mode flag | `loc_C98A_enter_gameplay_session`, `sub_D2FB_update_pacman_movement` | High | Gates input path and some script transitions. |

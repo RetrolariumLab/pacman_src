@@ -37,7 +37,7 @@ This document tracks the gameplay/intermission script state machine dispatched b
 | `10` | `00` | Intermission scene finishes (`E9A0..E9A2`: `STA ram_script <- 00`). |
 | `*` | `02` | Demo input/title bootstrap path (`C9EF..C9F3`, also title-side bootstrap). |
 
-## Notes For C Port
+## Invariants to Preserve
 1. Keep script IDs and dispatch table order stable first; refactor enum names only after trace parity.
 2. Treat `script 04` as the main frame driver: timers, pellets, pacman move, ghost update, collision, sprite prep.
 3. `script 06` is not a full state; it is a timed overlay freeze window before returning to `04`.

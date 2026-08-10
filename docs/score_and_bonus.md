@@ -42,7 +42,7 @@
 - `tbl_DFBE_fruit_sprite_tile_by_stage`: fruit sprite tile per stage group.
 - `tbl_E13A_life_icon_ppu_packets`: packet template for life icon update.
 
-## RAM Contracts (for C port)
+## RAM Contracts
 - `ram_00DC..00E1`: pending BCD score deltas (event producers write here).
 - `ram_score_p1` / `ram_score_hi`: canonical score/hiscore digits.
 - `ram_ppu_buffer_score` / `ram_ppu_buffer_hiscore`: display buffers.
@@ -50,7 +50,7 @@
 - `ram_pellet_cnt_p1`: remaining pellets in round.
 - `ram_fruit_timer_hi/lo`: fruit visibility lifetime.
 
-## Porting Notes
+## Invariants to Preserve
 1. Keep BCD digit math exact; avoid int conversion shortcuts initially.
 2. Keep event producers writing only pending deltas; centralize commit in `E060` equivalent.
 3. Preserve exact threshold values (`0x86`, `0x37`, `0x00`) and ordering.

@@ -1,6 +1,6 @@
 # Gameplay Feature Map (Bank FF)
 
-High-level map for the systems we care about before C porting.
+High-level map of the systems worth annotating in `bank_FF.asm` first.
 Addresses are from `bank_FF.asm`.
 
 ## Level Flow

@@ -45,7 +45,7 @@ This covers the remaining data-heavy tail of bank FF after gameplay/intermission
 - `FFFC`: `vec_C033_reset_entry`
 - `FFFE`: `vec_C167_IRQ`
 
-## C Port Notes
+## Invariants to Preserve
 1. Preserve stage profile decoding order from round init exactly.
 2. Keep all parameter tables byte-identical and table-driven at first.
 3. Keep maze stream raw and referenced through pointer table as in ROM.

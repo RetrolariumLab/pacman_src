@@ -52,7 +52,7 @@ Other handler table entries exist but appear mostly alias/unused in this ROM bui
   - `0D/0E`: intermission phrases
   - `0F`: pause toggle
 
-## C Port Notes
+## Invariants to Preserve
 1. Keep the 8-byte channel struct and decode order intact first.
 2. Preserve opcode semantics as byte-accurate handlers (no early abstraction).
 3. Preserve pre-pass arbitration before decode; it affects overlap/priority behavior.

@@ -40,17 +40,13 @@ def first_diff(a: bytes, b: bytes) -> int | None:
 
 
 def resolve_tool(tool_name: str, project_root: Path) -> Path:
-    candidates = [
-        project_root / "cc65-snapshot-win64" / "bin" / f"{tool_name}.exe",
-        project_root / "bin" / f"{tool_name}.exe",
-    ]
-    for p in candidates:
-        if p.is_file():
-            return p
+    candidate = project_root / "bin" / f"{tool_name}.exe"
+    if candidate.is_file():
+        return candidate
     found = shutil.which(tool_name)
     if found:
         return Path(found)
-    fail(f"{tool_name} not found (expected in cc65-snapshot-win64/bin or PATH)")
+    fail(f"{tool_name} not found (expected in bin/ or PATH)")
     raise AssertionError
 
 

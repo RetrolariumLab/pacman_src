@@ -1,31 +1,31 @@
-# Pac-Man (NES, JP) Reconstruction
+# Pac-Man (NES, JP) Disassembly
 
-Pac-Man (NES, JP) reverse-engineering and reconstruction project.
+Reverse-engineering and reconstruction of Pac-Man (J) (V1.0) for the NES.
 
-The project combines:
-- a new `cc65`-based C baseline ROM,
-- a commented `bank_FF.asm` reference/disassembly workflow,
-- automated FCEUX capture and comparison tooling,
-- local technical documentation for NES hardware and project-specific notes.
+The project is an annotated 6502 disassembly of the game's single PRG bank,
+plus the tooling used to prove the disassembly is correct: rebuild the ROM from
+`bank_FF.asm`, compare it byte for byte against the original, and replay a
+longplay movie in an instrumented FCEUX to catch behavioural regressions frame
+by frame.
 
 **Base `bank_FF.asm` reference**: [cyneprepou4uk/NES-Games-Disassembly - Pac-Man](https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man)
 
 **Local docs source**: [Nesdev Wiki](https://www.nesdev.org/wiki/Nesdev_Wiki)
 
-## Current Status
+## Status
 
-What works now:
-- title screen,
-- main menu,
-- attract names screen,
-- chase demo partially.
+The label / comment pass covers the major subsystems: boot and frame loop, the
+script state machine, Pac-Man movement, ghost AI, scoring, intermissions, and
+the sound engine. Ongoing work is deepening those annotations and splitting the
+single listing into per-subsystem modules.
 
-What is still broken:
-- chase demo still has sprite bugs,
-- some demo sprites disappear, clip, or render in the wrong order,
-- gameplay is not yet complete/playable.
+The gate for every change is `make verify-bank-ff`: rebuild the ROM from
+`bank_FF.asm` and assert byte-identity with the original. Annotation must never
+alter the assembled bytes, so any diff means the edit was wrong.
 
-In practice, the front-end and demo flow are far enough along to debug visually against the original ROM, but the game is not finished.
+The repository previously also contained a C reimplementation. It was removed —
+see [`docs/postmortem.md`](docs/postmortem.md) for what was tried and why it did
+not work.
 
 ## Quick Start
 
@@ -33,180 +33,130 @@ In practice, the front-end and demo flow are far enough along to debug visually 
 git clone <repo>
 cd pacman_src
 
-# Place original ROM in project root:
+# Place the original ROM in the project root:
 #   Pac-Man (J) (V1.0) [!].nes
 
-make build-c0
-make test-c0
+make build
 ```
+
+A successful run reports `[OK] Byte-identical ROM reproduced.`
+
+Three independent paths rebuild the ROM and all three assert byte-identity:
+`make build` (generated ca65 disassembly), `make verify-bank-ff` (pure Python
+assembler) and `make verify-bank-ff-ca65` (ca65/ld65 straight from
+`bank_FF.asm`).
 
 ## Project Structure
 
 ```text
 pacman_src/
-├── build_c/                      # Built C ROM output
-├── cc65-snapshot-win64/          # Local cc65 toolchain
-├── docs/                         # Project notes + local Nesdev Wiki dump
+├── bank_FF.asm                   # The disassembly — source of truth
+├── bin/                          # ca65 / ld65
+├── docs/                         # Subsystem notes + local Nesdev Wiki dump
 │   ├── nesdev/                   # Dumped NES technical documentation
-│   ├── bank_ff_map.md            # bank_FF notes
-│   ├── gameplay_feature_map.md   # Gameplay feature mapping
-│   ├── ghost_ai.md               # Ghost behavior notes
-│   ├── intermission_flow.md      # Intermission/cutscene notes
-│   └── ...
-├── movies/                       # FM2 movies for automation
-├── reference/                    # Reference captures from original ROM
-├── reference_projects/           # External projects kept for study
-├── reports/                      # Generated reports
-├── scripts/                      # Build/repro tooling
-│   ├── ghidra/                   # Ghidra export/import/headless helpers
-│   ├── workflow/                 # bank_FF analysis and compare helpers
-│   ├── build.py                  # Legacy root build
-│   ├── build_disasm_repro.py     # Disasm reproduction build
-│   ├── build_repro_c_cc65.py     # Ghidra C -> cc65 helper
-│   ├── build_repro_c_cc65_rom.py # Ghidra C ROM builder
-│   ├── build_repro_layout_rom.py # Repro layout ROM builder
+│   ├── index.md                  # Docs navigation
+│   ├── postmortem.md             # Why the C rewrite was abandoned
+│   ├── bank_ff_map.md            # Bank segmentation and annotation priorities
+│   ├── ram_fields.md             # RAM field glossary
+│   ├── script_states.md          # Gameplay script state machine
+│   ├── ghost_ai.md               # Ghost behaviour
+│   ├── score_and_bonus.md        # Pellets / fruit / score / 1UP
+│   ├── intermission_flow.md      # Intermission scenes
+│   ├── sound_engine.md           # Audio engine and stream decoder
+│   └── stage_params_and_data_tail.md
+├── movies/                       # FM2 movies driving the automated capture
+├── scripts/
+│   ├── ghidra/                   # Headless Ghidra disasm export / import
+│   ├── workflow/                 # bank_FF analysis, build, verify, reporting
+│   ├── build_disasm_repro.py     # Build a ROM from generated disassembly
+│   ├── build_repro_layout_rom.py # Layout-preserving repro ROM builder
 │   ├── compare_roms.py           # Binary ROM comparison
 │   ├── generate_repro_disasm.py  # bank_FF -> repro asm generator
 │   └── split_chr.py              # CHR extractor
 ├── src/
-│   ├── assets/                   # CHR/assets used by the C build
-│   ├── core/                     # Core engine/runtime code
-│   ├── game/                     # Game/demo modules
-│   ├── include/                  # Headers
-│   ├── README.md                 # Source tree notes
-│   └── nrom128_horz.cfg          # Current linker config
-├── workflow/                     # Generated workflow state and progress data
-├── bank_FF.asm                   # Main reference asm file
-├── decomp_bank_ff.c              # Auxiliary decompilation reference
-├── Makefile                      # Main automation entrypoint
-├── Pac-Man (J) (V1.0) [!].nes    # Original ROM
-├── README.md
-└── tile_ascii_map.txt            # Tile-to-ASCII map for reports
+│   └── nrom128_prg_only.cfg      # ld65 config: bare 16 KiB PRG, no header/CHR
+├── Makefile                      # Automation entrypoint
+├── Pac-Man (J) (V1.0) [!].nes    # Original ROM (not distributed)
+└── tile_ascii_map.txt            # Tile-to-ASCII map for capture reports
 ```
 
-### Scripts
-
-| Script | Purpose |
-|--------|---------|
-| `build.py` | Builds the legacy root-level ROM flow |
-| `split_chr.py` | Extracts CHR data from the original ROM |
-| `compare_roms.py` | Binary comparison of built ROM vs original |
-| `build_disasm_repro.py` | Builds a reproduction ROM from generated disassembly |
-| `build_repro_c_cc65.py` | Prepares Ghidra decompilation for `cc65` |
-| `build_repro_c_cc65_rom.py` | Builds a ROM from the Ghidra C path |
-| `build_repro_layout_rom.py` | Builds a reproduction ROM preserving layout |
-| `generate_repro_disasm.py` | Generates a repro asm from `bank_FF.asm` |
-| `scripts/workflow/*` | bank_FF manifests, RTS analysis, compare reports, ROM verification |
-| `scripts/ghidra/*` | Headless Ghidra export/import and coverage tooling |
+`reference/`, `diffs/`, `reports/` and `workflow/` are generated artifacts and
+are not tracked.
 
 ## Makefile Workflows
 
-### Core Build Workflow
+### Build and verification
 
 ```bash
-make split              # Extract CHR from the original ROM
-make build              # Build legacy root-level ROM flow
-make clean              # Remove root-level build artifacts
-
-make build-c0           # Build current C baseline ROM
-make run-c0             # Run current C baseline ROM
-make test-c0            # Run C ROM against reference and generate reports
-make clean-c0           # Remove C baseline build output
+make                            # Same as `make build`
+make build                      # Build ROM from generated ca65 disassembly, assert byte-identity
+make verify-bank-ff             # Rebuild ROM from bank_FF.asm, compare with original
+make build-bank-ff-ca65         # Build the bank_FF ROM via ca65/ld65
+make verify-bank-ff-ca65        # Build via ca65/ld65 and compare with original
 ```
 
-### Emulator / Reference Workflow
+### Annotation
 
 ```bash
-make build-fceux        # Build fceux_automation
-make reference          # Generate reference capture set from original ROM
-make debug              # Run built ROM against reference capture set
-make report             # Generate report from latest debug run
-make stop               # Kill running emulator/python processes
-```
-
-### `bank_FF.asm` Workflow
-
-```bash
-make wf-init                    # Build procedure manifest from bank_FF.asm
-make wf-batch COUNT=32          # Prepare RTS analysis batch
+make wf-init                    # Build the procedure manifest from bank_FF.asm
+make wf-batch COUNT=32          # Prepare an RTS analysis batch
 make analyze                    # Analyze bank_FF procedures with FCEUX
-make verify-bank-ff             # Verify ROM reconstructed from bank_FF.asm
-make build-bank-ff-ca65         # Build bank_FF ROM via ca65/ld65
-make verify-bank-ff-ca65        # Verify ca65/ld65 build against original
 make chunk CHUNK_START=1 CHUNK_LINES=250
-                                # Extract rename/analysis chunk from bank_FF.asm
+                                # Extract a rename/analysis chunk from bank_FF.asm
 ```
 
-### Utility Commands
+### Emulator / regression capture
 
 ```bash
-make help-workflow      # Print workflow-oriented help
+make build-fceux                # Build fceux_automation
+make reference                  # Capture the reference set from the original ROM
+make debug                      # Replay the longplay on the rebuilt ROM vs reference
+make report                     # Generate a report from the latest debug run
+make progress-report RUN_DIR=…  # Compare an existing capture dir against reference
+make stop                       # Kill running emulator/python processes
 ```
 
-## Build System
-
-### C Baseline Build
-
-The current main build target is `make build-c0`.
-
-It uses:
-- `cc65-snapshot-win64/bin/cl65`
-- `src/nrom128_horz.cfg`
-- `src/core/*`
-- `src/game/*`
-- `src/include/*`
-
-Output:
-- `build_c/pacman_c0.nes`
-
-### Reference / Compare Flow
-
-`make test-c0` does this:
-1. builds `build_c/pacman_c0.nes`
-2. runs it in `fceux_automation`
-3. replays `movies/pacman_j_longplay.fm2`
-4. saves screenshots, state dumps and ASCII tiles into `workflow/progress`
-5. builds a comparison report in `workflow/progress/report`
-
-## Recommended Working Flow
-
-### For C ROM debugging
+### Utility
 
 ```bash
-make test-c0
-
-# Then inspect:
-#   workflow/progress/screens
-#   workflow/progress/ascii
-#   workflow/progress/report
+make split                      # Extract CHR from the original ROM
+make clean                      # Remove build artifacts
+make help-workflow              # Print workflow-oriented help
 ```
 
-### For `bank_FF.asm` analysis
+## Working Flow
 
-```bash
-make wf-init
-make wf-batch COUNT=32
-make analyze
+1. Annotate a chunk of `bank_FF.asm` (`make chunk`).
+2. Run `make verify-bank-ff` — it must stay byte-identical. Annotation never
+   changes assembled bytes, so any diff is a mistake in the edit.
+3. For changes that do alter behaviour, run `make debug` and inspect the frame
+   diffs in `diffs/` and the report in `reports/`.
 
-# Then inspect:
-#   workflow/
-#   reports/
-#   diffs/
-```
+## Tooling Requirements
 
-## Notes
+- Python 3
+- `ca65` / `ld65` (bundled in `bin/`)
+- [`fceux_automation`](https://github.com/oranguthang/fceux_automation) — a
+  fork of FCEUX with headless capture, reference comparison and state dumping,
+  cloned and built by `make build-fceux`
+- MSBuild / Visual Studio 2022 (to build `fceux_automation` on Windows)
+- Ghidra, only for the optional `scripts/ghidra/` export paths
 
-- The original ROM remains the source of truth.
-- `workflow/`, `reports/`, `diffs/`, and parts of `reference/` are generated artifacts.
-- The repository currently contains both active code and reverse-engineering infrastructure.
-- The `docs/nesdev/` directory is a local dumped copy of [Nesdev Wiki](https://www.nesdev.org/wiki/Nesdev_Wiki).
+## Known Gaps
+
+- `bank_FF.asm` is still a single listing; the intended target shape is a split
+  into per-subsystem modules, matching `smb1_src`.
+- The generated `src/pacman_disasm_repro.asm` is a flat `.byte` stream with the
+  original mnemonics kept as trailing comments. It reproduces the ROM exactly
+  but is not the readable artifact — `bank_FF.asm` is.
 
 ## Credits
 
-- `bank_FF.asm` base reference came from [cyneprepou4uk/NES-Games-Disassembly - Pac-Man](https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man)
-- NES hardware documentation is mirrored locally from [Nesdev Wiki](https://www.nesdev.org/wiki/Nesdev_Wiki)
-- Original game rights belong to Namco/Nintendo
+- `bank_FF.asm` base reference: [cyneprepou4uk/NES-Games-Disassembly - Pac-Man](https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man)
+- NES hardware documentation mirrored locally from [Nesdev Wiki](https://www.nesdev.org/wiki/Nesdev_Wiki)
 
 ## License
 
-This repository is reverse-engineering / preservation work for educational purposes. Original game rights belong to Namco and Nintendo.
+Reverse-engineering / preservation work for educational purposes. No original
+ROM data is distributed with this repository. Original game rights belong to
+Namco and Nintendo.

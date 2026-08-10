@@ -241,25 +241,5 @@
         "europe": 801
       }
     }
-  ],
-  "c_includes": [
-    {
-      "path": "assets/generated/c/ec25cd088056307b.inc",
-      "asset": "palettes/title-background.bin",
-      "offset": 0,
-      "size": 16
-    },
-    {
-      "path": "assets/generated/c/42099a7bf62e02a5.inc",
-      "asset": "title/logo-tiles.bin",
-      "offset": 0,
-      "size": 138
-    },
-    {
-      "path": "assets/generated/c/2ea21de027701c59.inc",
-      "asset": "palettes/attract-namco.bin",
-      "offset": 0,
-      "size": 32
-    }
   ]
 }

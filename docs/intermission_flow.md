@@ -70,7 +70,7 @@ Finish path:
 - `ram_0089`: local countdown timer (blink/toggle phases).
 - `ram_060D/ram_060E`: actor visibility/one-shot control flags.
 
-## C Port Notes
+## Invariants to Preserve
 1. Keep scene/substate tables data-driven (no flattened if-chains initially).
 2. Preserve frame pipeline order from script10; changing order will desync OAM/logic.
 3. Keep substate increments by 2, matching table indexing.

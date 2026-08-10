@@ -1,10 +1,10 @@
 # BANK_FF Map
 
 ## Purpose
-Quick navigation map for `bank_FF.asm` with C-port priorities.
+Quick navigation map for `bank_FF.asm` with annotation priorities.
 
 ## Subsystem Ranges
-| Range | Area | Key Entrypoints | C Port Notes |
+| Range | Area | Key Entrypoints | Notes |
 |---|---|---|---|
 | `C033..C1DE` | Boot, NMI, input, frame bootstrap | `vec_C033_reset_entry`, `vec_C0FA_nmi_handler`, `loc_C168_main_frame_bootstrap` | Keep exact frame order (`NMI -> input -> script dispatch`) to avoid desyncs. |
 | `C1F5..C98A` | Title, attract, demo pregame | `tbl_C1F5_script_handlers_title_flow`, `sub_C21F_draw_title_logo_and_text`, `loc_C98A_enter_gameplay_session` | Title/attract uses script+substate counters (`ram_0087/0088`); preserve timing ticks. |
@@ -26,10 +26,10 @@ Quick navigation map for `bank_FF.asm` with C-port priorities.
 - `ram_00D2`, `ram_00D3`, `ram_00D4`, `ram_00D5`, `ram_00D6`: release target/counter pipeline.
 - `ram_fruit_timer_hi`, `ram_fruit_timer_lo`: fruit visibility timer.
 
-## Suggested C Port Order
-1. Port `C98A..CA1E` script dispatcher and loop shell.
-2. Port `CE35..D04D` round init and data-load pipeline.
-3. Port `D2FB..D4C1` Pac-Man movement.
-4. Port `D0EF..D2FA` timers/collision/scoring.
-5. Port `D4C2..E25B` ghost AI/state machine.
-6. Port intermission (`E655..EB41`) last.
+## Suggested Annotation Order
+1. `C98A..CA1E` script dispatcher and loop shell.
+2. `CE35..D04D` round init and data-load pipeline.
+3. `D2FB..D4C1` Pac-Man movement.
+4. `D0EF..D2FA` timers/collision/scoring.
+5. `D4C2..E25B` ghost AI/state machine.
+6. Intermission (`E655..EB41`) last.

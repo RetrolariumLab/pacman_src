@@ -40,7 +40,7 @@ Working notes for the enemy logic block in `bank_FF.asm`.
 - `sub_D8C9_update_ghost_house_counters` updates marker flags (`0608..060C`) and pellet-threshold release gating.
 - `sub_D1EB_queue_next_ghost_release` (outside this window but coupled) pushes release slots.
 
-## C Port Hints
+## Invariants to Preserve
 1. Keep state IDs numeric and table-driven first.
 2. Preserve tile-center checks exactly (`(x|y)&7 == 0`-style points) before allowing turn recompute.
 3. Keep speed vectors as fixed-point `(lo,hi)` pair like RAM layout; this avoids desync.
