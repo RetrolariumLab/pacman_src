@@ -1,9 +1,10 @@
 # Bank FF Docs Index
 
 ## Navigation
+- [roadmap.md](./roadmap.md): project direction, evidence rules, milestones, and completion criteria.
 - [postmortem.md](./postmortem.md): why the C reimplementation was removed and what replaced it.
 - [bank_ff_map.md](./bank_ff_map.md): top-level bank segmentation and annotation entry points.
-- [ram_fields.md](./ram_fields.md): key RAM fields and migration notes.
+- [ram_fields.md](./ram_fields.md): key RAM fields and runtime roles.
 - [script_states.md](./script_states.md): gameplay script state machine (`ram_script`).
 - [gameplay_feature_map.md](./gameplay_feature_map.md): feature-level map (levels, enemies, bonuses, cutscenes).
 - [ghost_ai.md](./ghost_ai.md): ghost update pipeline, states, targeting, movement.
@@ -36,10 +37,12 @@
 
 ## Verification Rule
 After each edit batch:
-- run `make verify-bank-ff`
-- require `[OK] Byte-identical to original ROM`
+- run `make verify`
+- require `[OK] Byte-identical ROM reproduced from native ca65 source.`
 
 ## Current Status
 - Bank FF label/comment pass is broadly complete for major systems.
-- Next practical step is splitting the single listing into per-subsystem modules,
-  keeping byte-identity after every step.
+- Native ca65 source is split into per-subsystem modules under `src/bank_ff/`,
+  with `src/main.asm` retaining their address order.
+- Next practical step is deepening lower-level branch and data annotations,
+  keeping byte-identity after every edit batch.

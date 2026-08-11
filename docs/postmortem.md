@@ -20,7 +20,7 @@ scripts/ghidra/*DecompC*, *Coverage* Ghidra C export and coverage tooling
 bin/cc65.exe, bin/cl65.exe           C compiler binaries
 ```
 
-What stays is the actual asset: `bank_FF.asm` (9904 lines), the FCEUX capture
+What stays is the actual asset: the native assembly under `src/`, the FCEUX capture
 and comparison automation in `scripts/`, the `movies/` input recordings,
 `docs/`, and `bin/ca65.exe` + `bin/ld65.exe`.
 
@@ -164,8 +164,8 @@ sequential assignments. That is most of what those 3616 lines are.
 
 ### 5. It killed the verification story
 
-The value of this repository is `make verify-bank-ff`: rebuild the ROM from
-`bank_FF.asm` and assert **byte-identical to the original**. That is a real,
+The value of this repository is `make verify`: rebuild the ROM from
+`src/main.asm` and assert **byte-identical to the original**. That is a real,
 binary, unarguable pass/fail. Every annotation added to the disassembly is
 checked by it.
 
@@ -243,8 +243,8 @@ pretending it is a reproduction.
 
 ## What the project does now
 
-- `bank_FF.asm` is the source of truth, annotated incrementally.
-- `make verify-bank-ff` must report byte-identity after every batch of edits.
+- `src/main.asm` and the modules under `src/bank_ff/` are the source of truth.
+- `make verify` must report byte-identity after every batch of edits.
 - `scripts/` + `movies/` + `fceux_automation` provide frame-level regression
   capture against the original ROM.
 - Target shape is `smb1_src`: disassembly, linker config, `ca65`/`ld65`,

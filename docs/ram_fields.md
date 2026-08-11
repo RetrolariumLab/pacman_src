@@ -1,7 +1,7 @@
 # RAM Fields (BANK_FF)
 
 ## Purpose
-Working glossary for the most important RAM fields used in `bank_FF.asm`.
+Working glossary for the most important RAM fields used by `src/main.asm`.
 
 ## Fields
 | Field | Hypothesized Meaning | Key Usage Sites | Confidence | Notes |

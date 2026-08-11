@@ -4,10 +4,17 @@ from __future__ import annotations
 import argparse
 import csv
 import re
+import sys
 from pathlib import Path
 
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from listing_source import read_listing_lines  # noqa: E402
+
 LABEL_RE = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*):')
-ADDR_RE = re.compile(r'00:([0-9A-Fa-f]{4}):')
+LABEL_ADDR_RE = re.compile(
+    r'^(?:sub|loc|bra|ofs|off|tbl|vec)_([C-F][0-9A-Fa-f]{3})(?:_|$)'
+)
 
 
 def classify_label(label: str) -> str:
@@ -29,19 +36,23 @@ def classify_label(label: str) -> str:
 def find_nearest_addr(lines: list[str], index: int, window: int = 4) -> str:
     end = min(len(lines), index + window + 1)
     for i in range(index, end):
-        m = ADDR_RE.search(lines[i])
-        if m:
-            return m.group(1).upper()
+        label = LABEL_RE.match(lines[i].strip())
+        if label:
+            address = LABEL_ADDR_RE.match(label.group(1))
+            if address:
+                return address.group(1).upper()
     start = max(0, index - window)
     for i in range(index - 1, start - 1, -1):
-        m = ADDR_RE.search(lines[i])
-        if m:
-            return m.group(1).upper()
+        label = LABEL_RE.match(lines[i].strip())
+        if label:
+            address = LABEL_ADDR_RE.match(label.group(1))
+            if address:
+                return address.group(1).upper()
     return ""
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Extract rename candidates from a line chunk of bank_FF.asm.")
+    ap = argparse.ArgumentParser(description="Extract rename candidates from a modular assembly chunk.")
     ap.add_argument("--source", required=True)
     ap.add_argument("--start-line", type=int, required=True)
     ap.add_argument("--line-count", type=int, default=250)
@@ -58,7 +69,7 @@ def main() -> int:
     if args.line_count < 1:
         raise SystemExit("[ERROR] --line-count must be >= 1")
 
-    lines = src.read_text(encoding="utf-8", errors="ignore").splitlines()
+    lines = read_listing_lines(src)
     start_idx = args.start_line - 1
     end_idx = min(len(lines), start_idx + args.line_count)
     chunk = lines[start_idx:end_idx]

@@ -1,20 +1,25 @@
 # BANK_FF Map
 
 ## Purpose
-Quick navigation map for `bank_FF.asm` with annotation priorities.
+Quick navigation map for the modules included by `src/main.asm`, with annotation
+priorities.
 
 ## Subsystem Ranges
 | Range | Area | Key Entrypoints | Notes |
 |---|---|---|---|
-| `C033..C1DE` | Boot, NMI, input, frame bootstrap | `vec_C033_reset_entry`, `vec_C0FA_nmi_handler`, `loc_C168_main_frame_bootstrap` | Keep exact frame order (`NMI -> input -> script dispatch`) to avoid desyncs. |
-| `C1F5..C98A` | Title, attract, demo pregame | `tbl_C1F5_script_handlers_title_flow`, `sub_C21F_draw_title_logo_and_text`, `loc_C98A_enter_gameplay_session` | Title/attract uses script+substate counters (`ram_0087/0088`); preserve timing ticks. |
-| `C98A..D04D` | Gameplay script core and round init | `tbl_CA0D_gameplay_script_handlers`, `ofs_003_CE35_script00_round_init` | This is the gameplay state machine backbone; port scripts as explicit enum states. |
+| `C000..C1F4` | Boot, NMI, input, frame bootstrap | `vec_C033_reset_entry`, `vec_C0FA_nmi_handler`, `loc_C168_main_frame_bootstrap` | Keep exact frame order (`NMI -> input -> script dispatch`) to avoid desyncs. |
+| `C1F5..C989` | Title, attract, demo pregame | `tbl_C1F5_script_handlers_title_flow`, `sub_C21F_draw_title_logo_and_text` | Title/attract uses script+substate counters (`ram_0087/0088`); preserve timing ticks. |
+| `C98A..D0EE` | Gameplay script core and round init | `loc_C98A_enter_gameplay_session`, `tbl_CA0D_gameplay_script_handlers`, `ofs_003_CE35_script00_round_init` | Keep handlers explicit and make every script transition visible. |
 | `D0EF..D2FA` | Timers, frightened, release, fruit, collisions | `sub_D0EF_update_round_timers_and_frightened`, `sub_D1EB_queue_next_ghost_release`, `sub_D20F_check_actor_collisions` | High-risk logic: affects ghost release order, fright windows, scoring. Add golden tests first. |
 | `D2FB..D4C1` | Pac-Man movement/input/demo path | `sub_D2FB_update_pacman_movement`, `loc_D311_apply_requested_direction` | Keep tile-grid alignment and tunnel wrap behavior bit-exact. |
-| `D4C2..E25B` | Ghost state machine + targeting + motion | `sub_D4C2_update_ghost_slots`, `sub_D4F2_dispatch_ghost_state_handler`, `loc_D6E3_choose_next_direction` | Largest complexity block; split by state (`00/02/04/06/08`) and test per-state traces. |
-| `E2FF..E74A` | Playfield/HUD utilities + intermission setup | `sub_E2FF_clear_bg_nametables_and_attrs`, `sub_E379_draw_score_hud_live`, `ofs_003_E655_script0E_intermission_setup` | Mostly PPU writers; isolate as renderer-side helpers in C. |
-| `E74B..EB41` | Intermission runtime and animation scripts | `ofs_003_E74B_script10_intermission_runtime`, `sub_E75A_run_intermission_scene_dispatch`, `sub_EA20_run_intermission_animation_dispatch` | Scene/state tables are cleanly data-driven; keep table dispatch structure. |
-| `EB42..F3FF` | Stage parameter tables, maze/sound data, audio support | `tbl_EB42_stage_param_index_stream`, `tbl_EBCC_level_param_blocks_22bytes`, `tbl_EFAA_sound_control_opcode_handlers` | Treat as immutable data first; decode into structs only after trace parity. |
+| `D4C2..D8F8` | Ghost state machine + targeting + motion | `sub_D4C2_update_ghost_slots`, `sub_D4F2_dispatch_ghost_state_handler`, `loc_D6E3_choose_next_direction` | Largest complexity block; annotate by state (`00/02/04/06/08`) and validate per-state traces. |
+| `D8F9..DEDE` | Actor animation, OAM, buffered PPU writes | `sub_D8F9_update_pacman_anim_frame`, `sub_DA5C_build_oam_from_sprite_buffers`, `sub_DDE9_write_buffer_to_ppu` | Preserve actor ordering, overlap handling, and NMI-side write order. |
+| `DEDF..E153` | Pellets, frightened mode, score, 1UP | `sub_DEDF_check_for_eating_pellets`, `loc_E060_add_points_and_update_score_buffers` | Score and frightened-mode side effects share this path; document them as one transaction. |
+| `E154..E654` | Tile probes, playfield, and HUD | `sub_E154_build_object_neighbor_ppu_positions`, `sub_E2FF_clear_bg_nametables_and_attrs`, `sub_E379_draw_score_hud_live` | Mostly PPU and coordinate helpers; keep address conversion and buffering assumptions visible. |
+| `E655..EB41` | Intermission setup, runtime, animation | `ofs_003_E655_script0E_intermission_setup`, `sub_E75A_run_intermission_scene_dispatch`, `sub_EA20_run_intermission_animation_dispatch` | Scene/state tables are cleanly data-driven; keep table dispatch structure. |
+| `EB42..EE17` | Stage parameters and maze data | `tbl_EB42_stage_param_index_stream`, `tbl_EBCC_level_param_blocks_22bytes`, `tbl_EC78_maze_rle_stream` | Treat the data as immutable; document its schema without changing layout. |
+| `EE18..F3FF` | Sound engine and SFX streams | `sub_EE18_init_sound_engine`, `sub_EE5C_update_sound_engine`, `tbl_EFAA_sound_control_opcode_handlers` | Decoder control flow and channel arbitration are timing-sensitive. |
+| `F400..FFFF` | Unused tail, maze pointer, vectors | `tbl_FFF8_maze_rle_stream_ptr`, `vec_C0FA_nmi_handler` | Preserve filler bytes and fixed vector placement. |
 
 ## Runtime Fields (Most Critical)
 - `ram_script`: gameplay script state (indexes `tbl_CA0D_gameplay_script_handlers`).

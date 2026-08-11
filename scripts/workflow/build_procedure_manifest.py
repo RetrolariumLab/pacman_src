@@ -1,45 +1,37 @@
 #!/usr/bin/env python3
-"""Build ordered procedure manifest from bank_FF.asm."""
+"""Build an ordered procedure manifest from the modular assembly source."""
 
 from __future__ import annotations
 
 import argparse
 import csv
 import re
+import sys
 from pathlib import Path
 
 
-LABEL_RE = re.compile(r"^(sub_[A-Za-z0-9_]+|loc_[A-Za-z0-9_]+):\s*$")
-ADDR_RE = re.compile(r"00:([0-9A-F]{4}):")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from listing_source import read_listing_lines  # noqa: E402
+
+
+LABEL_RE = re.compile(
+    r"^(sub_[A-Za-z0-9_]+|loc_[A-Za-z0-9_]+):\s*(?:;.*)?$"
+)
+LABEL_ADDR_RE = re.compile(r"^(?:sub|loc)_([C-F][0-9A-F]{3})(?:_|$)")
 
 
 def parse_listing(path: Path) -> list[tuple[str, str]]:
-    lines = path.read_text(encoding="utf-8").splitlines()
+    lines = read_listing_lines(path)
     out: list[tuple[str, str]] = []
 
-    i = 0
-    while i < len(lines):
-        m = LABEL_RE.match(lines[i].strip())
-        if not m:
-            i += 1
+    for line in lines:
+        match = LABEL_RE.match(line.strip())
+        if match is None:
             continue
-
-        label = m.group(1)
-        addr = ""
-        j = i + 1
-        while j < len(lines):
-            s = lines[j]
-            if LABEL_RE.match(s.strip()):
-                break
-            ma = ADDR_RE.search(s)
-            if ma:
-                addr = ma.group(1)
-                break
-            j += 1
-
-        if addr:
-            out.append((addr, label))
-        i = j
+        label = match.group(1)
+        address = LABEL_ADDR_RE.match(label)
+        if address is not None:
+            out.append((address.group(1), label))
 
     # Keep first occurrence only (listing may contain alias labels).
     seen: set[str] = set()

@@ -10,7 +10,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 
-def parse_ines(path: Path) -> tuple[bytes, bytes]:
+def parse_ines(path: Path) -> tuple[bytes, bytes, bytes]:
     data = path.read_bytes()
     if len(data) < 16 or data[:4] != b"NES\x1A":
         raise ValueError(f"Not a valid iNES ROM: {path}")
@@ -21,8 +21,9 @@ def parse_ines(path: Path) -> tuple[bytes, bytes]:
     prg_size = prg_banks * 16_384
     chr_size = chr_banks * 8_192
     header = data[:16]
+    prg = data[off : off + prg_size]
     chr_blob = data[off + prg_size : off + prg_size + chr_size]
-    return header, chr_blob
+    return header, prg, chr_blob
 
 
 def load_batch_labels(path: Path) -> list[str]:
@@ -74,30 +75,7 @@ def count_diffs(diff_report: Path) -> tuple[int, int]:
     return screen, memory
 
 
-def patch_listing_rts(path: Path, addr_hex: str) -> bool:
-    target = addr_hex.upper()
-    rows = path.read_text(encoding="utf-8", errors="ignore").splitlines()
-    out: list[str] = []
-    patched = False
-    for line in rows:
-        if not patched and f"00:{target}:" in line:
-            m = re.match(r"^(.*00:[0-9A-Fa-f]{4}:\s+)([0-9A-Fa-f]{2})(.*)$", line)
-            if m:
-                line = f"{m.group(1)}60{m.group(3)}"
-                patched = True
-        out.append(line)
-    if patched:
-        path.write_text("\n".join(out) + "\n", encoding="utf-8")
-    return patched
-
-
 def analyze_one(task: dict) -> dict:
-    import sys
-
-    ghidra_dir = Path(task["ghidra_dir"])
-    sys.path.insert(0, str(ghidra_dir))
-    from build_bank_ff_bin import parse_listing  # type: ignore
-
     label = task["label"]
     addr_s = task["address"]
     order = task["order"]
@@ -113,9 +91,9 @@ def analyze_one(task: dict) -> dict:
     work_dir.mkdir(parents=True, exist_ok=True)
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    listing_copy = work_dir / "bank_FF.asm"
-    shutil.copy2(Path(task["listing"]), listing_copy)
-    if not patch_listing_rts(listing_copy, addr_s):
+    prg_offset = int(addr_s, 16) - 0xC000
+    patched_prg = bytearray.fromhex(task["prg_hex"])
+    if not 0 <= prg_offset < len(patched_prg):
         return {
             "order": order,
             "label": label,
@@ -128,19 +106,7 @@ def analyze_one(task: dict) -> dict:
             "work_dir": str(work_dir),
         }
 
-    patched_prg = bytearray(parse_listing(listing_copy))
-    if len(patched_prg) != 16_384:
-        return {
-            "order": order,
-            "label": label,
-            "address": addr_s,
-            "status": "build_failed",
-            "screen_diff": 0,
-            "memory_diff": 0,
-            "exit_code": -1,
-            "run_dir": str(run_dir),
-            "work_dir": str(work_dir),
-        }
+    patched_prg[prg_offset] = 0x60
 
     rom_path = work_dir / "candidate_rts.nes"
     rom_path.write_bytes(bytes.fromhex(task["header_hex"]) + bytes(patched_prg) + bytes.fromhex(task["chr_hex"]))
@@ -216,9 +182,6 @@ def main() -> int:
     ap.add_argument("--nothrottle", action="store_true")
     args = ap.parse_args()
 
-    script_dir = Path(__file__).resolve().parent
-    ghidra_dir = script_dir.parent / "ghidra"
-
     listing = Path(args.listing)
     manifest = Path(args.manifest)
     batch = Path(args.batch)
@@ -240,7 +203,7 @@ def main() -> int:
     work_root = report.parent / "rts_work"
     work_root.mkdir(parents=True, exist_ok=True)
 
-    header, chr_blob = parse_ines(original_rom)
+    header, original_prg, chr_blob = parse_ines(original_rom)
     manifest_rows = load_manifest(manifest)
     labels = load_batch_labels(batch)
     if not labels:
@@ -263,7 +226,6 @@ def main() -> int:
                 "label": label,
                 "address": addr_s,
                 "worker_index": worker_index,
-                "listing": str(listing),
                 "work_root": str(work_root),
                 "diff_root": str(diff_root),
                 "fceux": str(fceux),
@@ -279,8 +241,8 @@ def main() -> int:
                 "turbo": args.turbo,
                 "nothrottle": args.nothrottle,
                 "header_hex": header.hex(),
+                "prg_hex": original_prg.hex(),
                 "chr_hex": chr_blob.hex(),
-                "ghidra_dir": str(ghidra_dir),
             }
         )
         worker_index += 1

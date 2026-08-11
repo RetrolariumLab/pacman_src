@@ -1,7 +1,7 @@
 # Gameplay Feature Map (Bank FF)
 
-High-level map of the systems worth annotating in `bank_FF.asm` first.
-Addresses are from `bank_FF.asm`.
+High-level map of the systems worth annotating under `src/bank_ff/` first.
+Addresses are from the native Bank FF modules.
 
 ## Level Flow
 - `C98A..CA1E`: gameplay loop shell + script dispatch (`ram_script`).
@@ -44,8 +44,8 @@ Addresses are from `bank_FF.asm`.
 - `EE18..F04E`: sound engine init/clear/update + stream decode.
 - `F357..F3FE`: SFX data blocks used by gameplay events.
 
-## Porting Priority
+## Annotation Priority
 1. Keep `script 00/02/04/06/08/0C` cycle stable before touching intermissions.
-2. Port pellet/frightened path (`DEDF..E05A`) as a single unit to preserve timers.
-3. Port ghost movement (`D4C2..D87E`) only after neighbor-tile probes (`E154..E21B`) are parity-checked.
-4. Port intermission scripts last; they are isolated from normal round progression.
+2. Treat the pellet/frightened path (`DEDF..E05A`) as one unit when documenting side effects.
+3. Cross-check ghost movement (`D4C2..D87E`) against the neighbor-tile probes (`E154..E21B`).
+4. Annotate intermission scripts independently; they are isolated from normal round progression.
