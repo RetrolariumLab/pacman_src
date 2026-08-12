@@ -205,14 +205,8 @@ bra_D87E_return:		; was: bra_D87E_RTS
 ; Update ghost slots with state06-only dispatch
 sub_D87F_update_ghost_slots_state06_only:		; was: sub_D87F
     LDX #$00
-    LDA #< (ram_obj_ppu_tile + $05)
-    STA ram_0000
-    LDA #> (ram_obj_ppu_tile + $05)
-    STA ram_0001
-    LDA #< (ram_obj_pos_X_hi + $04)
-    STA ram_0002
-    LDA #> (ram_obj_pos_X_hi + $04)
-    STA ram_0003
+    LoadPointer ram_0000, (ram_obj_ppu_tile + $05)
+    LoadPointer ram_0002, (ram_obj_pos_X_hi + $04)
     LDA #$01
     STA ram_0004
 ; Loop over ghost slots for state06-only update

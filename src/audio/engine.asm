@@ -5,10 +5,7 @@
 
 ; Initialize sound engine pointers, APU channel enables, and frame counter mode
 sub_EE18_init_sound_engine:		; was: sub_EE18
-    LDA #< ram_sfx
-    STA ram_00F0
-    LDA #> ram_sfx
-    STA ram_00F1
+    LoadPointer ram_00F0, ram_sfx
     LDA #< ram_0625
     STA ram_00F2
     LDA #> ram_0620

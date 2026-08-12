@@ -244,10 +244,7 @@ bra_CD6C_clear_oam_head:		; was: bra_CD6C_loop
     INY
     CPY #$60
     BNE bra_CD6C_clear_oam_head
-    LDA #< (ram_oam + $60)
-    STA ram_0000
-    LDA #> (ram_oam + $60)
-    STA ram_0001
+    LoadPointer ram_0000, (ram_oam + $60)
     LDA #$03
     STA ram_0004
     LDY #$00

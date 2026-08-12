@@ -20,11 +20,7 @@ bra_E26E_select_maze_target_nametable:		; was: bra_E26E
     LDY #$00
 ; Upload next compressed maze row
 bra_E27C_upload_next_maze_row:		; was: bra_E27C_loop
-    LDA $2002
-    LDA ram_0002
-    STA $2006
-    LDA ram_0003
-    STA $2006
+    SetPpuAddressFrom ram_0002
     LDA #$16
     STA ram_0004
 ; Decode next RLE token from maze stream
@@ -75,11 +71,7 @@ bra_E2D3_select_bottom_banner_nametable:		; was: bra_E2D3
 ; Fill bottom banner rows with pattern tiles
 bra_E2D3_fill_bottom_banner_rows:		; was: bra_E2D3_loop
     LDX #$07
-    LDA $2002
-    LDA ram_0000
-    STA $2006
-    LDA ram_0001
-    STA $2006
+    SetPpuAddressFrom ram_0000
     LDA tbl_E2FC_bottom_banner_fill_tiles,Y
 ; Write one bottom banner row
 bra_E2E5_write_bottom_banner_row:		; was: bra_E2E5_loop
@@ -110,11 +102,7 @@ tbl_E2FC_bottom_banner_fill_tiles:		; was: tbl_E2FC
 
 ; Clear both nametables and attribute blocks with blank tile
 sub_E2FF_clear_bg_nametables_and_attrs:		; was: sub_E2FF
-    LDA $2002
-    LDA #> $2000
-    STA $2006
-    LDA #< $2000
-    STA $2006
+    SetPpuAddress $2000
     LDA #$01
     STA ram_0002
 ; One nametable tile-fill pass in clear routine
@@ -142,21 +130,13 @@ bra_E31E_loop:
 bra_E335_select_next_nametable_phase:		; was: bra_E335
     DEC ram_0002
     BNE bra_E349_clear_attribute_blocks_phase
-    LDA $2002
-    LDA #> $2800
-    STA $2006
-    LDA #< $2800
-    STA $2006
+    SetPpuAddress $2800
     JMP loc_E310_clear_nametable_fill_pass
 ; Clear attribute blocks after nametable fill
 bra_E349_clear_attribute_blocks_phase:		; was: bra_E349
     LDA #$01
     STA ram_0000
-    LDA $2002
-    LDA #> $23C0
-    STA $2006
-    LDA #< $23C0
-    STA $2006
+    SetPpuAddress $23C0
 bra_E35A_loop:
     LDA #$00
     TAY
@@ -170,11 +150,7 @@ bra_E35D_loop:
     RTS
 ; Switch to second attribute block during clear
 bra_E36A_select_second_attr_block:		; was: bra_E36A
-    LDA $2002
-    LDA #> $2BC0
-    STA $2006
-    LDA #< $2BC0
-    STA $2006
+    SetPpuAddress $2BC0
     BNE bra_E35A_loop   ; jmp
 
 

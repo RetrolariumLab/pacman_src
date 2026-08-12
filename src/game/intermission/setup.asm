@@ -38,11 +38,7 @@ bra_E65C_wait_vblank_set_flag:		; was: bra_E65C_infinite_loop
     STA ram_obj_pos_X_lo + $04
     LDA #$00
     STA ram_0088
-    LDA $2002
-    LDA #> $3F10
-    STA $2006
-    LDA #< $3F10
-    STA $2006
+    SetPpuAddress $3F10
     LDY #$00
 ; Upload sprite palette for intro/demo setup
 bra_E6A0_upload_demo_sprite_palette:		; was: bra_E6A0_loop

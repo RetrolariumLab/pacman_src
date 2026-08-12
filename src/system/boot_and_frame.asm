@@ -240,11 +240,7 @@ bra_C180_clear_oam_ram_0700_07FF:		; was: bra_C180_loop
     JSR sub_C284_upload_title_attribute_table
     JSR sub_C21F_draw_title_logo_and_text
     JSR sub_E393_draw_score_hud_dual
-    LDA $2002
-    LDA #> $3F00
-    STA $2006
-    LDA #< $3F00
-    STA $2006
+    SetPpuAddress $3F00
     LDY #$00
 ; Upload 16-byte title background palette
 bra_C1A3_upload_background_palette:		; was: bra_C1A3_loop

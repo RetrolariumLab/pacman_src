@@ -10,6 +10,13 @@ ram_0002                                 = $0002
 ram_0003                                 = $0003
 ram_0004                                 = $0004
 ram_0005                                 = $0005
+; Contextual aliases used by score-HUD drawing. These bytes remain shared
+; scratch storage outside that subsystem.
+ram_score_hud_ppu_addr_hi                = ram_0000
+ram_score_hud_ppu_addr_lo                = ram_0001
+ram_score_hud_value_ptr                  = ram_0002
+ram_score_hud_row_stride                 = ram_0004
+ram_score_hud_row_count                  = ram_0005
 ram_0006                                 = $0006
 ram_0007                                 = $0007
 ram_0008                                 = $0008

@@ -23,6 +23,10 @@ Modules are divided at natural procedure and data boundaries and remain below
 600 lines. [`docs/source_layout.md`](docs/source_layout.md) is the detailed
 address-to-file map.
 
+Repeated domain operations use a small set of byte-preserving ca65 macros under
+`src/macros/`; the project deliberately avoids hiding ordinary 6502 instructions
+behind generic syntax aliases. See [`docs/macros.md`](docs/macros.md).
+
 The gate for every change is `make verify`: rebuild the ROM from
 `src/main.asm` and assert byte-identity with the original. Annotation must never
 alter the assembled bytes, so any diff means the edit was wrong.

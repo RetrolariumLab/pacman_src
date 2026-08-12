@@ -3,14 +3,8 @@
 sub_DA5C_build_oam_from_sprite_buffers:		; was: sub_DA5C
 ; Build final OAM entries from sprite buffers
 loc_DA5C_build_oam_from_sprite_buffers:		; was: loc_DA5C
-    LDA #< ram_spr_position
-    STA ram_0000
-    LDA #> ram_spr_position
-    STA ram_0001
-    LDA #< ram_oam
-    STA ram_0002
-    LDA #> ram_oam
-    STA ram_0003
+    LoadPointer ram_0000, ram_spr_position
+    LoadPointer ram_0002, ram_oam
     LDA #$00
     STA ram_0004
 ; Process next sprite group
@@ -44,79 +38,19 @@ bra_DA83_store_oam_y:		; was: bra_DA83
     BEQ bra_DB02_compose_sprite_set2
     BCC bra_DADF_compose_sprite_set1
 ; 03
-    LDA ram_028C,Y
-    ASL
-    ASL
-    CLC
-    ADC ram_0005
-    TAY
-    STA ram_0006
-    LDA tbl_DC8D_actor_sprite_attrs,Y
-    LDY #$01
-    STA (ram_0002),Y
-    LDY ram_0004
-    LDA ram_0292,Y
-    LDY ram_0006
-    ORA tbl_DDC1_oam_quad_offsets,Y
-    LDY #$02
-    STA (ram_0002),Y
+    ComposeActorOamEntry tbl_DC8D_actor_sprite_attrs, tbl_DDC1_oam_quad_offsets
     JMP loc_DB22_write_oam_quad_x_pass
 ; Compose sprite set 0 tiles/attrs
 bra_DABC_compose_sprite_set0:		; was: bra_DABC_00
-    LDA ram_028C,Y
-    ASL
-    ASL
-    CLC
-    ADC ram_0005
-    TAY
-    STA ram_0006
-    LDA tbl_DB59_actor_sprite_tiles,Y
-    LDY #$01
-    STA (ram_0002),Y    ; 0701-075D (spr_T)
-    LDY ram_0004
-    LDA ram_0292,Y
-    LDY ram_0006
-    ORA tbl_DC8D_actor_sprite_attrs,Y
-    LDY #$02
-    STA (ram_0002),Y    ; 0702-075E (spr_A)
+    ComposeActorOamEntry tbl_DB59_actor_sprite_tiles, tbl_DC8D_actor_sprite_attrs
     JMP loc_DB22_write_oam_quad_x_pass
 ; Compose sprite set 1 tiles/attrs
 bra_DADF_compose_sprite_set1:		; was: bra_DADF_01
-    LDA ram_028C,Y
-    ASL
-    ASL
-    CLC
-    ADC ram_0005
-    TAY
-    STA ram_0006
-    LDA tbl_DC59_actor_alt_sprite_tiles,Y
-    LDY #$01
-    STA (ram_0002),Y    ; 0701-072D and 0741-074D (spr_T)
-    LDY ram_0004
-    LDA ram_0292,Y
-    LDY ram_0006
-    ORA tbl_DD8D_actor_alt_sprite_attrs,Y
-    LDY #$02
-    STA (ram_0002),Y    ; 0702-072E and 0742-074E (spr_A)
+    ComposeActorOamEntry tbl_DC59_actor_alt_sprite_tiles, tbl_DD8D_actor_alt_sprite_attrs
     JMP loc_DB22_write_oam_quad_x_pass
 ; Compose sprite set 2 tiles/attrs
 bra_DB02_compose_sprite_set2:		; was: bra_DB02_02
-    LDA ram_028C,Y
-    ASL
-    ASL
-    CLC
-    ADC ram_0005
-    TAY
-    STA ram_0006
-    LDA tbl_DC8D_actor_sprite_attrs,Y
-    LDY #$01
-    STA (ram_0002),Y
-    LDY ram_0004
-    LDA ram_0292,Y
-    LDY ram_0006
-    ORA tbl_DDC1_oam_quad_offsets,Y
-    LDY #$02
-    STA (ram_0002),Y
+    ComposeActorOamEntry tbl_DC8D_actor_sprite_attrs, tbl_DDC1_oam_quad_offsets
 ; Write OAM X coordinates for current quad pass
 loc_DB22_write_oam_quad_x_pass:		; was: loc_DB22
     LDY #$00

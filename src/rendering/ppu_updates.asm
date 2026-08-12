@@ -41,11 +41,7 @@ bra_DDF0_flush_score_hud_buffers:		; was: bra_DDF0
     LDA ram_ppu_buffer_score
     CMP #$FF
     BEQ bra_DE4A_update_1up_blink    ; skip if buffer is empty
-    LDA $2002
-    LDA ram_ppu_buf_score_hi
-    STA $2006
-    LDA ram_ppu_buf_score_lo
-    STA $2006
+    SetPpuAddressFrom ram_ppu_buf_score_hi
     LDY #$00
 ; Write score digits to PPU
 bra_DE08_write_score_digits:		; was: bra_DE08_loop
@@ -62,11 +58,7 @@ bra_DE08_write_score_digits:		; was: bra_DE08_loop
     LDA ram_ppu_buffer_hiscore
     CMP #$FF
     BEQ bra_DE4A_update_1up_blink    ; skip if buffer is empty
-    LDA $2002
-    LDA ram_ppu_buf_hiscore_hi
-    STA $2006
-    LDA ram_ppu_buf_hiscore_lo
-    STA $2006
+    SetPpuAddressFrom ram_ppu_buf_hiscore_hi
     LDY #$00
 ; Write hiscore digits to PPU
 bra_DE35_write_hiscore_digits:		; was: bra_DE35_loop
@@ -84,11 +76,7 @@ bra_DE4A_update_1up_blink:		; was: bra_DE4A
     LDA ram_frame_cnt
     AND #$07
     BNE bra_DE7E_flush_power_pellet_and_main_ppu
-    LDA $2002
-    LDA ram_ppu_buffer_1up
-    STA $2006
-    LDA ram_ppu_buffer_1up + $01
-    STA $2006
+    SetPpuAddressFrom ram_ppu_buffer_1up
     LDX #$00
     LDA ram_frame_cnt
     AND #$18

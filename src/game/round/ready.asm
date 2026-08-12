@@ -6,10 +6,7 @@ ofs_003_CA9D_script02_round_ready:		; was: ofs_003_CA9D_02
     JMP loc_CB1A_round_ready_tick
 ; Enter READY sprite composition routine
 bra_CAA4_build_ready_sprites:		; was: bra_CAA4
-    LDA #< (ram_oam + $60)
-    STA ram_0000
-    LDA #> (ram_oam + $60)
-    STA ram_0001
+    LoadPointer ram_0000, (ram_oam + $60)
     LDA ram_flag_demo
     BNE bra_CB1A_round_ready_tick_entry
     LDA #$02

@@ -176,10 +176,7 @@ bra_D9AD_copy_obj_to_sprite_pos:		; was: bra_D9AD_loop
     STA ram_spr_position,X
     DEX
     BPL bra_D9AD_copy_obj_to_sprite_pos
-    LDA #< (ram_spr_pos_X_hi + $04 + $0C)
-    STA ram_0000
-    LDA #> (ram_spr_pos_X_hi + $04 + $0C)
-    STA ram_0001
+    LoadPointer ram_0000, (ram_spr_pos_X_hi + $04 + $0C)
     LDA #$08
     STA ram_0003
     LDA #$03

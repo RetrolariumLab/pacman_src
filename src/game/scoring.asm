@@ -219,14 +219,8 @@ bra_DFF3_append_frightened_palette_cmd:		; was: bra_DFF3_loop
 ; Try to reverse ghost directions when frightened starts
 sub_E003_try_reverse_ghost_directions:		; was: sub_E003
     LDX #$00
-    LDA #< (ram_obj_ppu_tile + $05)
-    STA ram_0000
-    LDA #> (ram_obj_ppu_tile + $05)
-    STA ram_0001
-    LDA #< (ram_obj_pos_X_hi + $04)
-    STA ram_0002
-    LDA #> (ram_obj_pos_X_hi + $04)
-    STA ram_0003
+    LoadPointer ram_0000, (ram_obj_ppu_tile + $05)
+    LoadPointer ram_0002, (ram_obj_pos_X_hi + $04)
     LDA #$0F
     CMP ram_0088
     BEQ bra_E01F_process_reversal_entry

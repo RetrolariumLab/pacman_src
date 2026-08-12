@@ -48,11 +48,7 @@ sub_C21F_draw_title_logo_and_text:		; was: sub_C21F_draw_logo_screen
     LDY #$00
 ; Iterate over title logo rows
 bra_C22D_draw_next_logo_row:		; was: bra_C22D_loop
-    LDA $2002
-    LDA ram_0000
-    STA $2006
-    LDA ram_0001
-    STA $2006
+    SetPpuAddressFrom ram_0000
     LDA #$17
     STA ram_0003
 ; Stream one title logo row tile sequence
@@ -103,11 +99,7 @@ bra_C27E_advance_to_next_logo_text_packet:		; was: bra_C27E
 
 ; Upload title-screen attribute bytes
 sub_C284_upload_title_attribute_table:		; was: sub_C284_set_bg_attr
-    LDA $2002
-    LDA #> $23C8
-    STA $2006
-    LDA #< $23C8
-    STA $2006
+    SetPpuAddress $23C8
     LDY #$00
 ; Upload next title attribute byte
 bra_C293_upload_next_attribute_byte:		; was: bra_C293_loop

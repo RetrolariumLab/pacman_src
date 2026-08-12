@@ -13,14 +13,8 @@
 ; 5) on tile centers choose next direction (targeted or seeded/randomized)
 sub_D4C2_update_ghost_slots:		; was: sub_D4C2
     LDX #$00
-    LDA #< (ram_obj_ppu_tile + $05)
-    STA ram_0000
-    LDA #> (ram_obj_ppu_tile + $05)
-    STA ram_0001
-    LDA #< (ram_obj_pos_X_hi + $04)
-    STA ram_0002
-    LDA #> (ram_obj_pos_X_hi + $04)
-    STA ram_0003
+    LoadPointer ram_0000, (ram_obj_ppu_tile + $05)
+    LoadPointer ram_0002, (ram_obj_pos_X_hi + $04)
     LDA #$01
     STA ram_0004
 ; Loop over 4 ghost slots (X+=2)

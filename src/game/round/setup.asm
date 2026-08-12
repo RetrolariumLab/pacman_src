@@ -27,11 +27,7 @@ bra_CE53_clear_oam_all:		; was: bra_CE53_loop
     STA ram_oam,X
     INX
     BNE bra_CE53_clear_oam_all
-    LDA $2002
-    LDA #> $3F00
-    STA $2006
-    LDA #< $3F00
-    STA $2006
+    SetPpuAddress $3F00
     LDY #$00
 ; Upload gameplay palette
 bra_CE68_upload_round_palette:		; was: bra_CE68_loop
@@ -300,11 +296,7 @@ bra_D004_center_strip_addr_ready:		; was: bra_D004
     STA ram_0002
 ; Iterate rows while filling center strip tiles
 bra_D00E_fill_center_strip_rows:		; was: bra_D00E_loop
-    LDA $2002
-    LDA ram_0000
-    STA $2006
-    LDA ram_0001
-    STA $2006
+    SetPpuAddressFrom ram_0000
     LDA #$06    ; counter
     STA ram_0003
     LDA #con_tile + $20
@@ -386,11 +378,7 @@ tbl_D060_round_gameplay_palette:		; was: tbl_D060_palette
     .incbin "assets/generated/palettes/round.bin", $1C, $4  ; rom-asset .byte
 ; Write maze attribute bytes into both gameplay nametables
 sub_D080_fill_maze_attr_tables:		; was: sub_D080
-    LDA $2002
-    LDA #> $23C0
-    STA $2006
-    LDA #< $23C0
-    STA $2006
+    SetPpuAddress $23C0
     LDX #$01
 ; Run two passes: first nametable $23C0, then $2BC0
 bra_D08F_attr_table_pass_loop:		; was: bra_D08F
@@ -407,11 +395,7 @@ bra_D091_copy_attr_block_loop:		; was: bra_D091_loop
     RTS
 ; Switch PPU address to second nametable attribute block
 bra_D0A0_select_second_attr_table:		; was: bra_D0A0
-    LDA $2002
-    LDA #> $2BC0
-    STA $2006
-    LDA #< $2BC0
-    STA $2006
+    SetPpuAddress $2BC0
     BNE bra_D08F_attr_table_pass_loop    ; jmp
 
 

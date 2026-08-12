@@ -5,6 +5,10 @@
 
 .include "memory/ram.inc"
 .include "memory/constants.inc"
+.include "macros/memory.inc"
+.include "macros/ppu.inc"
+.include "macros/hud.inc"
+.include "macros/actors.inc"
 
 .include "system/boot_and_frame.asm"          ; C000-C1F4
 .include "game/title/screen.asm"                ; C1F5-C457

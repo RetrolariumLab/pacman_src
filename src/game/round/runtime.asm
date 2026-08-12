@@ -233,10 +233,7 @@ sub_D20F_check_actor_collisions:		; was: sub_D20F
     RTS
 ; Initialize collision scan pointers and masks
 bra_D214_init_collision_scan:		; was: bra_D214
-    LDA #< (ram_obj_pos_X_hi + $04)
-    STA ram_0000
-    LDA #> (ram_obj_pos_X_hi + $04)
-    STA ram_0001
+    LoadPointer ram_0000, (ram_obj_pos_X_hi + $04)
     LDA #$01
     STA ram_0002
     LDX #$00

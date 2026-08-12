@@ -1,14 +1,8 @@
 ; Intermission actor movement, wrapping, and visibility
 
 sub_E9A5_update_intermission_actor_positions:		; was: sub_E9A5
-    LDA #< ram_obj_position
-    STA ram_0000
-    LDA #> ram_obj_position
-    STA ram_0001
-    LDA #< ram_spr_position
-    STA ram_0002
-    LDA #> ram_spr_position
-    STA ram_0003
+    LoadPointer ram_0000, ram_obj_position
+    LoadPointer ram_0002, ram_spr_position
     LDX #$00
 ; Iterate to next actor slot
 bra_E9B7_loop_update_next_actor:		; was: bra_E9B7_loop

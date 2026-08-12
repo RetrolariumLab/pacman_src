@@ -53,3 +53,6 @@ The current largest native source module is below 600 lines.
 These are source-organization boundaries, not linker segments or movable ROM
 sections. Cross-file branches and labels intentionally remain global within the
 single ca65 translation unit.
+
+Reusable inline operations live under `src/macros/` and emit bytes at their
+call sites; they do not own ROM ranges. See [macros.md](./macros.md).
