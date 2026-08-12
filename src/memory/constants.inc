@@ -19,8 +19,6 @@ con_btns_Dpad                           = con_btn_Right + con_btn_Left + con_btn
 con_btns_AB                             = con_btn_A + con_btn_B                                     ; 03
 con_btns_SS                             = con_btn_Start + con_btn_Select                            ; 0C
 
-
-
 ; ram_script
 con_script_00                           = $00
 con_script_02                           = $02

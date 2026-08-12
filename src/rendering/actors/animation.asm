@@ -1,52 +1,47 @@
 ; Actor animation, OAM construction, and PPU buffers
 
-
-
-
 ; Update Pac-Man animation frame from direction/alignment
-sub_D8F9_update_pacman_anim_frame:		; was: sub_D8F9
+sub_update_pacman_anim_frame:		; was: sub_D8F9
     LDA ram_direction_2
     ASL
     CLC
     ADC #$02
-    STA ram_0000
+    STA zp_work0
     LDA ram_obj_pos_X_hi
     ORA ram_obj_pos_Y_hi
     AND #$07
-    BNE bra_D919_advance_anim_phase_counter
+    BNE bra_advance_anim_phase_counter
     LDY ram_direction_2
     LDA ram_obj_ppu_tile_direction,Y  ; 022B 022C 022D 022E
     AND #$F0
-    BEQ bra_D919_advance_anim_phase_counter
-    LDA ram_00B7
+    BEQ bra_advance_anim_phase_counter
+    LDA ram_pacman_anim_phase
     AND #$03
-    JMP loc_D91D_build_anim_frame_index
+    JMP loc_build_anim_frame_index
 ; Advance animation phase counter
-bra_D919_advance_anim_phase_counter:		; was: bra_D919
-    INC ram_00B7
-    LDA ram_00B7
+bra_advance_anim_phase_counter:		; was: bra_D919
+    INC ram_pacman_anim_phase
+    LDA ram_pacman_anim_phase
 ; Build final Pac-Man anim frame index
-loc_D91D_build_anim_frame_index:		; was: loc_D91D
+loc_build_anim_frame_index:		; was: loc_D91D
     AND #$07
     CMP #$06
-    BCC bra_D927_use_anim_phase_lut
+    BCC bra_use_anim_phase_lut
     LDA #$01
-    BNE bra_D92E_store_anim_frame    ; jmp
+    BNE bra_store_anim_frame    ; jmp
 ; Use animation phase LUT
-bra_D927_use_anim_phase_lut:		; was: bra_D927
+bra_use_anim_phase_lut:		; was: bra_D927
     TAY
-    LDA tbl_D931_pacman_anim_phase_lut,Y
+    LDA tbl_pacman_anim_phase_lut,Y
     CLC
-    ADC ram_0000
+    ADC zp_work0
 ; Store computed Pac-Man animation frame
-bra_D92E_store_anim_frame:		; was: bra_D92E
+bra_store_anim_frame:		; was: bra_D92E
     STA ram_animation
     RTS
 
-
-
 ; Pac-Man animation phase LUT
-tbl_D931_pacman_anim_phase_lut:		; was: tbl_D931
+tbl_pacman_anim_phase_lut:		; was: tbl_D931
     .byte $00   ; 00
     .byte $00   ; 01
     .byte $00   ; 02
@@ -54,217 +49,201 @@ tbl_D931_pacman_anim_phase_lut:		; was: tbl_D931
     .byte $01   ; 04
     .byte $00   ; 05
 
-
-
 ; Update ghost animation frames for all slots
-sub_D937_update_ghost_anim_frames:		; was: sub_D937
+sub_update_ghost_anim_frames:		; was: sub_D937
     LDA #$00
     TAX
-    STA ram_0000
+    STA zp_work0
     LDA ram_frame_cnt
     AND #$08
-    BEQ bra_D946_init_anim_phase_offset
+    BEQ bra_init_anim_phase_offset
     LDA #$01
-    STA ram_0000
+    STA zp_work0
 ; Initialize frame-phase offset
-bra_D946_init_anim_phase_offset:		; was: bra_D946
+bra_init_anim_phase_offset:		; was: bra_D946
     LDA #$01
-    STA ram_0001
+    STA zp_work1
 ; Loop over ghost slots for anim update
-bra_D94A_update_ghost_anim_slot_loop:		; was: bra_D94A_loop
-    JSR sub_D956_dispatch_ghost_anim_handler
-    ASL ram_0001
+bra_update_ghost_anim_slot_loop:		; was: bra_D94A_loop
+    JSR sub_dispatch_ghost_anim_handler
+    ASL zp_work1
     INX
     INX
     CPX #$08
-    BNE bra_D94A_update_ghost_anim_slot_loop
+    BNE bra_update_ghost_anim_slot_loop
 ; State07 anim handler: no-op
-ofs_011_D955_state07_anim_noop:		; was: ofs_011_D955_07_RTS
+handler_state07_anim_noop:		; was: ofs_011_D955_07_RTS
     RTS
 
-
-
 ; Dispatch ghost animation handler by state
-sub_D956_dispatch_ghost_anim_handler:		; was: sub_D956
-    LDY ram_00B8,X
-    LDA tbl_D965_ghost_anim_handlers,Y
+sub_dispatch_ghost_anim_handler:		; was: sub_D956
+    LDY ram_ghost_state,X
+    LDA tbl_ghost_anim_handlers,Y
     STA ram_indirect_jmp
-    LDA tbl_D965_ghost_anim_handlers + $01,Y
+    LDA tbl_ghost_anim_handlers + $01,Y
     STA ram_indirect_jmp + $01
     JMP (ram_indirect_jmp)
 
-
-
 ; Ghost animation handlers by state
-tbl_D965_ghost_anim_handlers:		; was: tbl_D965
-    .word ofs_011_D98C_state00_anim_default
-    .word ofs_011_D98C_state02_anim_default
-    .word ofs_011_D98C_state04_anim_default
-    .word ofs_011_D998_state06_anim_eyes
-    .word ofs_011_D955_state07_anim_noop
-
-
+tbl_ghost_anim_handlers:		; was: tbl_D965
+    .word handler_state00_anim_default
+    .word handler_state02_anim_default
+    .word handler_state04_anim_default
+    .word handler_state06_anim_eyes
+    .word handler_state07_anim_noop
 
 ; Build base anim frame from direction
-bra_D96F_build_anim_frame_from_direction:		; was: bra_D96F
-    LDA ram_00B9,X
-    STA ram_0003
+bra_build_anim_frame_from_direction:		; was: bra_D96F
+    LDA ram_ghost_direction,X
+    STA zp_work3
     LDA #$0A
 ; Accumulate frame offset by direction
-bra_D975_accumulate_anim_frame_offset:		; was: bra_D975_loop
-    DEC ram_0003
-    BMI bra_D97E_apply_anim_phase_offset
+bra_accumulate_anim_frame_offset:		; was: bra_D975_loop
+    DEC zp_work3
+    BMI bra_apply_anim_phase_offset
     CLC
     ADC #$02
-    BNE bra_D975_accumulate_anim_frame_offset
+    BNE bra_accumulate_anim_frame_offset
 ; Apply global phase offset to frame
-bra_D97E_apply_anim_phase_offset:		; was: bra_D97E
+bra_apply_anim_phase_offset:		; was: bra_D97E
     CLC
-    ADC ram_0000
-    STA ram_0002
+    ADC zp_work0
+    STA zp_work2
 ; Store ghost anim frame for current slot
-bra_D983_store_ghost_anim_frame:		; was: bra_D983
+bra_store_ghost_anim_frame:		; was: bra_D983
     TXA
     LSR
     TAY
-    LDA ram_0002
+    LDA zp_work2
     STA ram_animation + $01,Y
     RTS
 
-
-
 ; State00 anim handler
-ofs_011_D98C_state00_anim_default:		; was: ofs_011_D98C_00
+handler_state00_anim_default:		; was: ofs_011_D98C_00
 ; State02 anim handler
-ofs_011_D98C_state02_anim_default:		; was: ofs_011_D98C_02
+handler_state02_anim_default:		; was: ofs_011_D98C_02
 ; State04 anim handler
-ofs_011_D98C_state04_anim_default:		; was: ofs_011_D98C_04
-    LDA ram_0001
-    AND ram_0088
-    BEQ bra_D96F_build_anim_frame_from_direction
+handler_state04_anim_default:		; was: ofs_011_D98C_04
+    LDA zp_work1
+    AND ram_shared_state_1
+    BEQ bra_build_anim_frame_from_direction
     LDA #$1E
-    STA ram_0002
-    BNE bra_D97E_apply_anim_phase_offset    ; jmp
-
-
+    STA zp_work2
+    BNE bra_apply_anim_phase_offset    ; jmp
 
 ; State06 anim handler (eyes)
-ofs_011_D998_state06_anim_eyes:		; was: ofs_011_D998_06
-    LDA ram_00B9,X
-    STA ram_0003
+handler_state06_anim_eyes:		; was: ofs_011_D998_06
+    LDA ram_ghost_direction,X
+    STA zp_work3
     LDA #$20
 ; Accumulate eyes animation offset
-bra_D99E_accumulate_eyes_anim_offset:		; was: bra_D99E_loop
-    DEC ram_0003
-    BMI bra_D9A7_store_eyes_anim_offset
+bra_accumulate_eyes_anim_offset:		; was: bra_D99E_loop
+    DEC zp_work3
+    BMI bra_store_eyes_anim_offset
     CLC
     ADC #$01
-    BNE bra_D99E_accumulate_eyes_anim_offset    ; jmp
+    BNE bra_accumulate_eyes_anim_offset    ; jmp
 ; Store eyes animation offset
-bra_D9A7_store_eyes_anim_offset:		; was: bra_D9A7
-    STA ram_0002
-    BMI bra_D983_store_ghost_anim_frame    ; jmp
-
-
+bra_store_eyes_anim_offset:		; was: bra_D9A7
+    STA zp_work2
+    BMI bra_store_ghost_anim_frame    ; jmp
 
 ; Prepare sprite positions and resolve overlap ordering
-sub_D9AB_prepare_sprite_positions:		; was: sub_D9AB
+sub_prepare_sprite_positions:		; was: sub_D9AB
     LDX #$23
 ; Copy object positions to sprite position buffer
-bra_D9AD_copy_obj_to_sprite_pos:		; was: bra_D9AD_loop
+bra_copy_obj_to_sprite_pos:		; was: bra_D9AD_loop
     LDA ram_obj_position,X
     STA ram_spr_position,X
     DEX
-    BPL bra_D9AD_copy_obj_to_sprite_pos
-    LoadPointer ram_0000, (ram_spr_pos_X_hi + $04 + $0C)
+    BPL bra_copy_obj_to_sprite_pos
+    LoadPointer zp_work0, (ram_spr_pos_X_hi + $04 + $0C)
     LDA #$08
-    STA ram_0003
+    STA zp_work3
     LDA #$03
-    STA ram_0002
+    STA zp_work2
 ; Resolve sprite overlap ordering loop
-loc_D9C5_overlap_resolution_loop:		; was: loc_D9C5_loop
-    LDA ram_0003
-    AND ram_0088
-    BNE bra_DA46_next_overlap_candidate
+loc_overlap_resolution_loop:		; was: loc_D9C5_loop
+    LDA zp_work3
+    AND ram_shared_state_1
+    BNE bra_next_overlap_candidate
     LDY #$00
     LDA ram_spr_pos_X_hi
-    CMP (ram_0000),Y    ; 0278 027C 0280 0284
-    BCS bra_D9DC_abs_dx_alt
-    LDA (ram_0000),Y    ; 0278 027C 0280 0284
+    CMP (zp_work0),Y    ; 0278 027C 0280 0284
+    BCS bra_abs_dx_alt
+    LDA (zp_work0),Y    ; 0278 027C 0280 0284
     SEC
     SBC ram_spr_pos_X_hi
-    BCS bra_D9DE_check_overlap_dx
+    BCS bra_check_overlap_dx
 ; Alternate absolute X difference branch
-bra_D9DC_abs_dx_alt:		; was: bra_D9DC
-    SBC (ram_0000),Y    ; 0278 027C 0280 0284
+bra_abs_dx_alt:		; was: bra_D9DC
+    SBC (zp_work0),Y    ; 0278 027C 0280 0284
 ; Check overlap X threshold
-bra_D9DE_check_overlap_dx:		; was: bra_D9DE
+bra_check_overlap_dx:		; was: bra_D9DE
     CMP #$19
-    BCS bra_DA46_next_overlap_candidate
-    STA ram_0004
+    BCS bra_next_overlap_candidate
+    STA zp_work4
     LDY #$02
     LDA ram_spr_pos_Y_hi
-    CMP (ram_0000),Y    ; 027A 027E 0282 0286
-    BCS bra_D9F5_abs_dy_alt
-    LDA (ram_0000),Y    ; 027A 027E 0282 0286
+    CMP (zp_work0),Y    ; 027A 027E 0282 0286
+    BCS bra_abs_dy_alt
+    LDA (zp_work0),Y    ; 027A 027E 0282 0286
     SEC
     SBC ram_spr_pos_Y_hi
-    BCS bra_D9F7_check_overlap_dy
+    BCS bra_check_overlap_dy
 ; Alternate absolute Y difference branch
-bra_D9F5_abs_dy_alt:		; was: bra_D9F5
-    SBC (ram_0000),Y    ; 027A 027E 0282 0286
+bra_abs_dy_alt:		; was: bra_D9F5
+    SBC (zp_work0),Y    ; 027A 027E 0282 0286
 ; Check overlap Y threshold
-bra_D9F7_check_overlap_dy:		; was: bra_D9F7
+bra_check_overlap_dy:		; was: bra_D9F7
     CMP #$19
-    BCS bra_DA46_next_overlap_candidate
-    ADC ram_0004
+    BCS bra_next_overlap_candidate
+    ADC zp_work4
     CMP #$10
-    BCS bra_DA46_next_overlap_candidate
+    BCS bra_next_overlap_candidate
     LDA ram_spr_pos_X_hi
-    STA ram_0003
+    STA zp_work3
     LDA ram_spr_pos_Y_hi
-    STA ram_0004
-    LDA ram_028C
-    STA ram_0005
-    LDA ram_0292
-    STA ram_0006
+    STA zp_work4
+    LDA ram_actor_sprite_set
+    STA zp_work5
+    LDA ram_actor_sprite_attrs
+    STA zp_work6
     LDY #$00
-    LDA (ram_0000),Y    ; 0278 027C 0280 0284
+    LDA (zp_work0),Y    ; 0278 027C 0280 0284
     STA ram_spr_pos_X_hi
-    LDA ram_0003
-    STA (ram_0000),Y    ; 0278 027C 0280 0284
+    LDA zp_work3
+    STA (zp_work0),Y    ; 0278 027C 0280 0284
     LDY #$02
-    LDA (ram_0000),Y    ; 027A 027E 0282 0286
+    LDA (zp_work0),Y    ; 027A 027E 0282 0286
     STA ram_spr_pos_Y_hi
-    LDA ram_0004
-    STA (ram_0000),Y    ; 027A 027E 0282 0286
-    LDX ram_0002
-    LDA ram_028D,X
-    STA ram_028C
-    LDA ram_0005
-    STA ram_028D,X
-    LDA ram_0293,X
-    STA ram_0292
-    LDA ram_0006
-    STA ram_0293,X
-    JMP loc_DA56_finalize_positions
+    LDA zp_work4
+    STA (zp_work0),Y    ; 027A 027E 0282 0286
+    LDX zp_work2
+    LDA ram_actor_sprite_set + $01,X
+    STA ram_actor_sprite_set
+    LDA zp_work5
+    STA ram_actor_sprite_set + $01,X
+    LDA ram_actor_sprite_attrs + $01,X
+    STA ram_actor_sprite_attrs
+    LDA zp_work6
+    STA ram_actor_sprite_attrs + $01,X
+    JMP loc_finalize_positions
 ; Advance to next overlap candidate
-bra_DA46_next_overlap_candidate:		; was: bra_DA46
-    LDA ram_0000
+bra_next_overlap_candidate:		; was: bra_DA46
+    LDA zp_work0
     SEC
     SBC #$04
-    STA ram_0000
-    LSR ram_0003
-    DEC ram_0002
-    BMI bra_DA56_finalize_positions
-    JMP loc_D9C5_overlap_resolution_loop
+    STA zp_work0
+    LSR zp_work3
+    DEC zp_work2
+    BMI bra_finalize_positions
+    JMP loc_overlap_resolution_loop
 ; Finalize positions and continue to OAM compose
-bra_DA56_finalize_positions:		; was: bra_DA56
+bra_finalize_positions:		; was: bra_DA56
 ; Finalize positions and continue to OAM compose
-loc_DA56_finalize_positions:		; was: loc_DA56
-    JSR sub_E154_build_object_neighbor_ppu_positions
-    JMP loc_DA5C_build_oam_from_sprite_buffers
-
-
+loc_finalize_positions:		; was: loc_DA56
+    JSR sub_build_object_neighbor_ppu_positions
+    JMP loc_build_oam_from_sprite_buffers
 
 ; Build final OAM entries from sprite buffers

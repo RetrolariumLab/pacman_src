@@ -1,100 +1,98 @@
 ; OAM construction and actor sprite tile/attribute tables
 
-sub_DA5C_build_oam_from_sprite_buffers:		; was: sub_DA5C
+sub_build_oam_from_sprite_buffers:		; was: sub_DA5C
 ; Build final OAM entries from sprite buffers
-loc_DA5C_build_oam_from_sprite_buffers:		; was: loc_DA5C
-    LoadPointer ram_0000, ram_spr_position
-    LoadPointer ram_0002, ram_oam
+loc_build_oam_from_sprite_buffers:		; was: loc_DA5C
+    LoadPointer zp_work0, ram_spr_position
+    LoadPointer zp_work2, ram_oam
     LDA #$00
-    STA ram_0004
+    STA zp_work4
 ; Process next sprite group
-loc_DA70_next_sprite_group:		; was: loc_DA70
+loc_next_sprite_group:		; was: loc_DA70
     LDA #$00
-    STA ram_0005
+    STA zp_work5
     TAX
 ; Build OAM quad entries for current group
-loc_DA75_build_oam_quad_loop:		; was: loc_DA75_loop
+loc_build_oam_quad_loop:		; was: loc_DA75_loop
     LDY #$02
-    LDA (ram_0000),Y    ; 0276 027A 027E 0282 0286 028A
-    BNE bra_DA7F_apply_y_offset
+    LDA (zp_work0),Y    ; 0276 027A 027E 0282 0286 028A
+    BNE bra_apply_y_offset
     LDA #$FF
-    BNE bra_DA83_store_oam_y    ; jmp
+    BNE bra_store_oam_y    ; jmp
 ; Apply Y offset from sprite offset table
-bra_DA7F_apply_y_offset:		; was: bra_DA7F
+bra_apply_y_offset:		; was: bra_DA7F
     CLC
-    ADC tbl_DDC1_oam_quad_offsets,X
+    ADC tbl_oam_quad_offsets,X
 ; Store OAM Y coordinate
-bra_DA83_store_oam_y:		; was: bra_DA83
+bra_store_oam_y:		; was: bra_DA83
     LDY #$00
-    STA (ram_0002),Y    ; 0700-075C (spr_Y)
-    LDY ram_0004
-    LDA ram_028C,Y
+    STA (zp_work2),Y    ; 0700-075C (spr_Y)
+    LDY zp_work4
+    LDA ram_actor_sprite_set,Y
     ASL
     ROL
     ROL
     AND #$03
-    BEQ bra_DABC_compose_sprite_set0
+    BEQ bra_compose_sprite_set0
     CMP #$02
-    BEQ bra_DB02_compose_sprite_set2
-    BCC bra_DADF_compose_sprite_set1
+    BEQ bra_compose_sprite_set2
+    BCC bra_compose_sprite_set1
 ; 03
-    ComposeActorOamEntry tbl_DC8D_actor_sprite_attrs, tbl_DDC1_oam_quad_offsets
-    JMP loc_DB22_write_oam_quad_x_pass
+    ComposeActorOamEntry tbl_actor_sprite_attrs, tbl_oam_quad_offsets
+    JMP loc_write_oam_quad_x_pass
 ; Compose sprite set 0 tiles/attrs
-bra_DABC_compose_sprite_set0:		; was: bra_DABC_00
-    ComposeActorOamEntry tbl_DB59_actor_sprite_tiles, tbl_DC8D_actor_sprite_attrs
-    JMP loc_DB22_write_oam_quad_x_pass
+bra_compose_sprite_set0:		; was: bra_DABC_00
+    ComposeActorOamEntry tbl_actor_sprite_tiles, tbl_actor_sprite_attrs
+    JMP loc_write_oam_quad_x_pass
 ; Compose sprite set 1 tiles/attrs
-bra_DADF_compose_sprite_set1:		; was: bra_DADF_01
-    ComposeActorOamEntry tbl_DC59_actor_alt_sprite_tiles, tbl_DD8D_actor_alt_sprite_attrs
-    JMP loc_DB22_write_oam_quad_x_pass
+bra_compose_sprite_set1:		; was: bra_DADF_01
+    ComposeActorOamEntry tbl_actor_alt_sprite_tiles, tbl_actor_alt_sprite_attrs
+    JMP loc_write_oam_quad_x_pass
 ; Compose sprite set 2 tiles/attrs
-bra_DB02_compose_sprite_set2:		; was: bra_DB02_02
-    ComposeActorOamEntry tbl_DC8D_actor_sprite_attrs, tbl_DDC1_oam_quad_offsets
+bra_compose_sprite_set2:		; was: bra_DB02_02
+    ComposeActorOamEntry tbl_actor_sprite_attrs, tbl_oam_quad_offsets
 ; Write OAM X coordinates for current quad pass
-loc_DB22_write_oam_quad_x_pass:		; was: loc_DB22
+loc_write_oam_quad_x_pass:		; was: loc_DB22
     LDY #$00
-    LDA (ram_0000),Y    ; 0274 0278 027C 0280 0284 0288
-    BNE bra_DB2C_apply_x_offset
+    LDA (zp_work0),Y    ; 0274 0278 027C 0280 0284 0288
+    BNE bra_apply_x_offset
     LDA #$FF
-    BNE bra_DB30_store_oam_x    ; jmp
+    BNE bra_store_oam_x    ; jmp
 ; Apply X offset from sprite offset table
-bra_DB2C_apply_x_offset:		; was: bra_DB2C
+bra_apply_x_offset:		; was: bra_DB2C
     CLC
-    ADC tbl_DDC1_oam_quad_offsets + $01,X
+    ADC tbl_oam_quad_offsets + $01,X
 ; Store OAM X coordinate
-bra_DB30_store_oam_x:		; was: bra_DB30
+bra_store_oam_x:		; was: bra_DB30
     LDY #$03
-    STA (ram_0002),Y    ; 0703-075F (spr_X)
-    LDA ram_0002
+    STA (zp_work2),Y    ; 0703-075F (spr_X)
+    LDA zp_work2
     CLC
     ADC #$04
-    STA ram_0002
-    INC ram_0005
+    STA zp_work2
+    INC zp_work5
     INX
     INX
     CPX #$08
-    BEQ bra_DB46_next_sprite_group_or_done
-    JMP loc_DA75_build_oam_quad_loop
+    BEQ bra_next_sprite_group_or_done
+    JMP loc_build_oam_quad_loop
 ; Advance to next sprite group or finish
-bra_DB46_next_sprite_group_or_done:		; was: bra_DB46
-    LDA ram_0000
+bra_next_sprite_group_or_done:		; was: bra_DB46
+    LDA zp_work0
     CLC
     ADC #$04
-    STA ram_0000
-    INC ram_0004
-    LDA ram_0004
+    STA zp_work0
+    INC zp_work4
+    LDA zp_work4
     CMP #$06
-    BEQ bra_DB58_return
-    JMP loc_DA70_next_sprite_group
+    BEQ bra_return_from_oam_builder
+    JMP loc_next_sprite_group
 ; Return from OAM builder
-bra_DB58_return:		; was: bra_DB58_RTS
+bra_return_from_oam_builder:		; was: bra_DB58_RTS
     RTS
 
-
-
 ; Actor sprite tile patterns
-tbl_DB59_actor_sprite_tiles:		; was: tbl_DB59_spr_T
+tbl_actor_sprite_tiles:		; was: tbl_DB59_spr_T
     .byte $4C, $4C, $4C, $4C   ; 00
     .byte $00, $00, $00, $00   ; 01
     .byte $04, $04, $03, $03   ; 02
@@ -160,10 +158,8 @@ tbl_DB59_actor_sprite_tiles:		; was: tbl_DB59_spr_T
     .byte $4F, $51, $4D, $4E   ; 3E
     .byte $53, $54, $4E, $52   ; 3F
 
-
-
 ; Alternate actor sprite tile patterns
-tbl_DC59_actor_alt_sprite_tiles:		; was: tbl_DC59_spr_T
+tbl_actor_alt_sprite_tiles:		; was: tbl_DC59_spr_T
     .byte $55, $4C, $56, $4C   ; 00
     .byte $56, $4C, $55, $4C   ; 01
     .byte $4C, $57, $4C, $58   ; 02
@@ -178,10 +174,8 @@ tbl_DC59_actor_alt_sprite_tiles:		; was: tbl_DC59_spr_T
     .byte $64, $65, $68, $69   ; 0B
     .byte $6A, $6B, $4C, $4C   ; 0C
 
-
-
 ; Actor sprite attribute patterns
-tbl_DC8D_actor_sprite_attrs:		; was: tbl_DC8D_spr_A
+tbl_actor_sprite_attrs:		; was: tbl_DC8D_spr_A
     .byte $00, $00, $00, $00   ; 00
     .byte $00, $40, $80, $C0   ; 01
     .byte $80, $C0, $80, $C0   ; 02
@@ -247,10 +241,8 @@ tbl_DC8D_actor_sprite_attrs:		; was: tbl_DC8D_spr_A
     .byte $80, $80, $80, $80   ; 3E
     .byte $80, $80, $C0, $80   ; 3F
 
-
-
 ; Alternate actor sprite attributes
-tbl_DD8D_actor_alt_sprite_attrs:		; was: tbl_DD8D_spr_A
+tbl_actor_alt_sprite_attrs:		; was: tbl_DD8D_spr_A
     .byte $00   ; 00
     .byte $00   ; 01
     .byte $00   ; 02
@@ -304,16 +296,12 @@ tbl_DD8D_actor_alt_sprite_attrs:		; was: tbl_DD8D_spr_A
     .byte $00   ; 32
     .byte $00   ; 33
 
-
-
 ; Per-quad OAM XY offsets
-tbl_DDC1_oam_quad_offsets:		; was: tbl_DDC1_spr_pos
+tbl_oam_quad_offsets:		; was: tbl_DDC1_spr_pos
 ; Y, X
     .byte $03, $F4   ; 00
     .byte $03, $FC   ; 02
     .byte $0B, $F4   ; 04
     .byte $0B, $FC   ; 06
-
-
 
 ; Toggle power-pellet tile IDs on a 16-frame cadence

@@ -2,26 +2,26 @@
 ;
 ; Inputs:
 ;   Y - actor slot
-;   ram_0002 - destination OAM pointer
-;   ram_0005 - quad offset
+;   zp_work2 - destination OAM pointer
+;   zp_work5 - quad offset
 ;
 ; Clobbers:
-;   A, Y, ram_0006
+;   A, Y, zp_work6
 .macro ComposeActorOamEntry tile_table, attribute_table
-    LDA ram_028C,Y
+    LDA ram_actor_sprite_set,Y
     ASL
     ASL
     CLC
-    ADC ram_0005
+    ADC zp_work5
     TAY
-    STA ram_0006
+    STA zp_work6
     LDA tile_table,Y
     LDY #$01
-    STA (ram_0002),Y
-    LDY ram_0004
-    LDA ram_0292,Y
-    LDY ram_0006
+    STA (zp_work2),Y
+    LDY zp_work4
+    LDA ram_actor_sprite_attrs,Y
+    LDY zp_work6
     ORA attribute_table,Y
     LDY #$02
-    STA (ram_0002),Y
+    STA (zp_work2),Y
 .endmacro

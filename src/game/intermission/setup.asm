@@ -1,33 +1,30 @@
 ; Intermission setup, playfield clearing, and intro palette
 
-
-
-
 ; Script 0E: intermission pre-setup (clear playfield, palette, actor seed state)
 ; Intermission field legend:
-; ram_0087: scene index (0..2)
-; ram_0088: scene-local substate index
-; ram_0089: per-substate countdown in some scenes
-; ram_060D/ram_060E: one-shot flags used by intermission setup/runtime
-; ram_028D/ram_0293: actor tile/state seeds for initial cutscene composition
-ofs_003_E655_script0E_intermission_setup:		; was: ofs_003_E655_0E
+; ram_shared_state_0: scene index (0..2)
+; ram_shared_state_1: scene-local substate index
+; ram_shared_state_2: per-substate countdown in some scenes
+; ram_sfx_intermission_flag_a/ram_sfx_intermission_flag_b: one-shot flags used by intermission setup/runtime
+; Actor sprite-set and attribute arrays seed the initial cutscene composition.
+handler_script0E_intermission_setup:		; was: ofs_003_E655_0E
     LDA #$08
-    STA ram_for_2000
+    STA ram_ppuctrl_base
     STA $2000
 ; Wait for vblank before enabling intro setup flags
-bra_E65C_wait_vblank_set_flag:		; was: bra_E65C_infinite_loop
+bra_wait_vblank_set_flag:		; was: bra_E65C_infinite_loop
     LDA $2002
-    BPL bra_E65C_wait_vblank_set_flag
+    BPL bra_wait_vblank_set_flag
     LDA #$01
-    STA ram_060D
-    STA ram_060E
+    STA ram_sfx_intermission_flag_a
+    STA ram_sfx_intermission_flag_b
     LDA #$00
     STA $2001
-    JSR sub_E6C4_clear_playfield_and_walls
+    JSR sub_clear_playfield_and_walls
     LDA #$01
-    STA ram_028D
+    STA ram_actor_sprite_set + $01
     LDA #$01
-    STA ram_0293
+    STA ram_actor_sprite_attrs + $01
     LDA #$F7
     STA ram_spr_pos_X_hi + $04
     LDA #$7C
@@ -37,16 +34,16 @@ bra_E65C_wait_vblank_set_flag:		; was: bra_E65C_infinite_loop
     LDA #> $00FF
     STA ram_obj_pos_X_lo + $04
     LDA #$00
-    STA ram_0088
+    STA ram_shared_state_1
     SetPpuAddress $3F10
     LDY #$00
 ; Upload sprite palette for intro/demo setup
-bra_E6A0_upload_demo_sprite_palette:		; was: bra_E6A0_loop
-    LDA tbl_E73B_intro_sprite_palette,Y
+bra_upload_demo_sprite_palette:		; was: bra_E6A0_loop
+    LDA tbl_intro_sprite_palette,Y
     STA $2007
     INY
     CPY #$10
-    BNE bra_E6A0_upload_demo_sprite_palette
+    BNE bra_upload_demo_sprite_palette
     LDA #con_tile + $20
     STA ram_ppu_buffer_1up + $02
     STA ram_ppu_buffer_1up + $03
@@ -55,79 +52,77 @@ bra_E6A0_upload_demo_sprite_palette:		; was: bra_E6A0_loop
     STA ram_script
     LDA #$88
     STA $2000
-    STA ram_for_2000
-    JMP loc_C9DD_gameplay_mainloop_wait_nmi
-
-
+    STA ram_ppuctrl_base
+    JMP loc_gameplay_mainloop_wait_nmi
 
 ; Clear playfield area and rebuild maze wall fill pattern
-sub_E6C4_clear_playfield_and_walls:		; was: sub_E6C4
+sub_clear_playfield_and_walls:		; was: sub_E6C4
     LDX #$20    ; 2000
     LDA ram_game_mode
     AND ram_current_player
-    BEQ bra_E6CE_select_playfield_nametable
+    BEQ bra_select_playfield_nametable
     LDX #$28    ; 2800
 ; Select active playfield nametable for current player
-bra_E6CE_select_playfield_nametable:		; was: bra_E6CE
+bra_select_playfield_nametable:		; was: bra_E6CE
     LDA $2002
     STX $2006
     LDA #$00
     STA $2006
     LDA #$1C
-    STA ram_0000
+    STA zp_work0
 ; Fill one playfield row pattern block
-bra_E6DD_fill_playfield_row_pattern:		; was: bra_E6DD_loop
+bra_fill_playfield_row_pattern:		; was: bra_E6DD_loop
     LDA #$02
-    STA ram_0001
+    STA zp_work1
     LDA #$1C
-    STA ram_0002
+    STA zp_work2
     LDA #$02
-    STA ram_0003
+    STA zp_work3
     LDA #$2D
 ; Write pattern byte sequence for playfield row
-bra_E6EB_write_playfield_pattern_byte:		; was: bra_E6EB_loop
+bra_write_playfield_pattern_byte:		; was: bra_E6EB_loop
     STA $2007
-    LDX ram_0001
-    BEQ bra_E6FA_switch_pattern_phase
-    DEC ram_0001
-    BNE bra_E6EB_write_playfield_pattern_byte
+    LDX zp_work1
+    BEQ bra_switch_pattern_phase
+    DEC zp_work1
+    BNE bra_write_playfield_pattern_byte
     LDA #$20
-    BNE bra_E6EB_write_playfield_pattern_byte    ; jmp
+    BNE bra_write_playfield_pattern_byte    ; jmp
 ; Switch between wall/background pattern phases
-bra_E6FA_switch_pattern_phase:		; was: bra_E6FA
-    LDX ram_0002
-    BEQ bra_E706_advance_pattern_repeat_counter
-    DEC ram_0002
-    BNE bra_E6EB_write_playfield_pattern_byte
+bra_switch_pattern_phase:		; was: bra_E6FA
+    LDX zp_work2
+    BEQ bra_advance_pattern_repeat_counter
+    DEC zp_work2
+    BNE bra_write_playfield_pattern_byte
     LDA #$2D
-    BNE bra_E6EB_write_playfield_pattern_byte    ; jmp
+    BNE bra_write_playfield_pattern_byte    ; jmp
 ; Advance pattern repeat counter
-bra_E706_advance_pattern_repeat_counter:		; was: bra_E706
-    DEC ram_0003
-    BNE bra_E6EB_write_playfield_pattern_byte
-    DEC ram_0000
-    BNE bra_E6DD_fill_playfield_row_pattern
+bra_advance_pattern_repeat_counter:		; was: bra_E706
+    DEC zp_work3
+    BNE bra_write_playfield_pattern_byte
+    DEC zp_work0
+    BNE bra_fill_playfield_row_pattern
     LDA #$00
     TAX
 ; Clear attribute block bytes
-bra_E711_clear_attribute_block:		; was: bra_E711_loop
+bra_clear_attribute_block:		; was: bra_E711_loop
     STA $2007
     INX
     CPX #$40
-    BNE bra_E711_clear_attribute_block
-    LDA ram_0087
+    BNE bra_clear_attribute_block
+    LDA ram_shared_state_0
     CMP #$02
-    BEQ bra_E720_draw_center_marker_if_mode2
+    BEQ bra_draw_center_marker_if_mode2
     RTS
 ; Draw center marker tile for mode 2
-bra_E720_draw_center_marker_if_mode2:		; was: bra_E720
+bra_draw_center_marker_if_mode2:		; was: bra_E720
     LDX #$22    ; 2230
     LDA ram_game_mode
     AND ram_current_player
-    BEQ bra_E72A_select_center_marker_nametable
+    BEQ bra_select_center_marker_nametable
     LDX #$2A    ; 2A30
 ; Select nametable for center marker
-bra_E72A_select_center_marker_nametable:		; was: bra_E72A
+bra_select_center_marker_nametable:		; was: bra_E72A
     LDA $2002
     STX $2006
     LDA #$30
@@ -136,10 +131,8 @@ bra_E72A_select_center_marker_nametable:		; was: bra_E72A
     STA $2007
     RTS
 
-
-
 ; Sprite palette used by intro/demo setup
-tbl_E73B_intro_sprite_palette:		; was: tbl_E73B_spr_palette
+tbl_intro_sprite_palette:		; was: tbl_E73B_spr_palette
     .incbin "assets/generated/palettes/intermission-sprites.bin", $0, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/intermission-sprites.bin", $4, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/intermission-sprites.bin", $8, $4  ; rom-asset .byte

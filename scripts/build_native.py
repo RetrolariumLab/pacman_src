@@ -49,15 +49,18 @@ def assemble_prg(
     config: Path,
     object_path: Path,
     prg_path: Path,
+    labels_path: Path,
 ) -> bytes:
     object_path.parent.mkdir(parents=True, exist_ok=True)
     prg_path.parent.mkdir(parents=True, exist_ok=True)
+    labels_path.parent.mkdir(parents=True, exist_ok=True)
     ca65 = resolve_tool("ca65", project_root)
     ld65 = resolve_tool("ld65", project_root)
     run_tool(
         ca65,
         [
             str(source),
+            "-g",
             "-I",
             str(source.parent),
             "-I",
@@ -69,7 +72,15 @@ def assemble_prg(
     )
     run_tool(
         ld65,
-        ["-C", str(config), str(object_path), "-o", str(prg_path)],
+        [
+            "-C",
+            str(config),
+            str(object_path),
+            "-o",
+            str(prg_path),
+            "-Ln",
+            str(labels_path),
+        ],
         project_root,
     )
     prg = prg_path.read_bytes()
@@ -116,6 +127,7 @@ def main() -> int:
     parser.add_argument("--chr", default="assets/generated/chr/pacman.chr")
     parser.add_argument("--object", default="build/pacman.o")
     parser.add_argument("--prg", default="build/pacman.prg")
+    parser.add_argument("--labels", default="build/pacman.lbl")
     parser.add_argument("--output-rom", default="build/pacman.nes")
     parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
@@ -127,6 +139,7 @@ def main() -> int:
     chr_path = rooted(project_root, args.chr)
     object_path = rooted(project_root, args.object)
     prg_path = rooted(project_root, args.prg)
+    labels_path = rooted(project_root, args.labels)
     output_rom = rooted(project_root, args.output_rom)
     for path in (source, config, original_rom, chr_path):
         if not path.is_file():
@@ -140,7 +153,14 @@ def main() -> int:
             f"Generated CHR must be {len(original_chr)} bytes, "
             f"got {len(chr_data)}"
         )
-    prg = assemble_prg(project_root, source, config, object_path, prg_path)
+    prg = assemble_prg(
+        project_root,
+        source,
+        config,
+        object_path,
+        prg_path,
+        labels_path,
+    )
     candidate = header + prg + chr_data
     output_rom.parent.mkdir(parents=True, exist_ok=True)
     output_rom.write_bytes(candidate)

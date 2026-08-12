@@ -1,98 +1,92 @@
 ; Attract-mode chase scene, collisions, slot rotation, and animation
 
-ofs_001_C6C8_attract_chase_scene:		; was: ofs_001_C6C8_16
-    LDY ram_0088
-    LDA tbl_C6D7_attract_chase_substates,Y
+handler_attract_chase_scene:		; was: ofs_001_C6C8_16
+    LDY ram_shared_state_1
+    LDA tbl_attract_chase_substates,Y
     STA ram_indirect_jmp
-    LDA tbl_C6D7_attract_chase_substates + $01,Y
+    LDA tbl_attract_chase_substates + $01,Y
     STA ram_indirect_jmp + $01
     JMP (ram_indirect_jmp)
 
-
-
 ; Substate handlers for chase attract scene
-tbl_C6D7_attract_chase_substates:		; was: tbl_C6D7
-    .word ofs_002_C6DD_chase_setup_intro_text
-    .word ofs_002_C728_chase_run_from_ghosts
-    .word ofs_002_C78D_chase_run_toward_ghosts
-
-
+tbl_attract_chase_substates:		; was: tbl_C6D7
+    .word handler_chase_setup_intro_text
+    .word handler_chase_run_from_ghosts
+    .word handler_chase_run_toward_ghosts
 
 ; Chase substate init: clear score text, seed actor/sprite state
-ofs_002_C6DD_chase_setup_intro_text:		; was: ofs_002_C6DD_00
+handler_chase_setup_intro_text:		; was: ofs_002_C6DD_00
 ; clear 10 pts 50 pts text
     LDY #$00
 ; Copy fixed PPU command packet into main buffer
-bra_C6DF_copy_ppu_packet:		; was: bra_C6DF_loop
-    LDA tbl_C90E_ppu_cmd_clear_points_text,Y
+bra_copy_ppu_packet:		; was: bra_C6DF_loop
+    LDA tbl_ppu_cmd_clear_points_text,Y
     STA ram_ppu_buffer_main,Y
     INY
     CMP #$FF
-    BNE bra_C6DF_copy_ppu_packet
+    BNE bra_copy_ppu_packet
     LDA #< $00FF
     STA ram_obj_pos_X_hi
     LDA #> $00FF
     STA ram_obj_pos_X_lo
-    STA ram_0089
-    STA ram_008A
+    STA ram_shared_state_2
+    STA ram_shared_state_3
     LDA #$F4
     STA ram_spr_pos_X_hi
     LDA #$A8
     STA ram_spr_pos_Y_hi
     LDA #$01
-    STA ram_028C
+    STA ram_actor_sprite_set
     LDA #$20
-    STA ram_0292
+    STA ram_actor_sprite_attrs
     LDA #$00
     TAY
 ; Clear attract runner object slots
-bra_C70D_clear_runner_obj_slots:		; was: bra_C70D_loop
+bra_clear_runner_obj_slots:		; was: bra_C70D_loop
     STA ram_obj_position + $04,Y
     INY
     CPY #$14
-    BNE bra_C70D_clear_runner_obj_slots
+    BNE bra_clear_runner_obj_slots
     TAY
 ; Clear attract runner sprite slots
-bra_C716_clear_runner_sprite_slots:		; was: bra_C716_loop
+bra_clear_runner_sprite_slots:		; was: bra_C716_loop
     STA ram_spr_pos_X_hi + $04,Y
     INY
     CPY #$14
-    BNE bra_C716_clear_runner_sprite_slots
-    JSR sub_DA5C_build_oam_from_sprite_buffers
-    INC ram_0088
-    INC ram_0088
-    JMP loc_C1DE_script_dispatch_loop
-
-
+    BNE bra_clear_runner_sprite_slots
+    JSR sub_build_oam_from_sprite_buffers
+    INC ram_shared_state_1
+    INC ram_shared_state_1
+    JMP loc_script_dispatch_loop
 
 ; Chase phase A: Pac-Man runs from ghosts
-ofs_002_C728_chase_run_from_ghosts:		; was: ofs_002_C728_02
+handler_chase_run_from_ghosts:		; was: ofs_002_C728_02
 ; pacman is running from ghosts
-    JSR sub_C812_update_chase_scene_frame
-    JSR sub_C8EE_blink_chase_marker
+    JSR sub_update_chase_scene_frame
+    JSR sub_blink_chase_marker
     LDA ram_spr_pos_X_hi
     CMP #$E0
-    BEQ bra_C741_spawn_next_ghost_if_checkpoint
+    BEQ bra_spawn_next_ghost_if_checkpoint
     CMP #$D1
-    BEQ bra_C741_spawn_next_ghost_if_checkpoint
+    BEQ bra_spawn_next_ghost_if_checkpoint
     CMP #$C2
-    BEQ bra_C741_spawn_next_ghost_if_checkpoint
+    BEQ bra_spawn_next_ghost_if_checkpoint
     CMP #$B3
-    BNE bra_C744_check_phase_a_finish
+    BNE bra_check_phase_a_finish
 ; At checkpoint X, spawn next ghost runner
-bra_C741_spawn_next_ghost_if_checkpoint:		; was: bra_C741
-    JSR sub_C7DE_spawn_ghost_runner
+bra_spawn_next_ghost_if_checkpoint:		; was: bra_C741
+    JSR sub_spawn_ghost_runner
 ; Wait until lead runner reaches phase-A terminal X
-bra_C744_check_phase_a_finish:		; was: bra_C744
+bra_check_phase_a_finish:		; was: bra_C744
     LDA ram_spr_pos_X_hi
     CMP #$40
-    BEQ bra_C74E_phase_a_to_b_reset
-    JMP loc_C1DE_script_dispatch_loop
+    BEQ bra_phase_a_to_b_reset
+    JMP loc_script_dispatch_loop
 ; Transition phase A->B: reset slots and marker
-bra_C74E_phase_a_to_b_reset:		; was: bra_C74E
+bra_phase_a_to_b_reset:		; was: bra_C74E
     LDY #$00
 ; Reset chase phase-B object X slots to base
-bra_C750_reset_phase_b_obj_slots:		; was: bra_C750_loop
+bra_reset_phase_b_obj_slots:		; was: bra_C750_loop
     LDA #> $00C0
     STA ram_obj_pos_X_hi + $04,Y
     LDA #< $00C0
@@ -102,53 +96,51 @@ bra_C750_reset_phase_b_obj_slots:		; was: bra_C750_loop
     INY
     INY
     CPY #$10
-    BNE bra_C750_reset_phase_b_obj_slots
+    BNE bra_reset_phase_b_obj_slots
     LDA #> $0150
     STA ram_obj_pos_X_hi
     LDA #< $0150
     STA ram_obj_pos_X_lo
     LDA #$01
-    STA ram_0293
-    STA ram_0294
-    STA ram_0295
-    STA ram_0296
+    STA ram_actor_sprite_attrs + $01
+    STA ram_actor_sprite_attrs + $02
+    STA ram_actor_sprite_attrs + $03
+    STA ram_actor_sprite_attrs + $04
     LDA #$00
-    STA ram_0089
+    STA ram_shared_state_2
     LDA #$22
     STA ram_ppu_buffer_main
     LDA #$20
     STA ram_ppu_buffer_main + $02
-    INC ram_0088
-    INC ram_0088
-    JMP loc_C1DE_script_dispatch_loop
-
-
+    INC ram_shared_state_1
+    INC ram_shared_state_1
+    JMP loc_script_dispatch_loop
 
 ; Chase phase B: Pac-Man turns and chases ghosts
-ofs_002_C78D_chase_run_toward_ghosts:		; was: ofs_002_C78D_04
+handler_chase_run_toward_ghosts:		; was: ofs_002_C78D_04
 ; pacman is running at ghosts
-    LDA ram_008A
-    BEQ bra_C7D8_update_phase_b_scene
-    JSR sub_C864_rotate_runner_slots
-    DEC ram_008A
-    BEQ bra_C79B_resolve_eaten_ghost
-    JMP loc_C1DE_script_dispatch_loop
+    LDA ram_shared_state_3
+    BEQ bra_update_phase_b_scene
+    JSR sub_rotate_runner_slots
+    DEC ram_shared_state_3
+    BEQ bra_resolve_eaten_ghost
+    JMP loc_script_dispatch_loop
 ; Resolve one eaten ghost slot and score marker update
-bra_C79B_resolve_eaten_ghost:		; was: bra_C79B
+bra_resolve_eaten_ghost:		; was: bra_C79B
     LDY #$00
 ; Scan eaten-marker slots for active entry
-bra_C79D_find_active_eaten_marker_slot:		; was: bra_C79D_loop
-    LDA ram_028D,Y
+bra_find_active_eaten_marker_slot:		; was: bra_C79D_loop
+    LDA ram_actor_sprite_set + $01,Y
     AND #$E0
-    BNE bra_C7A7_clear_eaten_slot_state
+    BNE bra_clear_eaten_slot_state
     INY
-    BNE bra_C79D_find_active_eaten_marker_slot    ; Y steps 0,4,8,0C so branch always until slot found
+    BNE bra_find_active_eaten_marker_slot    ; Y steps 0,4,8,0C so branch always until slot found
 ; Clear resolved eaten marker and slot state
-bra_C7A7_clear_eaten_slot_state:		; was: bra_C7A7
+bra_clear_eaten_slot_state:		; was: bra_C7A7
     LDA #$00
-    STA ram_028D,Y
+    STA ram_actor_sprite_set + $01,Y
     LDA #$00
-    STA ram_0293,Y
+    STA ram_actor_sprite_attrs + $01,Y
     TYA
     ASL
     ASL
@@ -160,38 +152,36 @@ bra_C7A7_clear_eaten_slot_state:		; was: bra_C7A7
     STA ram_obj_pos_X_lo + $04,Y
     LDA #$A8
     STA ram_spr_pos_Y_hi
-    LDA ram_0089
+    LDA ram_shared_state_2
     CMP #$04
-    BEQ bra_C7D1_enter_gameplay_after_chase
-    JMP loc_C1DE_script_dispatch_loop
+    BEQ bra_enter_gameplay_after_chase
+    JMP loc_script_dispatch_loop
 ; Exit attract chase and jump into gameplay init
-bra_C7D1_enter_gameplay_after_chase:		; was: bra_C7D1
+bra_enter_gameplay_after_chase:		; was: bra_C7D1
     LDA #$01
     STA ram_game_mode
-    JMP loc_C98A_enter_gameplay_session
+    JMP loc_enter_gameplay_session
 ; Phase B path when no eat event is active
-bra_C7D8_update_phase_b_scene:		; was: bra_C7D8
-    JSR sub_C812_update_chase_scene_frame
-    JMP loc_C1DE_script_dispatch_loop
-
-
+bra_update_phase_b_scene:		; was: bra_C7D8
+    JSR sub_update_chase_scene_frame
+    JMP loc_script_dispatch_loop
 
 ; Spawn one ghost runner entity in attract chase
-sub_C7DE_spawn_ghost_runner:		; was: sub_C7DE
+sub_spawn_ghost_runner:		; was: sub_C7DE
     LDY #$00
-    STY ram_0000
+    STY zp_work0
 ; Find first free runner slot for ghost spawn
-bra_C7E2_find_free_runner_slot:		; was: bra_C7E2_loop
+bra_find_free_runner_slot:		; was: bra_C7E2_loop
     LDA ram_spr_pos_X_hi + $04,Y
-    BEQ bra_C7EF_init_spawned_runner_slot
-    INC ram_0000
+    BEQ bra_init_spawned_runner_slot
+    INC zp_work0
     INY
     INY
     INY
     INY
-    BNE bra_C7E2_find_free_runner_slot
+    BNE bra_find_free_runner_slot
 ; Initialize spawned ghost runner slot values
-bra_C7EF_init_spawned_runner_slot:		; was: bra_C7EF
+bra_init_spawned_runner_slot:		; was: bra_C7EF
     LDA #$F4
     STA ram_spr_pos_X_hi + $04,Y
     LDA #$A8
@@ -200,82 +190,76 @@ bra_C7EF_init_spawned_runner_slot:		; was: bra_C7EF
     STA ram_obj_pos_X_hi + $04,Y
     LDA #> $00FF
     STA ram_obj_pos_X_lo + $04,Y
-    LDY ram_0000
-    LDA ram_0089
-    STA ram_0293,Y
+    LDY zp_work0
+    LDA ram_shared_state_2
+    STA ram_actor_sprite_attrs + $01,Y
     LDA #$0C
-    STA ram_028D,Y
-    INC ram_0089
+    STA ram_actor_sprite_set + $01,Y
+    INC ram_shared_state_2
     RTS
-
-
 
 ; Per-frame chase scene update: movement, anim, collision, OAM
-sub_C812_update_chase_scene_frame:		; was: sub_C812
-    JSR sub_E9A5_update_intermission_actor_positions
-    JSR sub_C864_rotate_runner_slots
-    JSR sub_C930_update_chase_anim_tiles
-    JSR sub_C821_handle_chase_contact
-    JMP loc_DA5C_build_oam_from_sprite_buffers
-
-
+sub_update_chase_scene_frame:		; was: sub_C812
+    JSR sub_update_intermission_actor_positions
+    JSR sub_rotate_runner_slots
+    JSR sub_update_chase_anim_tiles
+    JSR sub_handle_chase_contact
+    JMP loc_build_oam_from_sprite_buffers
 
 ; Detect Pac-Man contact with runner and trigger eat event
-sub_C821_handle_chase_contact:		; was: sub_C821
+sub_handle_chase_contact:		; was: sub_C821
     LDA ram_obj_pos_X_hi
-    BPL bra_C826_scan_runners_for_contact
+    BPL bra_scan_runners_for_contact
     RTS
 ; Begin collision scan between Pac-Man and runners
-bra_C826_scan_runners_for_contact:		; was: bra_C826
+bra_scan_runners_for_contact:		; was: bra_C826
     LDA ram_spr_pos_X_hi
     CLC
     ADC #$08
-    STA ram_0000
+    STA zp_work0
     LDY #$00
-    STY ram_0001
+    STY zp_work1
 ; Scan runner X positions against Pac-Man threshold
-bra_C832_find_first_runner_ahead_of_pacman:		; was: bra_C832_loop
+bra_find_first_runner_ahead_of_pacman:		; was: bra_C832_loop
     LDA ram_spr_pos_X_hi + $04,Y
-    BEQ bra_C83B_advance_runner_scan
-    CMP ram_0000
-    BCC bra_C846_mark_runner_eaten
+    BEQ bra_advance_runner_scan
+    CMP zp_work0
+    BCC bra_mark_runner_eaten
 ; Advance to next runner slot during contact scan
-bra_C83B_advance_runner_scan:		; was: bra_C83B
-    INC ram_0001
+bra_advance_runner_scan:		; was: bra_C83B
+    INC zp_work1
     INY
     INY
     INY
     INY
     CPY #$10
-    BNE bra_C832_find_first_runner_ahead_of_pacman
+    BNE bra_find_first_runner_ahead_of_pacman
     RTS
 ; Mark contacted runner as eaten and trigger score popup
-bra_C846_mark_runner_eaten:		; was: bra_C846
-    LDY ram_0089
-    INC ram_0089
+bra_mark_runner_eaten:		; was: bra_C846
+    LDY ram_shared_state_2
+    INC ram_shared_state_2
     LDA #$40
-    STA ram_008A
-    LDA tbl_C924_ghost_score_tiles,Y
-    LDY ram_0001
-    STA ram_028D,Y
+    STA ram_shared_state_3
+    LDA tbl_ghost_score_tiles,Y
+    LDY zp_work1
+    STA ram_actor_sprite_set + $01,Y
     LDA #$00
-    STA ram_0293,Y
+    STA ram_actor_sprite_attrs + $01,Y
     LDA #$00
-    STA ram_028C
+    STA ram_actor_sprite_set
     STA ram_spr_pos_Y_hi
     RTS
 
-
-
 ; Rotate runner object/sprite/state arrays
-sub_C864_rotate_runner_slots:		; was: sub_C864
+sub_rotate_runner_slots:		; was: sub_C864
     LDA ram_obj_pos_X_hi + $04
-    STA ram_0000
+    STA zp_work0
     LDA ram_obj_pos_X_lo + $04
-    STA ram_0001
+    STA zp_work1
     LDY #$00
 ; Rotate object position ring buffer left by one slot
-bra_C86E_rotate_object_positions_left:		; was: bra_C86E_loop
+bra_rotate_object_positions_left:		; was: bra_C86E_loop
     LDA ram_obj_pos_X_hi + $08,Y
     STA ram_obj_pos_X_hi + $04,Y
     LDA ram_obj_pos_X_lo + $08,Y
@@ -285,113 +269,105 @@ bra_C86E_rotate_object_positions_left:		; was: bra_C86E_loop
     INY
     INY
     CPY #$0C
-    BNE bra_C86E_rotate_object_positions_left
-    LDA ram_0000
+    BNE bra_rotate_object_positions_left
+    LDA zp_work0
     STA ram_obj_pos_X_hi + $10
-    LDA ram_0001
+    LDA zp_work1
     STA ram_obj_pos_X_lo + $10
     LDA ram_spr_pos_X_hi + $04
-    STA ram_0000
+    STA zp_work0
     LDA ram_spr_pos_X_lo + $04
-    STA ram_0001
+    STA zp_work1
     LDA ram_spr_pos_Y_hi + $04
-    STA ram_0002
+    STA zp_work2
     LDA ram_spr_pos_Y_lo + $04
-    STA ram_0003
+    STA zp_work3
     LDY #$00
 ; Rotate sprite position bytes left by one slot
-bra_C8A0_rotate_sprite_bytes_left:		; was: bra_C8A0_loop
+bra_rotate_sprite_bytes_left:		; was: bra_C8A0_loop
     LDA ram_spr_pos_X_hi + $08,Y
     STA ram_spr_pos_X_hi + $04,Y
     INY
     CPY #$0C
-    BNE bra_C8A0_rotate_sprite_bytes_left
-    LDA ram_0000
+    BNE bra_rotate_sprite_bytes_left
+    LDA zp_work0
     STA ram_spr_pos_X_hi + $10
-    LDA ram_0001
+    LDA zp_work1
     STA ram_spr_pos_X_lo + $10
-    LDA ram_0002
+    LDA zp_work2
     STA ram_spr_pos_Y_hi + $10
-    LDA ram_0003
+    LDA zp_work3
     STA ram_spr_pos_Y_lo + $10
-    LDA ram_028D
-    STA ram_0000
+    LDA ram_actor_sprite_set + $01
+    STA zp_work0
     LDY #$00
 ; Rotate runner tile IDs left by one slot
-bra_C8C6_rotate_runner_tile_ids_left:		; was: bra_C8C6_loop
-    LDA ram_028E,Y
-    STA ram_028D,Y
+bra_rotate_runner_tile_ids_left:		; was: bra_C8C6_loop
+    LDA ram_actor_sprite_set + $02,Y
+    STA ram_actor_sprite_set + $01,Y
     INY
     CPY #$03
-    BNE bra_C8C6_rotate_runner_tile_ids_left
-    LDA ram_0000
-    STA ram_0290
-    LDA ram_0293
-    STA ram_0000
+    BNE bra_rotate_runner_tile_ids_left
+    LDA zp_work0
+    STA ram_actor_sprite_set + $04
+    LDA ram_actor_sprite_attrs + $01
+    STA zp_work0
     LDY #$00
 ; Rotate runner palette/flags left by one slot
-bra_C8DD_rotate_runner_palette_flags_left:		; was: bra_C8DD_loop
-    LDA ram_0294,Y
-    STA ram_0293,Y
+bra_rotate_runner_palette_flags_left:		; was: bra_C8DD_loop
+    LDA ram_actor_sprite_attrs + $02,Y
+    STA ram_actor_sprite_attrs + $01,Y
     INY
     CPY #$03
-    BNE bra_C8DD_rotate_runner_palette_flags_left
-    LDA ram_0000
-    STA ram_0296
+    BNE bra_rotate_runner_palette_flags_left
+    LDA zp_work0
+    STA ram_actor_sprite_attrs + $04
     RTS
-
-
 
 ; Blink chase marker text/tile packet every 8 frames
-sub_C8EE_blink_chase_marker:		; was: sub_C8EE
+sub_blink_chase_marker:		; was: sub_C8EE
     LDA ram_frame_cnt
     AND #$07
-    BEQ bra_C8F5_blink_tick
+    BEQ bra_blink_tick
     RTS
 ; Every-8-frame blink update entry
-bra_C8F5_blink_tick:		; was: bra_C8F5
+bra_blink_tick:		; was: bra_C8F5
 ; each 8 frames
     LDX #$00
     LDY #$00
     LDA ram_frame_cnt
     AND #$08
-    BEQ bra_C901_select_marker_variant
+    BEQ bra_select_marker_variant
     LDY #$04
 ; Select visible/hidden marker packet variant
-bra_C901_select_marker_variant:		; was: bra_C901
+bra_select_marker_variant:		; was: bra_C901
 ; Copy marker packet bytes into PPU buffer
-bra_C901_copy_marker_packet:		; was: bra_C901_loop
-    LDA tbl_C928_ppu_cmd_chase_marker,Y
+bra_copy_marker_packet:		; was: bra_C901_loop
+    LDA tbl_ppu_cmd_chase_marker,Y
     STA ram_ppu_buffer_main,X
     INX
     INY
     CPX #$04
-    BNE bra_C901_copy_marker_packet
+    BNE bra_copy_marker_packet
     RTS
 
-
-
 ; PPU packet to clear 10/50/200/400 points text area
-tbl_C90E_ppu_cmd_clear_points_text:		; was: tbl_C90E
+tbl_ppu_cmd_clear_points_text:		; was: tbl_C90E
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
     .dbyt $22AD
     .byte                                                                  $2D, $2D, $2D
     .byte $2D, $2D, $2D, $2D, $2D, $00, $22, $ED, $2D, $2D, $2D, $2D, $2D, $2D, $2D, $2D
     .byte $FF   ; end token
 
-
-
 ; Tile IDs for ghost-eaten score popups
-tbl_C924_ghost_score_tiles:		; was: tbl_C924
+tbl_ghost_score_tiles:		; was: tbl_C924
     .byte $2D   ; 00
     .byte $2F   ; 01
     .byte $32   ; 02
     .byte $34   ; 03
 
-
-
 ; PPU packets for chase marker blink states
-tbl_C928_ppu_cmd_chase_marker:		; was: tbl_C928
+tbl_ppu_cmd_chase_marker:		; was: tbl_C928
 ; 00
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
     .dbyt $22C7
@@ -403,59 +379,57 @@ tbl_C928_ppu_cmd_chase_marker:		; was: tbl_C928
     .byte                                    $01
     .byte $FF
 ; Update chase scene animation tiles for Pac-Man/ghosts
-sub_C930_update_chase_anim_tiles:		; was: sub_C930
+sub_update_chase_anim_tiles:		; was: sub_C930
     LDX #$00
     LDA ram_obj_pos_X_hi
-    BMI bra_C938_store_anim_bank_offset
+    BMI bra_store_anim_bank_offset
     LDX #$0A
 ; Store selected animation bank offset
-bra_C938_store_anim_bank_offset:		; was: bra_C938
-    STX ram_0000
-    INC ram_00B7
-    LDA ram_00B7
+bra_store_anim_bank_offset:		; was: bra_C938
+    STX zp_work0
+    INC ram_pacman_anim_phase
+    LDA ram_pacman_anim_phase
     AND #$07
     CLC
-    ADC ram_0000
+    ADC zp_work0
     TAY
-    LDA tbl_C976_chase_anim_lut,Y
-    STA ram_028C
+    LDA tbl_chase_anim_lut,Y
+    STA ram_actor_sprite_set
     LDA ram_frame_cnt
     AND #$07
-    BEQ bra_C951_update_ghost_tiles_every_8f
+    BEQ bra_update_ghost_tiles_every_8f
     RTS
 ; Update ghost tiles every 8 frames only
-bra_C951_update_ghost_tiles_every_8f:		; was: bra_C951
+bra_update_ghost_tiles_every_8f:		; was: bra_C951
 ; each 8 frames
     LDA ram_frame_cnt
     AND #$08
-    BEQ bra_C959_select_chomp_toggle
+    BEQ bra_select_chomp_toggle
     LDA #$01
 ; Select alternate tile on 8-frame toggle bit
-bra_C959_select_chomp_toggle:		; was: bra_C959
+bra_select_chomp_toggle:		; was: bra_C959
     CLC
-    ADC ram_0000
+    ADC zp_work0
     ADC #$08
     TAY
-    LDA tbl_C976_chase_anim_lut,Y
-    STA ram_0000
+    LDA tbl_chase_anim_lut,Y
+    STA zp_work0
     LDY #$00
 ; Apply current ghost tile to active runner slots
-bra_C966_apply_ghost_tile_to_active_slots:		; was: bra_C966_loop
-    LDA ram_028D,Y
-    BEQ bra_C970_next_runner_tile_slot
-    LDA ram_0000
-    STA ram_028D,Y
+bra_apply_ghost_tile_to_active_slots:		; was: bra_C966_loop
+    LDA ram_actor_sprite_set + $01,Y
+    BEQ bra_next_runner_tile_slot
+    LDA zp_work0
+    STA ram_actor_sprite_set + $01,Y
 ; Advance to next chase runner tile slot in update loop
-bra_C970_next_runner_tile_slot:		; was: bra_C970
+bra_next_runner_tile_slot:		; was: bra_C970
     INY
     CPY #$04
-    BNE bra_C966_apply_ghost_tile_to_active_slots
+    BNE bra_apply_ghost_tile_to_active_slots
     RTS
 
-
-
 ; Animation LUT used by chase scene update
-tbl_C976_chase_anim_lut:		; was: tbl_C976
+tbl_chase_anim_lut:		; was: tbl_C976
 ; indexes 08, 09, 12 and 13 are read via 0x00096F
 ; other indexes are read via 0x000954
     .byte $04   ; 00

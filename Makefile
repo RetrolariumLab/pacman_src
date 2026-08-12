@@ -8,6 +8,7 @@ BUILD_DIR ?= $(PROJECT_DIR)build
 NATIVE_OBJ ?= $(BUILD_DIR)/pacman.o
 NATIVE_PRG ?= $(BUILD_DIR)/pacman.prg
 NATIVE_ROM ?= $(BUILD_DIR)/pacman.nes
+NATIVE_LABELS ?= $(BUILD_DIR)/pacman.lbl
 ASSET_MANIFEST ?= $(PROJECT_DIR)assets/manifest.json
 GENERATED_ASSET_DIR ?= $(PROJECT_DIR)assets/generated
 GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
@@ -51,6 +52,7 @@ build: _require-assets
 		--chr "$(GENERATED_CHR)" \
 		--object "$(NATIVE_OBJ)" \
 		--prg "$(NATIVE_PRG)" \
+		--labels "$(NATIVE_LABELS)" \
 		--output-rom "$(NATIVE_ROM)"
 
 verify: _require-assets
@@ -61,6 +63,7 @@ verify: _require-assets
 		--chr "$(GENERATED_CHR)" \
 		--object "$(NATIVE_OBJ)" \
 		--prg "$(NATIVE_PRG)" \
+		--labels "$(NATIVE_LABELS)" \
 		--output-rom "$(NATIVE_ROM)" \
 		--verify
 
@@ -107,9 +110,9 @@ reference: build-dev
 		"$(ORIGINAL_ROM)"
 	@echo Reference saved to $(REFERENCE_DIR)/longplay
 
-_manifest:
+_manifest: verify
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/build_procedure_manifest.py" \
-		--listing "$(NATIVE_SOURCE)" \
+		--labels "$(NATIVE_LABELS)" \
 		--output "$(PROJECT_DIR)$(WORKFLOW_DIR)/procedure_manifest.csv"
 
 _batch: _manifest
@@ -118,10 +121,9 @@ _batch: _manifest
 		--count "$(COUNT)" \
 		--output "$(PROJECT_DIR)$(WORKFLOW_DIR)/rts_batch.txt"
 
-analyze: verify build-dev _batch
+analyze: build-dev _batch
 	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(REFERENCE_DIR)/longplay'); p.is_dir() or (_ for _ in ()).throw(SystemExit('[ERROR] Missing reference capture; run make reference first.'))"
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/analyze_subroutines.py" \
-		--listing "$(NATIVE_SOURCE)" \
 		--manifest "$(PROJECT_DIR)$(WORKFLOW_DIR)/procedure_manifest.csv" \
 		--batch "$(PROJECT_DIR)$(WORKFLOW_DIR)/rts_batch.txt" \
 		--original-rom "$(ORIGINAL_ROM)" \
@@ -142,9 +144,10 @@ analyze: verify build-dev _batch
 		--nothrottle
 	@echo Analysis complete: $(ANALYSIS_REPORT_CSV)
 
-chunk:
+chunk: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/extract_rename_chunk.py" \
 		--source "$(NATIVE_SOURCE)" \
+		--labels "$(NATIVE_LABELS)" \
 		--start-line "$(START)" \
 		--line-count "$(LINES)" \
 		--output-csv "$(PROJECT_DIR)$(WORKFLOW_DIR)/rename_chunk.csv" \

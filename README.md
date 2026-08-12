@@ -27,6 +27,10 @@ Repeated domain operations use a small set of byte-preserving ca65 macros under
 `src/macros/`; the project deliberately avoids hiding ordinary 6502 instructions
 behind generic syntax aliases. See [`docs/macros.md`](docs/macros.md).
 
+Symbols are named by program role rather than ROM address. The `sub_`,
+`handler_`, `loc_`, and `bra_` prefixes distinguish callable subroutines from
+dispatch handlers and internal control flow; see [`docs/naming.md`](docs/naming.md).
+
 The gate for every change is `make verify`: rebuild the ROM from
 `src/main.asm` and assert byte-identity with the original. Annotation must never
 alter the assembled bytes, so any diff means the edit was wrong.

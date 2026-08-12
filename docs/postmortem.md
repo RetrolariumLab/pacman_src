@@ -44,7 +44,7 @@ engine — was still ahead.
 
 ### 1. No NMI. The whole frame loop was a busy-wait
 
-The original drives everything from the NMI handler (`vec_C0FA_nmi_handler`):
+The original drives everything from the NMI handler (`vec_nmi_handler`):
 VBlank fires, the handler pushes the prepared PPU packets and OAM, then game
 logic runs during the visible frame.
 
@@ -137,7 +137,7 @@ freezes on screen transitions.
 anything meaningful, and it is not readable either. The reset vector begins:
 
 ```c
-void vec_C033_RESET(void)
+void vec_RESET(void)
 {
   do { } while (-1 < DAT_2002);
   sVar3 = CONCAT11((char)((ushort)&stack0x0000 >> 8),0xff);

@@ -33,8 +33,8 @@ def load_batch_labels(path: Path) -> list[str]:
         if not line or line.startswith("#"):
             continue
         # Formats supported:
-        # 1) "sub_C21F"
-        # 2) "3 | C21F | sub_C21F_draw_logo_screen | status=pending"
+        # 1) "sub_draw_title_logo_and_text"
+        # 2) "3 | C21F | sub_draw_title_logo_and_text | status=pending"
         if "|" in line:
             parts = [p.strip() for p in line.split("|")]
             if len(parts) >= 3 and parts[2]:
@@ -161,7 +161,6 @@ def analyze_one(task: dict) -> dict:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="RTS analysis runner for bank_FF procedures.")
-    ap.add_argument("--listing", required=True)
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--batch", required=True)
     ap.add_argument("--original-rom", required=True)
@@ -182,7 +181,6 @@ def main() -> int:
     ap.add_argument("--nothrottle", action="store_true")
     args = ap.parse_args()
 
-    listing = Path(args.listing)
     manifest = Path(args.manifest)
     batch = Path(args.batch)
     original_rom = Path(args.original_rom)
@@ -192,7 +190,7 @@ def main() -> int:
     diff_root = Path(args.diff_root)
     report = Path(args.output_report)
 
-    for p in [listing, manifest, batch, original_rom, movie, fceux]:
+    for p in [manifest, batch, original_rom, movie, fceux]:
         if not p.is_file():
             raise SystemExit(f"[ERROR] Missing file: {p}")
     if not reference_dir.is_dir():

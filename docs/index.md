@@ -4,6 +4,7 @@
 - [roadmap.md](./roadmap.md): project direction, evidence rules, milestones, and completion criteria.
 - [source_layout.md](./source_layout.md): address-ordered module map and file-sizing rules.
 - [macros.md](./macros.md): allowed ca65 abstractions and byte-identity rules.
+- [naming.md](./naming.md): semantic symbol names and control-flow prefixes.
 - [postmortem.md](./postmortem.md): why the C reimplementation was removed and what replaced it.
 - [bank_ff_map.md](./bank_ff_map.md): top-level bank segmentation and annotation entry points.
 - [ram_fields.md](./ram_fields.md): key RAM fields and runtime roles.
