@@ -14,12 +14,16 @@ def main() -> int:
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parent.parent
-    file_targets = (
-        project_root / "pacman.chr",
-    )
+    file_targets: tuple[Path, ...] = ()
     directory_targets = tuple(
         project_root / name
-        for name in ("build", "workflow", "reference", "diffs", "reports")
+        for name in (
+            "build",
+            "workflow",
+            "reference",
+            "diffs",
+            "reports",
+        )
     )
 
     removed = 0

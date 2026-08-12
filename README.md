@@ -36,12 +36,19 @@ cd pacman_src
 # Place the original ROM in the project root:
 #   Pac-Man (J) (V1.0) [!].nes
 
+make split
 make build
 ```
 
 A successful run reports `[OK] Byte-identical ROM reproduced.`
 
+Run `make split` once to validate the reference ROM and extract the ignored CHR,
+maze, and audio assets described by `assets/manifest.json`. This command is
+explicit because it overwrites those local asset files with the original data.
+
 `make build` assembles `src/main.asm` and its modules directly with ca65/ld65.
+It only checks that all required assets exist and never extracts or overwrites
+them, so locally edited assets can be used for ROM hacks.
 `make verify` performs the same native build and fails unless the result is
 byte-identical to the reference ROM.
 
@@ -49,47 +56,35 @@ byte-identical to the reference ROM.
 
 ```text
 pacman_src/
-├── bin/                          # ca65 / ld65
-├── build/                        # Generated pacman.o, pacman.prg, and pacman.nes
-├── config/
-│   └── tile_ascii_map.txt        # Pac-Man tile mapping for ASCII captures
-├── docs/                         # Subsystem notes + local Nesdev Wiki dump
-│   ├── nesdev/                   # Dumped NES technical documentation
-│   ├── index.md                  # Docs navigation
-│   ├── roadmap.md                # Preservation-source milestones and RE rules
-│   ├── postmortem.md             # Why the C rewrite was abandoned
-│   ├── bank_ff_map.md            # Bank segmentation and annotation priorities
-│   ├── ram_fields.md             # RAM field glossary
-│   ├── script_states.md          # Gameplay script state machine
-│   ├── ghost_ai.md               # Ghost behaviour
-│   ├── score_and_bonus.md        # Pellets / fruit / score / 1UP
-│   ├── intermission_flow.md      # Intermission scenes
-│   ├── sound_engine.md           # Audio engine and stream decoder
-│   └── stage_params_and_data_tail.md
-├── movies/                       # FM2 movies driving the automated capture
-├── scripts/
-│   ├── workflow/                 # bank_FF analysis, build, verify, reporting
-│   ├── build_native.py           # Build and verify the native ca65 source
-│   ├── build_dev.py              # Check tools and clone/build FCEUX
-│   ├── clean_artifacts.py        # Remove generated local artifacts
-│   ├── flatten_listing.py        # Expand modules for single-file external tools
-│   ├── compare_roms.py           # Binary ROM comparison
-│   └── split_chr.py              # CHR extractor
-├── src/
-│   ├── main.asm                  # Native ca65 entrypoint and module index
-│   ├── system/                   # Reset, NMI, input, and frame bootstrap
-│   ├── game/                     # Game flow, actors, scoring, and intermissions
-│   ├── rendering/                # Actor, playfield, HUD, and PPU helpers
-│   ├── audio/                    # Sound engine and stream data
-│   ├── data/                     # Stage/maze data, bank tail, and vectors
-│   ├── memory/                   # RAM symbols and gameplay constants
-│   └── nrom128_prg_only.cfg      # ld65 config: bare 16 KiB PRG, no header/CHR
-├── Makefile                      # Automation entrypoint
-└── Pac-Man (J) (V1.0) [!].nes    # Original ROM (not distributed)
+|-- assets/
+|   |-- manifest.json              # Tracked extraction ranges and checksums
+|   `-- generated/                # Ignored CHR, maze, and audio payloads
+|-- bin/                           # ca65 / ld65
+|-- build/                         # Generated ROM and linker artifacts
+|-- config/                        # Emulator/reference configuration
+|-- docs/                          # Architecture and RE notes
+|-- movies/                        # FM2 inputs for automated capture
+|-- scripts/
+|   |-- workflow/                  # Analysis and reporting tools
+|   |-- build_native.py            # Native build and byte verification
+|   |-- build_dev.py               # FCEUX bootstrap
+|   |-- clean_artifacts.py         # Generated-artifact cleanup
+|   `-- split_assets.py           # Validated ROM asset extractor
+|-- src/
+|   |-- main.asm                   # Address-ordered ca65 entrypoint
+|   |-- system/
+|   |-- game/
+|   |-- rendering/
+|   |-- audio/
+|   |-- data/
+|   `-- memory/
+|-- Makefile
+`-- Pac-Man (J) (V1.0) [!].nes   # Original ROM (not distributed)
 ```
 
-`build/`, `reference/`, `diffs/`, `reports/` and `workflow/` are generated
-artifacts and are not tracked.
+`assets/generated/`, `build/`, `reference/`, `diffs/`, `reports/` and
+`workflow/` are generated artifacts and are not tracked. See
+[`docs/assets.md`](docs/assets.md) for the source-versus-asset policy.
 
 ## Make Targets
 
@@ -98,7 +93,7 @@ make                            # Same as `make build`
 make build                      # Build the native ca65 ROM
 make verify                     # Build and require byte-identity
 make run                        # Build and run the ROM in FCEUX
-make split                      # Extract CHR from the original ROM
+make split                      # Extract CHR, maze, and audio from the original ROM
 make build-dev                  # Check tools and clone/build FCEUX if needed
 make reference                  # Capture the reference set from the original ROM
 make analyze COUNT=32           # Run RTS reverse-engineering analysis

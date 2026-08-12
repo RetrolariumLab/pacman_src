@@ -26,7 +26,7 @@ checked against this ROM's bytes and behavior.
 ## Current Baseline
 
 - `src/main.asm` is the address-ordered module index.
-- Semantic subsystem directories under `src/` contain thirteen contiguous ROM
+- Semantic subsystem directories under `src/` contain address-ordered ROM
   modules.
 - Major systems have an initial label and comment pass.
 - The default build and compatibility verification targets reproduce the
@@ -36,6 +36,9 @@ checked against this ROM's bytes and behavior.
   directives; disassembler address and machine-code columns have been removed.
 - `src/memory/ram.inc` and `src/memory/constants.inc` provide the symbols needed
   by the native source. Generic RAM names remain where semantics are unproven.
+- Opaque CHR, maze, and audio payloads are reproducibly extracted from the
+  validated reference ROM according to `assets/manifest.json`; editable tables
+  and all asset labels remain in source.
 
 ## Reverse-Engineering Evidence Rules
 
@@ -152,6 +155,18 @@ src/
 
 Do not perform semantic cleanup, code relocation, or optimization during this
 phase. Readability changes must not alter the executable layout.
+
+### 4.5. Separate Editable Data from Opaque Assets — Complete
+
+- Keep understood gameplay, rendering, stage, audio-support, and pointer tables
+  as editable ca65 source.
+- Extract CHR, compressed maze bytes, and sound streams from the exact reference
+  ROM into the ignored `assets/generated/` directory.
+- Track extraction ranges, sizes, and checksums in `assets/manifest.json`.
+- Make asset extraction an explicit operation; normal build and verification
+  targets only require the files and never overwrite local modifications.
+- Represent deterministic unused padding with ca65 directives instead of
+  thousands of repeated byte literals.
 
 ### 5. Systematic Subsystem Documentation
 

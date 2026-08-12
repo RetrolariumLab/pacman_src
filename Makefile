@@ -2,13 +2,15 @@ PYTHON ?= python
 PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 ORIGINAL_ROM ?= $(PROJECT_DIR)Pac-Man (J) (V1.0) [!].nes
-CHR_OUT ?= $(PROJECT_DIR)pacman.chr
 NATIVE_SOURCE ?= $(PROJECT_DIR)src/main.asm
 NATIVE_CFG ?= $(PROJECT_DIR)src/nrom128_prg_only.cfg
 BUILD_DIR ?= $(PROJECT_DIR)build
 NATIVE_OBJ ?= $(BUILD_DIR)/pacman.o
 NATIVE_PRG ?= $(BUILD_DIR)/pacman.prg
 NATIVE_ROM ?= $(BUILD_DIR)/pacman.nes
+ASSET_MANIFEST ?= $(PROJECT_DIR)assets/manifest.json
+GENERATED_ASSET_DIR ?= $(PROJECT_DIR)assets/generated
+GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
 
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
 FCEUX_DIR ?= ../fceux_automation
@@ -39,22 +41,24 @@ LINES ?= 250
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify run clean split build-dev reference analyze chunk help _manifest _batch
+.PHONY: build verify run clean split build-dev reference analyze chunk help _require-assets _manifest _batch
 
-build:
+build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
 		--source "$(NATIVE_SOURCE)" \
 		--config "$(NATIVE_CFG)" \
 		--original-rom "$(ORIGINAL_ROM)" \
+		--chr "$(GENERATED_CHR)" \
 		--object "$(NATIVE_OBJ)" \
 		--prg "$(NATIVE_PRG)" \
 		--output-rom "$(NATIVE_ROM)"
 
-verify:
+verify: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
 		--source "$(NATIVE_SOURCE)" \
 		--config "$(NATIVE_CFG)" \
 		--original-rom "$(ORIGINAL_ROM)" \
+		--chr "$(GENERATED_CHR)" \
 		--object "$(NATIVE_OBJ)" \
 		--prg "$(NATIVE_PRG)" \
 		--output-rom "$(NATIVE_ROM)" \
@@ -67,7 +71,15 @@ clean:
 	$(PYTHON) "$(PROJECT_DIR)scripts/clean_artifacts.py"
 
 split:
-	$(PYTHON) "$(PROJECT_DIR)scripts/split_chr.py" "$(ORIGINAL_ROM)" "$(CHR_OUT)"
+	$(PYTHON) "$(PROJECT_DIR)scripts/split_assets.py" \
+		--rom "$(ORIGINAL_ROM)" \
+		--manifest "$(ASSET_MANIFEST)" \
+		--output-dir "$(GENERATED_ASSET_DIR)"
+
+_require-assets:
+	$(PYTHON) "$(PROJECT_DIR)scripts/check_assets.py" \
+		--manifest "$(ASSET_MANIFEST)" \
+		--asset-dir "$(GENERATED_ASSET_DIR)"
 
 build-dev:
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_dev.py" \
@@ -145,8 +157,8 @@ help:
 	@echo   make build                 Build the native ca65 ROM
 	@echo   make verify                Build and verify byte-identity
 	@echo   make run                   Build and run the ROM in FCEUX
-	@echo   make clean                 Remove local build and analysis artifacts
-	@echo   make split                 Extract CHR from the original ROM
+	@echo   make clean                 Remove build/analysis output; preserve assets
+	@echo   make split                 Extract CHR, maze, and audio assets from the original ROM
 	@echo   make build-dev             Check tools and clone/build FCEUX if needed
 	@echo   make reference             Capture the longplay reference set
 	@echo   make analyze COUNT=32      Run the reverse-engineering analysis

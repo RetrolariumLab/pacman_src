@@ -17,9 +17,11 @@ priorities.
 | `DEDF..E153` | Pellets, frightened mode, score, 1UP | `sub_DEDF_check_for_eating_pellets`, `loc_E060_add_points_and_update_score_buffers` | Score and frightened-mode side effects share this path; document them as one transaction. |
 | `E154..E654` | Tile probes, playfield, and HUD | `sub_E154_build_object_neighbor_ppu_positions`, `sub_E2FF_clear_bg_nametables_and_attrs`, `sub_E379_draw_score_hud_live` | Mostly PPU and coordinate helpers; keep address conversion and buffering assumptions visible. |
 | `E655..EB41` | Intermission setup, runtime, animation | `ofs_003_E655_script0E_intermission_setup`, `sub_E75A_run_intermission_scene_dispatch`, `sub_EA20_run_intermission_animation_dispatch` | Scene/state tables are cleanly data-driven; keep table dispatch structure. |
-| `EB42..EE17` | Stage parameters and maze data | `tbl_EB42_stage_param_index_stream`, `tbl_EBCC_level_param_blocks_22bytes`, `tbl_EC78_maze_rle_stream` | Treat the data as immutable; document its schema without changing layout. |
-| `EE18..F3FF` | Sound engine and SFX streams | `sub_EE18_init_sound_engine`, `sub_EE5C_update_sound_engine`, `tbl_EFAA_sound_control_opcode_handlers` | Decoder control flow and channel arbitration are timing-sensitive. |
-| `F400..FFFF` | Unused tail, maze pointer, vectors | `tbl_FFF8_maze_rle_stream_ptr`, `vec_C0FA_nmi_handler` | Preserve filler bytes and fixed vector placement. |
+| `EB42..EC77` | Editable stage parameters | `tbl_EB42_stage_param_index_stream`, `tbl_EBCC_level_param_blocks_22bytes` | Understood tuning tables remain readable ca65 source. |
+| `EC78..EE17` | Generated compressed maze | `tbl_EC78_maze_rle_stream` | Extracted by `make split`; keep address, size, and checksum stable. |
+| `EE18..F0AD` | Sound engine and support tables | `sub_EE18_init_sound_engine`, `sub_EE5C_update_sound_engine`, `tbl_EFAA_sound_control_opcode_handlers` | Decoder control flow and channel arbitration are timing-sensitive. |
+| `F0AE..F427` | Generated SFX streams | `off_F0AE_sfx_slot02_extra_life`, `off_F3ED_sfx_slot0F_pause_toggle` | Labels and pointer table stay in ASM; payloads are extracted locally. |
+| `F428..FFFF` | Unused tail, maze pointer, vectors | `tbl_FFF8_maze_rle_stream_ptr`, `vec_C0FA_nmi_handler` | Preserve filler size/value and fixed vector placement. |
 
 ## Runtime Fields (Most Critical)
 - `ram_script`: gameplay script state (indexes `tbl_CA0D_gameplay_script_handlers`).

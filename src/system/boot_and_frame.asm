@@ -16,8 +16,9 @@
 ; E154..E654  Tile probes, playfield, and HUD helpers
 ; E655..EB41  Intermission setup, runtime, and animation scripts
 ; EB42..EE17  Stage parameters and compressed maze data
-; EE18..F3FF  Sound engine and SFX streams
-; F400..FFFF  Unused tail, maze pointer, and vectors
+; EE18..F0AD  Sound engine and support tables
+; F0AE..F427  Generated SFX streams
+; F428..FFFF  Unused tail, maze pointer, and vectors
 ; ---------------------------------------------------------------------------
 
 ; bzk garbage

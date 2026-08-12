@@ -28,6 +28,8 @@ This covers the remaining data-heavy tail of bank FF after gameplay/intermission
 ## Maze Data
 - `tbl_EC78_maze_rle_stream`:
   - compressed maze stream decoded by `sub_E25C_decompress_and_upload_maze_layout`.
+  - extracted into `assets/generated/maze/maze.rle` by `make split` and included
+    at the original label by `src/data/maze.asm`.
 - `tbl_FFF8_maze_rle_stream_ptr`:
   - fixed pointer to the maze stream used by uploader init.
 
@@ -38,7 +40,7 @@ This covers the remaining data-heavy tail of bank FF after gameplay/intermission
 
 ## Padding / Unused Tail
 - Large `FF`-filled region appears in high tail (`F4xx..FFF7`).
-- Keep untouched during refactors; this is stable ROM layout padding.
+- It is represented by `.res $FFF8 - *, $FF`; preserve its size and fill value.
 
 ## Vectors (`FFFA..FFFF`)
 - `FFFA`: `vec_C0FA_nmi_handler`
@@ -48,5 +50,5 @@ This covers the remaining data-heavy tail of bank FF after gameplay/intermission
 ## Invariants to Preserve
 1. Preserve stage profile decoding order from round init exactly.
 2. Keep all parameter tables byte-identical and table-driven at first.
-3. Keep maze stream raw and referenced through pointer table as in ROM.
+3. Keep the generated maze stream referenced through the original pointer table.
 4. Preserve fixed vectors and tail alignment in any bank recreation flow.

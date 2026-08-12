@@ -12,6 +12,7 @@
 - [intermission_flow.md](./intermission_flow.md): script0E/script10 and scene/substate transitions.
 - [sound_engine.md](./sound_engine.md): audio engine update loop, stream decoder, opcode table.
 - [stage_params_and_data_tail.md](./stage_params_and_data_tail.md): stage profile tables, maze RLE, vectors, tail layout.
+- [assets.md](./assets.md): policy and reproducible extraction of opaque ROM assets.
 
 ## Suggested Annotation Order
 1. Core loop shell:
@@ -30,7 +31,7 @@
 `E655..EB41` scene runtime + animation dispatch.
 
 6. Audio engine:
-`EE18..F3FF` stream decoder and SFX tables.
+`EE18..F0AD` decoder/tables and `F0AE..F427` generated SFX streams.
 
 7. Data tail integration:
 `EB42..FFFF` stage profile multiplexer, parameter blocks, maze stream pointer, vectors.

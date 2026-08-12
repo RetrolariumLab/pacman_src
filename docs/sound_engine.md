@@ -1,4 +1,4 @@
-# Sound Engine Notes (`EE18..F3FF`)
+# Sound Engine Notes (`EE18..F427`)
 
 ## Entry Points
 - `sub_EE18_init_sound_engine`: initializes pointers, enables APU channels (`$4015`), frame counter (`$4017`).
@@ -52,8 +52,14 @@ Other handler table entries exist but appear mostly alias/unused in this ROM bui
   - `0D/0E`: intermission phrases
   - `0F`: pause toggle
 
+The decoder, note-period table, and pointer table remain editable in
+`src/audio/engine.asm` (`EE18..F0AD`). The stream payloads (`F0AE..F427`) are
+generated from the reference ROM into `assets/generated/audio/` and included by
+`src/audio/streams.asm`. See [assets.md](./assets.md).
+
 ## Invariants to Preserve
 1. Keep the 8-byte channel struct and decode order intact first.
 2. Preserve opcode semantics as byte-accurate handlers (no early abstraction).
 3. Preserve pre-pass arbitration before decode; it affects overlap/priority behavior.
-4. Keep stream data raw and table-driven; don’t rewrite SFX data format initially.
+4. Keep stream data table-driven and checksum-verified; do not rewrite its
+   format without a tested encoder.

@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "reference_rom": {
+    "sha1": "adb4d7d7d28c89ca177aad231e0fdad992c0fbfb",
+    "prg_cpu_base": "0xC000",
+    "prg_size": 16384,
+    "chr_size": 8192
+  },
+  "assets": [
+    {
+      "path": "chr/pacman.chr",
+      "region": "chr",
+      "offset": 0,
+      "size": 8192,
+      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
+    },
+    {
+      "path": "maze/maze.rle",
+      "region": "prg",
+      "address": "0xEC78",
+      "size": 416,
+      "sha1": "2076e1963bc3a0665cc0f831c459041fa88aea15"
+    },
+    {
+      "path": "audio/slot02_extra_life.bin",
+      "region": "prg",
+      "address": "0xF0AE",
+      "size": 21,
+      "sha1": "02559cea99dca72bfc6d71372f628c52708e7cf2"
+    },
+    {
+      "path": "audio/slot06_fruit.bin",
+      "region": "prg",
+      "address": "0xF0C3",
+      "size": 43,
+      "sha1": "bbc36fd670e8f94ba555819ff93aa1f5e18effed"
+    },
+    {
+      "path": "audio/slot0a_release_counter_hi.bin",
+      "region": "prg",
+      "address": "0xF0EE",
+      "size": 43,
+      "sha1": "9acde125daaf2a550b74c94567cbbe5e24fea013"
+    },
+    {
+      "path": "audio/slot0b_release_counter_mid.bin",
+      "region": "prg",
+      "address": "0xF119",
+      "size": 35,
+      "sha1": "4ffe59ffaad0a89f089fa2959cd2a2bbb679fe96"
+    },
+    {
+      "path": "audio/slot0c_release_counter_lo.bin",
+      "region": "prg",
+      "address": "0xF13C",
+      "size": 31,
+      "sha1": "f8c055fa7c17a9ac1300a26e8e520f88916514eb"
+    },
+    {
+      "path": "audio/slot09_ghost_house_release_marker.bin",
+      "region": "prg",
+      "address": "0xF15B",
+      "size": 21,
+      "sha1": "0ec572675bc67c19b42099b1625051fefa2b3bb8"
+    },
+    {
+      "path": "audio/slot07_eat_ghost.bin",
+      "region": "prg",
+      "address": "0xF170",
+      "size": 35,
+      "sha1": "b1de03e6f56d84a9af4a8ada7d8d472bc5222803"
+    },
+    {
+      "path": "audio/slot0d_intermission_flag_a.bin",
+      "region": "prg",
+      "address": "0xF193",
+      "size": 115,
+      "sha1": "add1b15ec35c2486066c0ff4e304451fec3c9687"
+    },
+    {
+      "path": "audio/slot0e_intermission_flag_b.bin",
+      "region": "prg",
+      "address": "0xF206",
+      "size": 163,
+      "sha1": "4cc966dc22215368b4db8d7bd72fc465ff78ab5f"
+    },
+    {
+      "path": "audio/slot08_ghost_house_state6_marker.bin",
+      "region": "prg",
+      "address": "0xF2A9",
+      "size": 31,
+      "sha1": "63bd01654f58df414ec9002232ed4498b7b3e94a"
+    },
+    {
+      "path": "audio/slot03_death.bin",
+      "region": "prg",
+      "address": "0xF2C8",
+      "size": 143,
+      "sha1": "3e1348fdc92ced363c4c09dbd879d47955131b6a"
+    },
+    {
+      "path": "audio/slot00_player_ready_channel_a.bin",
+      "region": "prg",
+      "address": "0xF357",
+      "size": 73,
+      "sha1": "61d00aa2d29897a8ba3ba526b58d0701fc9a0e0e"
+    },
+    {
+      "path": "audio/slot01_player_ready_channel_b.bin",
+      "region": "prg",
+      "address": "0xF3A0",
+      "size": 43,
+      "sha1": "f5eb941fb8a277fece9bccb3623959ca3a7f1e04"
+    },
+    {
+      "path": "audio/slot04_pellet_even.bin",
+      "region": "prg",
+      "address": "0xF3CB",
+      "size": 17,
+      "sha1": "8ae630e4d5551ca3ab7b89760d2a888985e7cfdc"
+    },
+    {
+      "path": "audio/slot05_pellet_odd.bin",
+      "region": "prg",
+      "address": "0xF3DC",
+      "size": 17,
+      "sha1": "3b6feb300fcce8204b1a873eba6d11a1b1906afa"
+    },
+    {
+      "path": "audio/slot0f_pause_toggle.bin",
+      "region": "prg",
+      "address": "0xF3ED",
+      "size": 59,
+      "sha1": "8288cae3927ee26d0dd5414897d0aa473f25532a"
+    },
+    {
+      "path": "palettes/attract-namco.bin",
+      "size": 32,
+      "sha1": "2ea21de027701c59a6ece5b276aa6d26cf1bcaff",
+      "region": "prg",
+      "address": "0xC5B3"
+    },
+    {
+      "path": "palettes/intermission-sprites.bin",
+      "size": 16,
+      "sha1": "b42defaad586242cededcab18d77d4c0df1545b3",
+      "region": "prg",
+      "address": "0xE73B"
+    },
+    {
+      "path": "palettes/round.bin",
+      "size": 32,
+      "sha1": "d1255c3b4d259ccacea58a784d504080211ab24e",
+      "region": "prg",
+      "address": "0xD060"
+    },
+    {
+      "path": "palettes/title-background.bin",
+      "size": 16,
+      "sha1": "ec25cd088056307b15869ede32e09480ed07142a",
+      "region": "prg",
+      "address": "0xC395"
+    },
+    {
+      "path": "title/logo-tiles.bin",
+      "size": 138,
+      "sha1": "42099a7bf62e02a54e70705d6823cc308900ecea",
+      "region": "prg",
+      "address": "0xC29F"
+    }
+  ]
+}

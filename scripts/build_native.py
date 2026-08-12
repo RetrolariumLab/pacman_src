@@ -113,6 +113,7 @@ def main() -> int:
     parser.add_argument("--source", default="src/main.asm")
     parser.add_argument("--config", default="src/nrom128_prg_only.cfg")
     parser.add_argument("--original-rom", default="Pac-Man (J) (V1.0) [!].nes")
+    parser.add_argument("--chr", default="assets/generated/chr/pacman.chr")
     parser.add_argument("--object", default="build/pacman.o")
     parser.add_argument("--prg", default="build/pacman.prg")
     parser.add_argument("--output-rom", default="build/pacman.nes")
@@ -123,15 +124,22 @@ def main() -> int:
     source = rooted(project_root, args.source)
     config = rooted(project_root, args.config)
     original_rom = rooted(project_root, args.original_rom)
+    chr_path = rooted(project_root, args.chr)
     object_path = rooted(project_root, args.object)
     prg_path = rooted(project_root, args.prg)
     output_rom = rooted(project_root, args.output_rom)
-    for path in (source, config, original_rom):
+    for path in (source, config, original_rom, chr_path):
         if not path.is_file():
             fail(f"Required file not found: {path}")
 
     reference = original_rom.read_bytes()
-    header, original_prg, chr_data = parse_ines(reference)
+    header, original_prg, original_chr = parse_ines(reference)
+    chr_data = chr_path.read_bytes()
+    if len(chr_data) != len(original_chr):
+        fail(
+            f"Generated CHR must be {len(original_chr)} bytes, "
+            f"got {len(chr_data)}"
+        )
     prg = assemble_prg(project_root, source, config, object_path, prg_path)
     candidate = header + prg + chr_data
     output_rom.parent.mkdir(parents=True, exist_ok=True)
