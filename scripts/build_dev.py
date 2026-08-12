@@ -82,21 +82,22 @@ def discover_msbuild(explicit: str, platform: str, toolset: str) -> Path:
         if found and supports_cpp_toolset(Path(found), platform, toolset):
             return Path(found).resolve()
 
-    program_files = os.environ.get("ProgramFiles", r"C:\Program Files")
-    editions = ("Community", "Professional", "Enterprise", "BuildTools")
-    for edition in editions:
-        candidate = (
-            Path(program_files)
-            / "Microsoft Visual Studio"
-            / "2022"
-            / edition
-            / "MSBuild"
-            / "Current"
-            / "Bin"
-            / "MSBuild.exe"
-        )
-        if candidate.is_file() and supports_cpp_toolset(candidate, platform, toolset):
-            return candidate.resolve()
+    program_files = os.environ.get("ProgramFiles")
+    if program_files:
+        editions = ("Community", "Professional", "Enterprise", "BuildTools")
+        for edition in editions:
+            candidate = (
+                Path(program_files)
+                / "Microsoft Visual Studio"
+                / "2022"
+                / edition
+                / "MSBuild"
+                / "Current"
+                / "Bin"
+                / "MSBuild.exe"
+            )
+            if candidate.is_file() and supports_cpp_toolset(candidate, platform, toolset):
+                return candidate.resolve()
 
     fail(
         f"MSBuild with the {toolset} C++ toolset for {platform} was not found. "

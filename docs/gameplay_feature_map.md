@@ -1,6 +1,6 @@
 # Gameplay Feature Map (Bank FF)
 
-High-level map of the systems worth annotating under `src/bank_ff/` first.
+High-level map of the systems worth annotating in the native modules under `src/` first.
 Addresses are from the native Bank FF modules.
 
 ## Level Flow

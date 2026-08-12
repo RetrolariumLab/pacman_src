@@ -243,7 +243,7 @@ pretending it is a reproduction.
 
 ## What the project does now
 
-- `src/main.asm` and the modules under `src/bank_ff/` are the source of truth.
+- `src/main.asm` and its subsystem modules under `src/` are the source of truth.
 - `make verify` must report byte-identity after every batch of edits.
 - `scripts/` + `movies/` + `fceux_automation` provide frame-level regression
   capture against the original ROM.

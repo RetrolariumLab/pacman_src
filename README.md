@@ -50,6 +50,7 @@ byte-identical to the reference ROM.
 ```text
 pacman_src/
 ├── bin/                          # ca65 / ld65
+├── build/                        # Generated pacman.o, pacman.prg, and pacman.nes
 ├── config/
 │   └── tile_ascii_map.txt        # Pac-Man tile mapping for ASCII captures
 ├── docs/                         # Subsystem notes + local Nesdev Wiki dump
@@ -76,15 +77,19 @@ pacman_src/
 │   └── split_chr.py              # CHR extractor
 ├── src/
 │   ├── main.asm                  # Native ca65 entrypoint and module index
-│   ├── bank_ff/                  # Annotated disassembly modules — source of truth
+│   ├── system/                   # Reset, NMI, input, and frame bootstrap
+│   ├── game/                     # Game flow, actors, scoring, and intermissions
+│   ├── rendering/                # Actor, playfield, HUD, and PPU helpers
+│   ├── audio/                    # Sound engine and stream data
+│   ├── data/                     # Stage/maze data, bank tail, and vectors
 │   ├── memory/                   # RAM symbols and gameplay constants
 │   └── nrom128_prg_only.cfg      # ld65 config: bare 16 KiB PRG, no header/CHR
 ├── Makefile                      # Automation entrypoint
 └── Pac-Man (J) (V1.0) [!].nes    # Original ROM (not distributed)
 ```
 
-`reference/`, `diffs/`, `reports/` and `workflow/` are generated artifacts and
-are not tracked.
+`build/`, `reference/`, `diffs/`, `reports/` and `workflow/` are generated
+artifacts and are not tracked.
 
 ## Make Targets
 
@@ -92,6 +97,7 @@ are not tracked.
 make                            # Same as `make build`
 make build                      # Build the native ca65 ROM
 make verify                     # Build and require byte-identity
+make run                        # Build and run the ROM in FCEUX
 make split                      # Extract CHR from the original ROM
 make build-dev                  # Check tools and clone/build FCEUX if needed
 make reference                  # Capture the reference set from the original ROM
@@ -108,8 +114,8 @@ checkout or the original ROM.
 
 ## Working Flow
 
-1. Annotate a module under `src/bank_ff/` (or select a logical flattened chunk
-   with `make chunk`).
+1. Annotate a subsystem module under `src/` (or select a logical flattened
+   chunk with `make chunk`).
 2. Run `make verify` — it must stay byte-identical. Annotation never
    changes assembled bytes, so any diff is a mistake in the edit.
 3. Use `make reference` and `make analyze` when runtime evidence is needed.

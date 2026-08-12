@@ -6,16 +6,16 @@
 .include "memory/ram.inc"
 .include "memory/constants.inc"
 
-.include "bank_ff/00_boot_and_frame.asm"
-.include "bank_ff/01_title_and_attract.asm"
-.include "bank_ff/02_gameplay_core.asm"
-.include "bank_ff/03_timers_collisions.asm"
-.include "bank_ff/04_pacman_movement.asm"
-.include "bank_ff/05_ghost_ai.asm"
-.include "bank_ff/06_actor_rendering.asm"
-.include "bank_ff/07_score_and_bonus.asm"
-.include "bank_ff/08_playfield_hud.asm"
-.include "bank_ff/09_intermissions.asm"
-.include "bank_ff/10_stage_data.asm"
-.include "bank_ff/11_sound_engine.asm"
-.include "bank_ff/12_padding_and_vectors.asm"
+.include "system/boot_and_frame.asm"          ; C000-C1F4
+.include "game/title_and_attract.asm"         ; C1F5-C989
+.include "game/state_machine.asm"             ; C98A-D0EE
+.include "game/round_runtime.asm"             ; D0EF-D2FA
+.include "game/pacman_movement.asm"           ; D2FB-D4C1
+.include "game/ghost_ai.asm"                  ; D4C2-D8F8
+.include "rendering/actors.asm"               ; D8F9-DEDE
+.include "game/scoring.asm"                   ; DEDF-E153
+.include "rendering/playfield_and_hud.asm"    ; E154-E654
+.include "game/intermissions.asm"             ; E655-EB41
+.include "data/stage_params_and_maze.asm"     ; EB42-EE17
+.include "audio/engine.asm"                   ; EE18-F3FF
+.include "data/tail_and_vectors.asm"          ; F400-FFFF

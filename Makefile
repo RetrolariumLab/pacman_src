@@ -5,9 +5,10 @@ ORIGINAL_ROM ?= $(PROJECT_DIR)Pac-Man (J) (V1.0) [!].nes
 CHR_OUT ?= $(PROJECT_DIR)pacman.chr
 NATIVE_SOURCE ?= $(PROJECT_DIR)src/main.asm
 NATIVE_CFG ?= $(PROJECT_DIR)src/nrom128_prg_only.cfg
-NATIVE_OBJ ?= $(PROJECT_DIR)workflow/pacman_native.o
-NATIVE_PRG ?= $(PROJECT_DIR)workflow/pacman_native.bin
-NATIVE_ROM ?= $(PROJECT_DIR)pacman_disasm_repro.nes
+BUILD_DIR ?= $(PROJECT_DIR)build
+NATIVE_OBJ ?= $(BUILD_DIR)/pacman.o
+NATIVE_PRG ?= $(BUILD_DIR)/pacman.prg
+NATIVE_ROM ?= $(BUILD_DIR)/pacman.nes
 
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
 FCEUX_DIR ?= ../fceux_automation
@@ -38,7 +39,7 @@ LINES ?= 250
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify clean split build-dev reference analyze chunk help _manifest _batch
+.PHONY: build verify run clean split build-dev reference analyze chunk help _manifest _batch
 
 build:
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -58,6 +59,9 @@ verify:
 		--prg "$(NATIVE_PRG)" \
 		--output-rom "$(NATIVE_ROM)" \
 		--verify
+
+run: build build-dev
+	"$(FCEUX_EXE)" "$(NATIVE_ROM)"
 
 clean:
 	$(PYTHON) "$(PROJECT_DIR)scripts/clean_artifacts.py"
@@ -140,6 +144,7 @@ help:
 	@echo Pac-Man disassembly targets:
 	@echo   make build                 Build the native ca65 ROM
 	@echo   make verify                Build and verify byte-identity
+	@echo   make run                   Build and run the ROM in FCEUX
 	@echo   make clean                 Remove local build and analysis artifacts
 	@echo   make split                 Extract CHR from the original ROM
 	@echo   make build-dev             Check tools and clone/build FCEUX if needed

@@ -42,7 +42,7 @@ After each edit batch:
 
 ## Current Status
 - Bank FF label/comment pass is broadly complete for major systems.
-- Native ca65 source is split into per-subsystem modules under `src/bank_ff/`,
-  with `src/main.asm` retaining their address order.
+- Native ca65 source is split into semantic subsystem directories under `src/`,
+  with `src/main.asm` retaining the modules' address order.
 - Next practical step is deepening lower-level branch and data annotations,
   keeping byte-identity after every edit batch.

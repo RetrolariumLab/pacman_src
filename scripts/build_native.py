@@ -113,9 +113,9 @@ def main() -> int:
     parser.add_argument("--source", default="src/main.asm")
     parser.add_argument("--config", default="src/nrom128_prg_only.cfg")
     parser.add_argument("--original-rom", default="Pac-Man (J) (V1.0) [!].nes")
-    parser.add_argument("--object", default="workflow/pacman_native.o")
-    parser.add_argument("--prg", default="workflow/pacman_native.bin")
-    parser.add_argument("--output-rom", default="pacman_native.nes")
+    parser.add_argument("--object", default="build/pacman.o")
+    parser.add_argument("--prg", default="build/pacman.prg")
+    parser.add_argument("--output-rom", default="build/pacman.nes")
     parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
 

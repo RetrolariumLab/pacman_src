@@ -15,12 +15,11 @@ def main() -> int:
 
     project_root = Path(__file__).resolve().parent.parent
     file_targets = (
-        project_root / "pacman_disasm_repro.nes",
         project_root / "pacman.chr",
-        project_root / "src" / "pacman_disasm_repro.asm",
     )
     directory_targets = tuple(
-        project_root / name for name in ("workflow", "reference", "diffs", "reports")
+        project_root / name
+        for name in ("build", "workflow", "reference", "diffs", "reports")
     )
 
     removed = 0

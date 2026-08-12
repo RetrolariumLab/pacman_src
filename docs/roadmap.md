@@ -26,7 +26,8 @@ checked against this ROM's bytes and behavior.
 ## Current Baseline
 
 - `src/main.asm` is the address-ordered module index.
-- `src/bank_ff/` contains thirteen contiguous subsystem modules.
+- Semantic subsystem directories under `src/` contain thirteen contiguous ROM
+  modules.
 - Major systems have an initial label and comment pass.
 - The default build and compatibility verification targets reproduce the
   reference ROM byte for byte from the same native source.
@@ -107,7 +108,7 @@ tag uncertain claims instead of filling the template speculatively.
 
 ### 2. Fully Document One Reference Module
 
-Use `src/bank_ff/07_score_and_bonus.asm` as the first end-to-end example:
+Use `src/game/scoring.asm` as the first end-to-end example:
 
 - document each substantial procedure's purpose and calling contract;
 - trace pellet, power-pellet, frightened-mode, score, 1UP, and high-score side
