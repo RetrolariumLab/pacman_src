@@ -19,6 +19,10 @@ the sound engine. The source is split into address-ordered subsystem modules
 containing real 6502 instructions and ca65 data directives. Ongoing work is
 deepening their annotations and replacing generic RAM names.
 
+Modules are divided at natural procedure and data boundaries and remain below
+600 lines. [`docs/source_layout.md`](docs/source_layout.md) is the detailed
+address-to-file map.
+
 The gate for every change is `make verify`: rebuild the ROM from
 `src/main.asm` and assert byte-identity with the original. Annotation must never
 alter the assembled bytes, so any diff means the edit was wrong.

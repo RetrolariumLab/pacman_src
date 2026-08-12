@@ -28,6 +28,8 @@ checked against this ROM's bytes and behavior.
 - `src/main.asm` is the address-ordered module index.
 - Semantic subsystem directories under `src/` contain address-ordered ROM
   modules.
+- Large subsystem listings are divided at procedural boundaries; every native
+  source module is currently below 600 lines. See `docs/source_layout.md`.
 - Major systems have an initial label and comment pass.
 - The default build and compatibility verification targets reproduce the
   reference ROM byte for byte from the same native source.

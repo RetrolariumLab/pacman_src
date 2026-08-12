@@ -1,6 +1,7 @@
 # Ghost AI Notes (`D4C2..D8F8`)
 
-Working notes for the enemy logic in `src/game/ghost_ai.asm`.
+Working notes for the enemy logic in `src/game/ghosts/navigation.asm` and
+`src/game/ghosts/house.asm`.
 
 ## Core Dispatch
 - `sub_D4C2_update_ghost_slots`: iterates 4 ghost slots (`X += 2`) and dispatches per-state handler.
