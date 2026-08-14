@@ -203,7 +203,7 @@ bra_advance_release_slot:		; was: bra_D1F6
     BNE bra_find_free_release_slot
     RTS
 
-; bzk garbage, same bytes as 0x001FCE
+; !(UNUSED) No pointer or fall-through reaches this duplicate table. See DATA-001.
     .byte $24, $25, $26, $27, $28, $29, $2A, $2B
 ; PPU command fragments for frightened palette writes
 tbl_frightened_palette_cmd:		; was: tbl_D205

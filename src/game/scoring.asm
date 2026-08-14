@@ -133,7 +133,7 @@ tbl_pellet_clear_tile_and_points_alias:		; was: tbl_DFA6_points
     .byte con_tile + $07, $01   ; 02 normal pellet
     .byte con_tile + $07, $05   ; 04 power pellet
 
-; bzk garbage
+; !(UNUSED) No external entry or fall-through reaches this duplicate. See CODE-002.
     LDX #$00
 ; Legacy duplicate: find free release slot
 bra_find_free_release_slot_legacy:		; was: bra_DFAE_loop
@@ -152,7 +152,7 @@ bra_next_release_slot_legacy:		; was: bra_DFB7
 
 ; Fruit sprite tile ID by stage
 tbl_fruit_sprite_tile_by_stage:		; was: tbl_DFBE_fruit_id
-; bzk optimize, 24 + Y instead of this table
+; !(OBS) Values are consecutive, but the preservation source retains the table.
     .byte $24   ; 00
     .byte $25   ; 01
     .byte $26   ; 02
@@ -428,7 +428,7 @@ tbl_life_icon_ppu_packets:		; was: tbl_E13A
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
     .dbyt $2337
     .byte                                    $3E, $3F, $FF
-; bzk garbage
+; !(UNUSED) No pointer, branch, or fall-through reaches these bytes. See DATA-002.
     .byte $4A, $4A, $4A, $4A
 ; Convert BCD nibble to score tile code
 sub_digit_to_score_tile:		; was: sub_E148

@@ -101,7 +101,7 @@ bra_advance_substate_after_wait:		; was: bra_C4DA
     STA ram_shared_state_1
     JMP loc_script_dispatch_loop
 
-; bzk garbage
+; !(UNUSED) No pointer, branch, or fall-through reaches this block. See CODE-001.
     LDA #$01
     STA ram_game_mode
     JMP loc_enter_gameplay_session
@@ -338,7 +338,7 @@ off_attract_text_points_table:		; was: _off000_C666_12
     .byte $30, $20, $50, $54, $53, $00, $22, $ED, $01, $20, $35, $30, $20, $50, $54, $53
     .byte $00, $23, $4C, $23, $24, $25, $26, $27, $28, $29, $2A, $2B
     .byte $FF   ; end token
-; bzk warning, read 0x0005F7
+; !(UNKNOWN) Explain the legacy $05F7 read warning. See DATA-003.
 
 ; Sprite strip data used by optional attract packet payload
 tbl_attract_sprite_strip_data:		; was: tbl_C688_spr_data

@@ -67,8 +67,7 @@ consistently in source and documentation:
 
 Do not silently turn an assumption into a factual name or comment. Promote a
 tagged hypothesis only after static analysis, trace evidence, or a controlled
-experiment supports it. Record reusable open questions in `docs/unknowns.md`
-once that file is introduced.
+experiment supports it. Record reusable open questions in the canonical `docs/unknowns.md` registry.
 
 Comments should explain intent, invariants, state transitions, data formats,
 and hardware consequences. They should not merely translate an instruction
@@ -131,7 +130,7 @@ tag uncertain claims instead of filling the template speculatively.
 The naming rules are documented in `docs/naming.md`. Future renames must retain
 the same evidence standard and pass `make verify`.
 
-### 2. Unknowns Registry and Evidence Cleanup — Next
+### 2. Unknowns Registry and Evidence Cleanup — Complete
 
 Create `docs/unknowns.md` as the canonical reverse-engineering backlog. Each
 entry should contain:
@@ -399,7 +398,7 @@ replace or weaken the preservation target.
 
 Create a branch such as `document-scoring-system` and complete this sequence:
 
-1. add the initial `docs/unknowns.md` registry;
+1. review `docs/unknowns.md` and link scoring-related findings by stable ID;
 2. add `src/memory/hardware.inc` with register names only;
 3. document `src/game/scoring.asm` procedure by procedure;
 4. add focused traces for pellet, frightened, ghost-score, fruit, 1UP, and
@@ -451,7 +450,7 @@ make verify
 Then read, in order:
 
 1. `docs/roadmap.md`;
-2. `docs/unknowns.md`, once introduced;
+2. `docs/unknowns.md`;
 3. `docs/naming.md`;
 4. `docs/macros.md`;
 5. the subsystem document related to the intended change;

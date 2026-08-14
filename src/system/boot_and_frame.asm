@@ -21,7 +21,7 @@
 ; F428..FFFF  Unused tail, maze pointer, and vectors
 ; ---------------------------------------------------------------------------
 
-; bzk garbage
+; !(WHY?) Data preceding reset entry; determine whether it is referenced. See DATA-004.
     .byte "COPY RIGHT 1984 "
     .byte "1980 NAMCO LTD. "
     .byte "ALL RIGHTS RESERVED"

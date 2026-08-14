@@ -275,8 +275,8 @@ bra_dispatch_f0_ff_control_opcode:		; was: bra_EF99_F0_FF_control_byte
 
 ; Handler table for F0-FF sound control opcodes
 tbl_sound_control_opcode_handlers:		; was: tbl_EFAA
-; Several opcode entries are effectively aliases/unused in this title build.
-; Active opcodes seen in streams: F0, F2, F3, F5.
+; !(OBS) Only F0, F2, F3, and F5 occur as opcodes in all 16 decoded streams. See resolved SND-002.
+; F1, F4, and F6 handlers are dormant; F7-FF alias the F0 handler.
     .word handler_00_turn_sound_off
     .word handler_ctrl01_set_channel_reg1_low6   ; never used
     .word handler_ctrl02_set_channel_reg1_mid2
@@ -415,7 +415,7 @@ sub_fetch_stream_byte_and_advance_ptr:		; was: sub_F04F_get_sound_data_and_incre
     INY
     LDA (ram_sound_channel_ptr),Y    ; 0626 062E 0636 063E 0646 064E 0656 065E 0666 066E 0676 067E 0686 068E 0696 069E
     STA ram_sound_work_ptr + $01
-; bzk optimize, read (ram_sound_work_ptr,X) at the end instead of PHA + PLA
+; !(OBS) PHA/PLA is functionally redundant but retained for timing/layout. See resolved CODE-004.
     LDX #$00
     LDA (ram_sound_work_ptr,X)    ; data from 0x00309E
     PHA

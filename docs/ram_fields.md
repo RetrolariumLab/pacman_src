@@ -28,5 +28,5 @@ Working glossary for the most important RAM fields used by `src/main.asm`.
 | `ram_sfx_intermission_flag_a` / `ram_sfx_intermission_flag_b` | Intermission sound-event request slots | `handler_script0E_intermission_setup`, scene02 midpoint | High | Slots 0D/0E in the sound request table. |
 
 ## Open Questions
-- The `ram_shared_state_*` bytes are multiplexed across subsystems; prefer contextual aliases as ownership becomes proven.
-- `ram_release_wave_timer` semantics may improve after deeper trace capture around `E003` reverse-direction trigger path.
+- See RAM-002 in `docs/unknowns.md` for contextual ownership of the multiplexed `ram_shared_state_*` bytes.
+- See RAM-003 in `docs/unknowns.md` for the unresolved `ram_release_wave_timer` lifetime and trace experiment.

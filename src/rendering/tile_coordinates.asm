@@ -149,7 +149,7 @@ bra_sample_next_obj_neighbor_tile:		; was: bra_E223_loop
 
 ; Add one nametable row stride ($20) to PPU address copy
 sub_add_nametable_row_stride:		; was: sub_E240_add_0020
-; bzk optimize, 0014-0015 is always = $0020
+; !(OBS) All callers set row delta to $0020. See resolved CODE-003.
     CLC
     LDA ram_ppu_work_addr_lo
     ADC ram_ppu_row_delta_lo
@@ -161,7 +161,7 @@ sub_add_nametable_row_stride:		; was: sub_E240_add_0020
 
 ; Subtract one nametable row stride ($20) from PPU address copy
 sub_subtract_nametable_row_stride:		; was: sub_E24E_sbc_0020
-; bzk optimize, 0014-0015 is always = $0020
+; !(OBS) All callers set row delta to $0020. See resolved CODE-003.
     SEC
     LDA ram_ppu_work_addr_lo
     SBC ram_ppu_row_delta_lo

@@ -38,7 +38,7 @@ Byte classes:
 - `F3`: set reg1 low nibble (`handler_ctrl03_set_channel_reg1_low4`).
 - `F5`: set reg4 raw (`handler_ctrl05_set_channel_reg4_raw`).
 
-Other handler table entries exist but appear mostly alias/unused in this ROM build.
+Other handler table entries are dormant in all decoded streams; see resolved SND-002 in `docs/unknowns.md`.
 
 ## Stream Source Table
 - Root pointer: `tbl_sfx_stream_table_ptr` -> `tbl_sfx_stream_ptr_table`.
@@ -51,6 +51,8 @@ Other handler table entries exist but appear mostly alias/unused in this ROM bui
   - `07`: eat ghost
   - `0D/0E`: intermission phrases
   - `0F`: pause toggle
+
+Slot semantics that still require runtime correlation are tracked as SND-001 in docs/unknowns.md.
 
 The decoder, note-period table, and pointer table remain editable in
 `src/audio/engine.asm` (`EE18..F0AD`). The stream payloads (`F0AE..F427`) are

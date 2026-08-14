@@ -2,6 +2,7 @@
 
 ## Navigation
 - [roadmap.md](./roadmap.md): project direction, evidence rules, milestones, and completion criteria.
+- [unknowns.md](./unknowns.md): canonical reverse-engineering backlog and evidence experiments.
 - [source_layout.md](./source_layout.md): address-ordered module map and file-sizing rules.
 - [macros.md](./macros.md): allowed ca65 abstractions and byte-identity rules.
 - [naming.md](./naming.md): semantic symbol names and control-flow prefixes.
