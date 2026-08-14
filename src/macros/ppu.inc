@@ -1,18 +1,18 @@
 ; Reset the PPU address latch and select a fixed VRAM address.
 .macro SetPpuAddress address
-    LDA $2002
+    LDA PPUSTATUS
     LDA #> address
-    STA $2006
+    STA PPUADDR
     LDA #< address
-    STA $2006
+    STA PPUADDR
 .endmacro
 
 ; Reset the PPU address latch and select a VRAM address stored high-byte first
 ; in two consecutive RAM bytes.
 .macro SetPpuAddressFrom source
-    LDA $2002
+    LDA PPUSTATUS
     LDA source
-    STA $2006
+    STA PPUADDR
     LDA source + $01
-    STA $2006
+    STA PPUADDR
 .endmacro

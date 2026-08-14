@@ -8,14 +8,14 @@
 ; Enter gameplay session (demo or real game) and init runtime state
 loc_enter_gameplay_session:		; was: loc_C98A
     LDA #$08
-    STA $2000
+    STA PPUCTRL
     STA ram_ppuctrl_base
 ; Wait for vblank set before disabling rendering during gameplay init
 bra_wait_vblank_set:		; was: bra_C991_infinite_loop
-    LDA $2002
+    LDA PPUSTATUS
     BPL bra_wait_vblank_set
     LDA #$00    ; con_script_00
-    STA $2001
+    STA PPUMASK
     STA ram_script
     STA ram_current_player
     STA ram_round_restart_flag
@@ -52,7 +52,7 @@ bra_reset_stage_counters:		; was: bra_C9CD
     STA ram_ppu_buffer_hiscore
     LDA #$88
     STA ram_ppuctrl_base
-    STA $2000
+    STA PPUCTRL
 ; Main gameplay loop entry with NMI wait
 loc_gameplay_mainloop_wait_nmi:		; was: loc_C9DD
 ; Gameplay loop per-frame tick

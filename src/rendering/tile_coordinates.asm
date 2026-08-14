@@ -130,16 +130,16 @@ bra_apply_player2_nametable_offset:		; was: bra_E214
 sub_sample_tiles_at_obj_ppu_positions:		; was: sub_E21C_analyze_obj_ppu_pos
     LDX #$00
     LDY #$00
-    LDA $2002
+    LDA PPUSTATUS
 ; Sample next neighbor tile from PPU
 bra_sample_next_obj_neighbor_tile:		; was: bra_E223_loop
     LDA ram_obj_ppu_position,X  ; 0200-0228, even
-    STA $2006
+    STA PPUADDR
     INX
     LDA ram_obj_ppu_position,X  ; 0201-0229, odd
-    STA $2006
-    LDA $2007
-    LDA $2007
+    STA PPUADDR
+    LDA PPUDATA
+    LDA PPUDATA
     STA ram_obj_ppu_tile,Y  ; 022A-023E
     INX
     INY

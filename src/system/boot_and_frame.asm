@@ -30,11 +30,11 @@ vec_reset_entry:		; was: vec_C033_RESET
     SEI
     CLD
     LDA #$00
-    STA $2000
-    STA $2001
+    STA PPUCTRL
+    STA PPUMASK
 ; Wait for first VBlank after reset before touching PPU state
 bra_wait_vblank_ready:		; was: bra_C03D_loop
-    LDA $2002
+    LDA PPUSTATUS
     BPL bra_wait_vblank_ready
     LDX #$FF
     TXS
@@ -59,14 +59,14 @@ bra_clear_runtime_ram:		; was: bra_C054_loop
     CPX zp_work1
     BNE bra_clear_runtime_ram
     LDA #$06
-    STA $2001
+    STA PPUMASK
     LDA #$00
-    STA $2005
-    STA $2005
+    STA PPUSCROLL
+    STA PPUSCROLL
     STA ram_scroll_X
     STA ram_scroll_Y
-    STA $2000
-    STA $2001
+    STA PPUCTRL
+    STA PPUMASK
     TAY
 ; 0052-0060
 ; Compare warm-boot signature at 0052-0060
@@ -125,14 +125,14 @@ bra_swap_player_state_blocks:		; was: bra_C0B2_loop
 ; Initialize APU + jump into main frame bootstrap
 bra_init_apu_and_continue:		; was: bra_C0C7
     LDA #$1F
-    STA $4015
+    STA APU_STATUS
     LDA #$C0
-    STA $4017
+    STA APU_FRAME_COUNTER
     JSR sub_init_sound_engine
     JSR sub_clear_sound_engine_state
     LDA #$88
     STA ram_ppuctrl_base
-    STA $2000
+    STA PPUCTRL
     LDA #$FF
     STA ram_flag_demo
     STA ram_ppu_buffer_score
@@ -152,37 +152,37 @@ vec_nmi_handler:		; was: vec_C0FA_NMI
     TYA
     PHA
     LDA #$1E
-    STA $2001
+    STA PPUMASK
     LDA #$00    ; < ram_oam
-    STA $2003
+    STA OAMADDR
     STA ram_nmi_wait
     LDA ram_oam_dma_page
-    STA $4014
+    STA OAMDMA
     JSR sub_write_buffer_to_ppu
     JSR sub_sample_tiles_at_obj_ppu_positions
     LDA ram_scroll_X
-    STA $2005
+    STA PPUSCROLL
     LDA ram_scroll_Y
-    STA $2005
+    STA PPUSCROLL
     LDA ram_game_mode
     AND ram_current_player
     AND #$01
     ASL
     ORA ram_ppuctrl_base
-    STA $2000
+    STA PPUCTRL
 ; read input
     LDA #$01
-    STA $4016
+    STA JOYPAD1
     LDA #$00
-    STA $4016
+    STA JOYPAD1
     LDX #$08
 ; Shift in 8 controller bits for both gamepads
 bra_shift_in_controller_bits:		; was: bra_C138_loop
-    LDA $4016
+    LDA JOYPAD1
     AND #$03
     CMP #$01
     ROR ram_btn_1p
-    LDA $4017
+    LDA JOYPAD2
     AND #$03
     CMP #$01
     ROR ram_btn_2p
@@ -220,11 +220,11 @@ bra_wait_nmi_before_main_bootstrap:		; was: bra_C16C_infinite_loop
     LDA ram_nmi_wait
     BNE bra_wait_nmi_before_main_bootstrap
     LDA #$08
-    STA $2000
+    STA PPUCTRL
     STA ram_ppuctrl_base
-    LDA $2002
+    LDA PPUSTATUS
     LDA #$00
-    STA $2001
+    STA PPUMASK
     TAX
 ; Clear OAM shadow RAM
 bra_clear_oam_buffer:		; was: bra_C180_loop
@@ -241,7 +241,7 @@ bra_clear_oam_buffer:		; was: bra_C180_loop
 ; Upload 16-byte title background palette
 bra_upload_background_palette:		; was: bra_C1A3_loop
     LDA tbl_title_background_palette,Y
-    STA $2007
+    STA PPUDATA
     INY
     CPY #$10
     BNE bra_upload_background_palette
@@ -271,7 +271,7 @@ bra_select_primary_nametable:		; was: bra_C1D7
     LDA #$88    ; nmt 2000
 ; Commit selected PPUCTRL base and mirror
 bra_commit_ppuctrl_base:		; was: bra_C1D9
-    STA $2000
+    STA PPUCTRL
     STA ram_ppuctrl_base
 ; Per-frame script dispatcher keyed by ram_script
 loc_script_dispatch_loop:		; was: loc_C1DE

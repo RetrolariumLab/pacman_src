@@ -36,7 +36,7 @@ bra_decode_next_maze_rle_token:		; was: bra_E28D_loop
     AND #$3F
 ; Write decoded RLE run to PPU
 bra_write_maze_rle_run:		; was: bra_E29D_loop
-    STA $2007
+    STA PPUDATA
     DEC zp_work4
     DEC zp_work5
     BPL bra_write_maze_rle_run
@@ -75,7 +75,7 @@ bra_fill_bottom_banner_rows:		; was: bra_E2D3_loop
     LDA tbl_bottom_banner_fill_tiles,Y
 ; Write one bottom banner row
 bra_write_bottom_banner_row:		; was: bra_E2E5_loop
-    STA $2007
+    STA PPUDATA
     DEX
     BPL bra_write_bottom_banner_row
     LDA zp_work1
@@ -111,7 +111,7 @@ loc_clear_nametable_fill_pass:		; was: loc_E310
     STA zp_work1
     LDA #con_tile + $2D
 bra_fill_nametable_tiles:
-    STA $2007
+    STA PPUDATA
     DEC zp_work1
     BNE bra_fill_nametable_tiles
     DEC zp_work0
@@ -137,7 +137,7 @@ bra_clear_attribute_tables:
     LDA #$00
     TAY
 bra_clear_attribute_table_bytes:
-    STA $2007
+    STA PPUDATA
     INY
     CPY #$20
     BNE bra_clear_attribute_table_bytes

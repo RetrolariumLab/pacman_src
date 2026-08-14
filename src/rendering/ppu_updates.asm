@@ -44,12 +44,12 @@ bra_flush_score_hud_buffers:		; was: bra_DDF0
 ; Write score digits to PPU
 bra_write_score_digits:		; was: bra_DE08_loop
     LDA ram_ppu_buffer_score,Y
-    STA $2007
+    STA PPUDATA
     INY
     CPY #$06
     BNE bra_write_score_digits
     LDA #con_tile + $30
-    STA $2007
+    STA PPUDATA
     LDA #$FF
     STA ram_ppu_buffer_score
 ; hiscore buffer
@@ -61,12 +61,12 @@ bra_write_score_digits:		; was: bra_DE08_loop
 ; Write hiscore digits to PPU
 bra_write_hiscore_digits:		; was: bra_DE35_loop
     LDA ram_ppu_buffer_hiscore,Y
-    STA $2007
+    STA PPUDATA
     INY
     CPY #$06
     BNE bra_write_hiscore_digits
     LDA #con_tile + $30
-    STA $2007
+    STA PPUDATA
     LDA #$FF
     STA ram_ppu_buffer_hiscore
 ; Update flashing 1UP indicator
@@ -82,7 +82,7 @@ bra_update_1up_blink:		; was: bra_DE4A
 ; Write 1UP text tiles
 bra_write_1up_text:		; was: bra_DE67_loop
     LDA ram_ppu_buffer_1up + $02,X
-    STA $2007
+    STA PPUDATA
     INX
     CPX #$03
     BNE bra_write_1up_text
@@ -92,7 +92,7 @@ bra_clear_1up_text:		; was: bra_DE74
     LDA #con_tile + $20
 ; Write clear tiles for 1UP field
 bra_write_1up_clear_tiles:		; was: bra_DE76_loop
-    STA $2007
+    STA PPUDATA
     INX
     CPX #$03
     BNE bra_write_1up_clear_tiles
@@ -110,19 +110,19 @@ loc_flush_power_pellet_and_main_ppu:		; was: loc_DE7E
 bra_select_player_nametable:		; was: bra_DE8A
 ; Write current power-pellet marker tiles
 bra_write_power_pellet_markers:		; was: bra_DE8A_loop
-    LDA $2002
+    LDA PPUSTATUS
     LDA tbl_power_pellet_ppu_addrs,Y
-    STA $2006
+    STA PPUADDR
     LDA tbl_power_pellet_ppu_addrs + $01,Y
-    STA $2006
+    STA PPUADDR
     LDA ram_power_pellet_tile_p1,X
-    STA $2007
+    STA PPUDATA
     INY
     INY
     INX
     CPX #$04
     BNE bra_write_power_pellet_markers
-    LDA $2002
+    LDA PPUSTATUS
     LDY #$FF
 ; Scan packed PPU command buffer entries
 bra_scan_ppu_command_buffer:		; was: bra_DEAA_loop
@@ -130,10 +130,10 @@ bra_scan_ppu_command_buffer:		; was: bra_DEAA_loop
     LDA ram_ppu_buffer_main,Y
     CMP #$FF
     BEQ bra_finalize_ppu_command_buffer    ; skip if buffer is empty
-    STA $2006
+    STA PPUADDR
     INY
     LDA ram_ppu_buffer_main,Y
-    STA $2006
+    STA PPUADDR
 ; Write payload bytes of current PPU command
 bra_write_ppu_command_payload:		; was: bra_DEBC_loop
     INY
@@ -141,7 +141,7 @@ bra_write_ppu_command_payload:		; was: bra_DEBC_loop
     BEQ bra_scan_ppu_command_buffer
     CMP #$FF
     BEQ bra_finalize_ppu_command_buffer    ; skip if there isn't anything else in the buffer
-    STA $2007
+    STA PPUDATA
     BNE bra_write_ppu_command_payload   ; jmp
 ; Mark PPU command buffer as consumed
 bra_finalize_ppu_command_buffer:		; was: bra_DECB

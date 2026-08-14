@@ -47,7 +47,7 @@ bra_draw_next_logo_row:		; was: bra_C22D_loop
 ; Stream one title logo row tile sequence
 bra_stream_logo_row_tiles:		; was: bra_C23E_loop
     LDA tbl_title_logo_tiles,Y
-    STA $2007
+    STA PPUDATA
     INY
     DEC zp_work3
     BNE bra_stream_logo_row_tiles
@@ -66,19 +66,19 @@ bra_stream_logo_row_tiles:		; was: bra_C23E_loop
     LDY #$00
 ; Draw next title text packet header+payload
 bra_draw_next_logo_text_packet:		; was: bra_C260_loop
-    LDA $2002
+    LDA PPUSTATUS
     LDA tbl_title_logo_text_packets,Y
-    STA $2006
+    STA PPUADDR
     INY
     LDA tbl_title_logo_text_packets,Y
-    STA $2006
+    STA PPUADDR
     INY
 ; Stream text payload bytes until FF terminator
 bra_stream_logo_text_until_ff:		; was: bra_C271_loop
     LDA tbl_title_logo_text_packets,Y
     CMP #$FF
     BEQ bra_advance_to_next_logo_text_packet
-    STA $2007
+    STA PPUDATA
     INY
     BNE bra_stream_logo_text_until_ff
 ; Advance to next title text packet
@@ -95,7 +95,7 @@ sub_upload_title_attribute_table:		; was: sub_C284_set_bg_attr
 ; Upload next title attribute byte
 bra_upload_next_attribute_byte:		; was: bra_C293_loop
     LDA tbl_title_attribute_bytes,Y
-    STA $2007
+    STA PPUDATA
     INY
     CPY #$18
     BNE bra_upload_next_attribute_byte

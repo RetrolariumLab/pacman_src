@@ -13,10 +13,10 @@ bra_stream_hud_block_packet:		; was: bra_E480_loop
     ADC #$07
 ; Write HUD block PPU high address
 bra_write_hud_block_addr_hi:		; was: bra_E489
-    STA $2006
+    STA PPUADDR
     INY
     LDA tbl_hud_block_packets,Y
-    STA $2006
+    STA PPUADDR
     INY
     LDA tbl_hud_block_packets,Y
     STA zp_work0
@@ -24,7 +24,7 @@ bra_write_hud_block_addr_hi:		; was: bra_E489
 bra_write_hud_block_payload:		; was: bra_E499_loop
     INY
     LDA tbl_hud_block_packets,Y
-    STA $2007
+    STA PPUDATA
     DEC zp_work0
     BNE bra_write_hud_block_payload
     INY
@@ -109,22 +109,22 @@ bra_write_life_icon_quad:		; was: bra_E506
 ; Write 2x2 icon quad at current PPU position
 sub_write_icon_quad_to_ppu:		; was: sub_E514
     LDA zp_work0
-    STA $2006
+    STA PPUADDR
     LDA zp_work1
-    STA $2006
-    STY $2007
+    STA PPUADDR
+    STY PPUDATA
     INY
-    STY $2007
+    STY PPUDATA
     LDA zp_work0
-    STA $2006
+    STA PPUADDR
     LDA zp_work1
     CLC
     ADC #$20
-    STA $2006
+    STA PPUADDR
     INY
-    STY $2007
+    STY PPUDATA
     INY
-    STY $2007
+    STY PPUDATA
     RTS
 
 ; Draw stage fruit history icons and related mask data
@@ -226,10 +226,10 @@ bra_accumulate_history_mask:		; was: bra_E5B3
     LDX #$2B    ; 2BE5
 ; Initialize PPU upload for fruit history mask
 bra_init_history_mask_upload:		; was: bra_E5D5
-    STX $2006
+    STX PPUADDR
     STX zp_work0
     LDA #$E5
-    STA $2006
+    STA PPUADDR
     LDX #$00
 ; Process next history mask row
 bra_next_history_mask_row:		; was: bra_E5E1_loop
@@ -238,7 +238,7 @@ bra_next_history_mask_row:		; was: bra_E5E1_loop
 ; Upload history mask bytes to PPU
 bra_upload_history_mask_bytes:		; was: bra_E5E5_loop
     LDA ram_history_mask_buffer,X
-    STA $2007
+    STA PPUDATA
     INX
     DEC zp_work1
     BNE bra_upload_history_mask_bytes
@@ -246,16 +246,16 @@ bra_upload_history_mask_bytes:		; was: bra_E5E5_loop
     BNE bra_upload_fruit_palette_color
 ; 23ED or 2BED
     LDA zp_work0
-    STA $2006
+    STA PPUADDR
     LDA #$ED
-    STA $2006
+    STA PPUADDR
     BNE bra_next_history_mask_row   ; jmp
 ; Upload stage fruit color into palette slot
 bra_upload_fruit_palette_color:		; was: bra_E5FF
     LDA #> $3F1D
-    STA $2006
+    STA PPUADDR
     LDA #< $3F1D
-    STA $2006
+    STA PPUADDR
     LDA ram_stage_p1
     CMP #$10
     BCC bra_clamp_fruit_color_index
@@ -264,7 +264,7 @@ bra_upload_fruit_palette_color:		; was: bra_E5FF
 bra_clamp_fruit_color_index:		; was: bra_E611
     TAY
     LDA tbl_stage_fruit_palette_color,Y
-    STA $2007
+    STA PPUDATA
     RTS
 
 ; Map stage to fruit icon index

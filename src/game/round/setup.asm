@@ -8,10 +8,10 @@ bra_wait_nmi:		; was: bra_CE39_infinite_loop
     LDA ram_nmi_wait
     BNE bra_wait_nmi
     LDA #$08
-    STA $2000
+    STA PPUCTRL
     STA ram_ppuctrl_base
     LDA #$00
-    STA $2001
+    STA PPUMASK
     LDX #$00
 ; Clear runtime RAM block 0087-00EF
 bra_clear_runtime_block:		; was: bra_CE4B_loop
@@ -32,7 +32,7 @@ bra_clear_oam_all:		; was: bra_CE53_loop
 ; Upload gameplay palette
 bra_upload_round_palette:		; was: bra_CE68_loop
     LDA tbl_round_gameplay_palette,Y
-    STA $2007
+    STA PPUDATA
     INY
     CPY #$20
     BNE bra_upload_round_palette
@@ -274,7 +274,7 @@ bra_next_power_pellet_slot:		; was: bra_CFE5
     LDA #$FF
     STA ram_shared_state_2
     LDA #$88
-    STA $2000
+    STA PPUCTRL
     STA ram_ppuctrl_base
     JMP loc_gameplay_mainloop_wait_nmi
 
@@ -300,12 +300,12 @@ bra_fill_center_strip_rows:		; was: bra_D00E_loop
     LDA #con_tile + $20
 ; Write one row segment of center-strip tiles
 bra_fill_center_strip_row_tiles:		; was: bra_D021_loop
-    STA $2007
+    STA PPUDATA
     DEC zp_work3
     BNE bra_fill_center_strip_row_tiles
     LDA #con_tile + $2D
-    STA $2007
-    STA $2007
+    STA PPUDATA
+    STA PPUDATA
     LDA zp_work1
     CLC
     ADC #< $0020
@@ -377,7 +377,7 @@ bra_attr_table_pass_loop:		; was: bra_D08F
 ; Copy 0x40 attribute bytes to current nametable
 bra_copy_attr_block_loop:		; was: bra_D091_loop
     LDA tbl_maze_attribute_bytes,Y
-    STA $2007
+    STA PPUDATA
     INY
     CPY #$40
     BNE bra_copy_attr_block_loop

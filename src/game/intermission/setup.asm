@@ -10,16 +10,16 @@
 handler_script0E_intermission_setup:		; was: ofs_003_E655_0E
     LDA #$08
     STA ram_ppuctrl_base
-    STA $2000
+    STA PPUCTRL
 ; Wait for vblank before enabling intro setup flags
 bra_wait_vblank_set_flag:		; was: bra_E65C_infinite_loop
-    LDA $2002
+    LDA PPUSTATUS
     BPL bra_wait_vblank_set_flag
     LDA #$01
     STA ram_sfx_intermission_flag_a
     STA ram_sfx_intermission_flag_b
     LDA #$00
-    STA $2001
+    STA PPUMASK
     JSR sub_clear_playfield_and_walls
     LDA #$01
     STA ram_actor_sprite_set + $01
@@ -40,7 +40,7 @@ bra_wait_vblank_set_flag:		; was: bra_E65C_infinite_loop
 ; Upload sprite palette for intro/demo setup
 bra_upload_demo_sprite_palette:		; was: bra_E6A0_loop
     LDA tbl_intro_sprite_palette,Y
-    STA $2007
+    STA PPUDATA
     INY
     CPY #$10
     BNE bra_upload_demo_sprite_palette
@@ -51,7 +51,7 @@ bra_upload_demo_sprite_palette:		; was: bra_E6A0_loop
     LDA #con_script_10
     STA ram_script
     LDA #$88
-    STA $2000
+    STA PPUCTRL
     STA ram_ppuctrl_base
     JMP loc_gameplay_mainloop_wait_nmi
 
@@ -64,10 +64,10 @@ sub_clear_playfield_and_walls:		; was: sub_E6C4
     LDX #$28    ; 2800
 ; Select active playfield nametable for current player
 bra_select_playfield_nametable:		; was: bra_E6CE
-    LDA $2002
-    STX $2006
+    LDA PPUSTATUS
+    STX PPUADDR
     LDA #$00
-    STA $2006
+    STA PPUADDR
     LDA #$1C
     STA zp_work0
 ; Fill one playfield row pattern block
@@ -81,7 +81,7 @@ bra_fill_playfield_row_pattern:		; was: bra_E6DD_loop
     LDA #$2D
 ; Write pattern byte sequence for playfield row
 bra_write_playfield_pattern_byte:		; was: bra_E6EB_loop
-    STA $2007
+    STA PPUDATA
     LDX zp_work1
     BEQ bra_switch_pattern_phase
     DEC zp_work1
@@ -106,7 +106,7 @@ bra_advance_pattern_repeat_counter:		; was: bra_E706
     TAX
 ; Clear attribute block bytes
 bra_clear_attribute_block:		; was: bra_E711_loop
-    STA $2007
+    STA PPUDATA
     INX
     CPX #$40
     BNE bra_clear_attribute_block
@@ -123,12 +123,12 @@ bra_draw_center_marker_if_mode2:		; was: bra_E720
     LDX #$2A    ; 2A30
 ; Select nametable for center marker
 bra_select_center_marker_nametable:		; was: bra_E72A
-    LDA $2002
-    STX $2006
+    LDA PPUSTATUS
+    STX PPUADDR
     LDA #$30
-    STA $2006
+    STA PPUADDR
     LDA #$5E
-    STA $2007
+    STA PPUDATA
     RTS
 
 ; Sprite palette used by intro/demo setup

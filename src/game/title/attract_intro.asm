@@ -40,10 +40,10 @@ bra_wait_nmi_before_attract_setup:		; was: bra_C490_infinite_loop
     LDA ram_nmi_wait
     BNE bra_wait_nmi_before_attract_setup
     LDA #$08
-    STA $2000
+    STA PPUCTRL
     STA ram_ppuctrl_base
     LDA #$00
-    STA $2001
+    STA PPUMASK
     STA ram_shared_state_1
     JSR sub_draw_attract_playfield_frame
     JSR sub_setup_attract_palette_and_attrs
@@ -51,7 +51,7 @@ bra_wait_nmi_before_attract_setup:		; was: bra_C490_infinite_loop
     INC ram_shared_state_0
     INC ram_shared_state_0
     LDA #$88
-    STA $2000
+    STA PPUCTRL
     STA ram_ppuctrl_base
     JMP loc_script_dispatch_loop
 
@@ -146,9 +146,9 @@ bra_copy_attract_sprite_strip:		; was: bra_C513_loop
 ; Draw attract-mode playfield frame tiles
 sub_draw_attract_playfield_frame:		; was: sub_C51E
     LDA #> $20C0
-    STA $2006
+    STA PPUADDR
     LDA #< $20C0
-    STA $2006
+    STA PPUADDR
     LDA #$17
     STA zp_work0
 ; Draw next row of attract playfield frame
@@ -156,17 +156,17 @@ bra_draw_next_frame_row:		; was: bra_C52C_loop
     LDA #$1C
     STA zp_work1
     LDA #con_tile + $2D
-    STA $2007
-    STA $2007
+    STA PPUDATA
+    STA PPUDATA
     LDA #con_tile + $20
 ; Fill inner row tiles between frame borders
 bra_fill_frame_inner_row:		; was: bra_C53A_loop
-    STA $2007
+    STA PPUDATA
     DEC zp_work1
     BNE bra_fill_frame_inner_row
     LDA #con_tile + $2D
-    STA $2007
-    STA $2007
+    STA PPUDATA
+    STA PPUDATA
     DEC zp_work0
     BPL bra_draw_next_frame_row
     RTS
@@ -174,20 +174,20 @@ bra_fill_frame_inner_row:		; was: bra_C53A_loop
 ; Setup attract-mode attributes and palette
 sub_setup_attract_palette_and_attrs:		; was: sub_C54E
     LDA #> $23C0
-    STA $2006
+    STA PPUADDR
     LDA #< $23C0
-    STA $2006
+    STA PPUADDR
     LDY #$20
     LDA #$00
 ; Clear initial attract attribute block bytes
 bra_clear_primary_attribute_table:		; was: bra_C55C_loop
-    STA $2007
+    STA PPUDATA
     DEY
     BNE bra_clear_primary_attribute_table
     LDA #> $23D0
-    STA $2006
+    STA PPUADDR
     LDA #< $23D0
-    STA $2006
+    STA PPUADDR
     LDA #$03
     STA zp_work0
     LDA #$55
@@ -196,7 +196,7 @@ bra_fill_checker_attr_rows:		; was: bra_C572_loop
     LDY #$08
 ; Write 8 repeated attribute bytes
 bra_write_eight_attr_bytes:		; was: bra_C574_loop
-    STA $2007
+    STA PPUDATA
     DEY
     BNE bra_write_eight_attr_bytes
     CLC
@@ -204,27 +204,27 @@ bra_write_eight_attr_bytes:		; was: bra_C574_loop
     DEC zp_work0
     BNE bra_fill_checker_attr_rows
     LDA #> $3F00
-    STA $2006
+    STA PPUADDR
     LDA #< $3F00
-    STA $2006
+    STA PPUADDR
     LDY #$00
 ; Upload 32-byte attract palette block
 bra_upload_attract_palette32:		; was: bra_C58D_loop
     LDA tbl_attract_bg_spr_palette,Y
-    STA $2007
+    STA PPUDATA
     INY
     CPY #$20
     BNE bra_upload_attract_palette32
     LDA #> $23E8
-    STA $2006
+    STA PPUADDR
     LDA #< $23E8
-    STA $2006
+    STA PPUADDR
     LDA #$AA
-    STA $2007
-    STA $2007
-    STA $2007
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
     LDA #$22
-    STA $2007
+    STA PPUDATA
     RTS
 
 ; Attract scene BG+SPR palette block (32 bytes)

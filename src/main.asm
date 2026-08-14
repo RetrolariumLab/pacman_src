@@ -4,6 +4,7 @@
 .setcpu "6502"
 
 .include "memory/ram.inc"
+.include "memory/hardware.inc"
 .include "memory/constants.inc"
 .include "macros/memory.inc"
 .include "macros/ppu.inc"

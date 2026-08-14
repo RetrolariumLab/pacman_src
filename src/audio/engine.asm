@@ -11,9 +11,9 @@ sub_init_sound_engine:		; was: sub_EE18
     LDA #$40
     STA ram_apu_register_ptr + $01
     LDA #$1F
-    STA $4015
+    STA APU_STATUS
     LDA #$C0
-    STA $4017
+    STA APU_FRAME_COUNTER
 ; Clear per-channel sound effect state and command slots
 sub_clear_sound_engine_state:		; was: sub_EE40
     LDY #$00

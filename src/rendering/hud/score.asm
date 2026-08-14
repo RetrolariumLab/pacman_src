@@ -69,7 +69,7 @@ bra_skip_leading_zeros_in_score:		; was: bra_E3F0_loop
     AND #$0F
     BNE bra_emit_score_digit_tile
     LDA #con_tile + $20
-    STA $2007
+    STA PPUDATA
     DEY
     BNE bra_skip_leading_zeros_in_score
     BEQ bra_write_last_digit_and_suffix    ; jmp
@@ -79,7 +79,7 @@ bra_write_remaining_score_digits:		; was: bra_E400_loop
 ; Emit one score digit tile
 bra_emit_score_digit_tile:		; was: bra_E402
     JSR sub_digit_to_score_tile
-    STA $2007
+    STA PPUDATA
     DEY
     BNE bra_write_remaining_score_digits
 ; Write least-significant digit and trailing zero tile
@@ -87,9 +87,9 @@ bra_write_last_digit_and_suffix:		; was: bra_E40B
 ; Y = 00
     LDA (ram_score_hud_value_ptr),Y    ; 0061 0070 0080
     JSR sub_digit_to_score_tile
-    STA $2007
+    STA PPUDATA
     LDA #con_tile + $30
-    STA $2007
+    STA PPUDATA
     RTS
 
 ; Source RAM triplets (hiscore/p1/p2 order) for HUD draw
