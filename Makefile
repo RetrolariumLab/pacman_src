@@ -42,6 +42,7 @@ LINES ?= 250
 SCORING_TRACE ?= $(PROJECT_DIR)tmp/scoring_trace.csv
 SCORING_SCENARIOS ?= $(PROJECT_DIR)scenarios/scoring_trace.json
 SCORING_MAX_FRAMES ?= $(MAX_FRAMES_LONGPLAY)
+SCORING_TRACE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_scoring_trace.lua
 
 .DEFAULT_GOAL := build
 
@@ -151,14 +152,23 @@ analyze: build-dev _batch
 	@echo Analysis complete: $(ANALYSIS_REPORT_CSV)
 
 trace-scoring: build-dev verify
-	@$(PYTHON) -c "import pathlib; pathlib.Path(r'$(PROJECT_DIR)tmp').mkdir(parents=True, exist_ok=True)"
+	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp'); p.mkdir(parents=True, exist_ok=True); t=pathlib.Path(r'$(SCORING_TRACE)'); t.unlink() if t.exists() else None"
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/check_scoring_trace_setup.py" \
+		--fceux "$(FCEUX_EXE)" \
+		--labels "$(NATIVE_LABELS)" \
+		--lua "$(SCORING_TRACE_LUA)"
 	set "PACMAN_SCORING_TRACE=$(SCORING_TRACE)" && set "PACMAN_SCORING_MAX_FRAMES=$(SCORING_MAX_FRAMES)" && "$(FCEUX_EXE)" \
 		-playmovie "$(LONGPLAY_MOVIE_FILE)" \
-		-lua "$(subst /,\,$(PROJECT_DIR)scripts/workflow/capture_scoring_trace.lua)" \
+		-lua "$(subst /,\,$(SCORING_TRACE_LUA))" \
 		-max-frames "$(SCORING_MAX_FRAMES)" \
 		-turbo 1 \
 		-nothrottle 1 \
 		"$(NATIVE_ROM)"
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/check_scoring_trace_setup.py" \
+		--fceux "$(FCEUX_EXE)" \
+		--labels "$(NATIVE_LABELS)" \
+		--lua "$(SCORING_TRACE_LUA)" \
+		--trace "$(SCORING_TRACE)"
 	@echo Scoring trace saved to $(SCORING_TRACE)
 
 validate-scoring-trace:

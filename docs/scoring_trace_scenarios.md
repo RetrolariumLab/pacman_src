@@ -13,8 +13,14 @@ make validate-scoring-trace
 
 The first command builds the byte-identical ROM, plays the repository longplay
 in the instrumented FCEUX build, and writes `tmp/scoring_trace.csv`. The second
-checks which expected event sequences occurred. Both the trace and any patched
-save states remain local artifacts under the ignored `tmp/` directory.
+checks the event sequence and its semantic RAM invariants. Both the trace and
+any patched save states remain local artifacts under the ignored `tmp/`
+directory.
+
+Before capture, the workflow verifies that both Lua runtime DLLs exist beside
+FCEUX and that every hard-coded execution hook still matches its symbol in the
+fresh linker label file. It removes an old CSV before launch and fails after
+emulation if a new non-empty trace was not produced.
 
 Each CSV row contains the frame, event name, pending/current/high-score BCD
 digits, lives, extra-life latch, pellet count, frightened mask, and ghost-chain
@@ -29,9 +35,11 @@ Frame sampling additionally records changes to score, high score, lives, and
 the extra-life latch.
 
 The repository longplay was exercised through 120,000 frames with this workflow.
-All six scenario sequences in `scenarios/scoring_trace.json` were observed in
-the unpatched byte-identical build. The generated CSV remains a local artifact;
-rerunning the two commands above reproduces the evidence check.
+All six scenarios in `scenarios/scoring_trace.json` passed value-aware checks in
+the unpatched byte-identical build. These include exact pending BCD awards,
+ghost-chain indices, fruit stage mapping, the extra-life latch/lives transition,
+and equality after high-score promotion. The generated CSV remains a local
+artifact; rerunning the two commands above reproduces the evidence check.
 
 ## Evidence rules
 

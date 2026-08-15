@@ -11,6 +11,7 @@ local EXTRA_LIFE_LATCH = 0x006B
 local PELLETS = 0x006A
 local FRIGHTENED_MASK = 0x0088
 local FRUIT_LATCH = 0x008B
+local STAGE_INDEX = 0x0093
 local KILL_COUNT = 0x00D9
 local PENDING = 0x00DC
 
@@ -28,15 +29,16 @@ end
 
 local function emit(event)
     output:write(string.format(
-        "%d,%s,%s,%s,%s,%02X,%02X,%02X,%02X,%02X\n",
+        "%d,%s,%s,%s,%s,%02X,%02X,%02X,%02X,%02X,%02X,%02X\n",
         frame(), event, bytes(PENDING, 6), bytes(SCORE, 6), bytes(HISCORE, 6),
         memory.readbyte(LIVES), memory.readbyte(EXTRA_LIFE_LATCH),
         memory.readbyte(PELLETS), memory.readbyte(FRIGHTENED_MASK),
-        memory.readbyte(KILL_COUNT)))
+        memory.readbyte(KILL_COUNT), memory.readbyte(FRUIT_LATCH),
+        memory.readbyte(STAGE_INDEX)))
     output:flush()
 end
 
-output:write("frame,event,pending_bcd,score_bcd,hiscore_bcd,lives,extra_life_latch,pellets,frightened_mask,kill_count\n")
+output:write("frame,event,pending_bcd,score_bcd,hiscore_bcd,lives,extra_life_latch,pellets,frightened_mask,kill_count,fruit_eaten_latch,stage_index\n")
 output:flush()
 
 memory.registerexecute(0xDEF7, function() emit("power_pellet") end)
