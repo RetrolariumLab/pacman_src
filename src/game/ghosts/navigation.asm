@@ -19,16 +19,16 @@ bra_update_ghost_slot_loop:		; was: bra_D4D8_loop
     JSR sub_dispatch_ghost_state_handler
     LDA zp_work0
     CLC
-    ADC #$04
+    ADC #con_actor_position_record_size
     STA zp_work0
     LDA zp_work2
     CLC
-    ADC #$04
+    ADC #con_actor_position_record_size
     STA zp_work2
     ASL zp_work4
     INX
-    INX
-    CPX #$08
+    INX ; con_ghost_slot_stride
+    CPX #con_ghost_slot_span
     BNE bra_update_ghost_slot_loop
     RTS
 ; Dispatch ghost update handler by state in ram_ghost_state

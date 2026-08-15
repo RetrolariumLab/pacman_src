@@ -68,19 +68,19 @@ bra_store_oam_x:		; was: bra_DB30
     STA (zp_work2),Y    ; 0703-075F (spr_X)
     LDA zp_work2
     CLC
-    ADC #$04
+    ADC #con_oam_entry_size
     STA zp_work2
     INC zp_work5
     INX
     INX
-    CPX #$08
+    CPX #con_oam_quad_offset_span
     BEQ bra_next_sprite_group_or_done
     JMP loc_build_oam_quad_loop
 ; Advance to next sprite group or finish
 bra_next_sprite_group_or_done:		; was: bra_DB46
     LDA zp_work0
     CLC
-    ADC #$04
+    ADC #con_actor_position_record_size
     STA zp_work0
     INC zp_work4
     LDA zp_work4

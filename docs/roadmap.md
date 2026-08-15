@@ -202,16 +202,15 @@ Completed with procedure contracts in `src/game/scoring.asm` and
 `docs/scoring_trace_scenarios.md`. The repository longplay observes all six
 defined score-event sequences in the byte-identical preservation build.
 
-### 4. Hardware Registers, Flags, and Constants — In Progress
+### 4. Hardware Registers, Flags, and Constants — Complete
 
 `src/memory/hardware.inc` now names the CPU-visible registers used directly by
 the source. Raw register operands have been replaced while VRAM addresses such
 as nametable `$2000` remain numeric. The initial proven PPU, APU, and controller
 bit masks are also defined there.
 
-The remaining work in this milestone is the evidence-backed magic-number and
-state/data-format constant pass described below. Standard register symbols
-include:
+The evidence-backed magic-number and state/data-format pass is complete for the
+verified concepts listed below. Standard register symbols include:
 
 ```asm
 PPUCTRL       = $2000
@@ -223,11 +222,11 @@ JOYPAD1       = $4016
 JOYPAD2       = $4017
 ```
 
-Add named bit masks only when their use is clear, such as NMI enable, rendering
-enable, controller buttons, and APU channel enables. Preserve exact immediate
-values and instruction encodings.
+Named bit masks are limited to clear uses such as NMI enable, rendering enable,
+controller buttons, and APU channel enables. Exact immediate values and
+instruction encodings remain preserved.
 
-Replace proven magic numbers with named constants for:
+Named constants now cover:
 
 - gameplay script states;
 - ghost states;

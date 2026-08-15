@@ -72,7 +72,7 @@ bra_common_round_init_tail:		; was: bra_CE99
 bra_calc_stage_table_offset:		; was: bra_CEAD_loop
     DEX
     BMI bra_stage_offset_ready
-    ADC #$06
+    ADC #con_stage_profile_record_size
     BNE bra_calc_stage_table_offset
 ; Stage table offset prepared in zp_work0
 bra_stage_offset_ready:		; was: bra_CEB4
@@ -86,7 +86,7 @@ bra_stage_offset_ready:		; was: bra_CEB4
 bra_calc_param_block_offset:		; was: bra_CEBE_loop
     DEX
     BMI bra_param_block_base_ready
-    ADC #$16
+    ADC #con_level_parameter_block_size
     BNE bra_calc_param_block_offset
 ; Parameter block base offset ready in Y
 bra_param_block_base_ready:		; was: bra_CEC5
@@ -98,7 +98,7 @@ bra_copy_level_param_block:		; was: bra_CEC8_loop
     STA ram_level_parameters,X
     INX
     INY
-    CPX #$16
+    CPX #con_level_parameter_block_size
     BNE bra_copy_level_param_block
     LDX zp_work0
     LDA tbl_stage_param_index_stream,X
@@ -116,7 +116,7 @@ bra_copy_timer_block:		; was: bra_CEE5_loop
     STA ram_scatter_chase_durations,Y
     INX
     INY
-    CPY #$08
+    CPY #con_speed_timer_block_size
     BNE bra_copy_timer_block
     INC zp_work0
     LDX zp_work0
@@ -125,7 +125,7 @@ bra_copy_timer_block:		; was: bra_CEE5_loop
     INC zp_work0
     LDX zp_work0
     LDA tbl_stage_param_index_stream,X
-    ASL
+    ASL ; multiply index by con_dot_threshold_pair_size
     TAX
     LDA tbl_dot_counter_threshold_pairs,X
     STA ram_personal_release_thresholds
@@ -153,7 +153,7 @@ bra_adjust_release_targets_by_pellets:		; was: bra_CF27_loop
     STA ram_ghost_release_targets,Y
     INY
     INX
-    CPY #$04
+    CPY #con_release_target_record_size
     BNE bra_adjust_release_targets_by_pellets
     BEQ bra_init_ghost_release_state    ; jmp
 ; Load default release target counters from table
@@ -161,7 +161,7 @@ bra_load_release_targets_from_table:		; was: bra_CF38
     LDX zp_work0
     LDA tbl_stage_param_index_stream,X
     ASL
-    ASL
+    ASL ; multiply index by con_release_target_record_size
     TAX
     LDY #$00
 ; Copy 4-byte release target set to RAM 008F..0092
@@ -170,7 +170,7 @@ bra_copy_release_target_quad:		; was: bra_CF42_loop
     STA ram_ghost_release_targets,Y
     INX
     INY
-    CPY #$04
+    CPY #con_release_target_record_size
     BNE bra_copy_release_target_quad
 ; Initialize ghost release scheduler state
 bra_init_ghost_release_state:		; was: bra_CF4E

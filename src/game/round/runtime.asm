@@ -295,7 +295,7 @@ bra_advance_collision_candidate:		; was: bra_D25A
     INX
     LDA zp_work0
     CLC
-    ADC #$04
+    ADC #con_actor_position_record_size
     STA zp_work0
     ASL zp_work2
     CPX #$0A

@@ -200,16 +200,16 @@ bra_update_state06_slot_loop:		; was: bra_D895_loop
     JSR sub_dispatch_state06_only_handler
     LDA zp_work0
     CLC
-    ADC #$04
+    ADC #con_actor_position_record_size
     STA zp_work0
     LDA zp_work2
     CLC
-    ADC #$04
+    ADC #con_actor_position_record_size
     STA zp_work2
     ASL zp_work4
     INX
-    INX
-    CPX #$08
+    INX ; con_ghost_slot_stride
+    CPX #con_ghost_slot_span
     BNE bra_update_state06_slot_loop
     RTS
 
@@ -255,8 +255,8 @@ bra_scan_state06_presence:		; was: bra_D8CD_loop
 ; Advance to next slot in state06 scan
 bra_next_slot_for_state06_scan:		; was: bra_D8D7
     INX
-    INX
-    CPX #$08
+    INX ; con_ghost_slot_stride
+    CPX #con_ghost_slot_span
     BNE bra_scan_state06_presence
     LDA ram_shared_state_1
     BEQ bra_set_release_marker_by_pellets

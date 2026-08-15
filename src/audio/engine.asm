@@ -22,17 +22,17 @@ sub_clear_sound_engine_state:		; was: sub_EE40
 bra_loop_clear_sfx_request_slots:		; was: bra_EE44_loop
     STA (ram_sfx_request_ptr),Y    ; 0600 0601 0602 0603 0604 0605 0606 0607 0608 0609 060A 060B 060C 060D 060E 060F
     INY
-    CPY #$10
+    CPY #con_sound_channel_count
     BNE bra_loop_clear_sfx_request_slots
     LDY #$00
-    LDX #$10
+    LDX #con_sound_channel_count
 ; Clear one command byte per 8-byte channel struct
 bra_loop_clear_channel_command_slots:		; was: bra_EE4F_loop
     LDA #$00
     STA (ram_sound_channel_ptr),Y    ; 0620 0628 0630 0638 0640 0648 0650 0658 0660 0668 0670 0678 0680 0688 0690 0698
     TYA
     CLC
-    ADC #$08
+    ADC #con_sound_channel_record_size
     TAY
     DEX
     BNE bra_loop_clear_channel_command_slots
@@ -102,9 +102,9 @@ bra_advance_channel_prepass:		; was: bra_EEAE
 loc_advance_channel_prepass_entry:		; was: loc_EEAE
     LDA ram_sound_channel_offset
     CLC
-    ADC #$08
+    ADC #con_sound_channel_record_size
     STA ram_sound_channel_offset
-    CMP #$80
+    CMP #con_sound_channel_span
     BCC bra_loop_scan_channel_command_slots
     LDY #$00
     STY ram_sound_channel_index
@@ -251,7 +251,7 @@ bra_advance_to_next_sound_channel:		; was: bra_EF84
 loc_advance_to_next_sound_channel_entry:		; was: loc_EF84
     LDA ram_sound_channel_offset
     CLC
-    ADC #$08
+    ADC #con_sound_channel_record_size
     STA ram_sound_channel_offset
     LDA ram_sound_channel_index
     ADC #$01

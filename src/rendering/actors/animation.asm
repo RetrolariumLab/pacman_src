@@ -69,7 +69,7 @@ bra_update_ghost_anim_slot_loop:		; was: bra_D94A_loop
     ASL zp_work1
     INX
     INX
-    CPX #$08
+    CPX #con_ghost_slot_span
     BNE bra_update_ghost_anim_slot_loop
 ; State07 anim handler: no-op
 handler_state07_anim_noop:		; was: ofs_011_D955_07_RTS

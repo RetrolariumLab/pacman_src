@@ -279,15 +279,15 @@ bra_store_reversed_direction:		; was: bra_E042
 bra_next_ghost_for_reversal:		; was: bra_E046
     LDA zp_work0
     CLC
-    ADC #$04
+    ADC #con_actor_position_record_size
     STA zp_work0
     LDA zp_work2
     CLC
-    ADC #$04
+    ADC #con_actor_position_record_size
     STA zp_work2
     INX
     INX
-    CPX #$08
+    CPX #con_ghost_slot_span
     BNE bra_process_reversal_for_active_ghosts
     RTS
 

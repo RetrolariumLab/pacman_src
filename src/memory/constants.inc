@@ -101,3 +101,19 @@ con_sound_opcode_stop                   = $F0
 con_sound_opcode_set_reg1_mid2          = $F2
 con_sound_opcode_set_reg1_low4          = $F3
 con_sound_opcode_set_reg4               = $F5
+
+; Proven table strides and fixed record sizes.
+con_state_handler_entry_size            = $02
+con_ghost_slot_stride                   = $02
+con_ghost_slot_span                     = $08
+con_actor_position_record_size          = $04
+con_oam_entry_size                      = $04
+con_oam_quad_offset_span                = $08
+con_sound_channel_record_size           = $08
+con_sound_channel_count                 = $10
+con_sound_channel_span                  = $80
+con_stage_profile_record_size           = $06
+con_level_parameter_block_size          = $16
+con_speed_timer_block_size              = $08
+con_dot_threshold_pair_size             = $02
+con_release_target_record_size          = $04
