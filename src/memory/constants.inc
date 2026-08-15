@@ -2,8 +2,25 @@
 ; Values verified by the byte-identical ca65 build.
 ; Base: https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man
 
-; MISC
-con_tile                                = $00
+; Proven background/HUD tile IDs.
+con_tile_empty                         = $00
+con_tile_power_pellet_visible           = $01
+con_tile_power_pellet_hidden            = $02
+con_tile_pellet                         = $03
+con_tile_floor                          = $07
+con_tile_pellet_alt                     = $09
+con_tile_space                          = $20
+con_tile_maze_blank                     = $2D
+con_tile_score_zero                     = $30
+; Added with carry set after CMP #$0A, producing tile $41 for digit A.
+con_tile_score_hex_adjust               = $36
+
+; OAM composition mode extracted from bits 5-6 of ram_actor_sprite_set.
+con_actor_sprite_mode_standard          = $00
+con_actor_sprite_mode_alternate         = $01
+con_actor_sprite_mode_tile_offsets      = $02
+con_actor_sprite_mode_attr_offsets      = $03
+con_actor_sprite_mode_index_mask        = $03
 ; ram_btn_1p
 ; ram_btn_2p
 ; ram_btn_total
@@ -68,3 +85,19 @@ con_intermission_return_wait_enemy      = $00
 con_intermission_return_wait_wrap       = $02
 con_intermission_return_wait_midpoint   = $04
 con_intermission_return_wait_chaser     = $06
+
+; Buffered PPU command stream: [address hi][address lo][payload...][00] ... [FF].
+con_ppu_command_end                     = $00
+con_ppu_buffer_end                      = $FF
+con_ppu_command_address_size            = $02
+con_score_field_size                    = $06
+con_1up_field_size                      = $03
+
+; Sound stream byte classes and the control opcodes observed in all 16 streams.
+con_sound_duration_min                  = $C0
+con_sound_control_min                   = $F0
+con_sound_control_index_mask            = $0F
+con_sound_opcode_stop                   = $F0
+con_sound_opcode_set_reg1_mid2          = $F2
+con_sound_opcode_set_reg1_low4          = $F3
+con_sound_opcode_set_reg4               = $F5

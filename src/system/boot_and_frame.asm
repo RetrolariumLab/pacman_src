@@ -133,7 +133,7 @@ bra_init_apu_and_continue:		; was: bra_C0C7
     LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH
     STA ram_ppuctrl_base
     STA PPUCTRL
-    LDA #$FF
+    LDA #con_ppu_buffer_end
     STA ram_flag_demo
     STA ram_ppu_buffer_score
     STA ram_ppu_buffer_main
@@ -245,12 +245,12 @@ bra_upload_background_palette:		; was: bra_C1A3_loop
     INY
     CPY #$10
     BNE bra_upload_background_palette
-    LDA #con_tile + $2D
+    LDA #con_tile_maze_blank
     STA ram_power_pellet_tile_p1
     STA ram_power_pellet_tile_p1 + $01
     STA ram_power_pellet_tile_p1 + $02
     STA ram_power_pellet_tile_p1 + $03
-    LDA #$FF
+    LDA #con_ppu_buffer_end
     STA ram_ppu_buffer_score
     STA ram_flag_demo
     LDA #$00

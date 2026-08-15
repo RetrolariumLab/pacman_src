@@ -60,15 +60,15 @@ loc_select_speed_profile:		; was: loc_D341
 ; Choose speed class based on current tile type
 bra_choose_speed_from_tile:		; was: bra_D349
     LDA ram_obj_ppu_tile_now
-    CMP #con_tile + $01
+    CMP #con_tile_power_pellet_visible
     BEQ bra_load_movement_delta    ; if power pellet (visible)
-    CMP #con_tile + $02
+    CMP #con_tile_power_pellet_hidden
     BEQ bra_load_movement_delta    ; if power pellet (not visible)
     DEX
     DEX
-    CMP #con_tile + $03
+    CMP #con_tile_pellet
     BEQ bra_load_movement_delta    ; if normal pellet
-    CMP #con_tile + $09
+    CMP #con_tile_pellet_alt
     BEQ bra_load_movement_delta    ; if normal pellet (rare)
     DEX
     DEX

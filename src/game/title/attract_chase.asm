@@ -23,7 +23,7 @@ bra_copy_ppu_packet:		; was: bra_C6DF_loop
     LDA tbl_ppu_cmd_clear_points_text,Y
     STA ram_ppu_buffer_main,Y
     INY
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BNE bra_copy_ppu_packet
     LDA #< $00FF
     STA ram_obj_pos_X_hi

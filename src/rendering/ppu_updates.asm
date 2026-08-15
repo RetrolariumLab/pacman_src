@@ -12,15 +12,15 @@ bra_process_blink_step:		; was: bra_DDD0
 ; Toggle next power-pellet tile ID
 bra_toggle_next_power_pellet_tile:		; was: bra_DDD1_loop
     LDA ram_power_pellet_tile_p1,X
-    CMP #con_tile + $07
+    CMP #con_tile_floor
     BEQ bra_store_power_pellet_tile
-    CMP #con_tile + $01
+    CMP #con_tile_power_pellet_visible
     BNE bra_set_power_pellet_visible
-    LDA #con_tile + $02
+    LDA #con_tile_power_pellet_hidden
     BNE bra_store_power_pellet_tile    ; jmp
 ; Set power-pellet tile to visible variant
 bra_set_power_pellet_visible:		; was: bra_DDDF
-    LDA #con_tile + $01
+    LDA #con_tile_power_pellet_visible
 ; Store updated power-pellet tile ID
 bra_store_power_pellet_tile:		; was: bra_DDE1
     STA ram_power_pellet_tile_p1,X
@@ -37,7 +37,7 @@ sub_write_buffer_to_ppu:
 bra_flush_score_hud_buffers:		; was: bra_DDF0
 ; score buffer
     LDA ram_ppu_buffer_score
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BEQ bra_update_1up_blink    ; skip if buffer is empty
     SetPpuAddressFrom ram_ppu_buf_score_hi
     LDY #$00
@@ -46,15 +46,15 @@ bra_write_score_digits:		; was: bra_DE08_loop
     LDA ram_ppu_buffer_score,Y
     STA PPUDATA
     INY
-    CPY #$06
+    CPY #con_score_field_size
     BNE bra_write_score_digits
-    LDA #con_tile + $30
+    LDA #con_tile_score_zero
     STA PPUDATA
-    LDA #$FF
+    LDA #con_ppu_buffer_end
     STA ram_ppu_buffer_score
 ; hiscore buffer
     LDA ram_ppu_buffer_hiscore
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BEQ bra_update_1up_blink    ; skip if buffer is empty
     SetPpuAddressFrom ram_ppu_buf_hiscore_hi
     LDY #$00
@@ -63,11 +63,11 @@ bra_write_hiscore_digits:		; was: bra_DE35_loop
     LDA ram_ppu_buffer_hiscore,Y
     STA PPUDATA
     INY
-    CPY #$06
+    CPY #con_score_field_size
     BNE bra_write_hiscore_digits
-    LDA #con_tile + $30
+    LDA #con_tile_score_zero
     STA PPUDATA
-    LDA #$FF
+    LDA #con_ppu_buffer_end
     STA ram_ppu_buffer_hiscore
 ; Update flashing 1UP indicator
 bra_update_1up_blink:		; was: bra_DE4A
@@ -81,20 +81,20 @@ bra_update_1up_blink:		; was: bra_DE4A
     BEQ bra_clear_1up_text
 ; Write 1UP text tiles
 bra_write_1up_text:		; was: bra_DE67_loop
-    LDA ram_ppu_buffer_1up + $02,X
+    LDA ram_ppu_buffer_1up + con_ppu_command_address_size,X
     STA PPUDATA
     INX
-    CPX #$03
+    CPX #con_1up_field_size
     BNE bra_write_1up_text
     BEQ bra_flush_power_pellet_and_main_ppu    ; jmp
 ; Clear 1UP text tiles
 bra_clear_1up_text:		; was: bra_DE74
-    LDA #con_tile + $20
+    LDA #con_tile_space
 ; Write clear tiles for 1UP field
 bra_write_1up_clear_tiles:		; was: bra_DE76_loop
     STA PPUDATA
     INX
-    CPX #$03
+    CPX #con_1up_field_size
     BNE bra_write_1up_clear_tiles
 ; Flush power-pellet markers and generic PPU command buffer
 bra_flush_power_pellet_and_main_ppu:		; was: bra_DE7E
@@ -124,11 +124,11 @@ bra_write_power_pellet_markers:		; was: bra_DE8A_loop
     BNE bra_write_power_pellet_markers
     LDA PPUSTATUS
     LDY #$FF
-; Scan packed PPU command buffer entries
+; Scan [address hi][address lo][payload...][00] commands until FF.
 bra_scan_ppu_command_buffer:		; was: bra_DEAA_loop
     INY
     LDA ram_ppu_buffer_main,Y
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BEQ bra_finalize_ppu_command_buffer    ; skip if buffer is empty
     STA PPUADDR
     INY
@@ -138,8 +138,8 @@ bra_scan_ppu_command_buffer:		; was: bra_DEAA_loop
 bra_write_ppu_command_payload:		; was: bra_DEBC_loop
     INY
     LDA ram_ppu_buffer_main,Y
-    BEQ bra_scan_ppu_command_buffer
-    CMP #$FF
+    BEQ bra_scan_ppu_command_buffer ; con_ppu_command_end
+    CMP #con_ppu_buffer_end
     BEQ bra_finalize_ppu_command_buffer    ; skip if there isn't anything else in the buffer
     STA PPUDATA
     BNE bra_write_ppu_command_payload   ; jmp

@@ -134,21 +134,21 @@ bra_store_life_icon_offset:		; was: bra_CB5F
     STA ram_ppu_buffer_main
     LDA zp_work1    ; ppu lo
     STA ram_ppu_buffer_main + $01
-    LDA #con_tile + $2D
+    LDA #con_tile_maze_blank
     STA ram_ppu_buffer_main + $02
     STA ram_ppu_buffer_main + $03
-    LDA #con_tile + $00
+    LDA #con_tile_empty
     STA ram_ppu_buffer_main + $04
     LDA zp_work0
     STA ram_ppu_buffer_main + $05
     LDA zp_work1
     CLC
-    ADC #con_tile + $20
+    ADC #con_tile_space
     STA ram_ppu_buffer_main + $06
-    LDA #con_tile + $2D
+    LDA #con_tile_maze_blank
     STA ram_ppu_buffer_main + $07
     STA ram_ppu_buffer_main + $08
-    LDA #$FF    ; close buffer
+    LDA #con_ppu_buffer_end
     STA ram_ppu_buffer_main + $09
     JSR sub_update_pacman_anim_frame
     JSR sub_update_ghost_anim_frames

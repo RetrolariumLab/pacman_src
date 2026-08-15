@@ -18,15 +18,15 @@
 sub_check_for_eating_pellets:
     LDX #$00
     LDA ram_obj_ppu_tile_now
-    CMP #con_tile + $09
+    CMP #con_tile_pellet_alt
     BEQ bra_handle_any_pellet_eaten    ; if normal pellet (rare)
     INX
     INX
-    CMP #con_tile + $03
+    CMP #con_tile_pellet
     BEQ bra_handle_any_pellet_eaten    ; if normal pellet
-    CMP #con_tile + $01
+    CMP #con_tile_power_pellet_visible
     BEQ bra_handle_power_pellet_eaten    ; if power pellet (visible)
-    CMP #con_tile + $02
+    CMP #con_tile_power_pellet_hidden
     BEQ bra_handle_power_pellet_eaten    ; if power pellet (not visible)
     RTS
 ; Handle power-pellet eat path
@@ -52,7 +52,7 @@ bra_select_power_pellet_slot_by_row:		; was: bra_DF0F
     INX
 ; Mark matched power-pellet slot as eaten
 bra_mark_power_pellet_slot_eaten:		; was: bra_DF18
-    LDA #con_tile + $07
+    LDA #con_tile_floor
     STA ram_power_pellet_tile_p1,X
     LDX #$04
 ; Handle common pellet-eaten flow
@@ -74,11 +74,11 @@ bra_handle_any_pellet_eaten:		; was: bra_DF1E
 bra_find_ppu_buffer_end:		; was: bra_DF31_loop
     INY
     LDA ram_ppu_buffer_main,Y
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BNE bra_find_ppu_buffer_end
     TYA
     BEQ bra_append_pellet_clear_ppu_cmd
-    LDA #$00
+    LDA #con_ppu_command_end
     STA ram_ppu_buffer_main,Y
     INY
 ; Append pellet-clear PPU command
@@ -92,9 +92,9 @@ bra_append_pellet_clear_ppu_cmd:		; was: bra_DF42
     LDA tbl_pellet_clear_tile_and_points,X
     STA ram_ppu_buffer_main,Y
     INY
-    LDA #$FF
+    LDA #con_ppu_buffer_end
     STA ram_ppu_buffer_main,Y
-    LDA #con_tile + $07
+    LDA #con_tile_floor
     STA ram_obj_ppu_tile_now
     LDA tbl_pellet_clear_tile_and_points_alias + $01,X
     STA ram_pending_score_bcd
@@ -141,9 +141,9 @@ bra_play_pellet_sfx_and_score:		; was: bra_DF99_skip_fruit_spawn
 tbl_pellet_clear_tile_and_points:		; was: tbl_DFA6_tile
 ; Alias label at same address for pellet tile+points pairs
 tbl_pellet_clear_tile_and_points_alias:		; was: tbl_DFA6_points
-    .byte con_tile + $08, $01   ; 00 normal pellet (rare)
-    .byte con_tile + $07, $01   ; 02 normal pellet
-    .byte con_tile + $07, $05   ; 04 power pellet
+    .byte $08, $01             ; 00 normal pellet (rare)
+    .byte con_tile_floor, $01  ; 02 normal pellet
+    .byte con_tile_floor, $05  ; 04 power pellet
 
 ; !(UNUSED) No external entry or fall-through reaches this duplicate. See CODE-002.
     LDX #$00
@@ -213,7 +213,7 @@ bra_set_ghost_palette_frightened:		; was: bra_DFD8_loop
 bra_find_ppu_buffer_end_for_palette_cmd:		; was: bra_DFE5_loop
     INY
     LDA ram_ppu_buffer_main,Y
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BNE bra_find_ppu_buffer_end_for_palette_cmd
     LDX #$00
     TYA
@@ -227,7 +227,7 @@ bra_append_frightened_palette_cmd:		; was: bra_DFF3_loop
     STA ram_ppu_buffer_main,Y
     INY
     INX
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BNE bra_append_frightened_palette_cmd
     LDA #$00
     STA ram_kill_cnt
@@ -384,11 +384,11 @@ bra_store_formatted_score_digit:		; was: bra_E0A5
 bra_find_ppu_buffer_end_for_life_icon:		; was: bra_E0C9_loop
     INY
     LDA ram_ppu_buffer_main,Y
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BNE bra_find_ppu_buffer_end_for_life_icon
     TYA
     BEQ bra_select_life_icon_nametable
-    LDA #$00
+    LDA #con_ppu_command_end
     STA ram_ppu_buffer_main,Y
     INY
 ; Select life-icon nametable segment for active player
@@ -451,7 +451,7 @@ bra_copy_score_buf_to_hiscore_buf:		; was: bra_E123_loop
     LDA ram_ppu_buffer_score,X
     STA ram_ppu_buffer_hiscore,X
     INX
-    CPX #$06
+    CPX #con_score_field_size
     BNE bra_copy_score_buf_to_hiscore_buf
     LDX #$00
 ; Copy score digits into hiscore RAM
@@ -459,7 +459,7 @@ bra_copy_score_ram_to_hiscore_ram:		; was: bra_E130_loop
     LDA ram_score_p1,X
     STA ram_score_hi,X
     INX
-    CPX #$06
+    CPX #con_score_field_size
     BNE bra_copy_score_ram_to_hiscore_ram
     RTS
 
@@ -476,15 +476,15 @@ tbl_life_icon_ppu_packets:		; was: tbl_E13A
 ; Convert the low nibble in A to the corresponding score-font tile.
 ;
 ; Input: A (only bits 0..3 are significant).
-; Output: A = con_tile+$30..$39 for 0..9, or con_tile+$41..$46 for A..F.
+; Output: A = score digit tiles $30..$39 for 0..9, or $41..$46 for A..F.
 ; Preserves: X, Y. Clobbers: processor flags.
 sub_digit_to_score_tile:		; was: sub_E148
     AND #$0F
     CMP #$0A
     BCS bra_convert_hex_digit_tile
-    ADC #con_tile + $30
+    ADC #con_tile_score_zero
     RTS
 ; Convert hex digit 0xA-0xF to tile code
 bra_convert_hex_digit_tile:		; was: bra_E151
-    ADC #con_tile + $36
+    ADC #con_tile_score_hex_adjust
     RTS

@@ -32,12 +32,12 @@ bra_store_oam_y:		; was: bra_DA83
     ASL
     ROL
     ROL
-    AND #$03
-    BEQ bra_compose_sprite_set0
-    CMP #$02
+    AND #con_actor_sprite_mode_index_mask
+    BEQ bra_compose_sprite_set0 ; con_actor_sprite_mode_standard
+    CMP #con_actor_sprite_mode_tile_offsets
     BEQ bra_compose_sprite_set2
-    BCC bra_compose_sprite_set1
-; 03
+    BCC bra_compose_sprite_set1 ; con_actor_sprite_mode_alternate
+; con_actor_sprite_mode_attr_offsets
     ComposeActorOamEntry tbl_actor_sprite_attrs, tbl_oam_quad_offsets
     JMP loc_write_oam_quad_x_pass
 ; Compose sprite set 0 tiles/attrs

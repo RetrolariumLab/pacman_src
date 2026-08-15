@@ -187,9 +187,9 @@ loc_decode_sound_stream_byte:		; was: loc_EF2E
 ; C0-EF -> explicit duration byte follows
 ; F0-FF -> control opcode via tbl_sound_control_opcode_handlers
     JSR sub_fetch_stream_byte_and_advance_ptr
-    CMP #$F0
+    CMP #con_sound_control_min
     BCS bra_dispatch_f0_ff_control_opcode
-    CMP #$C0
+    CMP #con_sound_duration_min
     BCS bra_C0_EF_fetch_channel_duration_byte_alias
 ; 00-BF
     PHA
@@ -203,7 +203,7 @@ loc_decode_sound_stream_byte:		; was: loc_EF2E
     LDA tbl_note_period_base_pairs + $01,X
     STA ram_sound_work_ptr + $01
     PLA
-    AND #$0F
+    AND #con_sound_control_index_mask
     BEQ bra_00_apply_note_period_to_channel
 ; 01-0F
     TAX
@@ -277,12 +277,12 @@ bra_dispatch_f0_ff_control_opcode:		; was: bra_EF99_F0_FF_control_byte
 tbl_sound_control_opcode_handlers:		; was: tbl_EFAA
 ; !(OBS) Only F0, F2, F3, and F5 occur as opcodes in all 16 decoded streams. See resolved SND-002.
 ; F1, F4, and F6 handlers are dormant; F7-FF alias the F0 handler.
-    .word handler_00_turn_sound_off
+    .word handler_00_turn_sound_off              ; con_sound_opcode_stop
     .word handler_ctrl01_set_channel_reg1_low6   ; never used
-    .word handler_ctrl02_set_channel_reg1_mid2
-    .word handler_ctrl03_set_channel_reg1_low4
+    .word handler_ctrl02_set_channel_reg1_mid2   ; con_sound_opcode_set_reg1_mid2
+    .word handler_ctrl03_set_channel_reg1_low4   ; con_sound_opcode_set_reg1_low4
     .word handler_ctrl04_set_channel_reg2_raw   ; never used
-    .word handler_ctrl05_set_channel_reg4_raw
+    .word handler_ctrl05_set_channel_reg4_raw    ; con_sound_opcode_set_reg4
     .word handler_ctrl06_set_channel_reg1_raw   ; never used
     .word handler_07_unused_alias_turn_sound_off   ; never used
     .word handler_08_unused_alias_turn_sound_off   ; never used

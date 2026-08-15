@@ -92,9 +92,9 @@ bra_write_bottom_banner_row:		; was: bra_E2E5_loop
 ; Fill tiles used for bottom banner rows
 tbl_bottom_banner_fill_tiles:		; was: tbl_E2FC
 ; fill ppu with this byte
-    .byte con_tile + $2D   ; 00
-    .byte con_tile + $04   ; 01
-    .byte con_tile + $2D   ; 02
+    .byte con_tile_maze_blank   ; 00
+    .byte $04                   ; 01, scene-specific fill tile
+    .byte con_tile_maze_blank   ; 02
 
 ; Clear both nametables and attribute blocks with blank tile
 sub_clear_bg_nametables_and_attrs:		; was: sub_E2FF
@@ -109,7 +109,7 @@ loc_clear_nametable_fill_pass:		; was: loc_E310
     STA zp_work0
     LDA #$C0
     STA zp_work1
-    LDA #con_tile + $2D
+    LDA #con_tile_maze_blank
 bra_fill_nametable_tiles:
     STA PPUDATA
     DEC zp_work1

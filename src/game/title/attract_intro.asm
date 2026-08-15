@@ -119,7 +119,7 @@ bra_copy_ppu_packet_to_buffer:		; was: bra_C4FA_loop
     LDA (zp_work0),Y    ; data from 0x0005E3
     STA ram_ppu_buffer_main,Y
     INY
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BNE bra_copy_ppu_packet_to_buffer
     LDA (zp_work0),Y    ; data from 0x0005E3 (last byte)
     BEQ bra_copy_optional_sprite_strip
@@ -155,16 +155,16 @@ sub_draw_attract_playfield_frame:		; was: sub_C51E
 bra_draw_next_frame_row:		; was: bra_C52C_loop
     LDA #$1C
     STA zp_work1
-    LDA #con_tile + $2D
+    LDA #con_tile_maze_blank
     STA PPUDATA
     STA PPUDATA
-    LDA #con_tile + $20
+    LDA #con_tile_space
 ; Fill inner row tiles between frame borders
 bra_fill_frame_inner_row:		; was: bra_C53A_loop
     STA PPUDATA
     DEC zp_work1
     BNE bra_fill_frame_inner_row
-    LDA #con_tile + $2D
+    LDA #con_tile_maze_blank
     STA PPUDATA
     STA PPUDATA
     DEC zp_work0

@@ -44,7 +44,7 @@ bra_upload_demo_sprite_palette:		; was: bra_E6A0_loop
     INY
     CPY #$10
     BNE bra_upload_demo_sprite_palette
-    LDA #con_tile + $20
+    LDA #con_tile_space
     STA ram_ppu_buffer_1up + $02
     STA ram_ppu_buffer_1up + $03
     STA ram_ppu_buffer_1up + $04

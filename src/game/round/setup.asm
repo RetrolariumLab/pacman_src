@@ -41,7 +41,7 @@ bra_upload_round_palette:		; was: bra_CE68_loop
     LDA ram_round_restart_flag
     BNE bra_common_round_init_tail
     STA ram_fruit_eaten_latch
-    LDA #con_tile + $01
+    LDA #con_tile_power_pellet_visible
     STA ram_power_pellet_tile_p1
     STA ram_power_pellet_tile_p1 + $01
     STA ram_power_pellet_tile_p1 + $02
@@ -261,9 +261,9 @@ bra_copy_anim_palette_defaults:		; was: bra_CFCC_loop
 ; Normalize blinking power pellet tile IDs for gameplay
 bra_normalize_power_pellet_tiles:		; was: bra_CFD9_loop
     LDA ram_power_pellet_tile_p1,Y  ; 006C 006D 006E 006F
-    CMP #con_tile + $02
+    CMP #con_tile_power_pellet_hidden
     BNE bra_next_power_pellet_slot
-    LDA #con_tile + $01
+    LDA #con_tile_power_pellet_visible
     STA ram_power_pellet_tile_p1,Y  ; 006C 006D 006E 006F
 ; Advance to next power-pellet tile slot
 bra_next_power_pellet_slot:		; was: bra_CFE5
@@ -297,13 +297,13 @@ bra_fill_center_strip_rows:		; was: bra_D00E_loop
     SetPpuAddressFrom zp_work0
     LDA #$06    ; counter
     STA zp_work3
-    LDA #con_tile + $20
+    LDA #con_tile_space
 ; Write one row segment of center-strip tiles
 bra_fill_center_strip_row_tiles:		; was: bra_D021_loop
     STA PPUDATA
     DEC zp_work3
     BNE bra_fill_center_strip_row_tiles
-    LDA #con_tile + $2D
+    LDA #con_tile_maze_blank
     STA PPUDATA
     STA PPUDATA
     LDA zp_work1

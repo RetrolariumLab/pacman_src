@@ -76,7 +76,7 @@ bra_draw_next_logo_text_packet:		; was: bra_C260_loop
 ; Stream text payload bytes until FF terminator
 bra_stream_logo_text_until_ff:		; was: bra_C271_loop
     LDA tbl_title_logo_text_packets,Y
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BEQ bra_advance_to_next_logo_text_packet
     STA PPUDATA
     INY

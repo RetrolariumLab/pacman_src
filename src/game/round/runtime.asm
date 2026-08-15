@@ -65,7 +65,7 @@ bra_prepare_ppu_append_index:		; was: bra_D127
 bra_find_ppu_terminator:		; was: bra_D129_loop
     INY
     LDA ram_ppu_buffer_main,Y
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BNE bra_find_ppu_terminator
     TYA
     BNE bra_append_frightened_cmd_if_empty
@@ -78,7 +78,7 @@ bra_copy_frightened_palette_cmd:		; was: bra_D135_loop
     STA ram_ppu_buffer_main,Y
     INY
     INX
-    CMP #$FF
+    CMP #con_ppu_buffer_end
     BNE bra_copy_frightened_palette_cmd
 ; Continue with release/fruit timers after frightened handling
 bra_release_and_fruit_tick:		; was: bra_D141

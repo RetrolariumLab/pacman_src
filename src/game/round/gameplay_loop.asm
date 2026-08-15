@@ -124,7 +124,7 @@ bra_store_pause_ppu_addr:		; was: bra_CA41
     STX ram_ppu_buffer_main
     LDA #$37
     STA ram_ppu_buffer_main + $01
-    LDX #$06
+    LDX #con_score_field_size
     LDY #$00
     LDA ram_flag_pause
     AND #$01
@@ -136,10 +136,10 @@ bra_select_pause_text_variant:		; was: bra_CA58
 ; Copy pause/on-off tile sequence into PPU packet
 bra_copy_pause_tiles:		; was: bra_CA58_loop
     LDA tbl_pause_text_tiles,X
-    STA ram_ppu_buffer_main + $02,Y
+    STA ram_ppu_buffer_main + con_ppu_command_address_size,Y
     INX
     INY
-    CPY #$06
+    CPY #con_score_field_size
     BNE bra_copy_pause_tiles
     JMP loc_gameplay_mainloop_wait_nmi
 ; No new Start edge path for normal frame processing

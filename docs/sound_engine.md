@@ -33,10 +33,10 @@ Byte classes:
 - `F0..FF`: control opcode dispatch via `tbl_sound_control_opcode_handlers`.
 
 ## Control Opcodes
-- `F0`: turn sound off (`handler_00_turn_sound_off`).
-- `F2`: set reg1 middle bits (`handler_ctrl02_set_channel_reg1_mid2`).
-- `F3`: set reg1 low nibble (`handler_ctrl03_set_channel_reg1_low4`).
-- `F5`: set reg4 raw (`handler_ctrl05_set_channel_reg4_raw`).
+- `con_sound_opcode_stop` (`F0`): turn sound off (`handler_00_turn_sound_off`).
+- `con_sound_opcode_set_reg1_mid2` (`F2`): set reg1 middle bits (`handler_ctrl02_set_channel_reg1_mid2`).
+- `con_sound_opcode_set_reg1_low4` (`F3`): set reg1 low nibble (`handler_ctrl03_set_channel_reg1_low4`).
+- `con_sound_opcode_set_reg4` (`F5`): set reg4 raw (`handler_ctrl05_set_channel_reg4_raw`).
 
 Other handler table entries are dormant in all decoded streams; see resolved SND-002 in `docs/unknowns.md`.
 

@@ -68,7 +68,7 @@ bra_skip_leading_zeros_in_score:		; was: bra_E3F0_loop
     LDA (ram_score_hud_value_ptr),Y    ; 0064 0065 0066 0071 0072 0073 0074 0075 0081 0082 0083 0084 0085
     AND #$0F
     BNE bra_emit_score_digit_tile
-    LDA #con_tile + $20
+    LDA #con_tile_space
     STA PPUDATA
     DEY
     BNE bra_skip_leading_zeros_in_score
@@ -88,7 +88,7 @@ bra_write_last_digit_and_suffix:		; was: bra_E40B
     LDA (ram_score_hud_value_ptr),Y    ; 0061 0070 0080
     JSR sub_digit_to_score_tile
     STA PPUDATA
-    LDA #con_tile + $30
+    LDA #con_tile_score_zero
     STA PPUDATA
     RTS
 
