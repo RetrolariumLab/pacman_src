@@ -56,3 +56,12 @@ single ca65 translation unit.
 
 Reusable inline operations live under `src/macros/` and emit bytes at their
 call sites; they do not own ROM ranges. See [macros.md](./macros.md).
+
+Shared address and constant definitions live under `src/memory/`:
+
+- `hardware.inc` names CPU-visible NES registers and proven register bit masks;
+- `ram.inc` maps runtime RAM fields;
+- `constants.inc` defines verified gameplay and data-format constants.
+
+These includes emit no bytes and are loaded by `src/main.asm` before macros and
+address-ordered ROM modules.

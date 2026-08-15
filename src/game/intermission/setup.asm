@@ -8,7 +8,7 @@
 ; ram_sfx_intermission_flag_a/ram_sfx_intermission_flag_b: one-shot flags used by intermission setup/runtime
 ; Actor sprite-set and attribute arrays seed the initial cutscene composition.
 handler_script0E_intermission_setup:		; was: ofs_003_E655_0E
-    LDA #$08
+    LDA #PPUCTRL_SPRITE_PATTERN_HIGH
     STA ram_ppuctrl_base
     STA PPUCTRL
 ; Wait for vblank before enabling intro setup flags
@@ -50,7 +50,7 @@ bra_upload_demo_sprite_palette:		; was: bra_E6A0_loop
     STA ram_ppu_buffer_1up + $04
     LDA #con_script_10
     STA ram_script
-    LDA #$88
+    LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH
     STA PPUCTRL
     STA ram_ppuctrl_base
     JMP loc_gameplay_mainloop_wait_nmi

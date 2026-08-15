@@ -22,7 +22,7 @@ bra_continue_title_scroll:		; was: bra_C208
     BNE bra_dispatch_next_title_frame
     LDA #$00
     STA ram_scroll_Y
-    LDA #$88
+    LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH
     STA ram_ppuctrl_base
     LDA #con_script_02
     STA ram_script

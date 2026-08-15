@@ -7,7 +7,7 @@
 ; ---------------------------------------------------------------------------
 ; Enter gameplay session (demo or real game) and init runtime state
 loc_enter_gameplay_session:		; was: loc_C98A
-    LDA #$08
+    LDA #PPUCTRL_SPRITE_PATTERN_HIGH
     STA PPUCTRL
     STA ram_ppuctrl_base
 ; Wait for vblank set before disabling rendering during gameplay init
@@ -50,7 +50,7 @@ bra_reset_stage_counters:		; was: bra_C9CD
     STA ram_stage_p1
     STA ram_stage_p2
     STA ram_ppu_buffer_hiscore
-    LDA #$88
+    LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH
     STA ram_ppuctrl_base
     STA PPUCTRL
 ; Main gameplay loop entry with NMI wait

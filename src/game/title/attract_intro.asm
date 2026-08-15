@@ -39,7 +39,7 @@ handler_attract_substate_init:		; was: ofs_001_C48C_00
 bra_wait_nmi_before_attract_setup:		; was: bra_C490_infinite_loop
     LDA ram_nmi_wait
     BNE bra_wait_nmi_before_attract_setup
-    LDA #$08
+    LDA #PPUCTRL_SPRITE_PATTERN_HIGH
     STA PPUCTRL
     STA ram_ppuctrl_base
     LDA #$00
@@ -50,7 +50,7 @@ bra_wait_nmi_before_attract_setup:		; was: bra_C490_infinite_loop
     JSR sub_build_attract_ppu_packet
     INC ram_shared_state_0
     INC ram_shared_state_0
-    LDA #$88
+    LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH
     STA PPUCTRL
     STA ram_ppuctrl_base
     JMP loc_script_dispatch_loop

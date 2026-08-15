@@ -58,7 +58,7 @@ bra_clear_runtime_ram:		; was: bra_C054_loop
     INC zp_work1
     CPX zp_work1
     BNE bra_clear_runtime_ram
-    LDA #$06
+    LDA #PPUMASK_SHOW_LEFT_EDGE
     STA PPUMASK
     LDA #$00
     STA PPUSCROLL
@@ -124,13 +124,13 @@ bra_swap_player_state_blocks:		; was: bra_C0B2_loop
     BNE bra_swap_player_state_blocks
 ; Initialize APU + jump into main frame bootstrap
 bra_init_apu_and_continue:		; was: bra_C0C7
-    LDA #$1F
+    LDA #APU_STATUS_ENABLE_ALL
     STA APU_STATUS
-    LDA #$C0
+    LDA #APU_FRAME_COUNTER_IRQ_INHIBIT + APU_FRAME_COUNTER_5_STEP
     STA APU_FRAME_COUNTER
     JSR sub_init_sound_engine
     JSR sub_clear_sound_engine_state
-    LDA #$88
+    LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH
     STA ram_ppuctrl_base
     STA PPUCTRL
     LDA #$FF
@@ -151,7 +151,7 @@ vec_nmi_handler:		; was: vec_C0FA_NMI
     PHA
     TYA
     PHA
-    LDA #$1E
+    LDA #PPUMASK_SHOW_LEFT_EDGE + PPUMASK_RENDERING_ENABLE
     STA PPUMASK
     LDA #$00    ; < ram_oam
     STA OAMADDR
@@ -171,7 +171,7 @@ vec_nmi_handler:		; was: vec_C0FA_NMI
     ORA ram_ppuctrl_base
     STA PPUCTRL
 ; read input
-    LDA #$01
+    LDA #JOYPAD_STROBE
     STA JOYPAD1
     LDA #$00
     STA JOYPAD1
@@ -179,12 +179,12 @@ vec_nmi_handler:		; was: vec_C0FA_NMI
 ; Shift in 8 controller bits for both gamepads
 bra_shift_in_controller_bits:		; was: bra_C138_loop
     LDA JOYPAD1
-    AND #$03
-    CMP #$01
+    AND #JOYPAD_READ_MASK
+    CMP #JOYPAD_SERIAL_BIT
     ROR ram_btn_1p
     LDA JOYPAD2
-    AND #$03
-    CMP #$01
+    AND #JOYPAD_READ_MASK
+    CMP #JOYPAD_SERIAL_BIT
     ROR ram_btn_2p
     DEX
     BNE bra_shift_in_controller_bits
@@ -219,7 +219,7 @@ loc_main_frame_bootstrap:		; was: loc_C168
 bra_wait_nmi_before_main_bootstrap:		; was: bra_C16C_infinite_loop
     LDA ram_nmi_wait
     BNE bra_wait_nmi_before_main_bootstrap
-    LDA #$08
+    LDA #PPUCTRL_SPRITE_PATTERN_HIGH
     STA PPUCTRL
     STA ram_ppuctrl_base
     LDA PPUSTATUS
@@ -268,7 +268,7 @@ bra_upload_background_palette:		; was: bra_C1A3_loop
     BNE bra_commit_ppuctrl_base    ; jmp
 ; Select nametable 2000 path when script != 00
 bra_select_primary_nametable:		; was: bra_C1D7
-    LDA #$88    ; nmt 2000
+    LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH    ; nmt 2000
 ; Commit selected PPUCTRL base and mirror
 bra_commit_ppuctrl_base:		; was: bra_C1D9
     STA PPUCTRL

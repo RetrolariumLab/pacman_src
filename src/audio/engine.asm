@@ -10,9 +10,9 @@ sub_init_sound_engine:		; was: sub_EE18
     STA ram_sfx_stream_table_ptr + $01
     LDA #$40
     STA ram_apu_register_ptr + $01
-    LDA #$1F
+    LDA #APU_STATUS_ENABLE_ALL
     STA APU_STATUS
-    LDA #$C0
+    LDA #APU_FRAME_COUNTER_IRQ_INHIBIT + APU_FRAME_COUNTER_5_STEP
     STA APU_FRAME_COUNTER
 ; Clear per-channel sound effect state and command slots
 sub_clear_sound_engine_state:		; was: sub_EE40

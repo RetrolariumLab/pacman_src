@@ -196,10 +196,16 @@ Deliverables:
 Once complete, this module becomes the style template for every later
 subsystem pass.
 
-### 4. Hardware Registers, Flags, and Constants
+### 4. Hardware Registers, Flags, and Constants — In Progress
 
-Add `src/memory/hardware.inc` and replace raw hardware addresses with standard
-NES register symbols, for example:
+`src/memory/hardware.inc` now names the CPU-visible registers used directly by
+the source. Raw register operands have been replaced while VRAM addresses such
+as nametable `$2000` remain numeric. The initial proven PPU, APU, and controller
+bit masks are also defined there.
+
+The remaining work in this milestone is the evidence-backed magic-number and
+state/data-format constant pass described below. Standard register symbols
+include:
 
 ```asm
 PPUCTRL       = $2000
@@ -399,7 +405,7 @@ replace or weaken the preservation target.
 Create a branch such as `document-scoring-system` and complete this sequence:
 
 1. review `docs/unknowns.md` and link scoring-related findings by stable ID;
-2. add `src/memory/hardware.inc` with register names only;
+2. use `src/memory/hardware.inc` symbols when documenting hardware effects;
 3. document `src/game/scoring.asm` procedure by procedure;
 4. add focused traces for pellet, frightened, ghost-score, fruit, 1UP, and
    high-score events;

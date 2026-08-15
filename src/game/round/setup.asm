@@ -7,7 +7,7 @@ handler_script00_round_init:		; was: ofs_003_CE35_00
 bra_wait_nmi:		; was: bra_CE39_infinite_loop
     LDA ram_nmi_wait
     BNE bra_wait_nmi
-    LDA #$08
+    LDA #PPUCTRL_SPRITE_PATTERN_HIGH
     STA PPUCTRL
     STA ram_ppuctrl_base
     LDA #$00
@@ -273,7 +273,7 @@ bra_next_power_pellet_slot:		; was: bra_CFE5
     STY ram_unknown_round_state
     LDA #$FF
     STA ram_shared_state_2
-    LDA #$88
+    LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH
     STA PPUCTRL
     STA ram_ppuctrl_base
     JMP loc_gameplay_mainloop_wait_nmi
