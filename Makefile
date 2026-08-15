@@ -42,7 +42,7 @@ LINES ?= 250
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify run clean split build-dev reference analyze chunk help _require-assets _manifest _batch
+.PHONY: build verify lint run clean split build-dev reference analyze chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -66,6 +66,9 @@ verify: _require-assets
 		--labels "$(NATIVE_LABELS)" \
 		--output-rom "$(NATIVE_ROM)" \
 		--verify
+
+lint:
+	$(PYTHON) "$(PROJECT_DIR)scripts/lint_source.py"
 
 run: build build-dev
 	"$(FCEUX_EXE)" "$(NATIVE_ROM)"
@@ -159,6 +162,7 @@ help:
 	@echo Pac-Man disassembly targets:
 	@echo   make build                 Build the native ca65 ROM
 	@echo   make verify                Build and verify byte-identity
+	@echo   make lint                  Run fast source and documentation checks
 	@echo   make run                   Build and run the ROM in FCEUX
 	@echo   make clean                 Remove build/analysis output; preserve assets
 	@echo   make split                 Extract CHR, maze, and audio assets from the original ROM

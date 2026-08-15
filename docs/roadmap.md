@@ -308,10 +308,15 @@ Use controlled patches when needed to force a rare state, but record the exact
 patch and never confuse a patched ROM result with evidence from the preservation
 build.
 
-### 8. Automated Source and Documentation Checks
+### 8. Automated Source and Documentation Checks — In Progress
 
-Add a public `make lint` or `make check` target for fast, non-emulator checks.
-It should verify at least:
+The initial `make lint` target now checks text whitespace and final newlines,
+evidence tags and registry IDs, legacy uncertainty annotations, raw hardware
+operands, address-derived symbols, direct `JSR`/`sub_` consistency, and the ASM
+module size budget. Remaining checks below can be added as their rules become
+precise enough to avoid false positives.
+
+It should eventually verify:
 
 - no ROM or RAM addresses are embedded in active symbol names;
 - every direct `JSR` target uses `sub_` and every `sub_` has a direct caller;

@@ -252,7 +252,7 @@ tbl_attract_ppu_packet_ptrs:		; was: tbl_C5D3
     .word off_attract_text_name_guzuta
     .word off_attract_text_points_table
 
-; bzk careful here if you move this data
+; Keep this data adjacent to the indexed lookup above if the block is moved.
 ; code always reads next byte after FF via 0x000514
 ; and checks if it is 00 or not
 ; recommended to place additional FF or 01 or whatever byte after each chunk of data
