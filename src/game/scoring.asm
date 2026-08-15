@@ -1,8 +1,20 @@
 ; Pellets, frightened mode, score, and extra lives
 
-; Pellet/power-pellet detector.
-; On hit: updates pellet tile state, queues PPU clear command, updates counters, may spawn fruit,
-; then jumps to score accumulator flush at loc_add_points_and_update_score_buffers.
+; Check whether Pac-Man's sampled tile is a pellet and consume it.
+;
+; Inputs:
+; - ram_obj_ppu_tile_now: tile sampled at Pac-Man's current position
+; - ram_obj_pos_X_hi/ram_obj_pos_Y_hi: world position used to locate the PPU tile
+; Outputs:
+; - no pellet: returns without changing gameplay state
+; - pellet: commits its pending score before returning through
+;   loc_add_points_and_update_score_buffers
+; Side effects:
+; - clears the maze tile through ram_ppu_buffer_main and ram_obj_ppu_tile_now
+; - resets the ghost-release inactivity timer and decrements ram_pellet_cnt_p1
+; - may start frightened mode, spawn fruit, or select the stage-clear script
+; - requests one of the alternating pellet sound effects
+; Clobbers: A, X, Y; pellet paths also use zp_work0..zp_work4.
 sub_check_for_eating_pellets:
     LDX #$00
     LDA ram_obj_ppu_tile_now
@@ -162,7 +174,20 @@ tbl_fruit_sprite_tile_by_stage:		; was: tbl_DFBE_fruit_id
     .byte $2A   ; 06
     .byte $2B   ; 07
 
-; Enter frightened mode and enqueue palette update
+; Start frightened mode after a power pellet is consumed.
+;
+; Inputs:
+; - ram_frightened_duration: stage-specific frightened timer value
+; - ghost state, direction, position, and sampled neighbor-tile arrays
+; - ram_ppu_buffer_main: terminated command stream with space for the palette packet
+; Outputs: none.
+; Side effects:
+; - initializes the frightened timer/mask, resets ram_kill_cnt, and selects the
+;   frightened palette for all four ghosts
+; - appends tbl_frightened_palette_cmd_alt to ram_ppu_buffer_main
+; - falls through to sub_try_reverse_ghost_directions, so eligible active ghosts
+;   may reverse before this call returns
+; Clobbers: A, X, Y and zp_work0..zp_work4.
 sub_start_frightened_mode:		; was: sub_DFC6
     LDA ram_frightened_duration
     BNE bra_store_frightened_timer
@@ -206,7 +231,15 @@ bra_append_frightened_palette_cmd:		; was: bra_DFF3_loop
     BNE bra_append_frightened_palette_cmd
     LDA #$00
     STA ram_kill_cnt
-; Try to reverse ghost directions when frightened starts
+; Reverse eligible active ghosts for a frightened/scatter-chase transition.
+;
+; Inputs:
+; - ram_shared_state_1 and ram_release_wave_timer select whether reversal is due
+; - ghost state/direction, position fractions, and sampled neighbor tiles
+; Outputs: none.
+; Side effects: writes ram_ghost_direction for state-$04 ghosts whose movement
+; state permits an immediate reversal; all other slots are left unchanged.
+; Clobbers: A, X, Y and zp_work0..zp_work4.
 sub_try_reverse_ghost_directions:		; was: sub_E003
     LDX #$00
     LoadPointer zp_work0, (ram_obj_ppu_tile + $05)
@@ -265,7 +298,17 @@ tbl_frightened_palette_cmd_alt:		; was: tbl_E05B
     .byte $11
     .byte $FF   ; end token
 
-; Add pending points and rebuild score PPU buffers
+; Commit the pending BCD score transaction and refresh derived HUD state.
+;
+; Entry contract: producers fill ram_pending_score_bcd and tail-jump here. In
+; demo mode the entry returns immediately and leaves the pending digits intact.
+; Outputs: none.
+; Side effects in live play:
+; - adds and clears all six pending BCD digits, then rebuilds ram_ppu_buffer_score
+; - awards the one-time extra life, requests its SFX, and appends its icon packet
+;   when the threshold digit first reaches one
+; - promotes the score RAM and formatted buffer when the score exceeds the hiscore
+; Clobbers: A, X, Y and zp_work0..zp_work2.
 loc_add_points_and_update_score_buffers:		; was: loc_E060
 ; Score pipeline:
 ; 1) add pending BCD deltas from ram_pending_score_bcd into active score
@@ -430,7 +473,11 @@ tbl_life_icon_ppu_packets:		; was: tbl_E13A
     .byte                                    $3E, $3F, $FF
 ; !(UNUSED) No pointer, branch, or fall-through reaches these bytes. See DATA-002.
     .byte $4A, $4A, $4A, $4A
-; Convert BCD nibble to score tile code
+; Convert the low nibble in A to the corresponding score-font tile.
+;
+; Input: A (only bits 0..3 are significant).
+; Output: A = con_tile+$30..$39 for 0..9, or con_tile+$41..$46 for A..F.
+; Preserves: X, Y. Clobbers: processor flags.
 sub_digit_to_score_tile:		; was: sub_E148
     AND #$0F
     CMP #$0A
