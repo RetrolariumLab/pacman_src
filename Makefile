@@ -39,10 +39,13 @@ TILE_ASCII_MAP ?= $(PROJECT_DIR)config/tile_ascii_map.txt
 COUNT ?= 32
 START ?= 1
 LINES ?= 250
+SCORING_TRACE ?= $(PROJECT_DIR)tmp/scoring_trace.csv
+SCORING_SCENARIOS ?= $(PROJECT_DIR)scenarios/scoring_trace.json
+SCORING_MAX_FRAMES ?= $(MAX_FRAMES_LONGPLAY)
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify lint run clean split build-dev reference analyze chunk help _require-assets _manifest _batch
+.PHONY: build verify lint run clean split build-dev reference analyze trace-scoring validate-scoring-trace chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -147,6 +150,22 @@ analyze: build-dev _batch
 		--nothrottle
 	@echo Analysis complete: $(ANALYSIS_REPORT_CSV)
 
+trace-scoring: build-dev verify
+	@$(PYTHON) -c "import pathlib; pathlib.Path(r'$(PROJECT_DIR)tmp').mkdir(parents=True, exist_ok=True)"
+	set "PACMAN_SCORING_TRACE=$(SCORING_TRACE)" && set "PACMAN_SCORING_MAX_FRAMES=$(SCORING_MAX_FRAMES)" && "$(FCEUX_EXE)" \
+		-playmovie "$(LONGPLAY_MOVIE_FILE)" \
+		-lua "$(subst /,\,$(PROJECT_DIR)scripts/workflow/capture_scoring_trace.lua)" \
+		-max-frames "$(SCORING_MAX_FRAMES)" \
+		-turbo 1 \
+		-nothrottle 1 \
+		"$(NATIVE_ROM)"
+	@echo Scoring trace saved to $(SCORING_TRACE)
+
+validate-scoring-trace:
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_scoring_trace.py" \
+		--scenarios "$(SCORING_SCENARIOS)" \
+		--trace "$(SCORING_TRACE)"
+
 chunk: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/extract_rename_chunk.py" \
 		--source "$(NATIVE_SOURCE)" \
@@ -169,6 +188,8 @@ help:
 	@echo   make build-dev             Check tools and clone/build FCEUX if needed
 	@echo   make reference             Capture the longplay reference set
 	@echo   make analyze COUNT=32      Run the reverse-engineering analysis
+	@echo   make trace-scoring         Capture compact scoring events during longplay
+	@echo   make validate-scoring-trace Validate expected scoring event sequences
 	@echo   make chunk START=260 LINES=60  Prepare a rename/analysis chunk
 	@echo   make help                  Show these public targets
 

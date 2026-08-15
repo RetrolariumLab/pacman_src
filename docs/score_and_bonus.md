@@ -108,9 +108,9 @@ loads the `0A:3C` visibility timer, chooses the stage-dependent sprite tile,
 and places the fruit at world position `$60,$80`.
 
 The round runtime decrements the timer and hides the fruit when it expires.
-While fruit is available, collision handling replaces the fruit with its score
-popup, starts the popup timer, requests the fruit SFX, and writes the
-stage-indexed award:
+While `ram_fruit_eaten_latch` is clear, collision handling replaces the fruit
+with its score popup, sets the latch, starts the popup timer, requests the fruit
+SFX, and writes the stage-indexed award:
 
 | Stage parameter index | Displayed points |
 | ---: | ---: |

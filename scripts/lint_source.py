@@ -26,6 +26,7 @@ TEXT_SUFFIXES = {
     ".fm2",
     ".inc",
     ".json",
+    ".lua",
     ".md",
     ".py",
     ".txt",

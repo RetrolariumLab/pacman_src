@@ -15,7 +15,15 @@
 ; ram_personal_release_stage: personal-release stage index
 ; ram_release_timer_seconds/ram_release_timer_ticks: release counters (seconds/subseconds)
 ; ram_fruit_timer_hi/ram_fruit_timer_lo: fruit visibility timer
-; Update frightened timers, ghost release progression, and fruit timer
+; Advance the per-frame frightened, release, scatter/chase, and fruit timers.
+;
+; Inputs: current round timer/state fields and terminated ram_ppu_buffer_main.
+; Outputs: none.
+; Side effects:
+; - advances frightened state and queues palette blink/end packets
+; - advances scatter/chase and ghost-release state, possibly reversing ghosts
+; - decrements the fruit/popup timer and removes its sprite when it expires
+; Clobbers: A, X, Y and zp_work0..zp_work4.
 sub_update_round_timers_and_frightened:		; was: sub_D0EF
     LDA ram_shared_state_2
     BMI bra_release_and_fruit_tick
@@ -176,11 +184,11 @@ bra_update_fruit_visibility_timer:		; was: bra_D1CF
     LDA #$3C
     STA ram_fruit_timer_lo
     RTS
-; Hide fruit sprite and clear fruit active flag
+; Hide the fruit/popup sprite and clear the eaten latch.
 bra_hide_fruit_sprite:		; was: bra_D1E4
     STA ram_obj_pos_X_hi + $14
     STA ram_obj_pos_Y_hi + $14
-    STA ram_fruit_active
+    STA ram_fruit_eaten_latch
 ; Return from round timer update
 bra_return_from_round_timer_update:		; was: bra_D1EA_RTS
     RTS
@@ -218,7 +226,20 @@ tbl_frightened_palette_cmd:		; was: tbl_D205
     .byte $20
     .byte $FF   ; end token
 
-; Check Pac-Man collisions against ghosts/fruit and dispatch death/eat/score paths
+; Check Pac-Man against the four ghost slots and the fruit slot.
+;
+; Inputs:
+; - Pac-Man and candidate world positions
+; - ghost states and ram_shared_state_1 frightened mask
+; - fruit availability state and ram_stage_param_index
+; Outputs: none.
+; Side effects:
+; - dangerous ghost: selects the death script and initializes death animation
+; - frightened ghost: prepares the indexed 200/400/800/1600 transaction, popup,
+;   ghost state, SFX, and freeze script, then tail-jumps to the score commit
+; - available fruit: prepares its stage-indexed transaction, popup timer, and SFX,
+;   then tail-jumps to the score commit
+; Clobbers: A, X, Y and zp_work0..zp_work3.
 sub_check_actor_collisions:		; was: sub_D20F
     LDA ram_pellet_cnt_p1
     BNE bra_init_collision_scan
@@ -280,13 +301,15 @@ bra_advance_collision_candidate:		; was: bra_D25A
     CPX #$0A
     BNE bra_scan_collision_candidates
     RTS
-; Dispatch ghost-eat, player-death, or fruit-eat paths
+; Dispatch a confirmed overlap to ghost-eat, player-death, or fruit-eat handling.
 bra_dispatch_collision_type:		; was: bra_D26A
     CPX #$08
     BEQ bra_handle_fruit_collision
     LDA zp_work2
     AND ram_shared_state_1
     BEQ bra_trigger_player_death
+; Prepare the frightened-ghost award selected by ram_kill_cnt.
+bra_award_frightened_ghost:
     TXA
     LSR
     STA zp_work3
@@ -319,17 +342,17 @@ bra_trigger_player_death:		; was: bra_D2A2
     LDA #$00
     STA ram_shared_state_0
     RTS
-; Fruit candidate reached: check spawn state
+; Accept a fruit collision only while the availability/popup latch is clear.
 bra_handle_fruit_collision:		; was: bra_D2B3
-    LDA ram_fruit_active
+    LDA ram_fruit_eaten_latch
     BEQ bra_spawn_fruit_and_score
     RTS
-; Spawn fruit score popup and start fruit timer
+; Replace the fruit with its score popup and prepare the stage-indexed award.
 bra_spawn_fruit_and_score:		; was: bra_D2B8
     STA ram_fruit_timer_hi
     LDA #$80
     STA ram_fruit_timer_lo
-    STA ram_fruit_active
+    STA ram_fruit_eaten_latch
     STA ram_sfx_eat_fruit
     LDY ram_stage_param_index
     LDA tbl_fruit_score_hi,Y

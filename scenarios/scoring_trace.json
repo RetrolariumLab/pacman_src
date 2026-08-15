@@ -1,0 +1,36 @@
+{
+  "format": 1,
+  "trace": "tmp/scoring_trace.csv",
+  "scenarios": [
+    {
+      "id": "normal-pellet",
+      "method": "natural play",
+      "expected_events": ["pellet", "score_commit", "score_changed"]
+    },
+    {
+      "id": "power-pellet",
+      "method": "natural play",
+      "expected_events": ["power_pellet", "pellet", "score_commit", "score_changed"]
+    },
+    {
+      "id": "four-ghost-chain",
+      "method": "controlled play or explicitly recorded patched setup",
+      "expected_events": ["ghost_award", "score_commit", "ghost_award", "score_commit", "ghost_award", "score_commit", "ghost_award", "score_commit"]
+    },
+    {
+      "id": "fruit-award",
+      "method": "natural play",
+      "expected_events": ["actor_collision", "fruit_award", "score_commit", "score_changed"]
+    },
+    {
+      "id": "extra-life-threshold",
+      "method": "natural play or explicitly recorded patched pre-threshold score",
+      "expected_events": ["score_commit", "score_changed", "extra_life_awarded"]
+    },
+    {
+      "id": "high-score-promotion",
+      "method": "natural play",
+      "expected_events": ["score_commit", "score_changed", "hiscore_changed"]
+    }
+  ]
+}

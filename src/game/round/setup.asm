@@ -40,7 +40,7 @@ bra_upload_round_palette:		; was: bra_CE68_loop
     STA ram_script
     LDA ram_round_restart_flag
     BNE bra_common_round_init_tail
-    STA ram_fruit_active
+    STA ram_fruit_eaten_latch
     LDA #con_tile + $01
     STA ram_power_pellet_tile_p1
     STA ram_power_pellet_tile_p1 + $01
