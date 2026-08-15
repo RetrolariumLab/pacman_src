@@ -22,8 +22,8 @@ bra_decode_dpad_direction:		; was: bra_D30A_loop
 loc_apply_requested_direction:		; was: loc_D311
     STA ram_direction_1
     CLC
-    ADC #$02
-    AND #$03
+    ADC #con_direction_reverse_delta
+    AND #con_direction_mask
     CMP ram_direction_2
     BNE bra_validate_requested_direction
     LDA ram_obj_pos_X_hi
@@ -157,7 +157,7 @@ tbl_pos_hi_update_handlers:		; was: tbl_D3C5
 handler_pos_hi_03_right:
     LDX #$00    ; obj_pos_X_hi
     STX zp_work0
-    LDA #$03    ; right
+    LDA #con_direction_right
     STA zp_work1
     BNE bra_move_positive_axis_hi    ; jmp
 
@@ -186,14 +186,14 @@ bra_move_positive_axis_hi:		; was: bra_D3DD
 handler_pos_hi_01_left:
     LDX #$00    ; obj_pos_X_hi
     STX zp_work0
-    LDA #$01    ; left
+    LDA #con_direction_left
     STA zp_work1
     BNE bra_move_negative_axis_hi    ; jmp
 
 handler_pos_hi_00_up:
     LDX #$02    ; obj_pos_Y_hi
     STX zp_work0
-    LDA #$00    ; up
+    LDA #con_direction_up
     STA zp_work1
 ; Move on negative axis (up/left) and align at junctions
 bra_move_negative_axis_hi:		; was: bra_D40D
@@ -263,10 +263,10 @@ bra_continue_step_loop:		; was: bra_D46A
 
 ; Map dpad bit order to direction enum
 tbl_dpad_to_direction:		; was: tbl_D46D_direction
-    .byte $03   ; 00 right
-    .byte $01   ; 01 left
-    .byte $02   ; 02 down
-    .byte $00   ; 03 up
+    .byte con_direction_right
+    .byte con_direction_left
+    .byte con_direction_down
+    .byte con_direction_up
 
 ; Demo/autoplay direction sequencer
 loc_demo_direction_script:		; was: loc_D471

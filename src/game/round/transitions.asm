@@ -7,9 +7,9 @@ handler_script06_post_eat_pause:		; was: ofs_003_CC0F_06
     BNE bra_run_post_eat_updates
     LDA #$02
     STA ram_post_eat_pause_timer
-    LDA #con_script_04
+    LDA #con_game_script_pause
     STA ram_script
-    LDA #$08
+    LDA #con_ghost_state_eaten_score
     LDX #$FE
 ; Find ghost slot matching post-eat state marker
 bra_find_matching_ghost_state_slot:		; was: bra_CC23_loop
@@ -17,7 +17,7 @@ bra_find_matching_ghost_state_slot:		; was: bra_CC23_loop
     INX
     CMP ram_ghost_state,X
     BNE bra_find_matching_ghost_state_slot
-    LDA #$06
+    LDA #con_ghost_state_returning_eyes
     STA ram_ghost_state,X
 ; Continue post-eat freeze updates
 bra_run_post_eat_updates:		; was: bra_CC2D
@@ -77,14 +77,14 @@ bra_finish_death_anim_phase:		; was: bra_CC7F
     LDA #$00
     STA ram_shared_state_0
     STA ram_round_restart_flag
-    LDA #con_script_0A
+    LDA #con_game_script_game_over
     STA ram_script
     JMP loc_gameplay_mainloop_wait_nmi
 ; Branch alias into next-spawn preparation block
 bra_prepare_next_spawn_alias:		; was: bra_CC94
 ; Prepare next spawn/player handoff after death
 loc_prepare_next_spawn:		; was: loc_CC94
-    LDA #con_script_00
+    LDA #con_game_script_round_init
     STA ram_script
     LDA #$01
     STA ram_round_restart_flag
@@ -115,7 +115,7 @@ bra_swap_player_state_blocks_first_path:		; was: bra_CCB0_loop
 bra_bootstrap_title_after_game_over:		; was: bra_CCBF
     LDA #$00
     STA ram_current_player
-    LDA #con_script_00
+    LDA #con_game_script_round_init
     STA ram_script
     JMP loc_main_frame_bootstrap
 ; Swap player state and switch active player for next spawn
@@ -200,12 +200,12 @@ bra_copy_flash_packet_reversed:		; was: bra_CD0D_loop
     BNE bra_start_next_round_script
 ; Switch to intermission script when stage threshold reached
 bra_start_intermission_script:		; was: bra_CD45
-    LDA #con_script_0E
+    LDA #con_game_script_intermission_setup
     STA ram_script
     JMP loc_stage_clear_tail
 ; Switch to normal round-init script when no intermission
 bra_start_next_round_script:		; was: bra_CD4C
-    LDA #con_script_00
+    LDA #con_game_script_round_init
     STA ram_script
 ; Direct branch into shared stage-clear tail
 bra_stage_clear_tail_entry:		; was: bra_CD50

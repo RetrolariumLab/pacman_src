@@ -174,7 +174,7 @@ bra_clear_ready_oam_tail:		; was: bra_CBC3_loop
     BNE bra_clear_ready_oam_tail
 ; Switch script to active gameplay/pause handler
 bra_switch_to_pause_script:		; was: bra_CBCB
-    LDA #con_script_04
+    LDA #con_game_script_pause
     STA ram_script
 ; Return to gameplay dispatcher
 bra_return_dispatch:		; was: bra_CBCF

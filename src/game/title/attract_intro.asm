@@ -4,7 +4,7 @@ handler_script04_attract_intro:		; was: ofs_000_C458_04
     LDA ram_btn_1p
     AND #con_btns_SS
     BEQ bra_run_attract_substate
-    LDA #con_script_02
+    LDA #con_title_script_menu_idle
     STA ram_script
     JMP loc_main_frame_bootstrap
 ; Execute current attract substate handler

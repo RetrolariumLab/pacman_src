@@ -27,8 +27,8 @@ bra_next_neighbor_tile:		; was: bra_E448
     BNE bra_scan_neighbor_tiles
     LDA ram_ghost_direction,X
     CLC
-    ADC #$02
-    AND #$03
+    ADC #con_direction_reverse_delta
+    AND #con_direction_mask
     TAY
     LDA #$FF
     STA zp_work11,Y

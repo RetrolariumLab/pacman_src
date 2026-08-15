@@ -199,7 +199,7 @@ subsystem pass.
 Completed with procedure contracts in `src/game/scoring.asm` and
 `src/game/round/runtime.asm`, the architecture narrative in
 `docs/score_and_bonus.md`, and reproducible Lua-backed scenarios documented in
-`docs/scoring_trace_scenarios.md`. The repository longplay observes all five
+`docs/scoring_trace_scenarios.md`. The repository longplay observes all six
 defined score-event sequences in the byte-identical preservation build.
 
 ### 4. Hardware Registers, Flags, and Constants — In Progress

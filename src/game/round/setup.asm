@@ -36,7 +36,7 @@ bra_upload_round_palette:		; was: bra_CE68_loop
     INY
     CPY #$20
     BNE bra_upload_round_palette
-    LDA #con_script_02
+    LDA #con_game_script_round_ready
     STA ram_script
     LDA ram_round_restart_flag
     BNE bra_common_round_init_tail
@@ -174,9 +174,9 @@ bra_copy_release_target_quad:		; was: bra_CF42_loop
     BNE bra_copy_release_target_quad
 ; Initialize ghost release scheduler state
 bra_init_ghost_release_state:		; was: bra_CF4E
-    LDA #$04
+    LDA #con_ghost_state_active
     STA ram_ghost_state
-    LDA #$01
+    LDA #con_direction_left
     STA ram_ghost_direction
     LDA ram_ghost_release_targets
     STA zp_work1
@@ -185,7 +185,7 @@ bra_init_ghost_release_state:		; was: bra_CF4E
 bra_fill_release_queue_active:		; was: bra_CF5C_loop
     DEC zp_work1
     BEQ bra_release_queue_tail_start
-    LDA #$02
+    LDA #con_ghost_state_exiting_house
     STA ram_ghost_state + $02,X
     LDA #$00
     STA ram_ghost_direction + $02,X
@@ -230,7 +230,7 @@ bra_finalize_round_runtime:		; was: bra_CF7A
     STA ram_ghost_move_pixels + $04
     STA ram_ghost_move_pixels + $06
     STA ram_ghost0_current_speed_pixels
-    LDA #$01
+    LDA #con_direction_left
     STA ram_direction_1
     STA ram_direction_2
     LDY #$00

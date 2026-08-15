@@ -2,7 +2,7 @@
 
 ; Script 0E: intermission pre-setup (clear playfield, palette, actor seed state)
 ; Intermission field legend:
-; ram_shared_state_0: scene index (0..2)
+; ram_shared_state_0: even-valued scene-table offset (00/02/04)
 ; ram_shared_state_1: scene-local substate index
 ; ram_shared_state_2: per-substate countdown in some scenes
 ; ram_sfx_intermission_flag_a/ram_sfx_intermission_flag_b: one-shot flags used by intermission setup/runtime
@@ -33,7 +33,7 @@ bra_wait_vblank_set_flag:		; was: bra_E65C_infinite_loop
     STA ram_obj_pos_X_hi + $04
     LDA #> $00FF
     STA ram_obj_pos_X_lo + $04
-    LDA #$00
+    LDA #$00    ; every intermission scene begins at its first substate
     STA ram_shared_state_1
     SetPpuAddress $3F10
     LDY #$00
@@ -48,7 +48,7 @@ bra_upload_demo_sprite_palette:		; was: bra_E6A0_loop
     STA ram_ppu_buffer_1up + $02
     STA ram_ppu_buffer_1up + $03
     STA ram_ppu_buffer_1up + $04
-    LDA #con_script_10
+    LDA #con_game_script_intermission_runtime
     STA ram_script
     LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH
     STA PPUCTRL
@@ -111,7 +111,7 @@ bra_clear_attribute_block:		; was: bra_E711_loop
     CPX #$40
     BNE bra_clear_attribute_block
     LDA ram_shared_state_0
-    CMP #$02
+    CMP #con_intermission_scene_ripped_suit
     BEQ bra_draw_center_marker_if_mode2
     RTS
 ; Draw center marker tile for mode 2

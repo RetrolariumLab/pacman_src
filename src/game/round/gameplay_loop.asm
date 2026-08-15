@@ -14,7 +14,7 @@ loc_enter_gameplay_session:		; was: loc_C98A
 bra_wait_vblank_set:		; was: bra_C991_infinite_loop
     LDA PPUSTATUS
     BPL bra_wait_vblank_set
-    LDA #$00    ; con_script_00
+    LDA #con_game_script_round_init
     STA PPUMASK
     STA ram_script
     STA ram_current_player
@@ -68,7 +68,7 @@ bra_wait_nmi_in_gameplay_loop:		; was: bra_C9E1_infinite_loop
     LDA ram_btn_1p
     AND #con_btns_SS
     BEQ bra_handle_script_delay
-    LDA #con_script_02
+    LDA #con_title_script_menu_idle
     STA ram_script
     JMP loc_main_frame_bootstrap
 ; Handle script delay countdown before dispatch
@@ -89,15 +89,15 @@ bra_dispatch_current_script:		; was: bra_C9FE
 
 ; Main gameplay script handler table
 tbl_gameplay_script_handlers:		; was: tbl_CA0D
-    .word handler_script00_round_init
-    .word handler_script02_round_ready
-    .word handler_script04_pause_handler
-    .word handler_script06_post_eat_pause
-    .word handler_script08_death_sequence
-    .word handler_script0A_game_over
-    .word handler_script0C_stage_clear
-    .word handler_script0E_intermission_setup
-    .word handler_script10_intermission_runtime
+    .word handler_script00_round_init        ; con_game_script_round_init
+    .word handler_script02_round_ready       ; con_game_script_round_ready
+    .word handler_script04_pause_handler     ; con_game_script_pause
+    .word handler_script06_post_eat_pause    ; con_game_script_post_eat_pause
+    .word handler_script08_death_sequence    ; con_game_script_death
+    .word handler_script0A_game_over         ; con_game_script_game_over
+    .word handler_script0C_stage_clear       ; con_game_script_stage_clear
+    .word handler_script0E_intermission_setup ; con_game_script_intermission_setup
+    .word handler_script10_intermission_runtime ; con_game_script_intermission_runtime
 
 ; Script 04: pause input gate + PAUSE text packet
 handler_script04_pause_handler:		; was: ofs_003_CA1F_04

@@ -100,7 +100,7 @@ bra_append_pellet_clear_ppu_cmd:		; was: bra_DF42
     STA ram_pending_score_bcd
     DEC ram_pellet_cnt_p1
     BNE bra_check_fruit_spawn_thresholds
-    LDA #con_script_stage_clear
+    LDA #con_game_script_stage_clear
     STA ram_script
     LDA #$00
     STA ram_shared_state_0
@@ -151,7 +151,7 @@ tbl_pellet_clear_tile_and_points_alias:		; was: tbl_DFA6_points
 bra_find_free_release_slot_legacy:		; was: bra_DFAE_loop
     LDA ram_ghost_state + $02,X
     BNE bra_next_release_slot_legacy
-    LDA #$02
+    LDA #con_ghost_state_exiting_house
     STA ram_ghost_state + $02,X
     RTS
 ; Legacy duplicate: next release slot
@@ -254,12 +254,12 @@ bra_process_reversal_entry:		; was: bra_E01F
 ; Process direction reversal for active ghost slots
 bra_process_reversal_for_active_ghosts:		; was: bra_E01F_loop
     LDA ram_ghost_state,X
-    CMP #$04
+    CMP #con_ghost_state_active
     BNE bra_next_ghost_for_reversal
     LDA ram_ghost_direction,X
     CLC
-    ADC #$02
-    AND #$03
+    ADC #con_direction_reverse_delta
+    AND #con_direction_mask
     STA zp_work4
     LDY #$00
     LDA (zp_work2),Y    ; 001E 0022 0026 002A

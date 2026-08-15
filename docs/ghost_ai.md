@@ -8,13 +8,17 @@ Working notes for the enemy logic in `src/game/ghosts/navigation.asm` and
 - `sub_dispatch_ghost_state_handler`: reads `ram_ghost_state,X` and jumps via `tbl_ghost_state_handlers`.
 
 ## Ghost States (`ram_ghost_state`)
-- `00`: entering/inside house (`handler_state00_enter_house`).
-- `02`: exiting house (`handler_state02_exit_house`).
-- `04`: active move logic (`handler_state04_move_logic`).
-- `06`: eyes-return logic (shares mover at `handler_state06_move_logic` with special target/speed branches).
-- `08`: noop/disabled (`handler_ghost_state08_noop`).
+- `con_ghost_state_in_house` (`00`): entering/inside house (`handler_state00_enter_house`).
+- `con_ghost_state_exiting_house` (`02`): exiting house (`handler_state02_exit_house`).
+- `con_ghost_state_active` (`04`): active move logic (`handler_state04_move_logic`).
+- `con_ghost_state_returning_eyes` (`06`): eyes-return logic (shares mover at `handler_state06_move_logic` with special target/speed branches).
+- `con_ghost_state_eaten_score` (`08`): movement-disabled state while the eaten-ghost score is displayed (`handler_ghost_state08_noop`).
 
 ## Movement Pipeline (state 04/06)
+Directions use the shared movement enum: up `00`, left `01`, down `02`, and
+right `03` (`con_direction_*`). Adding `con_direction_reverse_delta` and
+masking with `con_direction_mask` selects the opposite direction.
+
 1. `sub_select_ghost_speed_vector` picks the `ram_ghost_move_fraction,X` and `ram_ghost_move_pixels,X` speed pair.
 2. Low-byte step via `tbl_axis_step_lo_handlers`.
 3. Carry/borrow is folded into `ram_movement_step_budget`.

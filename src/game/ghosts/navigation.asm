@@ -43,11 +43,11 @@ sub_dispatch_ghost_state_handler:		; was: sub_D4F2
 
 ; Ghost state handler jump table
 tbl_ghost_state_handlers:		; was: tbl_D501
-    .word handler_state00_enter_house
-    .word handler_state02_exit_house
-    .word handler_state04_move_logic
-    .word handler_state06_move_logic
-    .word handler_ghost_state08_noop
+    .word handler_state00_enter_house    ; con_ghost_state_in_house
+    .word handler_state02_exit_house     ; con_ghost_state_exiting_house
+    .word handler_state04_move_logic     ; con_ghost_state_active
+    .word handler_state06_move_logic     ; con_ghost_state_returning_eyes
+    .word handler_ghost_state08_noop     ; con_ghost_state_eaten_score
 
 ; State 08 handler: no-op
 handler_ghost_state08_noop:		; was: ofs_006_D50B_08_RTS
@@ -227,7 +227,7 @@ bra_check_house_entry_trigger:		; was: bra_D5D9
     LDA (zp_work2),Y    ; 0020 0024 0028 002C
     CMP #$70
     BNE bra_handle_state06_targeting
-    LDA #$02
+    LDA #con_ghost_state_exiting_house
     STA ram_ghost_state,X
     LDA #$00
     CLC
@@ -246,7 +246,7 @@ bra_check_house_entry_trigger:		; was: bra_D5D9
 ; State 06 targeting branch
 bra_handle_state06_targeting:		; was: bra_D606
     LDA ram_ghost_state,X
-    CMP #$06
+    CMP #con_ghost_state_returning_eyes
     BNE bra_select_target_mode
     LDA #$60
     STA ram_ghost_target_x
@@ -332,25 +332,25 @@ bra_pick_turn_from_tile_options:		; was: bra_D675
 bra_scan_open_exits:		; was: bra_D67D_loop
     DEC zp_work6
     BNE bra_try_next_exit_seed
-    LDA #$02
+    LDA #con_direction_down
     BNE bra_store_selected_direction    ; jmp
 ; Try next seeded exit direction
 bra_try_next_exit_seed:		; was: bra_D685
     INC zp_work5
     LDA zp_work5
-    AND #$03
+    AND #con_direction_mask
     TAY
     LDA (zp_work0),Y    ; 022F 0230 0231 0232 0233 0234 0235 0236 0237 0238 0239 023A 023B 023C 023D 023E
     AND #$F8
     BNE bra_scan_open_exits
     LDA zp_work5
     CLC
-    ADC #$02
-    AND #$03
+    ADC #con_direction_reverse_delta
+    AND #con_direction_mask
     CMP ram_ghost_direction,X
     BEQ bra_scan_open_exits
     LDA zp_work5
-    AND #$03
+    AND #con_direction_mask
 ; Store selected movement direction
 bra_store_selected_direction:		; was: bra_D6A1
     STA ram_ghost_direction,X
@@ -406,7 +406,7 @@ bra_choose_next_direction:		; was: bra_D6E3
 loc_choose_next_direction:		; was: loc_D6E3
     LDA ram_ghost_state,X
     SEC
-    SBC #$04
+    SBC #con_ghost_state_active
     TAY
     LDA tbl_forbidden_turn_mask_by_state,Y
     STA zp_work9
@@ -416,7 +416,7 @@ loc_choose_next_direction:		; was: loc_D6E3
     LDA zp_work11
     CMP #$FF
     BNE bra_check_candidate_b
-    LDA #$02
+    LDA #con_direction_down
     BNE bra_commit_direction_choice    ; jmp
 ; Check second direction candidate validity
 bra_check_candidate_b:		; was: bra_D700
@@ -490,7 +490,7 @@ bra_match_candidate_against_valid:		; was: bra_D755_loop
     LDA ram_ghost_direction,X
     SEC
     SBC #$01
-    AND #$03
+    AND #con_direction_mask
     LDY #$00
 ; Try alternate direction (left turn)
 bra_try_turn_left_alt:		; was: bra_D76E_loop
@@ -502,7 +502,7 @@ bra_try_turn_left_alt:		; was: bra_D76E_loop
     LDA ram_ghost_direction,X
     CLC
     ADC #$01
-    AND #$03
+    AND #con_direction_mask
     LDY #$00
 ; Try alternate direction (right turn)
 bra_try_turn_right_alt:		; was: bra_D781_loop

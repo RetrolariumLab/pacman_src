@@ -15,15 +15,15 @@ sub_run_intermission_scene_dispatch:		; was: sub_E75A
     STA ram_indirect_jmp + $01
     JMP (ram_indirect_jmp)
 
-; Intermission scene handler table (scene 0/1/2)
+; Intermission scene handler table (byte offsets 00/02/04)
 ; Scene id mapping:
 ; 00 -> first chase scene
-; 01 -> ripped-suit gag scene
-; 02 -> return/chaser finale
+; 02 -> ripped-suit gag scene
+; 04 -> return/chaser finale
 tbl_intermission_scene_handlers:		; was: tbl_E769
-    .word handler_scene00_chase_opening
-    .word handler_scene01_chase_rip_opening
-    .word handler_scene02_chase_return_opening
+    .word handler_scene00_chase_opening        ; con_intermission_scene_chase
+    .word handler_scene01_chase_rip_opening    ; con_intermission_scene_ripped_suit
+    .word handler_scene02_chase_return_opening ; con_intermission_scene_return
 
 ; Intermission scene 00 (first cutscene) state machine
 ; Uses ram_shared_state_1 as substate selector into tbl_scene00_state_handlers.
@@ -37,10 +37,10 @@ handler_scene00_chase_opening:		; was: ofs_012_E76F_00
 
 ; State handlers for intermission scene 00
 tbl_scene00_state_handlers:		; was: tbl_E77E
-    .word handler_scene00_wait_enemy4_left_entry
-    .word handler_scene00_wait_pacman_wrap_left
-    .word handler_scene00_wait_pacman_midpoint
-    .word handler_scene00_wait_ghost_pack_wrap
+    .word handler_scene00_wait_enemy4_left_entry ; con_intermission_chase_wait_enemy
+    .word handler_scene00_wait_pacman_wrap_left  ; con_intermission_chase_wait_wrap
+    .word handler_scene00_wait_pacman_midpoint   ; con_intermission_chase_wait_midpoint
+    .word handler_scene00_wait_ghost_pack_wrap   ; con_intermission_chase_wait_pack_wrap
 
 ; Wait until enemy 4 reaches trigger X, then initialize chase actor
 handler_scene00_wait_enemy4_left_entry:		; was: ofs_013_E786_00
@@ -167,9 +167,9 @@ handler_scene01_chase_rip_opening:		; was: ofs_012_E853_02
 ; 02: transform to ripped-suit phase
 ; 04: blink ripped tiles then finish
 tbl_scene01_state_handlers:		; was: tbl_E862
-    .word handler_scene01_wait_enemy4_left_entry
-    .word handler_scene01_handle_rip_transform
-    .word handler_scene01_blink_rip_tiles_then_finish
+    .word handler_scene01_wait_enemy4_left_entry      ; con_intermission_rip_wait_enemy
+    .word handler_scene01_handle_rip_transform        ; con_intermission_rip_transform
+    .word handler_scene01_blink_rip_tiles_then_finish ; con_intermission_rip_blink
 
 ; Wait enemy 4 position then init chase actor for scene01
 handler_scene01_wait_enemy4_left_entry:		; was: ofs_014_E868_00
@@ -276,10 +276,10 @@ handler_scene02_chase_return_opening:		; was: ofs_012_E8FA_04
 ; 04: wait midpoint + spawn chaser
 ; 06: wait chaser wrap then finish
 tbl_scene02_state_handlers:		; was: tbl_E909
-    .word handler_scene02_wait_enemy4_left_entry
-    .word handler_scene02_wait_pacman_wrap_left
-    .word handler_scene02_wait_return_midpoint
-    .word handler_scene02_wait_chaser_wrap
+    .word handler_scene02_wait_enemy4_left_entry ; con_intermission_return_wait_enemy
+    .word handler_scene02_wait_pacman_wrap_left  ; con_intermission_return_wait_wrap
+    .word handler_scene02_wait_return_midpoint   ; con_intermission_return_wait_midpoint
+    .word handler_scene02_wait_chaser_wrap       ; con_intermission_return_wait_chaser
 
 ; Wait enemy 4 trigger and init chase actor for scene02
 handler_scene02_wait_enemy4_left_entry:		; was: ofs_015_E911_00
@@ -368,7 +368,7 @@ bra_scene02_finish_to_script00:		; was: bra_E99C
     STA ram_script_delay
 ; Common return: set script00 and exit
 loc_set_script00_return:		; was: loc_E9A0
-    LDA #con_script_00
+    LDA #con_game_script_round_init
     STA ram_script
     RTS
 

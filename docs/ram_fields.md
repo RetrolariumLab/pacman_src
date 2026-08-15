@@ -6,7 +6,7 @@ Working glossary for the most important RAM fields used by `src/main.asm`.
 ## Fields
 | Field | Hypothesized Meaning | Key Usage Sites | Confidence | Notes |
 |---|---|---|---|---|
-| `ram_script` | Current gameplay script state | `bra_dispatch_current_script`, `tbl_gameplay_script_handlers` | High | Model as enum (`SCRIPT_00`, `SCRIPT_02`, ...). |
+| `ram_script` | Current title-flow or gameplay script state | `bra_dispatch_current_script`, `tbl_gameplay_script_handlers` | High | Semantic `con_title_script_*` and `con_game_script_*` constants reflect the active dispatcher. |
 | `ram_flag_demo` | Demo/autoplay mode flag | `loc_enter_gameplay_session`, `sub_update_pacman_movement` | High | Gates input path and some script transitions. |
 | `ram_flag_pause` | Pause toggle state | `handler_script04_pause_handler` | High | Also drives PAUSE text packet variant. |
 | `ram_stage_p1` / `ram_stage_p2` | Current stage counters per player | `handler_script00_round_init`, stage-clear/game-over flows | High | Used as table index drivers for level params. |
@@ -16,8 +16,8 @@ Working glossary for the most important RAM fields used by `src/main.asm`.
 | `ram_shared_state_0` | Generic script/scene local timer or scene id | title/intermission/gameplay scripts | Medium | Semantics vary by context; keep per-script ownership clear. |
 | `ram_shared_state_1` | Generic substate counter or frightened mask | attract/intermission substates; runtime frightened mask | Medium | In round runtime it acts as a frightened bitmask by ghost slot. |
 | `ram_shared_state_2` / `ram_shared_state_3` | Frightened timer pair and cutscene countdown storage | `sub_update_round_timers_and_frightened`, scene blink waits | Medium | Deliberately neutral names reflect cross-subsystem reuse. |
-| `ram_ghost_state` | Ghost state array with a two-byte stride | `sub_dispatch_ghost_state_handler`, `tbl_ghost_state_handlers` | High | Core ghost FSM selector. Release routines scan slots 1..3 at `ram_ghost_state + $02,X`. |
-| `ram_ghost_direction` | Ghost direction array interleaved with state | ghost movement/targeting (`D50C..D83F`) | High | Keep direction encoding stable (0..3). |
+| `ram_ghost_state` | Ghost state array with a two-byte stride | `sub_dispatch_ghost_state_handler`, `tbl_ghost_state_handlers` | High | Core ghost FSM selector, represented by `con_ghost_state_*`. Release routines scan slots 1..3 at `ram_ghost_state + $02,X`. |
+| `ram_ghost_direction` | Ghost direction array interleaved with state | ghost movement/targeting (`D50C..D83F`) | High | Uses the shared `con_direction_*` encoding: up, left, down, right (`0..3`). |
 | `ram_scatter_chase_timer` | Active scatter/chase countdown | `sub_update_round_timers_and_frightened` | High | Decremented via the second divider. |
 | `ram_scatter_chase_phase` / `ram_scatter_chase_second_divider` | Scatter/chase phase index and second divider | `D14B..D172` | High | Drives phase transitions and optional direction reversals. |
 | `ram_release_wave_timer` | Per-wave release timer seed/current | `D16A`, `D1C2`, `E01B` | Medium | Used when the phase timer source switches. |

@@ -19,11 +19,14 @@ Order in `handler_script10_intermission_runtime`:
 4. `sub_run_intermission_scene_dispatch`
 
 ## Scene Dispatch (`ram_shared_state_0`)
-- `00`: `handler_scene00_chase_opening`
-- `01`: `handler_scene01_chase_rip_opening`
-- `02`: `handler_scene02_chase_return_opening`
+- `con_intermission_scene_chase` (`00`): `handler_scene00_chase_opening`
+- `con_intermission_scene_ripped_suit` (`02`): `handler_scene01_chase_rip_opening`
+- `con_intermission_scene_return` (`04`): `handler_scene02_chase_return_opening`
 
-All scenes use `ram_shared_state_1` as an even-valued substate selector.
+The scene IDs are byte offsets into word tables, not ordinal `0..2` indexes.
+All scenes use `ram_shared_state_1` as an even-valued substate selector. Each
+table entry has a scene-specific `con_intermission_*` constant because the same
+numeric offset represents different actions in different scenes.
 
 ## Scene 00 (First Intermission)
 Substates (`tbl_scene00_state_handlers`):
@@ -65,7 +68,7 @@ Finish path:
 - Scene02: base + main/aux tile toggles (`EB08` table).
 
 ## RAM Roles in Intermission
-- `ram_shared_state_0`: scene index (0..2).
+- `ram_shared_state_0`: even-valued scene-table offset (`00`, `02`, `04`).
 - `ram_shared_state_1`: scene substate (even steps).
 - `ram_shared_state_2`: local countdown timer (blink/toggle phases).
 - `ram_sfx_intermission_flag_a` / `ram_sfx_intermission_flag_b`: intermission sound-event request slots.

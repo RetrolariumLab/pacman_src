@@ -200,7 +200,7 @@ sub_queue_next_ghost_release:		; was: sub_D1EB
 bra_find_free_release_slot:		; was: bra_D1ED_loop
     LDA ram_ghost_state + $02,X
     BNE bra_advance_release_slot
-    LDA #$02
+    LDA #con_ghost_state_exiting_house
     STA ram_ghost_state + $02,X
     RTS
 ; Advance to next release slot pair
@@ -253,7 +253,7 @@ bra_init_collision_scan:		; was: bra_D214
 ; Iterate ghost/fruit collision candidate slots
 bra_scan_collision_candidates:		; was: bra_D222_loop
     LDA ram_ghost_state,X
-    CMP #$04
+    CMP #con_ghost_state_active
     BNE bra_advance_collision_candidate
     LDY #$00
     LDA ram_obj_pos_X_hi
@@ -325,15 +325,15 @@ bra_award_frightened_ghost:
     LDA tbl_ghost_score_popup_hi,Y
     STA ram_pending_score_bcd + $02
     INC ram_kill_cnt
-    LDA #$08
+    LDA #con_ghost_state_eaten_score
     STA ram_ghost_state,X
     STA ram_sfx_eat_ghost
-    LDA #con_script_freeze
+    LDA #con_game_script_post_eat_pause
     STA ram_script
     JMP loc_add_points_and_update_score_buffers
 ; Collision with dangerous ghost: enter death script
 bra_trigger_player_death:		; was: bra_D2A2
-    LDA #con_script_08
+    LDA #con_game_script_death
     STA ram_script
     LDA #$12
     STA ram_animation

@@ -102,7 +102,7 @@ bra_write_warm_boot_signature:		; was: bra_C091_loop
     STA ram_score_hi + $03
 ; Common boot finalization shared by cold/warm paths
 bra_boot_finalize_common:		; was: bra_C0A0
-    LDY #con_script_00
+    LDY #con_title_script_scroll_in
     STY ram_script
     LDA #> ram_oam
     STA ram_oam_dma_page
@@ -263,7 +263,7 @@ bra_upload_background_palette:		; was: bra_C1A3_loop
     STA ram_shared_state_1
     LDA ram_script
     BNE bra_select_primary_nametable
-; if con_script_00
+; if con_title_script_scroll_in
     LDA #$8A    ; nmt 2800
     BNE bra_commit_ppuctrl_base    ; jmp
 ; Select nametable 2000 path when script != 00

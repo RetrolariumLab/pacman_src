@@ -10,9 +10,9 @@ sub_run_intermission_animation_dispatch:		; was: sub_EA20
 
 ; Animation scene handler table for intermission script10
 tbl_intermission_anim_scene_handlers:		; was: tbl_EA2F
-    .word handler_anim_scene00_dispatch
-    .word handler_anim_scene01_dispatch
-    .word handler_anim_scene02_dispatch
+    .word handler_anim_scene00_dispatch ; con_intermission_scene_chase
+    .word handler_anim_scene01_dispatch ; con_intermission_scene_ripped_suit
+    .word handler_anim_scene02_dispatch ; con_intermission_scene_return
 
 ; Animation state machine for intermission scene00
 handler_anim_scene00_dispatch:		; was: ofs_016_EA35_00
@@ -25,10 +25,10 @@ handler_anim_scene00_dispatch:		; was: ofs_016_EA35_00
 
 ; State handlers for animation scene00
 tbl_anim_scene00_state_handlers:		; was: tbl_EA44
-    .word handler_anim_scene_base_cycle
-    .word handler_anim_scene00_head_toggle_alias
-    .word handler_anim_scene00_tail_toggle
-    .word handler_anim_scene00_banner_cycle
+    .word handler_anim_scene_base_cycle         ; con_intermission_chase_wait_enemy
+    .word handler_anim_scene00_head_toggle_alias ; con_intermission_chase_wait_wrap
+    .word handler_anim_scene00_tail_toggle      ; con_intermission_chase_wait_midpoint
+    .word handler_anim_scene00_banner_cycle     ; con_intermission_chase_wait_pack_wrap
 
 ; Shared animation tick: cycle frame index and tile
 bra_anim_tick_palette_cycle:		; was: bra_EA4C
@@ -159,9 +159,9 @@ handler_anim_scene01_dispatch:		; was: ofs_016_EAC9_02
 ; State handlers for animation scene01
 ; 00: base cycle, 02: ripped-tile toggle, 04: base cycle alt
 tbl_anim_scene01_state_handlers:		; was: tbl_EAD8
-    .word handler_anim_scene_base_cycle
-    .word handler_anim_scene01_rip_tile_toggle
-    .word handler_anim_scene_base_cycle_alt
+    .word handler_anim_scene_base_cycle        ; con_intermission_rip_wait_enemy
+    .word handler_anim_scene01_rip_tile_toggle ; con_intermission_rip_transform
+    .word handler_anim_scene_base_cycle_alt    ; con_intermission_rip_blink
 
 ; Scene01 animation: toggle ripped-suit center tile by position
 handler_anim_scene01_rip_tile_toggle:		; was: ofs_017_EADE_02
@@ -195,10 +195,10 @@ handler_anim_scene02_dispatch:		; was: ofs_016_EAF9_04
 ; State handlers for animation scene02
 ; 00: base cycle, 02: main-tile toggle, 04/06: aux-tile toggles
 tbl_anim_scene02_state_handlers:		; was: tbl_EB08
-    .word handler_anim_scene_base_cycle
-    .word handler_anim_scene02_toggle_main_tile
-    .word handler_anim_scene02_toggle_aux_tile
-    .word handler_anim_scene02_toggle_aux_tile_alt
+    .word handler_anim_scene_base_cycle            ; con_intermission_return_wait_enemy
+    .word handler_anim_scene02_toggle_main_tile     ; con_intermission_return_wait_wrap
+    .word handler_anim_scene02_toggle_aux_tile      ; con_intermission_return_wait_midpoint
+    .word handler_anim_scene02_toggle_aux_tile_alt  ; con_intermission_return_wait_chaser
 
 ; Scene02 animation: toggle main actor tile every 8 frames
 handler_anim_scene02_toggle_main_tile:		; was: ofs_017_EB10_02

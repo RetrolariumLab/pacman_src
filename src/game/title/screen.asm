@@ -11,7 +11,7 @@ handler_script00_title_scroll_in:		; was: ofs_000_C1FB_00
     LDA ram_btn_1p
     AND #con_btns_SS
     BEQ bra_continue_title_scroll
-    LDA #con_script_02
+    LDA #con_title_script_menu_idle
     STA ram_script
     JMP loc_main_frame_bootstrap
 ; Advance title scroll until target Y reached
@@ -24,7 +24,7 @@ bra_continue_title_scroll:		; was: bra_C208
     STA ram_scroll_Y
     LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH
     STA ram_ppuctrl_base
-    LDA #con_script_02
+    LDA #con_title_script_menu_idle
     STA ram_script
 ; Return to script dispatcher on next frame
 bra_dispatch_next_title_frame:		; was: bra_C21C
@@ -192,7 +192,7 @@ bra_title_idle_tick:		; was: bra_C3DC
 ; start demo mode when timer is 200h
     LDA #$00
     STA ram_shared_state_0
-    LDA #con_script_04
+    LDA #con_title_script_attract_intro
     STA ram_script
     JMP loc_script_dispatch_loop
 ; Handle Select edge: toggle 1P/2P and refresh text

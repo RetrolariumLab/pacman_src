@@ -7,7 +7,7 @@ sub_select_ghost_speed_vector:		; was: sub_D78C
 ; - ram_ghost_frightened_speed_*: frightened speed
 ; - ram_ghost_tunnel_speed_*: tunnel speed
     LDA ram_ghost_state,X
-    CMP #$06
+    CMP #con_ghost_state_returning_eyes
     BEQ bra_apply_eyes_speed
     LDY #$02
     LDA (zp_work2),Y    ; 0020 0024 0028 002C
@@ -97,11 +97,11 @@ handler_state02_exit_house:		; was: ofs_006_D7F0_02
     BEQ bra_transition_to_state04
     BCC bra_choose_exit_left_or_up
     DEC zp_work5
-    LDA #$01
+    LDA #con_direction_left
     BNE bra_store_exit_direction    ; jmp
 ; Choose exit direction variant
 bra_choose_exit_left_or_up:		; was: bra_D807
-    LDA #$03
+    LDA #con_direction_right
 ; Store selected exit direction
 bra_store_exit_direction:		; was: bra_D809
     STA ram_ghost_direction,X
@@ -117,7 +117,7 @@ bra_store_exit_direction:		; was: bra_D809
     RTS
 ; Transition ghost from state 02 to state 04
 bra_transition_to_state04:		; was: bra_D81D
-    LDA #$00
+    LDA #con_direction_up
     STA ram_ghost_direction,X
     LDY #$03
     LDA (zp_work2),Y    ; 0021 0025 0029 002D
@@ -133,9 +133,9 @@ bra_transition_to_state04:		; was: bra_D81D
     RTS
 ; Finalize exit-house transition
 bra_finish_exit_house_transition:		; was: bra_D837
-    LDA #$01
+    LDA #con_direction_left
     STA ram_ghost_direction,X
-    LDA #$04
+    LDA #con_ghost_state_active
     STA ram_ghost_state,X
     RTS
 
@@ -224,11 +224,11 @@ sub_dispatch_state06_only_handler:		; was: sub_D8AF
 
 ; Reduced handler table for state06 pass
 tbl_state06_only_handlers:		; was: tbl_D8BE
-    .word handler_state00_noop
-    .word handler_state02_noop
-    .word handler_state04_noop
-    .word handler_state06_move_logic
-    .word handler_reduced_ghost_state08_noop
+    .word handler_state00_noop           ; con_ghost_state_in_house
+    .word handler_state02_noop           ; con_ghost_state_exiting_house
+    .word handler_state04_noop           ; con_ghost_state_active
+    .word handler_state06_move_logic     ; con_ghost_state_returning_eyes
+    .word handler_reduced_ghost_state08_noop ; con_ghost_state_eaten_score
 
 ; State00 in reduced pass: no-op
 handler_state00_noop:		; was: ofs_006_D8C8_00_RTS
@@ -248,7 +248,7 @@ sub_update_ghost_house_counters:		; was: sub_D8C9
 ; Scan ghost slots for state06 presence
 bra_scan_state06_presence:		; was: bra_D8CD_loop
     LDA ram_ghost_state,X
-    CMP #$06
+    CMP #con_ghost_state_returning_eyes
     BNE bra_next_slot_for_state06_scan
     STA ram_sfx_ghost_house_state6_marker
     RTS
