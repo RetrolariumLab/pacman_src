@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import ast
 import re
 import subprocess
 import sys
@@ -32,6 +33,19 @@ TEXT_SUFFIXES = {
     ".txt",
 }
 TEXT_FILENAMES = {".gitattributes", ".gitignore", "Makefile"}
+APPROVED_SYMBOL_PREFIXES = {
+    "bra",
+    "con",
+    "handler",
+    "loc",
+    "off",
+    "ram",
+    "sub",
+    "tbl",
+    "unused",
+    "vec",
+    "zp",
+}
 
 DEFINITION_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)\s*(?::|=)")
 ADDRESS_NAME_RE = re.compile(
@@ -47,6 +61,10 @@ RAW_HARDWARE_OPERAND_RE = re.compile(
 )
 JSR_RE = re.compile(r"^\s*JSR\s+([A-Za-z_][A-Za-z0-9_]*)\b")
 SUB_LABEL_RE = re.compile(r"^(sub_[A-Za-z0-9_]+):")
+DOC_SYMBOL_RE = re.compile(
+    r"`((?:bra|con|handler|loc|off|ram|sub|tbl|unused|vec|zp)_[A-Za-z0-9_]+)`"
+)
+MARKDOWN_LINK_RE = re.compile(r"\[[^]]+\]\(([^)]+)\)")
 
 
 class LintResult:
@@ -54,6 +72,8 @@ class LintResult:
         self.errors: list[str] = []
         self.checked_text_files = 0
         self.checked_asm_modules = 0
+        self.checked_doc_symbols = 0
+        self.checked_python_files = 0
 
     def error(self, path: Path | str, message: str, line: int | None = None) -> None:
         location = Path(path).as_posix()
@@ -112,9 +132,27 @@ def check_text_format(path: Path, text: str, result: LintResult) -> None:
     elif text.endswith("\n\n"):
         result.error(path, "text file has a blank line at EOF")
 
-    for line_number, line in enumerate(text.splitlines(), start=1):
+    lines = text.splitlines()
+    for line_number, line in enumerate(lines, start=1):
         if line.endswith((" ", "\t")):
             result.error(path, "trailing whitespace", line_number)
+        if (
+            path.suffix.lower() in {".asm", ".inc"}
+            and not line
+            and line_number < len(lines)
+            and not lines[line_number]
+        ):
+            result.error(path, "repeated blank line in assembly source", line_number)
+
+
+def check_python_syntax(path: Path, text: str, result: LintResult) -> None:
+    if path.suffix.lower() != ".py":
+        return
+    result.checked_python_files += 1
+    try:
+        ast.parse(text, filename=path.as_posix())
+    except SyntaxError as error:
+        result.error(path, f"Python syntax error: {error.msg}", error.lineno)
 
 
 def source_lines(text: str) -> list[tuple[int, str]]:
@@ -148,6 +186,14 @@ def check_asm_file(
         definition = DEFINITION_RE.match(code)
         if definition is not None:
             symbol = definition.group(1)
+            if symbol.startswith("ofs_"):
+                result.error(path, f"legacy ofs_ definition: {symbol}", line_number)
+            if symbol[0].islower() and symbol.split("_", 1)[0] not in APPROVED_SYMBOL_PREFIXES:
+                result.error(
+                    path,
+                    f"lowercase symbol uses unsupported prefix: {symbol}",
+                    line_number,
+                )
             address_match = ADDRESS_NAME_RE.search(symbol)
             if address_match is not None:
                 result.error(
@@ -257,6 +303,54 @@ def check_registry_references(
                     )
 
 
+def source_definitions(text_by_path: dict[Path, str]) -> set[str]:
+    definitions: set[str] = set()
+    for path, text in text_by_path.items():
+        if path.suffix.lower() not in {".asm", ".inc"}:
+            continue
+        for _, code in source_lines(text):
+            definition = DEFINITION_RE.match(code)
+            if definition is not None:
+                definitions.add(definition.group(1))
+    return definitions
+
+
+def check_documentation_references(
+    project_root: Path,
+    text_by_path: dict[Path, str],
+    definitions: set[str],
+    result: LintResult,
+) -> None:
+    documentation = {
+        path: text
+        for path, text in text_by_path.items()
+        if path == Path("README.md")
+        or (path.parts[:1] == ("docs",) and path.parts[:2] != ("docs", "nesdev"))
+    }
+    for path, text in documentation.items():
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            for symbol in DOC_SYMBOL_RE.findall(line):
+                result.checked_doc_symbols += 1
+                if ADDRESS_NAME_RE.search(symbol) is None and symbol not in definitions:
+                    result.error(
+                        path,
+                        f"documentation references undefined symbol: {symbol}",
+                        line_number,
+                    )
+            for target in MARKDOWN_LINK_RE.findall(line):
+                file_target = target.split("#", 1)[0]
+                if not file_target or "://" in file_target or file_target.startswith("mailto:"):
+                    continue
+                resolved = (project_root / path.parent / file_target).resolve()
+                try:
+                    resolved.relative_to(project_root.resolve())
+                except ValueError:
+                    result.error(path, f"documentation link escapes repository: {target}", line_number)
+                    continue
+                if not resolved.exists():
+                    result.error(path, f"broken local documentation link: {target}", line_number)
+
+
 def check_subroutine_calls(
     sub_labels: dict[str, tuple[Path, int]],
     jsr_targets: dict[str, list[tuple[Path, int]]],
@@ -291,9 +385,12 @@ def main() -> int:
             continue
         text_by_path[path] = text
         check_text_format(path, text, result)
+        check_python_syntax(path, text, result)
 
     known_registry_ids = registry_ids(project_root, text_by_path, result)
     check_registry_references(text_by_path, known_registry_ids, result)
+    definitions = source_definitions(text_by_path)
+    check_documentation_references(project_root, text_by_path, definitions, result)
 
     sub_labels: dict[str, tuple[Path, int]] = {}
     jsr_targets: dict[str, list[tuple[Path, int]]] = {}
@@ -315,7 +412,9 @@ def main() -> int:
         f"[OK] Lint passed: {result.checked_text_files} text files, "
         f"{result.checked_asm_modules} ASM modules, "
         f"{len(known_registry_ids)} registry IDs, "
-        f"{len(sub_labels)} subroutines."
+        f"{len(sub_labels)} subroutines, "
+        f"{result.checked_doc_symbols} documentation symbol references, "
+        f"{result.checked_python_files} Python files."
     )
     return 0
 

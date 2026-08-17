@@ -338,7 +338,7 @@ handoff, and intermission scenes 1 and 2. `make trace-runtime` verifies the ROM
 and FM2 identities, reproduces all local CSVs, and requires all nine semantic
 checks to pass.
 
-### 8. Automated Source and Documentation Checks — In Progress
+### 8. Automated Source and Documentation Checks — Complete
 
 The initial `make lint` target now checks text whitespace and final newlines,
 evidence tags and registry IDs, legacy uncertainty annotations, raw hardware
@@ -369,6 +369,13 @@ make lint       # source and documentation invariants
 make verify     # byte-identical ROM
 make analyze    # expensive behavioral comparison when relevant
 ```
+
+Completed with the layered workflow in `docs/validation.md`. `make lint` now
+enforces every precise invariant above, including legacy `ofs_*` rejection,
+the documented lowercase-prefix vocabulary, project documentation symbol/link
+resolution, assembly blank-line normalization, and syntax parsing of every
+tracked Python file. `make test` discovers all focused workflow tests while
+emulator-backed checks remain explicit slower targets.
 
 ### 9. Decode and Document Binary Data Formats
 
@@ -437,11 +444,10 @@ replace or weaken the preservation target.
 
 ## Recommended Next Work Package
 
-Complete milestone 8 by extending the fast lint layer only where rules are
-precise: validate documentation symbol references, tighten naming-prefix checks,
-and run focused Python workflow tests from a single public target. Keep emulator
-traces separate from fast lint and retain `make verify` as the authoritative
-binary gate.
+Begin milestone 9 with one binary format at a time. Prefer the already
+well-documented stage parameter records or buffered PPU packets, define a stable
+human-readable representation, and prove a byte-identical decode/encode
+round-trip before moving to maze, sound, actor, or intermission data.
 
 ## Resuming Work on Another Computer
 

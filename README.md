@@ -115,6 +115,8 @@ make verify                     # Build and require byte-identity
 make symbols                    # Generate Mesen/FCEUX debugger artifacts
 make test-debug-symbols         # Test symbol parsing and conversion
 make validate-symbols           # Prove live symbol lookup and named breakpoint
+make lint                       # Check source, naming, docs, and Python syntax
+make test                       # Run all focused Python workflow tests
 make trace-runtime              # Capture and validate focused gameplay traces
 make validate-runtime-traces    # Revalidate existing gameplay traces
 make run                        # Build and run the ROM in FCEUX

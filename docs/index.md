@@ -8,6 +8,7 @@
 - [naming.md](./naming.md): semantic symbol names and control-flow prefixes.
 - [debugger_workflow.md](./debugger_workflow.md): Mesen/FCEUX symbols, source navigation, breakpoints, and RAM watches.
 - [runtime_trace_scenarios.md](./runtime_trace_scenarios.md): natural and controlled gameplay trace evidence.
+- [validation.md](./validation.md): fast lint, unit, binary, debugger, and emulator validation layers.
 - [postmortem.md](./postmortem.md): why the C reimplementation was removed and what replaced it.
 - [bank_ff_map.md](./bank_ff_map.md): top-level bank segmentation and annotation entry points.
 - [ram_fields.md](./ram_fields.md): key RAM fields and runtime roles.
@@ -60,3 +61,5 @@ After each edit batch:
 - Focused runtime traces (roadmap milestone 7) cover lifecycle, ghost releases,
   mode changes, intermissions, pause/player handoff, and sound byte classes via
   `make trace-runtime`.
+- Automated source and documentation checks (roadmap milestone 8) are available
+  through the fast `make lint` and aggregate `make test` gates.

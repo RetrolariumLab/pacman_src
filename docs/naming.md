@@ -47,6 +47,8 @@ Do not invent inputs, outputs, or clobbers merely to complete the template.
 | `off_` | Addressable data block referenced through a pointer table |
 | `ram_` | Persistent or domain-specific RAM field |
 | `con_` | Assembly-time constant |
+| `zp_` | Neutral zero-page workspace |
+| `unused_` | Code or data proven unreachable for this ROM |
 
 Shared zero-page workspace may use a neutral scratch name until each use has a
 proven contextual alias. Unknown persistent state keeps an explicit unknown
@@ -65,3 +67,8 @@ not sufficient.
    when useful for comparison with the base disassembly.
 5. Every rename-only change must pass `make verify`; names must never affect the
    reproduced ROM.
+
+`make lint` rejects lowercase definitions outside this vocabulary, legacy
+`ofs_*` definitions, and address-derived identifiers. Uppercase hardware names
+remain valid because they follow the conventional register/bit-mask style in
+`src/memory/hardware.inc`.

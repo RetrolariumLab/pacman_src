@@ -57,7 +57,7 @@ RUNTIME_TRACE_DIR ?= $(PROJECT_DIR)tmp/runtime_traces
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify symbols test-debug-symbols test-runtime-traces validate-symbols lint run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
+.PHONY: build verify symbols test test-debug-symbols test-runtime-traces validate-symbols lint run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -102,6 +102,9 @@ test-debug-symbols:
 
 test-runtime-traces:
 	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)scripts/tests" -p "test_runtime_traces.py" -v
+
+test:
+	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)scripts/tests" -p "test_*.py" -v
 
 validate-symbols: build-dev symbols
 	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp'); p.mkdir(parents=True, exist_ok=True); r=pathlib.Path(r'$(DEBUG_RUNTIME_RESULT)'); r.unlink() if r.exists() else None"
@@ -252,6 +255,7 @@ help:
 	@echo   make symbols               Build Mesen debug/map and FCEUX label artifacts
 	@echo   make test-debug-symbols    Run focused symbol conversion unit tests
 	@echo   make test-runtime-traces   Run focused runtime validator unit tests
+	@echo   make test                  Run all fast Python workflow unit tests
 	@echo   make validate-symbols      Prove FCEUX symbol lookup and semantic breakpoint
 	@echo   make lint                  Run fast source and documentation checks
 	@echo   make run                   Build and run the ROM in FCEUX
