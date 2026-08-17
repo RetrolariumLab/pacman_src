@@ -11,6 +11,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from debug_symbols import normalize_dbg_for_ines
+
 
 PRG_SIZE = 16_384
 
@@ -50,10 +52,16 @@ def assemble_prg(
     object_path: Path,
     prg_path: Path,
     labels_path: Path,
+    map_path: Path,
+    debug_path: Path,
+    output_rom_path: Path,
 ) -> bytes:
     object_path.parent.mkdir(parents=True, exist_ok=True)
     prg_path.parent.mkdir(parents=True, exist_ok=True)
     labels_path.parent.mkdir(parents=True, exist_ok=True)
+    map_path.parent.mkdir(parents=True, exist_ok=True)
+    debug_path.parent.mkdir(parents=True, exist_ok=True)
+    raw_debug_path = debug_path.with_name(f"{debug_path.stem}.ld65.dbg")
     ca65 = resolve_tool("ca65", project_root)
     ld65 = resolve_tool("ld65", project_root)
     run_tool(
@@ -80,9 +88,21 @@ def assemble_prg(
             str(prg_path),
             "-Ln",
             str(labels_path),
+            "--mapfile",
+            str(map_path),
+            "-vm",
+            "--dbgfile",
+            str(raw_debug_path),
         ],
         project_root,
     )
+    normalize_dbg_for_ines(
+        raw_debug_path,
+        debug_path,
+        prg_path,
+        output_rom_path,
+    )
+    raw_debug_path.unlink()
     prg = prg_path.read_bytes()
     if len(prg) != PRG_SIZE:
         fail(f"Linked PRG must be {PRG_SIZE} bytes, got {len(prg)}")
@@ -128,6 +148,8 @@ def main() -> int:
     parser.add_argument("--object", default="build/pacman.o")
     parser.add_argument("--prg", default="build/pacman.prg")
     parser.add_argument("--labels", default="build/pacman.lbl")
+    parser.add_argument("--map", default="build/pacman.map")
+    parser.add_argument("--debug-info", default="build/pacman.dbg")
     parser.add_argument("--output-rom", default="build/pacman.nes")
     parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
@@ -140,6 +162,8 @@ def main() -> int:
     object_path = rooted(project_root, args.object)
     prg_path = rooted(project_root, args.prg)
     labels_path = rooted(project_root, args.labels)
+    map_path = rooted(project_root, args.map)
+    debug_path = rooted(project_root, args.debug_info)
     output_rom = rooted(project_root, args.output_rom)
     for path in (source, config, original_rom, chr_path):
         if not path.is_file():
@@ -160,6 +184,9 @@ def main() -> int:
         object_path,
         prg_path,
         labels_path,
+        map_path,
+        debug_path,
+        output_rom,
     )
     candidate = header + prg + chr_data
     output_rom.parent.mkdir(parents=True, exist_ok=True)

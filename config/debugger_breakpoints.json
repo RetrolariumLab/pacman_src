@@ -1,0 +1,33 @@
+{
+  "scripts": [
+    {"symbol": "vec_nmi_handler", "description": "NMI frame boundary"},
+    {"symbol": "bra_dispatch_current_script", "description": "Gameplay script dispatch"},
+    {"symbol": "handler_script00_round_init", "description": "Round initialization"},
+    {"symbol": "handler_script04_pause_handler", "description": "Live gameplay frame driver"},
+    {"symbol": "handler_script10_intermission_runtime", "description": "Intermission frame driver"}
+  ],
+  "scoring": [
+    {"symbol": "sub_check_for_eating_pellets", "description": "Pellet transaction entry"},
+    {"symbol": "sub_start_frightened_mode", "description": "Frightened-mode transaction"},
+    {"symbol": "bra_dispatch_collision_type", "description": "Confirmed actor collision"},
+    {"symbol": "loc_add_points_and_update_score_buffers", "description": "BCD score commit"}
+  ],
+  "ghosts": [
+    {"symbol": "sub_update_ghost_slots", "description": "Four-slot ghost update"},
+    {"symbol": "loc_choose_next_direction", "description": "Target-ranked turn selection"},
+    {"symbol": "sub_queue_next_ghost_release", "description": "House release request"},
+    {"symbol": "sub_try_reverse_ghost_directions", "description": "Mode/frightened reversal pass"}
+  ],
+  "ppu": [
+    {"symbol": "sub_write_buffer_to_ppu", "description": "NMI buffered PPU consumer"},
+    {"symbol": "sub_sample_tiles_at_obj_ppu_positions", "description": "NMI tile-probe sampling"},
+    {"symbol": "sub_decompress_and_upload_maze_layout", "description": "Maze RLE upload"},
+    {"symbol": "sub_build_oam_from_sprite_buffers", "description": "Shadow OAM composition"}
+  ],
+  "sound": [
+    {"symbol": "sub_update_sound_engine", "description": "Sound arbitration/update entry"},
+    {"symbol": "loc_decode_sound_stream_byte", "description": "Sound stream decoder"},
+    {"symbol": "sub_fetch_stream_byte_and_advance_ptr", "description": "Stream cursor fetch"},
+    {"symbol": "handler_00_turn_sound_off", "description": "Stream stop opcode"}
+  ]
+}

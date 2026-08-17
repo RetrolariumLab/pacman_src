@@ -6,6 +6,7 @@
 - [source_layout.md](./source_layout.md): address-ordered module map and file-sizing rules.
 - [macros.md](./macros.md): allowed ca65 abstractions and byte-identity rules.
 - [naming.md](./naming.md): semantic symbol names and control-flow prefixes.
+- [debugger_workflow.md](./debugger_workflow.md): Mesen/FCEUX symbols, source navigation, breakpoints, and RAM watches.
 - [postmortem.md](./postmortem.md): why the C reimplementation was removed and what replaced it.
 - [bank_ff_map.md](./bank_ff_map.md): top-level bank segmentation and annotation entry points.
 - [ram_fields.md](./ram_fields.md): key RAM fields and runtime roles.
@@ -52,5 +53,6 @@ After each edit batch:
   all seven planned subsystem passes.
 - Native ca65 source is split into semantic subsystem directories under `src/`,
   with `src/main.asm` retaining the modules' address order.
-- Next practical step is milestone 6: debugger symbols and source-level
-  navigation, keeping byte-identity after every edit batch.
+- Debugger symbols and source-level navigation (roadmap milestone 6) are
+  available through `make symbols` and validated at runtime with
+  `make validate-symbols`.

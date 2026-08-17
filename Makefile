@@ -9,6 +9,14 @@ NATIVE_OBJ ?= $(BUILD_DIR)/pacman.o
 NATIVE_PRG ?= $(BUILD_DIR)/pacman.prg
 NATIVE_ROM ?= $(BUILD_DIR)/pacman.nes
 NATIVE_LABELS ?= $(BUILD_DIR)/pacman.lbl
+NATIVE_MAP ?= $(BUILD_DIR)/pacman.map
+NATIVE_DEBUG ?= $(BUILD_DIR)/pacman.dbg
+DEBUG_SUMMARY ?= $(BUILD_DIR)/debug_symbols.json
+FCEUX_SYMBOL_DIR ?= $(BUILD_DIR)
+DEBUG_BREAKPOINTS ?= $(PROJECT_DIR)config/debugger_breakpoints.json
+DEBUG_WATCHES ?= $(PROJECT_DIR)config/debugger_watches.json
+DEBUG_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_debug_symbols.lua
+DEBUG_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/debug_symbols_runtime.txt
 ASSET_MANIFEST ?= $(PROJECT_DIR)assets/manifest.json
 GENERATED_ASSET_DIR ?= $(PROJECT_DIR)assets/generated
 GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
@@ -46,7 +54,7 @@ SCORING_TRACE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_scoring_trace.lua
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify lint run clean split build-dev reference analyze trace-scoring validate-scoring-trace chunk help _require-assets _manifest _batch
+.PHONY: build verify symbols test-debug-symbols validate-symbols lint run clean split build-dev reference analyze trace-scoring validate-scoring-trace chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -57,6 +65,8 @@ build: _require-assets
 		--object "$(NATIVE_OBJ)" \
 		--prg "$(NATIVE_PRG)" \
 		--labels "$(NATIVE_LABELS)" \
+		--map "$(NATIVE_MAP)" \
+		--debug-info "$(NATIVE_DEBUG)" \
 		--output-rom "$(NATIVE_ROM)"
 
 verify: _require-assets
@@ -68,8 +78,35 @@ verify: _require-assets
 		--object "$(NATIVE_OBJ)" \
 		--prg "$(NATIVE_PRG)" \
 		--labels "$(NATIVE_LABELS)" \
+		--map "$(NATIVE_MAP)" \
+		--debug-info "$(NATIVE_DEBUG)" \
 		--output-rom "$(NATIVE_ROM)" \
 		--verify
+
+symbols: build
+	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
+		--debug "$(NATIVE_DEBUG)" \
+		--map "$(NATIVE_MAP)" \
+		--labels "$(NATIVE_LABELS)" \
+		--rom "$(NATIVE_ROM)" \
+		--fceux-output-dir "$(FCEUX_SYMBOL_DIR)" \
+		--breakpoints "$(DEBUG_BREAKPOINTS)" \
+		--watches "$(DEBUG_WATCHES)" \
+		--summary "$(DEBUG_SUMMARY)"
+
+test-debug-symbols:
+	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)scripts/tests" -p "test_debug_symbols.py" -v
+
+validate-symbols: build-dev symbols
+	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp'); p.mkdir(parents=True, exist_ok=True); r=pathlib.Path(r'$(DEBUG_RUNTIME_RESULT)'); r.unlink() if r.exists() else None"
+	set "PACMAN_DEBUG_SYMBOL_RESULT=$(DEBUG_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \
+		-lua "$(subst /,\,$(DEBUG_RUNTIME_LUA))" \
+		-max-frames "120" \
+		-turbo 1 \
+		-nothrottle 1 \
+		"$(NATIVE_ROM)"
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_debug_runtime.py" \
+		--result "$(DEBUG_RUNTIME_RESULT)"
 
 lint:
 	$(PYTHON) "$(PROJECT_DIR)scripts/lint_source.py"
@@ -191,6 +228,9 @@ help:
 	@echo Pac-Man disassembly targets:
 	@echo   make build                 Build the native ca65 ROM
 	@echo   make verify                Build and verify byte-identity
+	@echo   make symbols               Build Mesen debug/map and FCEUX label artifacts
+	@echo   make test-debug-symbols    Run focused symbol conversion unit tests
+	@echo   make validate-symbols      Prove FCEUX symbol lookup and semantic breakpoint
 	@echo   make lint                  Run fast source and documentation checks
 	@echo   make run                   Build and run the ROM in FCEUX
 	@echo   make clean                 Remove build/analysis output; preserve assets

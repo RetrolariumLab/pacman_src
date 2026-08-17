@@ -1,0 +1,38 @@
+{
+  "script_and_frame": [
+    {"symbol": "ram_script", "size": 1, "format": "hex", "description": "Current gameplay script offset"},
+    {"symbol": "ram_script_delay", "size": 1, "format": "unsigned", "description": "Dispatch delay"},
+    {"symbol": "ram_frame_cnt", "size": 1, "format": "hex", "description": "Wrapping frame counter"},
+    {"symbol": "ram_current_player", "size": 1, "format": "unsigned", "description": "Active player index"}
+  ],
+  "movement_and_actors": [
+    {"symbol": "ram_obj_position", "size": 36, "format": "hex", "description": "Actor fixed-point XY records"},
+    {"symbol": "ram_direction_1", "size": 1, "format": "hex", "description": "Queued Pac-Man direction"},
+    {"symbol": "ram_direction_2", "size": 1, "format": "hex", "description": "Committed Pac-Man direction"},
+    {"symbol": "ram_obj_ppu_tile", "size": 21, "format": "hex", "description": "Cached current/neighbor tile samples"}
+  ],
+  "scoring": [
+    {"symbol": "ram_pellet_cnt_p1", "size": 1, "format": "unsigned", "description": "Remaining pellet counter"},
+    {"symbol": "ram_pending_score_bcd", "size": 6, "format": "hex", "description": "Pending BCD transaction"},
+    {"symbol": "ram_score_p1", "size": 6, "format": "hex", "description": "Player-one BCD score"},
+    {"symbol": "ram_score_hi", "size": 6, "format": "hex", "description": "High-score BCD value"},
+    {"symbol": "ram_kill_cnt", "size": 1, "format": "unsigned", "description": "Frightened ghost chain index"}
+  ],
+  "ghosts": [
+    {"symbol": "ram_ghost_state", "size": 8, "format": "hex", "description": "Interleaved state/direction slots"},
+    {"symbol": "ram_shared_state_1", "size": 1, "format": "hex", "description": "Gameplay frightened mask"},
+    {"symbol": "ram_scatter_chase_phase", "size": 1, "format": "unsigned", "description": "Scatter/chase phase index"},
+    {"symbol": "ram_release_wave_timer", "size": 1, "format": "hex", "description": "Provisional RAM-003 mode/reversal gate"},
+    {"symbol": "ram_global_release_target", "size": 1, "format": "unsigned", "description": "Global pellet release target"}
+  ],
+  "ppu_and_oam": [
+    {"symbol": "ram_ppu_buffer_main", "size": 32, "format": "hex", "description": "Generic terminated PPU command stream"},
+    {"symbol": "ram_spr_position", "size": 36, "format": "hex", "description": "Staged sprite positions"},
+    {"symbol": "ram_oam", "size": 256, "format": "hex", "description": "Shadow OAM page"}
+  ],
+  "sound": [
+    {"symbol": "ram_sfx", "size": 16, "format": "hex", "description": "Logical stream request page"},
+    {"symbol": "ram_sound_channel_state", "size": 128, "format": "hex", "description": "Sixteen eight-byte sound channel records"},
+    {"symbol": "ram_sound_channel_claims", "size": 4, "format": "hex", "description": "Physical APU channel claims"}
+  ]
+}

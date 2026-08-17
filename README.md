@@ -31,6 +31,10 @@ Symbols are named by program role rather than ROM address. The `sub_`,
 `handler_`, `loc_`, and `bra_` prefixes distinguish callable subroutines from
 dispatch handlers and internal control flow; see [`docs/naming.md`](docs/naming.md).
 
+`make symbols` generates native ld65 source mappings for Mesen, FCEUX ROM/RAM
+labels, breakpoint groups, and a standard watch list. See
+[`docs/debugger_workflow.md`](docs/debugger_workflow.md).
+
 The gate for every change is `make verify`: rebuild the ROM from
 `src/main.asm` and assert byte-identity with the original. Annotation must never
 alter the assembled bytes, so any diff means the edit was wrong.
@@ -104,6 +108,9 @@ pacman_src/
 make                            # Same as `make build`
 make build                      # Build the native ca65 ROM
 make verify                     # Build and require byte-identity
+make symbols                    # Generate Mesen/FCEUX debugger artifacts
+make test-debug-symbols         # Test symbol parsing and conversion
+make validate-symbols           # Prove live symbol lookup and named breakpoint
 make run                        # Build and run the ROM in FCEUX
 make split                      # Extract CHR, maze, and audio from the original ROM
 make build-dev                  # Check tools and clone/build FCEUX if needed
@@ -140,10 +147,10 @@ checkout or the original ROM.
 
 - Labels and comments cover all major systems, but many lower-level branches
   and data fields can still be described more precisely.
-- Many RAM fields still have address-derived names and need trace-backed
-  semantic names.
-- Procedure inputs, outputs, clobbers, invariants, and open questions are not
-  yet documented consistently; see [`docs/roadmap.md`](docs/roadmap.md).
+- Some neutral RAM and branch names remain where trace evidence does not yet
+  justify a more specific interpretation; see [`docs/unknowns.md`](docs/unknowns.md).
+- Focused runtime traces and decoded binary formats remain planned; see
+  [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Credits
 

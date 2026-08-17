@@ -280,7 +280,7 @@ sound channel-record base, stage-profile field mapping, intermission staged-X
 bounds, and the evidence recorded for `RAM-003`; unresolved intent remains in
 `unknowns.md` rather than being promoted from inference.
 
-### 6. Debugger Symbols and Source-Level Navigation
+### 6. Debugger Symbols and Source-Level Navigation — Complete
 
 The build already emits ld65 labels with addresses separated from semantic
 source names. Extend this into a first-class debugging workflow:
@@ -297,6 +297,13 @@ source names. Extend this into a first-class debugging workflow:
 Completion means a contributor can open the rebuilt ROM in the debugger, stop
 on a named routine, inspect meaningful RAM fields, and return to the matching
 source without manually translating an address.
+
+Completed with native ld65 `.dbg` and verbose map output, iNES-aware source
+span normalization for Mesen, automatically loaded FCEUX ROM/RAM labels,
+semantic breakpoint and watch groups, and the workflow documented in
+`docs/debugger_workflow.md`. `make validate-symbols` proves live semantic symbol
+lookup and an execution hook on `vec_nmi_handler`; artifact validation maps key
+subsystem symbols back to their exact source label lines.
 
 ### 7. Focused Runtime Trace Scenarios
 
@@ -421,19 +428,11 @@ replace or weaken the preservation target.
 
 ## Recommended Next Work Package
 
-Create a branch such as `document-scoring-system` and complete this sequence:
-
-1. review `docs/unknowns.md` and link scoring-related findings by stable ID;
-2. use `src/memory/hardware.inc` symbols when documenting hardware effects;
-3. document `src/game/scoring.asm` procedure by procedure;
-4. add focused traces for pellet, frightened, ghost-score, fruit, 1UP, and
-   high-score events;
-5. promote only proven RAM fields and constants;
-6. run `make lint` once available and always run `make verify`;
-7. update `docs/score_and_bonus.md` and close or refine registry entries.
-
-Avoid another broad mechanical rewrite during this phase. Small evidence-backed
-commits will make regressions and mistaken interpretations easier to isolate.
+Begin milestone 7 with short deterministic runtime traces. Reuse the existing
+scoring trace as the pattern, then add death/respawn/player switching, ghost
+house releases, and scatter/chase reversals before moving to intermissions and
+sound-stream decoding. Keep trace schemas compact, record only semantically
+relevant fields, and retain `make verify` as the preservation gate.
 
 ## Resuming Work on Another Computer
 
