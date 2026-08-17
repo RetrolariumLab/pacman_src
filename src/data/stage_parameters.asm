@@ -3,8 +3,9 @@
 ; Stage-driven index stream selecting parameter groups (step size 6 in round-init)
 tbl_stage_param_index_stream:		; was: tbl_EB42
 ; Read as a 6-byte stage profile:
-; [0]=level param block id, [1]=speed/timer block id, [2]=dot-threshold pair id,
-; [3]=release target block id, [4]=fruit bonus group id, [5]=fruit color group id.
+; [0]=shared level-block/timing-window id, [1]=frightened duration,
+; [2]=dot-threshold pair id, [3]=release-target block id,
+; [4]=fruit/bonus stage group, [5]=release interval seconds.
 ; 00
     .byte $00   ; 0x000EC7 0x000EE5
     .byte $07   ; 0x000F05
@@ -175,13 +176,14 @@ tbl_level_param_blocks_22bytes:		; was: tbl_EBCC
     .byte $00, $01, $F0, $00, $D0, $00, $00, $01, $F0, $00, $D0, $00, $00, $01, $10, $01, $F0, $00, $80, $00, $80, $00   ; 03
     .byte $00, $01, $F0, $00, $D0, $00, $00, $01, $F0, $00, $D0, $00, $20, $01, $30, $01, $10, $01, $80, $00, $80, $00   ; 04
 
-; Per-level speed/timer control blocks copied to RAM 0097..009E
+; Per-level speed/timer control windows copied to RAM 0097..009E.
+; Profile id 4 reads the eight bytes immediately following these four rows,
+; so adjacency with tbl_dot_counter_threshold_pairs is a runtime contract.
 tbl_speed_timer_blocks_8bytes:		; was: tbl_EC3A
     .byte $07, $14, $07, $14, $05, $14, $05, $FF   ; 00
     .byte $07, $14, $07, $14, $05, $FF, $00, $00   ; 01
     .byte $05, $14, $05, $14, $05, $FF, $00, $00   ; 02
     .byte $05, $14, $05, $14, $05, $FF, $00, $00   ; 03
-; Note: stage profile id 04 can also be reached from the 6-byte stage stream above.
 
 ; Dot-counter threshold pairs loaded into RAM 008D/008E
 tbl_dot_counter_threshold_pairs:		; was: tbl_EC5A

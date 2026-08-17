@@ -1,12 +1,20 @@
 ; Intermission scene dispatch and the three chase sequences
 
+; Script10 per-frame cutscene coordinator.
+; Inputs: selected scene/substate plus cutscene actor state.
+; Outputs: integrated actors, animation/OAM, and scene-transition effects.
+; Side effects: scene completion may select script00 after OAM is built.
+; Clobbers: A, X, Y, shared work bytes, and ram_indirect_jmp.
 handler_script10_intermission_runtime:		; was: ofs_003_E74B_10
     JSR sub_update_intermission_actor_positions
     JSR sub_run_intermission_animation_dispatch
     JSR sub_build_oam_from_sprite_buffers
     JSR sub_run_intermission_scene_dispatch
     JMP loc_gameplay_mainloop_wait_nmi
-; Dispatch selected intermission scene handler by ram_shared_state_0 (scene id)
+; Dispatch selected intermission scene handler by even scene-table offset.
+; Inputs: ram_shared_state_0 and scene-local actor/substate data.
+; Outputs/side effects: handler-dependent; scene handlers alone advance substates.
+; Clobbers: A, Y and ram_indirect_jmp.
 sub_run_intermission_scene_dispatch:		; was: sub_E75A
     LDY ram_shared_state_0
     LDA tbl_intermission_scene_handlers,Y

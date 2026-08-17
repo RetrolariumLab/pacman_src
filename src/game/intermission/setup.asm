@@ -7,6 +7,10 @@
 ; ram_shared_state_2: per-substate countdown in some scenes
 ; ram_sfx_intermission_flag_a/ram_sfx_intermission_flag_b: one-shot flags used by intermission setup/runtime
 ; Actor sprite-set and attribute arrays seed the initial cutscene composition.
+; Inputs: selected intermission scene, current player/game mode, PPU in gameplay state.
+; Outputs: cleared playfield, seeded actors/palette, substate 00, script 10 selected.
+; Side effects: waits for vblank, temporarily disables rendering, writes PPU directly.
+; Clobbers: A, X, Y and zp_work0..zp_work3.
 handler_script0E_intermission_setup:		; was: ofs_003_E655_0E
     LDA #PPUCTRL_SPRITE_PATTERN_HIGH
     STA ram_ppuctrl_base
@@ -55,7 +59,11 @@ bra_upload_demo_sprite_palette:		; was: bra_E6A0_loop
     STA ram_ppuctrl_base
     JMP loc_gameplay_mainloop_wait_nmi
 
-; Clear playfield area and rebuild maze wall fill pattern
+; Clear the active playfield and attributes, with scene01's optional center marker.
+; Inputs: current player/game mode and intermission scene ID.
+; Outputs: selected nametable playfield/attribute region rewritten.
+; Side effects: direct PPU writes; caller must own rendering/vblank timing.
+; Clobbers: A, X and zp_work0..zp_work3; Y is preserved.
 sub_clear_playfield_and_walls:		; was: sub_E6C4
     LDX #$20    ; 2000
     LDA ram_game_mode

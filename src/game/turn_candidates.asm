@@ -1,4 +1,10 @@
-; Collect valid movement directions from neighboring maze tiles
+; Collect valid movement directions from neighboring maze tiles.
+;
+; Inputs: X=ghost-state/direction slot offset; zp_work0 points to four cached
+; neighbor tiles; zp_work9 and zp_work10 are caller-accepted special tile classes.
+; Outputs: zp_work11..zp_work14 contain compacted direction indices followed by $FF.
+; Side effects: removes the reverse of ram_ghost_direction,X from consideration.
+; Clobbers: A, Y, zp_work10..zp_work14; X is preserved.
 
 sub_collect_valid_turn_candidates:		; was: sub_E42B
     LDY #$FF

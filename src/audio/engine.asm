@@ -1,6 +1,9 @@
 ; Sound engine, note periods, and SFX pointer table
 
-; Initialize sound engine pointers, APU channel enables, and frame counter mode
+; Initialize sound pointers and APU mode, then fall through to state clearing.
+; Outputs: request/channel/table/APU pointers initialized; APU channels enabled.
+; Side effects: writes APU status/frame counter and clears request/channel states.
+; Clobbers: A, X, Y.
 sub_init_sound_engine:		; was: sub_EE18
     LoadPointer ram_sfx_request_ptr, ram_sfx
     LoadPointer ram_sound_channel_ptr, ram_sound_channel_state
@@ -14,7 +17,10 @@ sub_init_sound_engine:		; was: sub_EE18
     STA APU_STATUS
     LDA #APU_FRAME_COUNTER_IRQ_INHIBIT + APU_FRAME_COUNTER_5_STEP
     STA APU_FRAME_COUNTER
-; Clear per-channel sound effect state and command slots
+; Clear all 16 request bytes and byte zero of all 16 eight-byte channel records.
+; Inputs: initialized request/channel pointers.
+; Outputs: request page and channel-state bytes zeroed.
+; Clobbers: A, X, Y.
 sub_clear_sound_engine_state:		; was: sub_EE40
     LDY #$00
     LDA #$00
@@ -29,7 +35,7 @@ bra_loop_clear_sfx_request_slots:		; was: bra_EE44_loop
 ; Clear one command byte per 8-byte channel struct
 bra_loop_clear_channel_command_slots:		; was: bra_EE4F_loop
     LDA #$00
-    STA (ram_sound_channel_ptr),Y    ; 0620 0628 0630 0638 0640 0648 0650 0658 0660 0668 0670 0678 0680 0688 0690 0698
+    STA (ram_sound_channel_ptr),Y    ; record +0 channel state
     TYA
     CLC
     ADC #con_sound_channel_record_size
@@ -42,6 +48,10 @@ bra_loop_clear_channel_command_slots:		; was: bra_EE4F_loop
 ; 1) pre-pass for channel request arbitration
 ; 2) per-channel stream decode/update
 ; 3) immediate APU writes for updated channel quads
+; Inputs: request page, channel records, stream table, and initialized pointers.
+; Outputs: arbitrated channel states/cursors/durations/register mirrors and APU writes.
+; Side effects: consumes stream bytes and clears requests when stop is decoded.
+; Clobbers: A, X, Y and sound work/index/offset/claim fields.
 sub_update_sound_engine:
     LDA #$00
     STA ram_sound_channel_claims
@@ -55,7 +65,7 @@ sub_update_sound_engine:
 ; Pre-pass over channels to detect command conflicts
 bra_loop_scan_channel_command_slots:		; was: bra_EE6E_loop
     LDY ram_sound_channel_offset
-    LDA (ram_sound_channel_ptr),Y    ; 0620 0628 0630 0638 0640 0648 0650 0658 0660 0668 0670 0678 0680 0688 0690 0698
+    LDA (ram_sound_channel_ptr),Y    ; record +0 channel state
     BEQ bra_advance_channel_prepass
     CMP #$05
     BCC bra_handle_low_priority_channel_request
@@ -78,7 +88,7 @@ bra_handle_low_priority_channel_request:		; was: bra_EE83
     TAX
     ADC #$04
     LDY ram_sound_channel_offset
-    STA (ram_sound_channel_ptr),Y    ; 0620 0628 0630 0638 0640 0648 0650 0658 0660 0668 0670 0678 0680 0688 0690 0698
+    STA (ram_sound_channel_ptr),Y    ; channel state, records begin at ram_sound_channel_state
     TXA
     ASL
     ASL
@@ -89,7 +99,7 @@ bra_handle_low_priority_channel_request:		; was: bra_EE83
 bra_loop_write_apu_register_quad:		; was: bra_EEA0_loop
     PHA
     INY
-    LDA (ram_sound_channel_ptr),Y    ; 0621-069C
+    LDA (ram_sound_channel_ptr),Y    ; record +1 through +4 APU register quad
     STA (ram_apu_register_ptr,X)    ; 4000 4001 4002 4003 4004 4005 4006 4007 4008 4009 400A 400B
     INC ram_apu_register_ptr
     PLA
@@ -118,7 +128,7 @@ loc_sound_channel_main_loop:		; was: loc_EEBF
 ; Channel has pending stream; update countdown or decode
 bra_channel_has_active_stream:		; was: bra_EEC8
     LDY ram_sound_channel_offset
-    LDA (ram_sound_channel_ptr),Y    ; 0620 0628 0630 0638 0640 0648 0650 0658 0660 0668 0670 0678 0680 0688 0690 0698
+    LDA (ram_sound_channel_ptr),Y    ; channel state
     BNE bra_decrement_channel_duration
     LDA ram_sound_channel_index
     ASL
@@ -129,7 +139,7 @@ bra_channel_has_active_stream:		; was: bra_EEC8
     ADC #$05
     TAY
     PLA
-    STA (ram_sound_channel_ptr),Y    ; 0625 062D 0635 063D 0645 064D 0655 065D 0665 066D 0675 067D 0685 068D 0695 069D
+    STA (ram_sound_channel_ptr),Y    ; record +5 stream cursor low
     LDA ram_sound_channel_index
     ASL
     ADC #$01
@@ -140,10 +150,10 @@ bra_channel_has_active_stream:		; was: bra_EEC8
     ADC #$06
     TAY
     PLA
-    STA (ram_sound_channel_ptr),Y    ; 0626 062E 0636 063E 0646 064E 0656 065E 0666 066E 0676 067E 0686 068E 0696 069E
+    STA (ram_sound_channel_ptr),Y    ; record +6 stream cursor high
     JSR sub_fetch_stream_byte_and_advance_ptr
     LDY ram_sound_channel_offset
-    STA (ram_sound_channel_ptr),Y    ; 0620 0628 0630 0638 0640 0648 0650 0658 0660 0668 0670 0678 0680 0688 0690 0698
+    STA (ram_sound_channel_ptr),Y    ; promoted channel state
     JSR sub_fetch_stream_byte_and_advance_ptr
     TAX
     LDA ram_sound_channel_offset
@@ -151,7 +161,7 @@ bra_channel_has_active_stream:		; was: bra_EEC8
     ADC #$01
     TAY
     TXA
-    STA (ram_sound_channel_ptr),Y    ; 0621 0629 0631 0639 0641 0649 0651 0659 0661 0669 0671 0679 0681 0689 0691 0699
+    STA (ram_sound_channel_ptr),Y    ; record +1 APU register byte 0
     JSR sub_fetch_stream_byte_and_advance_ptr
     TAX
     LDA ram_sound_channel_offset
@@ -159,7 +169,7 @@ bra_channel_has_active_stream:		; was: bra_EEC8
     ADC #$02
     TAY
     TXA
-    STA (ram_sound_channel_ptr),Y    ; 0622 062A 0632 063A 0642 064A 0652 065A 0662 066A 0672 067A 0682 068A 0692 069A
+    STA (ram_sound_channel_ptr),Y    ; record +2 APU register byte 1
     JSR sub_fetch_stream_byte_and_advance_ptr
     TAX
     LDA ram_sound_channel_offset
@@ -167,7 +177,7 @@ bra_channel_has_active_stream:		; was: bra_EEC8
     ADC #$04
     TAY
     TXA
-    STA (ram_sound_channel_ptr),Y    ; 0624 062C 0634 063C 0644 064C 0654 065C 0664 066C 0674 067C 0684 068C 0694 069C
+    STA (ram_sound_channel_ptr),Y    ; record +4 timer-high/control byte
     JMP loc_decode_sound_stream_byte
 ; Decrement active channel duration counter
 bra_decrement_channel_duration:		; was: bra_EF1F
@@ -175,10 +185,10 @@ bra_decrement_channel_duration:		; was: bra_EF1F
     CLC
     ADC #$07
     TAY
-    LDA (ram_sound_channel_ptr),Y    ; 0627 062F 0637 063F 0647 064F 0657 065F 0667 066F 0677 067F 0687 068F 0697 069F
+    LDA (ram_sound_channel_ptr),Y    ; record +7 duration
     SEC
     SBC #$01
-    STA (ram_sound_channel_ptr),Y    ; 0627 062F 0637 063F 0647 064F 0657 065F 0667 066F 0677 067F 0687 068F 0697 069F
+    STA (ram_sound_channel_ptr),Y    ; record +7 duration
     BNE bra_advance_to_next_sound_channel
 ; Decode next sound stream byte for active channel
 loc_decode_sound_stream_byte:		; was: loc_EF2E
@@ -219,20 +229,20 @@ bra_00_apply_note_period_to_channel:		; was: bra_EF57_00
     CLC
     ADC #$04
     TAY
-    LDA (ram_sound_channel_ptr),Y    ; 0624 062C 0634 063C 0644 064C 0654 065C 0664 066C 0674 067C 0684 068C 0694 069C
+    LDA (ram_sound_channel_ptr),Y    ; record +4 timer-high/control byte
     AND #$F8
     ORA ram_sound_work_ptr
-    STA (ram_sound_channel_ptr),Y    ; 0624 062C 0634 063C 0644 064C 0654 065C 0664 066C 0674 067C 0684 068C 0694 069C
+    STA (ram_sound_channel_ptr),Y    ; record +4 timer-high/control byte
     LDA ram_sound_work_ptr + $01
     DEY
-    STA (ram_sound_channel_ptr),Y    ; 0623 062B 0633 063B 0643 064B 0653 065B 0663 066B 0673 067B 0683 068B 0693 069B
+    STA (ram_sound_channel_ptr),Y    ; record +3 timer low
     LDY ram_sound_channel_offset
-    LDA (ram_sound_channel_ptr),Y    ; 0620 0628 0630 0638 0640 0648 0650 0658 0660 0668 0670 0678 0680 0688 0690 0698
+    LDA (ram_sound_channel_ptr),Y    ; record +0 channel state
     CMP #$05
     BCC bra_fetch_channel_duration_byte
     SEC
     SBC #$04
-    STA (ram_sound_channel_ptr),Y    ; 0620 0628 0630 0638 0640 0648 0650 0658 0660 0668 0670 0678 0680 0688 0690 0698
+    STA (ram_sound_channel_ptr),Y    ; record +0 channel state
 ; Fetch next duration byte after note/control handling
 bra_fetch_channel_duration_byte:		; was: bra_EF77
 ; Alias entry for C0-EF command path to duration fetch
@@ -244,7 +254,7 @@ bra_C0_EF_fetch_channel_duration_byte_alias:		; was: bra_EF77_C0_EF
     ADC #$07
     TAY
     PLA
-    STA (ram_sound_channel_ptr),Y    ; 0627 062F 0637 063F 0647 064F 0657 065F 0667 066F 0677 067F 0687 068F 0697 069F
+    STA (ram_sound_channel_ptr),Y    ; record +7 duration
 ; Advance to next sound channel slot
 bra_advance_to_next_sound_channel:		; was: bra_EF84
 ; Shared entry to advance to next sound channel
@@ -317,7 +327,7 @@ handler_0F_unused_alias_turn_sound_off:		; was: ofs_018_EFCA_0F
     LDA #$00
     STA (ram_sfx_request_ptr),Y    ; 0600 0601 0602 0603 0604 0605 0606 0607 0608 0609 060A 060B 060C 060D 060E 060F
     LDY ram_sound_channel_offset
-    STA (ram_sound_channel_ptr),Y    ; 0620 0628 0630 0638 0640 0648 0650 0658 0660 0668 0670 0678 0680 0688 0690 0698
+    STA (ram_sound_channel_ptr),Y    ; record +0 channel state
     JMP loc_advance_to_next_sound_channel_entry
 
 ; Control F1: update channel register byte1 low 6 bits
@@ -404,16 +414,19 @@ handler_ctrl06_set_channel_reg1_raw:		; was: ofs_018_F03F_06
     STA (ram_sound_channel_ptr),Y
     JMP loc_decode_sound_stream_byte
 
-; Read next byte from channel stream pointer and advance stream pointer
+; Read one byte through the current record's stream cursor and post-increment it.
+; Inputs: ram_sound_channel_offset and initialized channel pointer.
+; Output: A=fetched byte; record cursor +5/+6 advanced with carry.
+; Clobbers: X, Y and ram_sound_work_ptr.
 sub_fetch_stream_byte_and_advance_ptr:		; was: sub_F04F_get_sound_data_and_increase_pointer
     LDA ram_sound_channel_offset
     CLC
     ADC #$05
     TAY
-    LDA (ram_sound_channel_ptr),Y    ; 0625 062D 0635 063D 0645 064D 0655 065D 0665 066D 0675 067D 0685 068D 0695 069D
+    LDA (ram_sound_channel_ptr),Y    ; record +5 stream cursor low
     STA ram_sound_work_ptr
     INY
-    LDA (ram_sound_channel_ptr),Y    ; 0626 062E 0636 063E 0646 064E 0656 065E 0666 066E 0676 067E 0686 068E 0696 069E
+    LDA (ram_sound_channel_ptr),Y    ; record +6 stream cursor high
     STA ram_sound_work_ptr + $01
 ; !(OBS) PHA/PLA is functionally redundant but retained for timing/layout. See resolved CODE-004.
     LDX #$00
@@ -423,11 +436,11 @@ sub_fetch_stream_byte_and_advance_ptr:		; was: sub_F04F_get_sound_data_and_incre
     DEY
     CLC
     ADC #< $0001
-    STA (ram_sound_channel_ptr),Y    ; 0625 062D 0635 063D 0645 064D 0655 065D 0665 066D 0675 067D 0685 068D 0695 069D
+    STA (ram_sound_channel_ptr),Y    ; record +5 stream cursor low
     LDA ram_sound_work_ptr + $01
     ADC #> $0001
     INY
-    STA (ram_sound_channel_ptr),Y    ; 0626 062E 0636 063E 0646 064E 0656 065E 0666 066E 0676 067E 0686 068E 0696 069E
+    STA (ram_sound_channel_ptr),Y    ; record +6 stream cursor high
     PLA
     RTS
 

@@ -1,5 +1,10 @@
 ; Maze decompression, nametable upload, and background clearing
 
+; Decode the generated maze stream directly into the active player's nametable.
+; Inputs: current player/game mode and tbl_maze_rle_stream_ptr.
+; Outputs: 27 rows x 22 tiles plus three eight-tile bottom-banner rows.
+; Side effects: direct PPU writes; token high bits encode run length minus one.
+; Clobbers: A, X, Y and zp_work0..zp_work5.
 sub_decompress_and_upload_maze_layout:		; was: sub_E25C
     LDA #$20    ; 2040
     STA zp_work2

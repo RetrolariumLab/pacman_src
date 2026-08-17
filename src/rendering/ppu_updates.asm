@@ -29,6 +29,11 @@ bra_store_power_pellet_tile:		; was: bra_DDE1
     BNE bra_toggle_next_power_pellet_tile
     RTS
 
+; Consume gameplay PPU buffers during NMI/vblank.
+; Inputs: demo/player mode, frame counter, score/HUD/pellet/main buffers.
+; Outputs: PPU writes; consumed score/hiscore/main buffers begin with $FF.
+; Side effects: changes PPU address latch/address; caller restores scroll/control.
+; Clobbers: A, X, Y.
 sub_write_buffer_to_ppu:
     LDA ram_flag_demo
     BEQ bra_flush_score_hud_buffers

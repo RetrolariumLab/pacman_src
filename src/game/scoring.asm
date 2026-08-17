@@ -234,7 +234,7 @@ bra_append_frightened_palette_cmd:		; was: bra_DFF3_loop
 ; Reverse eligible active ghosts for a frightened/scatter-chase transition.
 ;
 ; Inputs:
-; - ram_shared_state_1 and ram_release_wave_timer select whether reversal is due
+; - ram_shared_state_1 and the RAM-003 post-threshold gate select reversal eligibility
 ; - ghost state/direction, position fractions, and sampled neighbor tiles
 ; Outputs: none.
 ; Side effects: writes ram_ghost_direction for state-$04 ghosts whose movement

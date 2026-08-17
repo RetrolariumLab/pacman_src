@@ -1,4 +1,9 @@
 ; READY sequence, player handoff, and associated sprite tables
+;
+; handler_script02_round_ready builds and advances the READY phase.
+; Input: ram_shared_state_0 timer, player/mode flags, lives, and READY SFX slots.
+; Side effects: composes READY OAM/HUD data and switches to active gameplay only
+; after both READY sound channels stop. Returns through the gameplay NMI loop.
 
 handler_script02_round_ready:		; was: ofs_003_CA9D_02
     LDA ram_shared_state_0

@@ -1,52 +1,132 @@
-# Ghost AI Notes (`D4C2..D8F8`)
+# Ghost State Machine, Targeting, Release, and Speed
 
-Working notes for the enemy logic in `src/game/ghosts/navigation.asm` and
-`src/game/ghosts/house.asm`.
+The ghost runtime spans `src/game/ghosts/navigation.asm`,
+`src/game/ghosts/house.asm`, and the timer/release portion of
+`src/game/round/runtime.asm`. It shares the cached tile-probe pipeline described
+in `movement_and_collisions.md`.
 
-## Core Dispatch
-- `sub_update_ghost_slots`: iterates 4 ghost slots (`X += 2`) and dispatches per-state handler.
-- `sub_dispatch_ghost_state_handler`: reads `ram_ghost_state,X` and jumps via `tbl_ghost_state_handlers`.
+## Slot Model and State Dispatch
 
-## Ghost States (`ram_ghost_state`)
-- `con_ghost_state_in_house` (`00`): entering/inside house (`handler_state00_enter_house`).
-- `con_ghost_state_exiting_house` (`02`): exiting house (`handler_state02_exit_house`).
-- `con_ghost_state_active` (`04`): active move logic (`handler_state04_move_logic`).
-- `con_ghost_state_returning_eyes` (`06`): eyes-return logic (shares mover at `handler_state06_move_logic` with special target/speed branches).
-- `con_ghost_state_eaten_score` (`08`): movement-disabled state while the eaten-ghost score is displayed (`handler_ghost_state08_noop`).
+Four ghost slots use even offsets `0, 2, 4, 6` in interleaved state/direction
+arrays. The update loop also advances a tile pointer, position pointer, and
+one-bit slot mask. Each state value is an even byte offset into a word table:
 
-## Movement Pipeline (state 04/06)
-Directions use the shared movement enum: up `00`, left `01`, down `02`, and
-right `03` (`con_direction_*`). Adding `con_direction_reverse_delta` and
-masking with `con_direction_mask` selects the opposite direction.
+| State | Meaning | Main update behavior |
+| --- | --- | --- |
+| `con_ghost_state_in_house` | waiting/bouncing in house | vertical two-phase house motion |
+| `con_ghost_state_exiting_house` | queued for release | align to house exit, move up, become active |
+| `con_ghost_state_active` | normal/frightened maze actor | speed, fixed-point movement, targeting, turns |
+| `con_ghost_state_returning_eyes` | eaten eyes returning | fixed fast speed and house-door target |
+| `con_ghost_state_eaten_score` | score-popup freeze | no movement |
 
-1. `sub_select_ghost_speed_vector` picks the `ram_ghost_move_fraction,X` and `ram_ghost_move_pixels,X` speed pair.
-2. Low-byte step via `tbl_axis_step_lo_handlers`.
-3. Carry/borrow is folded into `ram_movement_step_budget`.
-4. Hi-byte loop (`loc_step_hi_budget_loop`) via `tbl_axis_step_hi_handlers`.
-5. Wrap + tunnel palette bit update around `D59D..D5C7`.
-6. At tile-center alignment, target/turn selection path enters `loc_choose_next_direction`.
+The reduced update used during post-eat pause dispatches movement only for
+returning eyes; every other state is a no-op. This lets previously eaten eyes
+continue home without advancing the ordinary ghosts.
 
-## Target Selection
-- `D617` mode gate:
-  - frightened branch -> `bra_pick_turn_from_tile_options` seeded selection from legal exits.
-  - scatter/chase branch -> corner targets (`tbl_corner_targets`) or slot-specific formulas (`tbl_target_formula_handlers`).
-- Slot formulas:
-  - slot0: `handler_target_formula_slot0`.
-  - slot1: `handler_target_formula_slot1`.
-  - slot2: `handler_target_formula_slot2`.
-  - slot3: `handler_target_formula_slot3` with distance gate fallback to slot0-style target.
+At the observed house entrance `(X=$60,Y=$70)`, returning eyes switch to the
+exit-house state, clear their frightened bit, and restore their slot palette.
+The exit handler first aligns X to `$60`, moves upward to Y `$58`, then selects
+left and changes to active. In-house actors use their direction byte as a local
+two-phase selector while bouncing between Y `$69` and `$70`.
 
-## Direction Choice
-- `loc_choose_next_direction` ranks candidate directions by target deltas.
-- Ranking LUT: `tbl_ranked_dir_order_lut`.
-- If preferred ranked candidates unavailable, falls back to left/right alternatives.
+## Movement and Tunnel Handling
 
-## House/Release Support
-- `sub_update_ghost_house_counters` updates marker flags (`0608..060C`) and pellet-threshold release gating.
-- `sub_queue_next_ghost_release` (outside this window but coupled) pushes release slots.
+Active and returning-eye states share fixed-point movement. The chosen
+fraction/pixel pair updates the low byte first; carry or borrow becomes the
+integer step budget. Each high-byte substep applies tunnel wrap (`$0A` -> `$BF`,
+`$C0` -> `$0B`) and updates sprite-palette bit `$20` outside X `$18..$A8`.
 
-## Invariants to Preserve
-1. Keep state IDs numeric and table-driven first.
-2. Preserve tile-center checks exactly (`(x|y)&7 == 0`-style points) before allowing turn recompute.
-3. Keep speed vectors as fixed-point `(lo,hi)` pair like RAM layout; this avoids desync.
-4. Keep tunnel wrap and palette-flag side effect in movement stage, not renderer stage.
+Direction selection runs only at eight-pixel alignment. Returning eyes target
+the house door. Other active ghosts choose frightened, scatter, or chase logic
+from their slot bit in `ram_shared_state_1` and `ram_shared_state_0`.
+
+## Speed Priority
+
+`sub_select_ghost_speed_vector` chooses exactly one fixed-point pair in this
+priority order:
+
+1. returning eyes: literal fraction `0`, pixels `2`;
+2. tunnel row Y `$70` with X outside `$30..$8F`: tunnel profile;
+3. slot frightened bit set: frightened profile;
+4. slot zero: its mutable current-speed profile;
+5. slots one through three: shared normal profile.
+
+The slot-zero current-speed pair is initialized from stage parameters and can
+advance at personal pellet thresholds. This mutable pair is distinct from the
+normal profile used by the other slots.
+
+## Target Modes and Formulas
+
+For an active ghost, mode priority is:
+
+- frightened bit set: choose a legal non-reverse exit using the frame counter
+  as a deterministic seed;
+- its bit set in `ram_shared_state_0`: use the slot-specific chase formula;
+- otherwise: use its fixed corner target.
+
+The chase formulas are expressed in world coordinates:
+
+| Slot | Target formula |
+| --- | --- |
+| 0 | Pac-Man position |
+| 1 | Pac-Man position plus a 24-pixel offset in Pac-Man's direction |
+| 2 | `2 * Pac-Man - slot0 ghost position` on both axes |
+| 3 | Pac-Man when either axis is at least 32 pixels away; otherwise seeded legal-exit selection |
+
+Slot 3's test is axis-wise, not a radial-distance calculation. Scatter targets
+are the four fixed corner coordinates stored in slot order.
+
+## Legal Exits and Direction Ranking
+
+The shared candidate collector scans up/left/down/right tile samples, applies
+state-specific accepted tile classes, removes reverse, and compacts valid
+directions. With no candidate the fallback is down; with one candidate it is
+used directly.
+
+For multiple candidates, `loc_choose_next_direction` computes absolute X and Y
+deltas to the target and uses `tbl_ranked_dir_order_lut` to try the two directions
+that reduce the dominant/sign-selected axes. If neither ranked direction is
+available, it tries relative left then relative right. The LUT and fallback
+order are gameplay behavior and must not be replaced by a generic shortest-path
+algorithm.
+
+## Scatter/Chase and Reversal
+
+Outside frightened mode, a 60-frame divider decrements the active phase timer.
+On expiry the phase index advances, a new duration is loaded, and the mode mask
+in `ram_shared_state_0` is selected. One phase parity also calls
+`sub_try_reverse_ghost_directions`; that helper reverses eligible active ghosts
+using their cached tiles and slot masks.
+
+The provisionally named `ram_release_wave_timer` is cleared at round init and
+set to one at a personal pellet threshold. Later it supplies an even-phase mode
+mask and gates ordinary phase reversals. Its gameplay intent is still tracked as
+`RAM-003` in `unknowns.md`; the static accesses do not justify calling it a timer.
+
+## House Release Paths
+
+`sub_queue_next_ghost_release` scans house slots one through three and changes
+the first in-house state to exiting-house. It is reached by three observed
+conditions:
+
+- a global pellet target, compared as target plus current pellet count equals
+  `$C0`, then advanced through the target table;
+- a seconds/subseconds inactivity-style interval (`$60` ticks per second);
+- stage-provided personal pellet thresholds, which also advance slot zero's
+  current-speed pair.
+
+`sub_update_ghost_house_counters` separately maintains sound/request-page marker
+bytes: returning-eyes presence wins, then frightened presence, otherwise one of
+three pellet-count bands. These bytes are coupled to audio-side behavior and
+must not be treated as the release-state array itself.
+
+## Preservation Invariants
+
+- Keep even state IDs and even slot offsets aligned with their word tables.
+- Preserve the main and reduced dispatchers as distinct update policies.
+- Preserve fixed-point carry/borrow and per-pixel tunnel side effects.
+- Preserve state/mode/speed priority and slot-zero's separate mutable speed.
+- Preserve candidate filtering, reverse exclusion, ranking LUT, and fallback order.
+- Keep house coordinates, release scan order, counters, and threshold equality
+  comparisons byte-exact.
+- Leave `RAM-003` open until a runtime trace separates all lifetimes.

@@ -1,6 +1,6 @@
 ; Ghost movement, targeting, path selection, and direction ranking
 
-; Iterate ghost slots and run per-state movement/update logic
+; Iterate ghost slots and run per-state movement/update logic.
 ; Core enemy AI dispatcher: state machine, targeting formulas, and speed profiles.
 ; Per ghost slot update pipeline:
 ; 1) state dispatch (house enter/exit, move logic, noop)
@@ -8,6 +8,10 @@
 ; 3) low-byte move + carry/borrow accumulation
 ; 4) high-byte move loop, tunnel wrap, palette flag update
 ; 5) on tile centers choose next direction (targeted or seeded/randomized)
+; Inputs: ghost state/direction/position arrays and cached tile probes.
+; Outputs: updated positions, directions, states, targets, and palette tunnel bits.
+; Side effects: advances tile/position pointers and a one-bit slot mask internally.
+; Clobbers: A, X, Y, zp_work0..zp_work14, and ram_indirect_jmp.
 sub_update_ghost_slots:		; was: sub_D4C2
     LDX #$00
     LoadPointer zp_work0, (ram_obj_ppu_tile + $05)
@@ -31,7 +35,10 @@ bra_update_ghost_slot_loop:		; was: bra_D4D8_loop
     CPX #con_ghost_slot_span
     BNE bra_update_ghost_slot_loop
     RTS
-; Dispatch ghost update handler by state in ram_ghost_state
+; Dispatch one ghost update handler by even state-table offset.
+; Inputs: X=interleaved ghost slot offset plus current slot pointers/mask.
+; Outputs/side effects: state-handler dependent; X is preserved.
+; Clobbers: A, Y and ram_indirect_jmp.
 ; State and direction are interleaved; release scans start at ghost slot 1.
 sub_dispatch_ghost_state_handler:		; was: sub_D4F2
     LDY ram_ghost_state,X
@@ -400,7 +407,11 @@ handler_target_formula_slot2:		; was: ofs_009_D6CF_04
     CLC
     ADC ram_obj_pos_Y_hi
     STA ram_ghost_target_y
-; Choose next movement direction via path candidates
+; Choose a non-reverse direction from cached legal exits and the current target.
+; Inputs: X=ghost slot, zp_work0=neighbor tiles, zp_work2=position,
+; ram_ghost_target_x/y=current target.
+; Output: ram_ghost_direction,X; X is preserved.
+; Clobbers: A, Y and zp_work5..zp_work14.
 bra_choose_next_direction:		; was: bra_D6E3
 ; Choose next movement direction via path candidates
 loc_choose_next_direction:		; was: loc_D6E3

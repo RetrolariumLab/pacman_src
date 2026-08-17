@@ -1,5 +1,8 @@
 ; OAM construction and actor sprite tile/attribute tables
 
+; Inputs: six staged actor positions, sprite-set indices, and actor attributes.
+; Outputs: 24 four-byte entries in ram_oam; zero position axes map to $FF.
+; Clobbers: A, X, Y and zp_work0..zp_work5.
 sub_build_oam_from_sprite_buffers:		; was: sub_DA5C
 ; Build final OAM entries from sprite buffers
 loc_build_oam_from_sprite_buffers:		; was: loc_DA5C

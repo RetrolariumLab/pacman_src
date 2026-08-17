@@ -1,7 +1,15 @@
 ; Pac-Man movement, input, and demo path
 
-; Main Pac-Man movement update (live input or demo script)
-; Handles turn buffering, tile legality checks, tunnel wrap, and per-frame stepping.
+; Main Pac-Man movement update (live input or demo script).
+;
+; Inputs:
+; - ram_flag_demo and either ram_btn_total or the demo direction state
+; - current/requested direction, Pac-Man XY position, cached tile samples
+; - selected level movement parameters and shared frightened state
+; Outputs: updated Pac-Man position, direction request/current direction, and palette.
+; Side effects: advances demo timing when enabled; uses the shared indirect jump
+; pointer and movement-step budget; may wrap Pac-Man horizontally.
+; Clobbers: A, X, Y, zp_work0, zp_work1, and ram_indirect_jmp.
 sub_update_pacman_movement:		; was: sub_D2FB
     LDA ram_flag_demo
     BEQ bra_handle_live_input
@@ -18,7 +26,8 @@ bra_decode_dpad_direction:		; was: bra_D30A_loop
     ASL
     BCC bra_decode_dpad_direction
     LDA tbl_dpad_to_direction,X
-; Apply requested direction and validate turn legality
+; Shared live/demo entry. A=requested direction; caches it, accepts an immediate
+; legal reversal, or leaves a normal turn queued until tile alignment.
 loc_apply_requested_direction:		; was: loc_D311
     STA ram_direction_1
     CLC
@@ -51,7 +60,8 @@ bra_fallback_to_current_direction:		; was: bra_D33D
     STA ram_direction_1
 ; Branch alias into speed-profile selection entry point
 bra_select_speed_profile_entry:		; was: bra_D341
-; Select movement speed profile for current tile/state
+; Select the floor/pellet/power-pellet speed pair for the cached tile and shared
+; frightened state, then dispatch fractional movement in ram_direction_2.
 loc_select_speed_profile:		; was: loc_D341
     LDX #$04
     LDA ram_shared_state_1
@@ -268,7 +278,8 @@ tbl_dpad_to_direction:		; was: tbl_D46D_direction
     .byte con_direction_down
     .byte con_direction_up
 
-; Demo/autoplay direction sequencer
+; Demo/autoplay direction sequencer. Consumes [duration,direction] pairs and
+; enters loc_apply_requested_direction so demo movement obeys normal legality.
 loc_demo_direction_script:		; was: loc_D471
     LDY ram_demo_direction_index
     DEC ram_demo_direction_timer

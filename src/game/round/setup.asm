@@ -1,4 +1,9 @@
 ; Round initialization, runtime parameter loading, HUD, and maze attributes
+;
+; handler_script00_round_init initializes a fresh stage or rebuilds runtime
+; state after death/handoff. Input: restart flag, active player state, and stage.
+; Side effects: clears runtime/OAM state, loads stage records, rebuilds maze/HUD
+; as needed, and selects con_game_script_round_ready via the gameplay NMI loop.
 
 handler_script00_round_init:		; was: ofs_003_CE35_00
     LDA #$01

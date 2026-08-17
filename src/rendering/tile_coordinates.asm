@@ -1,6 +1,11 @@
 ; Tile probes, playfield, HUD, and renderer helpers
 
-; Build current+neighbor tile probe addresses for Pac-Man and all ghosts
+; Build current+neighbor tile probe addresses for Pac-Man and all ghosts.
+;
+; Inputs: five actor XY records and current player/game mode.
+; Outputs: cached current/up/left/down/right PPU addresses in ram_obj_ppu_position.
+; Side effects: uses shared PPU-address work fields and row delta.
+; Clobbers: A, X, Y, zp_work2..zp_work5.
 sub_build_object_neighbor_ppu_positions:		; was: sub_E154_calculate_ppu_positions
     LDA ram_obj_pos_X_hi
     STA zp_work2
@@ -82,7 +87,10 @@ bra_build_neighbor_ppu_positions:		; was: bra_E16D_loop
     BNE bra_build_neighbor_ppu_positions
     RTS
 
-; Convert world XY position to nametable PPU address
+; Convert one world XY position to its containing nametable tile address.
+; Inputs: zp_work2=X high, zp_work3=Y high, current player/game mode.
+; Outputs: zp_work2=PPU low, zp_work3=PPU high; player two adds $0800.
+; Clobbers: A, zp_work4, zp_work5.
 sub_convert_world_pos_to_ppu_addr:		; was: sub_E1DD_convert_position_to_ppu
     LDA #$00
     STA zp_work5
@@ -126,7 +134,12 @@ bra_apply_player2_nametable_offset:		; was: bra_E214
     STA zp_work3    ; ppu_pos_hi
     RTS
 
-; Read tiles from PPU at cached object neighbor positions
+; Read tiles from all cached object-neighbor PPU addresses.
+; Inputs: ram_obj_ppu_position contains 21 big-endian PPU addresses.
+; Outputs: ram_obj_ppu_tile contains 21 sampled tile IDs.
+; Side effects: resets the PPU address latch and performs a dummy PPUDATA read for
+; every sample; callers must restore scroll/control state after this routine.
+; Clobbers: A, X, Y.
 sub_sample_tiles_at_obj_ppu_positions:		; was: sub_E21C_analyze_obj_ppu_pos
     LDX #$00
     LDY #$00
@@ -147,7 +160,9 @@ bra_sample_next_obj_neighbor_tile:		; was: bra_E223_loop
     BNE bra_sample_next_obj_neighbor_tile
     RTS
 
-; Add one nametable row stride ($20) to PPU address copy
+; Add the caller-supplied row delta to ram_ppu_work_addr.
+; Inputs/outputs: ram_ppu_work_addr; input delta in ram_ppu_row_delta.
+; Clobbers: A; X and Y are preserved.
 sub_add_nametable_row_stride:		; was: sub_E240_add_0020
 ; !(OBS) All callers set row delta to $0020. See resolved CODE-003.
     CLC
@@ -159,7 +174,9 @@ sub_add_nametable_row_stride:		; was: sub_E240_add_0020
     STA ram_ppu_work_addr_hi
     RTS
 
-; Subtract one nametable row stride ($20) from PPU address copy
+; Subtract the caller-supplied row delta from ram_ppu_work_addr.
+; Inputs/outputs: ram_ppu_work_addr; input delta in ram_ppu_row_delta.
+; Clobbers: A; X and Y are preserved.
 sub_subtract_nametable_row_stride:		; was: sub_E24E_sbc_0020
 ; !(OBS) All callers set row delta to $0020. See resolved CODE-003.
     SEC

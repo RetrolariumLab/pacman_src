@@ -10,6 +10,8 @@
 - [bank_ff_map.md](./bank_ff_map.md): top-level bank segmentation and annotation entry points.
 - [ram_fields.md](./ram_fields.md): key RAM fields and runtime roles.
 - [script_states.md](./script_states.md): gameplay script state machine (`ram_script`).
+- [movement_and_collisions.md](./movement_and_collisions.md): input buffering, tile probes, stepping, tunnel wrap, and actor collisions.
+- [rendering_pipeline.md](./rendering_pipeline.md): actor animation, overlap ordering, OAM composition, and NMI PPU buffers.
 - [gameplay_feature_map.md](./gameplay_feature_map.md): feature-level map (levels, enemies, bonuses, cutscenes).
 - [ghost_ai.md](./ghost_ai.md): ghost update pipeline, states, targeting, movement.
 - [score_and_bonus.md](./score_and_bonus.md): pellets/fruit/score/1UP flow.
@@ -46,8 +48,9 @@ After each edit batch:
 - require `[OK] Byte-identical ROM reproduced from native ca65 source.`
 
 ## Current Status
-- Bank FF label/comment pass is broadly complete for major systems.
+- Systematic subsystem documentation (roadmap milestone 5) is complete across
+  all seven planned subsystem passes.
 - Native ca65 source is split into semantic subsystem directories under `src/`,
   with `src/main.asm` retaining the modules' address order.
-- Next practical step is deepening lower-level branch and data annotations,
-  keeping byte-identity after every edit batch.
+- Next practical step is milestone 6: debugger symbols and source-level
+  navigation, keeping byte-identity after every edit batch.

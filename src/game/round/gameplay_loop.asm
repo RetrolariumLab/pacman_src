@@ -5,7 +5,10 @@
 ; This is the main runtime loop used after leaving title/attract.
 ; Includes round init, pause, ready, collisions, death, stage clear, and game over.
 ; ---------------------------------------------------------------------------
-; Enter gameplay session (demo or real game) and init runtime state
+; Enter gameplay session (demo or real game) and initialize runtime state.
+; Inputs: ram_flag_demo and persistent game/high-score state.
+; Side effects: resets script/player/pause state, clears display state, and
+; enables the NMI-driven gameplay loop. Does not return.
 loc_enter_gameplay_session:		; was: loc_C98A
     LDA #PPUCTRL_SPRITE_PATTERN_HIGH
     STA PPUCTRL
@@ -77,7 +80,9 @@ bra_handle_script_delay:		; was: bra_C9F6
     BEQ bra_dispatch_current_script
     DEC ram_script_delay
     BNE bra_loop_gameplay_tick
-; Dispatch current gameplay script handler
+; Dispatch current gameplay script handler.
+; Input: ram_script is an even byte offset into tbl_gameplay_script_handlers.
+; Clobbers: A, Y, and ram_indirect_jmp. Tail-jumps to the selected handler.
 bra_dispatch_current_script:		; was: bra_C9FE
 ; ram_script stores even-valued state IDs indexing tbl_gameplay_script_handlers
     LDY ram_script
@@ -99,7 +104,10 @@ tbl_gameplay_script_handlers:		; was: tbl_CA0D
     .word handler_script0E_intermission_setup ; con_game_script_intermission_setup
     .word handler_script10_intermission_runtime ; con_game_script_intermission_runtime
 
-; Script 04: pause input gate + PAUSE text packet
+; Script 04: pause input gate and normal gameplay frame driver.
+; Input: controller edge state, pause state, and live round state.
+; Side effects: may toggle pause/SFX/PPU text; when unpaused, runs the ordered
+; gameplay update chain. Returns only through the NMI wait loop.
 handler_script04_pause_handler:		; was: ofs_003_CA1F_04
     LDA ram_sfx_pause_toggle
     BEQ bra_check_pause_start_edge

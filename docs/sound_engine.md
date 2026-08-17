@@ -1,67 +1,118 @@
-# Sound Engine Notes (`EE18..F427`)
+# Sound Engine, Stream Commands, and Channel Arbitration
 
-## Entry Points
-- `sub_init_sound_engine`: initializes pointers, enables APU channels (`$4015`), frame counter (`$4017`).
-- `sub_clear_sound_engine_state`: clears SFX request slots and channel command/state bytes.
-- `sub_update_sound_engine`: per-frame mixer/decoder update (called from NMI path when not in demo).
+The sound engine lives in `src/audio/engine.asm`; the 16 original byte streams
+are checksum-managed generated assets included by `src/audio/streams.asm`.
+`sub_update_sound_engine` runs from NMI when demo mode does not suppress audio.
 
-## RAM Layout (high-level)
-- `0600..060F`: SFX request slots (`ram_sfx_*`), one per logical sound event id.
-- `0620..069F`: 16 channel structs, stride 8 bytes.
-  - byte `+0`: channel state/request id
-  - bytes `+1..+4`: register/control bytes used for APU writes
-  - bytes `+5,+6`: stream pointer lo/hi
-  - byte `+7`: duration counter
+## Initialization and Ownership
 
-## Per-frame Update (`sub_update_sound_engine`)
-1. Clears temporary dedup flags (`00F8..00FF`).
-2. Pre-pass over 16 channel structs (`EE6E..EEB7`):
-   - resolves command conflicts and low-priority dedup.
-   - may write immediate 4-byte APU quads to `4000..400B`.
-3. Main per-channel loop (`loc_sound_channel_main_loop`):
-   - if duration active -> decrement counter.
-   - if expired/new -> load stream header and decode stream bytes.
-4. Advances to next channel until all are processed.
+`sub_init_sound_engine` installs pointers to the request page, channel records,
+and stream-pointer table, enables all APU channels, selects five-step frame
+counter mode with IRQ inhibited, then falls through to clearing state.
+`sub_clear_sound_engine_state` zeros all 16 request bytes and only byte zero of
+each channel record.
 
-## Stream Decoder (`loc_decode_sound_stream_byte`)
-Byte classes:
-- `00..BF`: note encoding.
-  - upper nibble selects base period pair (`tbl_note_period_base_pairs`)
-  - lower nibble applies shift to period.
-  - writes resulting period into channel register bytes.
-- `C0..EF`: duration-like command path; fetches next duration byte.
-- `F0..FF`: control opcode dispatch via `tbl_sound_control_opcode_handlers`.
+The request page at `$0600..$060F` has one byte per stream-table slot. Writers
+set a nonzero byte to request/keep that stream active; the F0 stop command clears
+both the request byte and its channel state. Some slots are companion layers,
+not necessarily independent audible effects. Exact semantics of provisional
+slots `$0608..$060E` remain `SND-001` in `unknowns.md` pending a runtime trace.
+
+## Channel Record Layout
+
+There are 16 eight-byte records beginning at `ram_sound_channel_state` (`$0625`).
+The last record begins at `$069D` and its duration byte ends the span at `$06A4`:
+
+| Offset | Role |
+| --- | --- |
+| `+0` | arbitration/channel state |
+| `+1` | APU register byte 0 |
+| `+2` | APU register byte 1 |
+| `+3` | computed timer low |
+| `+4` | APU timer-high/control byte |
+| `+5,+6` | little-endian stream cursor |
+| `+7` | remaining duration |
+
+Older address comments that show `$0620` as the record base are stale by five
+bytes; the named RAM symbol and indexed accesses are authoritative. The stream
+prologue initializes `+0`, `+1`, `+2`, and `+4`; pitch decoding supplies `+3`
+and the low timer bits in `+4`.
+
+## Frame Update and Arbitration
+
+The update has two passes. The pre-pass clears four physical-channel claim
+bytes, then scans logical records in slot order. State zero is inactive. States
+at least five mark the corresponding physical-channel claim. States one through
+four are admitted only if that claim is still free; an admitted state is
+promoted into the five-through-eight range and its four register bytes are
+immediately copied to the corresponding APU register quad. A duplicate low
+state is skipped.
+
+This scan order and promotion arithmetic implement arbitration. They must not
+be described as generic mixing or reordered by apparent sound importance: the
+stream state byte and earlier logical slot determine the observed winner.
+
+The main pass then walks the same 16 logical slots. A zero request skips the
+slot. When channel state is zero, the slot's stream pointer is installed and a
+four-byte prologue is read. Otherwise its duration decrements; reaching zero
+continues directly into byte decoding. Only the pre-pass writes APU quads.
+
+## Stream Grammar
+
+After the four-byte prologue, the cursor consumes these byte classes:
+
+| Range | Meaning |
+| --- | --- |
+| `$00..$BF` | note: high nibble selects one of 12 base periods; low nibble right-shifts it, then a duration byte follows |
+| `$C0..$EF` | duration-only command marker; the next byte becomes duration |
+| `$F0..$FF` | control opcode indexed through a 16-entry word table |
+
+For note commands, the 11-bit period is split across record bytes `+3/+4` while
+preserving the upper five bits of `+4`. Channel states at least five are reduced
+by four after a note before the next duration is loaded, feeding the next
+frame's arbitration cycle.
 
 ## Control Opcodes
-- `con_sound_opcode_stop` (`F0`): turn sound off (`handler_00_turn_sound_off`).
-- `con_sound_opcode_set_reg1_mid2` (`F2`): set reg1 middle bits (`handler_ctrl02_set_channel_reg1_mid2`).
-- `con_sound_opcode_set_reg1_low4` (`F3`): set reg1 low nibble (`handler_ctrl03_set_channel_reg1_low4`).
-- `con_sound_opcode_set_reg4` (`F5`): set reg4 raw (`handler_ctrl05_set_channel_reg4_raw`).
 
-Other handler table entries are dormant in all decoded streams; see resolved SND-002 in `docs/unknowns.md`.
+All control handlers either stop the stream or consume one operand and continue
+decoding in the same frame:
 
-## Stream Source Table
-- Root pointer: `tbl_sfx_stream_table_ptr` -> `tbl_sfx_stream_ptr_table`.
-- Slots map request ids `00..0F` to concrete streams, e.g.:
-  - `00/01`: READY jingle A/B
-  - `02`: extra life
-  - `03`: death
-  - `04/05`: pellet alternation
-  - `06`: fruit
-  - `07`: eat ghost
-  - `0D/0E`: intermission phrases
-  - `0F`: pause toggle
+| Opcode | Effect |
+| --- | --- |
+| `F0` | clear request and channel state, advance to next logical slot |
+| `F1` | replace low six bits of record `+1` |
+| `F2` | replace bits 4-5 of record `+1` |
+| `F3` | replace low nibble of record `+1` |
+| `F4` | replace record `+2` |
+| `F5` | replace record `+4` |
+| `F6` | replace record `+1` |
+| `F7..FF` | aliases of stop |
 
-Slot semantics that still require runtime correlation are tracked as SND-001 in docs/unknowns.md.
+Static decoding of every generated stream observes only F0, F2, F3, and F5;
+the remaining handlers are retained dormant behavior, as recorded by resolved
+`SND-002`. The fetch helper's redundant PHA/PLA is similarly retained and
+tracked by resolved `CODE-004`.
 
-The decoder, note-period table, and pointer table remain editable in
-`src/audio/engine.asm` (`EE18..F0AD`). The stream payloads (`F0AE..F427`) are
-generated from the reference ROM into `assets/generated/audio/` and included by
-`src/audio/streams.asm`. See [assets.md](./assets.md).
+## Stream Assets and Slot Table
 
-## Invariants to Preserve
-1. Keep the 8-byte channel struct and decode order intact first.
-2. Preserve opcode semantics as byte-accurate handlers (no early abstraction).
-3. Preserve pre-pass arbitration before decode; it affects overlap/priority behavior.
-4. Keep stream data table-driven and checksum-verified; do not rewrite its
-   format without a tested encoder.
+`tbl_sfx_stream_ptr_table` maps request slots 00 through 0F to generated assets.
+Confirmed callers cover READY's two layers, extra life, death, alternating pellet
+slots, fruit, eaten ghost, and pause. The house/release/intermission names are
+useful caller-based labels but remain provisional under `SND-001`.
+
+The binary streams are regenerated by `make split` and verified through the
+asset manifest. Editing the pointer table or decoder is source work; changing a
+stream requires a reproducible extractor/encoder and updated asset evidence.
+
+## Preservation Invariants
+
+- Keep 16 request slots and 16 channel records at stride eight.
+- Treat `$0625`, not stale raw-address comments, as the channel-record base.
+- Preserve pre-pass scan order, claim mapping, carry-dependent promotion, and
+  immediate four-register writes.
+- Preserve stream prologue and byte-class grammar exactly.
+- Keep opcode table entries and dormant handlers until stronger evidence permits
+  removal.
+- Do not close `SND-001` from caller names alone; capture request, stream, claim,
+  and APU-channel behavior at runtime.
+- Keep generated streams manifest-verified and the rebuilt ROM byte-identical.

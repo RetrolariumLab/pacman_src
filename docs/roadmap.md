@@ -250,7 +250,7 @@ src/memory/
   constants.inc
 ```
 
-### 5. Systematic Subsystem Documentation
+### 5. Systematic Subsystem Documentation — Complete
 
 After the scoring reference module is complete, apply the same standard in this
 order:
@@ -270,6 +270,15 @@ transitions, or a binary layout materially easier to understand.
 Do not split files further merely to reduce line count. The current modules are
 already small enough; new boundaries should reflect ownership or a decoded data
 format rather than an arbitrary size target.
+
+Completed subsystem references are `script_states.md`,
+`movement_and_collisions.md`, `ghost_ai.md`, `rendering_pipeline.md`,
+`intermission_flow.md`, `sound_engine.md`, and
+`stage_params_and_data_tail.md`. Their corresponding source entry points carry
+local input/output/side-effect/clobber contracts. The pass also corrected the
+sound channel-record base, stage-profile field mapping, intermission staged-X
+bounds, and the evidence recorded for `RAM-003`; unresolved intent remains in
+`unknowns.md` rather than being promoted from inference.
 
 ### 6. Debugger Symbols and Source-Level Navigation
 

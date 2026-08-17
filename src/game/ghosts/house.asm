@@ -1,5 +1,8 @@
 ; Ghost speed selection, house transitions, and release counters
 
+; Inputs: X=ghost slot, zp_work2=position pointer, zp_work4=slot bit, state masks.
+; Outputs: ram_ghost_move_fraction/pixels,X selected by state, tunnel, and mode.
+; Clobbers: A, Y; X and the position pointer are preserved.
 sub_select_ghost_speed_vector:		; was: sub_D78C
 ; Speed source registers:
 ; - ram_ghost0_current_speed_*: slot 0 normal speed
@@ -188,7 +191,9 @@ bra_store_house_transition_phase:		; was: bra_D87C
 bra_return_from_house_transition:		; was: bra_D87E_RTS
     RTS
 
-; Update ghost slots with state06-only dispatch
+; Update only returning-eye ghosts, used while normal actors are frozen.
+; Inputs/outputs match sub_update_ghost_slots, but states 00/02/04/08 are no-ops.
+; Clobbers: A, X, Y, zp_work0..zp_work14, and ram_indirect_jmp.
 sub_update_ghost_slots_state06_only:		; was: sub_D87F
     LDX #$00
     LoadPointer zp_work0, (ram_obj_ppu_tile + $05)
@@ -240,7 +245,11 @@ handler_state04_noop:		; was: ofs_006_D8C8_04_RTS
 handler_reduced_ghost_state08_noop:		; was: ofs_006_D8C8_08_RTS
     RTS
 
-; Update ghost-house counters and release markers
+; Update ghost-house sound/request-page markers.
+; Inputs: ghost states, frightened mask, and player-one pellet count.
+; Outputs: one marker in ram_sfx_ghost_house_state6_marker through
+; ram_sfx_release_counter_hi according to state/mask/pellet priority.
+; Clobbers: A, X, Y and zp_work0.
 sub_update_ghost_house_counters:		; was: sub_D8C9
 ; Maintains state06 marker and pellet-threshold release flags in 0608..060C.
     LDX #$00

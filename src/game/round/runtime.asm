@@ -10,7 +10,7 @@
 ; ram_shared_state_2/ram_shared_state_3: frightened timer hi/lo
 ; ram_scatter_chase_timer: active scatter/chase timer countdown
 ; ram_scatter_chase_phase/ram_scatter_chase_second_divider: phase index + per-second divider
-; ram_release_wave_timer: per-wave release timer value
+; ram_release_wave_timer: provisional post-threshold mode/reversal gate (RAM-003)
 ; ram_global_release_target: global dot-release target cursor
 ; ram_personal_release_stage: personal-release stage index
 ; ram_release_timer_seconds/ram_release_timer_ticks: release counters (seconds/subseconds)
@@ -102,7 +102,7 @@ bra_release_and_fruit_tick:		; was: bra_D141
     JSR sub_try_reverse_ghost_directions
     LDA #$0F
     BNE bra_store_next_release_timer    ; jmp
-; Use per-target release timer value when phase bit is even
+; Use the provisional post-threshold mode mask when phase bit is even
 bra_use_personal_release_timer:		; was: bra_D16A
     LDA ram_release_wave_timer
 ; Store selected release timer value into active countdown
@@ -193,7 +193,10 @@ bra_hide_fruit_sprite:		; was: bra_D1E4
 bra_return_from_round_timer_update:		; was: bra_D1EA_RTS
     RTS
 
-; Reserve next available ghost release slot
+; Reserve the next available house ghost for release.
+; Inputs: interleaved ghost state array for slots one through three.
+; Outputs: first in-house slot becomes con_ghost_state_exiting_house, if any.
+; Clobbers: A, X.
 sub_queue_next_ghost_release:		; was: sub_D1EB
     LDX #$00
 ; Scan release slot pairs for an empty entry

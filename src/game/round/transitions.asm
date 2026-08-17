@@ -1,5 +1,9 @@
 ; Post-eat pause, death, stage-clear, and game-over scripts
 
+; Advance the eaten-ghost popup freeze.
+; Input: one ghost remains in con_ghost_state_eaten_score.
+; Side effects: returns that ghost as con_ghost_state_returning_eyes when the
+; timer expires; otherwise runs only the restricted freeze-frame update set.
 handler_script06_post_eat_pause:		; was: ofs_003_CC0F_06
     INC ram_post_eat_pause_timer
     LDA #$28
@@ -28,6 +32,9 @@ bra_run_post_eat_updates:		; was: bra_CC2D
     JMP loc_gameplay_mainloop_wait_nmi
 
 ; Script 08: Pac-Man death sequence + life decrement / handoff logic
+; Advances death animation, decrements lives, and selects respawn, player
+; handoff, game over, or title bootstrap. ram_shared_state_0 owns the phase.
+; Returns through the gameplay NMI loop unless control transfers to bootstrap.
 handler_script08_death_sequence:		; was: ofs_003_CC3C_08
     LDA ram_shared_state_0
     BNE bra_run_death_anim_phase
@@ -141,6 +148,8 @@ bra_return_from_death_handler:		; was: bra_CCE3
     JMP loc_gameplay_mainloop_wait_nmi
 
 ; Script 0C: stage clear flash + gate into intermission script when needed
+; ram_shared_state_0 owns the flash phase and then the intermission scene ID.
+; Side effects: queues palette packets and selects round init or intermission.
 handler_script0C_stage_clear:		; was: ofs_003_CCE6_0C
     LDA ram_shared_state_0
     BNE bra_stage_clear_flash_tick
@@ -221,6 +230,8 @@ tbl_stage_clear_flash_cmd:		; was: tbl_CD59
     .byte $FF, $20, $05, $3F   ; 04
 
 ; Script 0A: GAME OVER text flow + timeout to restart/bootstrap
+; Composes GAME OVER sprites on entry, then advances the wrapping timeout in
+; ram_shared_state_0. On expiry, tail-jumps into the shared exit decision path.
 handler_script0A_game_over:		; was: ofs_003_CD61_0A
     LDA ram_shared_state_0
     BEQ bra_build_game_over_sprites

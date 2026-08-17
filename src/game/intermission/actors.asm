@@ -1,5 +1,10 @@
 ; Intermission actor movement, wrapping, and visibility
 
+; Integrate fixed-point horizontal motion for five staged cutscene actors.
+; Inputs: object X pairs as velocities, staged sprite positions, actor attributes.
+; Outputs: staged X positions and tunnel attribute bit; offscreen slots are cleared.
+; Side effects: a zero staged X disables integration for that slot.
+; Clobbers: A, X, Y and zp_work0..zp_work3.
 sub_update_intermission_actor_positions:		; was: sub_E9A5
     LoadPointer zp_work0, ram_obj_position
     LoadPointer zp_work2, ram_spr_position
@@ -33,7 +38,7 @@ bra_actor_in_visible_range:		; was: bra_E9DA
     LDA #$DF
     AND ram_actor_sprite_attrs,X
     STA ram_actor_sprite_attrs,X
-; Continue with vertical/offscreen bounds checks
+; Continue with staged-X offscreen bounds checks
 bra_continue_actor_bounds_check:		; was: bra_E9E6
     LDY #$00
     LDA (zp_work2),Y    ; 0274 0278 027C 0280 0284
@@ -49,7 +54,7 @@ bra_loop_reset_offscreen_actor:		; was: bra_E9EE_loop
     INY
     STA (zp_work2),Y    ; 0276 027A 027E 0282 0286
     BNE bra_advance_actor_pointer
-; Actor remains within vertical bounds
+; Actor remains within staged-X bounds
 bra_actor_not_outside_vertical_bounds:		; was: bra_E9FC
     CMP #$04
     BCC bra_loop_reset_offscreen_actor

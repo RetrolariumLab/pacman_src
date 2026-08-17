@@ -40,26 +40,30 @@ annotations use `!(OBS)`, `!(ASSUME)`, `!(WHY?)`, `!(UNKNOWN)`, `!(BUG?)`, and
 - **Smallest experiment:** build a per-script access table and trace the four
   bytes at script transitions; alias only unambiguous lifetimes.
 
-### RAM-003 - release-wave timer semantics
+### RAM-003 - release-wave field semantics
 
 - **Subsystem/address:** ghost-house release; `ram_release_wave_timer`
 - **Status/confidence:** open; medium
-- **Established:** the field is seeded from stage parameters and participates in
-  the round timer/release path, including the direction-reversal trigger around
-  `sub_try_reverse_ghost_directions`.
-- **Hypothesis:** it is a per-wave release timing value whose exact lifetime and
-  relationship to scatter/chase timing remain incompletely separated.
+- **Established:** round init clears the field. Reaching a personal pellet
+  threshold stores `1`; no other active write is known. An even scatter/chase
+  phase copies it to `ram_shared_state_0`, while reversal logic skips ordinary
+  phase reversals when it is nonzero (the all-frightened path still reverses).
+- **Hypothesis:** it is a persistent post-threshold mode/reversal gate, not a
+  timer, but the gameplay intent and exact slot-zero relationship need a trace.
 - **Evidence:** `docs/ram_fields.md`, `src/game/round/runtime.asm`, and
   `src/game/scoring.asm`.
-- **Experiment:** trace writes/reads with ghost slot, release state, phase, and
-  frame across each house exit and the reversal trigger.
+- **Experiment:** trace writes/reads with ghost slot, release state, phase,
+  `ram_shared_state_0`, and frame across the first personal threshold and later
+  scatter/chase transitions.
 ### SND-001 — SFX request-slot semantics
 
 - **Subsystem/address:** sound request page; RAM `$0600..$060F`
 - **Status/confidence:** open; medium
-- **Established:** each byte selects a stream-table entry and is cleared when
-  its channel stops. `$0601` and `$0605` are second channels of ready/pellet
-  sounds. Names for `$0608..$060E` are provisional and based on callers.
+- **Established:** the request byte's slot index selects the stream-table entry;
+  any nonzero value keeps that slot active until its stop opcode clears it.
+  Channel records occupy `$0625..$06A4` at stride eight, and their state bytes
+  arbitrate four physical register quads. `$0601` and `$0605` are second layers
+  of ready/pellet sounds. Names for `$0608..$060E` remain caller-based.
 - **Hypothesis:** some slots are multi-channel companions or internal layers,
   not independent effects.
 - **Evidence:** `src/memory/ram.inc`, `tbl_sfx_stream_ptr_table`,

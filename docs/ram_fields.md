@@ -20,7 +20,7 @@ Working glossary for the most important RAM fields used by `src/main.asm`.
 | `ram_ghost_direction` | Ghost direction array interleaved with state | ghost movement/targeting (`D50C..D83F`) | High | Uses the shared `con_direction_*` encoding: up, left, down, right (`0..3`). |
 | `ram_scatter_chase_timer` | Active scatter/chase countdown | `sub_update_round_timers_and_frightened` | High | Decremented via the second divider. |
 | `ram_scatter_chase_phase` / `ram_scatter_chase_second_divider` | Scatter/chase phase index and second divider | `D14B..D172` | High | Drives phase transitions and optional direction reversals. |
-| `ram_release_wave_timer` | Per-wave release timer seed/current | `D16A`, `D1C2`, `E01B` | Medium | Used when the phase timer source switches. |
+| `ram_release_wave_timer` | Provisional post-threshold mode/reversal gate | `D16A`, `D1C2`, `E01B` | Medium | Cleared at round init and set to 1 at a personal threshold; see RAM-003. |
 | `ram_global_release_target` | Global dot-release target cursor | `D174..D18F`, initialized in `CF7A` | Medium | Advanced through the release target table. |
 | `ram_personal_release_stage` | Personal release stage index | `D1B2..D1C2` | Medium | Selects personal dot thresholds. |
 | `ram_release_timer_seconds` / `ram_release_timer_ticks` | Global release timer | `loc_update_release_counters` | High | Periodic trigger path for house release. |

@@ -1,5 +1,10 @@
 ; Intermission tile-animation dispatch and scene animation states
 
+; Dispatch the animation layer by the same even scene/substate keys as scene logic.
+; Inputs: ram_shared_state_0/1, frame/animation phase, and staged actor positions.
+; Outputs: current scene's actor sprite-set indices.
+; Side effects: may advance ram_pacman_anim_phase; never advances scene substate.
+; Clobbers: A, Y and ram_indirect_jmp.
 sub_run_intermission_animation_dispatch:		; was: sub_EA20
     LDY ram_shared_state_0
     LDA tbl_intermission_anim_scene_handlers,Y

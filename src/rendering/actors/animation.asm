@@ -1,6 +1,9 @@
 ; Actor animation, OAM construction, and PPU buffers
 
-; Update Pac-Man animation frame from direction/alignment
+; Update Pac-Man animation frame from direction, phase, alignment, and forward tile.
+; Inputs: current direction/position, cached directional tiles, animation phase.
+; Output: ram_animation; may advance ram_pacman_anim_phase.
+; Clobbers: A, Y and zp_work0.
 sub_update_pacman_anim_frame:		; was: sub_D8F9
     LDA ram_direction_2
     ASL
@@ -49,7 +52,10 @@ tbl_pacman_anim_phase_lut:		; was: tbl_D931
     .byte $01   ; 04
     .byte $00   ; 05
 
-; Update ghost animation frames for all slots
+; Update ghost animation frames for all slots.
+; Inputs: ghost states/directions, frightened mask, and global frame counter.
+; Outputs: ram_animation+1..4, except state08 leaves its slot unchanged.
+; Clobbers: A, X, Y, zp_work0..zp_work3, and ram_indirect_jmp.
 sub_update_ghost_anim_frames:		; was: sub_D937
     LDA #$00
     TAX
@@ -148,7 +154,12 @@ bra_store_eyes_anim_offset:		; was: bra_D9A7
     STA zp_work2
     BMI bra_store_ghost_anim_frame    ; jmp
 
-; Prepare sprite positions and resolve overlap ordering
+; Prepare sprite positions, resolve overlap ordering, build tile probes and OAM.
+; Inputs: object positions, actor sprite sets/attrs, frightened mask.
+; Outputs: staged sprite records, cached tile-probe addresses, and shadow OAM.
+; Side effects: may swap Pac-Man with the first qualifying non-frightened ghost;
+; tail-jumps into loc_build_oam_from_sprite_buffers.
+; Clobbers: A, X, Y and zp_work0..zp_work6.
 sub_prepare_sprite_positions:		; was: sub_D9AB
     LDX #$23
 ; Copy object positions to sprite position buffer

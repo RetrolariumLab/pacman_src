@@ -1,9 +1,10 @@
-; Unused bank padding, maze pointer, and hardware vectors.
+; Fixed bank tail: $FF padding through $FFF7, maze pointer, and hardware vectors.
 
 unused_bank_padding:
     .res $FFF8 - *, $FF
 
 ; Pointer to the generated compressed maze stream.
+; Fixed at $FFF8; the VECTORS segment starts at $FFFA.
 tbl_maze_rle_stream_ptr:
     .word tbl_maze_rle_stream
 
