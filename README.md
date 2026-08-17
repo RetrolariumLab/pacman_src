@@ -35,6 +35,10 @@ dispatch handlers and internal control flow; see [`docs/naming.md`](docs/naming.
 labels, breakpoint groups, and a standard watch list. See
 [`docs/debugger_workflow.md`](docs/debugger_workflow.md).
 
+Focused natural and controlled FCEUX traces cover scoring, lifecycle, ghost
+release/mode changes, all intermissions, pause, player handoff, and sound byte
+classes. See [`docs/runtime_trace_scenarios.md`](docs/runtime_trace_scenarios.md).
+
 The gate for every change is `make verify`: rebuild the ROM from
 `src/main.asm` and assert byte-identity with the original. Annotation must never
 alter the assembled bytes, so any diff means the edit was wrong.
@@ -111,6 +115,8 @@ make verify                     # Build and require byte-identity
 make symbols                    # Generate Mesen/FCEUX debugger artifacts
 make test-debug-symbols         # Test symbol parsing and conversion
 make validate-symbols           # Prove live symbol lookup and named breakpoint
+make trace-runtime              # Capture and validate focused gameplay traces
+make validate-runtime-traces    # Revalidate existing gameplay traces
 make run                        # Build and run the ROM in FCEUX
 make split                      # Extract CHR, maze, and audio from the original ROM
 make build-dev                  # Check tools and clone/build FCEUX if needed

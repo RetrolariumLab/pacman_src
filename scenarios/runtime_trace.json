@@ -1,0 +1,54 @@
+{
+  "format": 1,
+  "rom_sha1": "adb4d7d7d28c89ca177aad231e0fdad992c0fbfb",
+  "movie": "movies/pacman_j_longplay.fm2",
+  "movie_sha1": "f6a343fd9f50f4bc8773af48a79eda313c946961",
+  "scenarios": [
+    {
+      "id": "natural-longplay",
+      "method": "natural play",
+      "max_frames": 35000,
+      "checks": ["death-respawn", "ghost-releases", "mode-boundaries", "intermission-scene-0", "sound-byte-classes"]
+    },
+    {
+      "id": "pause-resume",
+      "method": "controlled Start-edge injection",
+      "max_frames": 23000,
+      "patches": [
+        {"address": "$004D", "symbol": "ram_btn_1p", "reason": "inject two Start press edges at the script04 input gate"}
+      ],
+      "checks": ["pause-resume"]
+    },
+    {
+      "id": "death-player-switch",
+      "method": "controlled state patch",
+      "max_frames": 22500,
+      "patches": [
+        {"address": "$003F", "symbol": "ram_script", "reason": "enter the documented death script from stable live play"},
+        {"address": "$0032", "symbol": "ram_animation", "reason": "advance to the terminal death-animation step"},
+        {"address": "$0047", "symbol": "ram_game_mode", "reason": "select two-player handoff logic"},
+        {"address": "$0087", "symbol": "ram_shared_state_0", "reason": "select the death animation phase"},
+        {"address": "$00DB", "symbol": "ram_death_anim_timer", "reason": "execute the terminal animation step on the next dispatch"}
+      ],
+      "checks": ["death-player-switch"]
+    },
+    {
+      "id": "intermission-scene-1",
+      "method": "controlled stage-index patch",
+      "max_frames": 26000,
+      "patches": [
+        {"address": "$0068", "symbol": "ram_stage_p1", "reason": "select the second intermission at the first natural stage-clear entry"}
+      ],
+      "checks": ["intermission-scene-1"]
+    },
+    {
+      "id": "intermission-scene-2",
+      "method": "controlled stage-index patch",
+      "max_frames": 26000,
+      "patches": [
+        {"address": "$0068", "symbol": "ram_stage_p1", "reason": "select the third intermission at the first natural stage-clear entry"}
+      ],
+      "checks": ["intermission-scene-2"]
+    }
+  ]
+}

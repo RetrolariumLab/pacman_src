@@ -51,10 +51,13 @@ SCORING_TRACE ?= $(PROJECT_DIR)tmp/scoring_trace.csv
 SCORING_SCENARIOS ?= $(PROJECT_DIR)scenarios/scoring_trace.json
 SCORING_MAX_FRAMES ?= $(MAX_FRAMES_LONGPLAY)
 SCORING_TRACE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_scoring_trace.lua
+RUNTIME_SCENARIOS ?= $(PROJECT_DIR)scenarios/runtime_trace.json
+RUNTIME_TRACE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_runtime_trace.lua
+RUNTIME_TRACE_DIR ?= $(PROJECT_DIR)tmp/runtime_traces
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify symbols test-debug-symbols validate-symbols lint run clean split build-dev reference analyze trace-scoring validate-scoring-trace chunk help _require-assets _manifest _batch
+.PHONY: build verify symbols test-debug-symbols test-runtime-traces validate-symbols lint run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -96,6 +99,9 @@ symbols: build
 
 test-debug-symbols:
 	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)scripts/tests" -p "test_debug_symbols.py" -v
+
+test-runtime-traces:
+	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)scripts/tests" -p "test_runtime_traces.py" -v
 
 validate-symbols: build-dev symbols
 	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp'); p.mkdir(parents=True, exist_ok=True); r=pathlib.Path(r'$(DEBUG_RUNTIME_RESULT)'); r.unlink() if r.exists() else None"
@@ -213,6 +219,21 @@ validate-scoring-trace:
 		--scenarios "$(SCORING_SCENARIOS)" \
 		--trace "$(SCORING_TRACE)"
 
+trace-runtime: build-dev symbols
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_runtime_traces.py" \
+		--fceux "$(FCEUX_EXE)" \
+		--rom "$(NATIVE_ROM)" \
+		--movie "$(LONGPLAY_MOVIE_FILE)" \
+		--lua "$(RUNTIME_TRACE_LUA)" \
+		--scenarios "$(RUNTIME_SCENARIOS)" \
+		--output-dir "$(RUNTIME_TRACE_DIR)"
+	$(MAKE) validate-runtime-traces
+
+validate-runtime-traces:
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_runtime_traces.py" \
+		--scenarios "$(RUNTIME_SCENARIOS)" \
+		--trace-dir "$(RUNTIME_TRACE_DIR)"
+
 chunk: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/extract_rename_chunk.py" \
 		--source "$(NATIVE_SOURCE)" \
@@ -230,6 +251,7 @@ help:
 	@echo   make verify                Build and verify byte-identity
 	@echo   make symbols               Build Mesen debug/map and FCEUX label artifacts
 	@echo   make test-debug-symbols    Run focused symbol conversion unit tests
+	@echo   make test-runtime-traces   Run focused runtime validator unit tests
 	@echo   make validate-symbols      Prove FCEUX symbol lookup and semantic breakpoint
 	@echo   make lint                  Run fast source and documentation checks
 	@echo   make run                   Build and run the ROM in FCEUX
@@ -240,6 +262,8 @@ help:
 	@echo   make analyze COUNT=32      Run the reverse-engineering analysis
 	@echo   make trace-scoring         Capture compact scoring events during longplay
 	@echo   make validate-scoring-trace Validate expected scoring event sequences
+	@echo   make trace-runtime          Capture and validate focused runtime scenarios
+	@echo   make validate-runtime-traces Validate existing focused runtime traces
 	@echo   make chunk START=260 LINES=60  Prepare a rename/analysis chunk
 	@echo   make help                  Show these public targets
 

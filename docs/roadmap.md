@@ -305,7 +305,7 @@ semantic breakpoint and watch groups, and the workflow documented in
 lookup and an execution hook on `vec_nmi_handler`; artifact validation maps key
 subsystem symbols back to their exact source label lines.
 
-### 7. Focused Runtime Trace Scenarios
+### 7. Focused Runtime Trace Scenarios — Complete
 
 The longplay comparison remains the broad regression test. Add short,
 deterministic scenarios for semantic investigation:
@@ -328,6 +328,15 @@ events in the repository; keep large captures and emulator dumps ignored.
 Use controlled patches when needed to force a rare state, but record the exact
 patch and never confuse a patched ROM result with evidence from the preservation
 build.
+
+Completed with the existing value-aware scoring trace and the focused gameplay
+workflow in `docs/runtime_trace_scenarios.md`. Natural longplay evidence covers
+death/respawn, all three house-ghost releases, scatter/chase boundaries and
+reversals, scene 0 intermission, and representative sound byte classes.
+Separate declared and audited controlled runs cover pause/resume, two-player
+handoff, and intermission scenes 1 and 2. `make trace-runtime` verifies the ROM
+and FM2 identities, reproduces all local CSVs, and requires all nine semantic
+checks to pass.
 
 ### 8. Automated Source and Documentation Checks — In Progress
 
@@ -428,11 +437,11 @@ replace or weaken the preservation target.
 
 ## Recommended Next Work Package
 
-Begin milestone 7 with short deterministic runtime traces. Reuse the existing
-scoring trace as the pattern, then add death/respawn/player switching, ghost
-house releases, and scatter/chase reversals before moving to intermissions and
-sound-stream decoding. Keep trace schemas compact, record only semantically
-relevant fields, and retain `make verify` as the preservation gate.
+Complete milestone 8 by extending the fast lint layer only where rules are
+precise: validate documentation symbol references, tighten naming-prefix checks,
+and run focused Python workflow tests from a single public target. Keep emulator
+traces separate from fast lint and retain `make verify` as the authoritative
+binary gate.
 
 ## Resuming Work on Another Computer
 
