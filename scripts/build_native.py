@@ -55,6 +55,7 @@ def assemble_prg(
     map_path: Path,
     debug_path: Path,
     output_rom_path: Path,
+    expected_prg_size: int = PRG_SIZE,
 ) -> bytes:
     object_path.parent.mkdir(parents=True, exist_ok=True)
     prg_path.parent.mkdir(parents=True, exist_ok=True)
@@ -104,8 +105,8 @@ def assemble_prg(
     )
     raw_debug_path.unlink()
     prg = prg_path.read_bytes()
-    if len(prg) != PRG_SIZE:
-        fail(f"Linked PRG must be {PRG_SIZE} bytes, got {len(prg)}")
+    if len(prg) != expected_prg_size:
+        fail(f"Linked PRG must be {expected_prg_size} bytes, got {len(prg)}")
     return prg
 
 

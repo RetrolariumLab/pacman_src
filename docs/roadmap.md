@@ -463,12 +463,25 @@ stage-5 demonstration variant in FCEUX. The preservation entrypoint and
 byte-identical `make verify` contract remain unchanged. Expanded-ROM layouts
 remain an explicit future variant rather than an implicit part of this gate.
 
+### 12. Expanded ROM and JSON Asset Pipeline — Complete
+
+Provide a separate layout for modifications that cannot fit the full original
+PRG bank. Keep the preserved bank at its original CPU addresses, add explicitly
+addressed free space, and prove the result in an emulator. Connect editable
+human-readable assets only through deterministic, explicit build steps.
+
+Completed with the NROM-256 workflow in `docs/expanded_rom_assets.md`. The new
+`HACK_BANK` occupies `$8000..$BFFF`, while the original bank remains at
+`$C000..$FFFF` with only its maze pointer redirected. An ignored editable maze
+JSON is encoded into the new bank, statically checked against the complete ROM
+layout, and exercised at `$8000` by `make validate-expanded` in FCEUX.
+
 ## Recommended Next Work Package
 
-Choose the next optional variant deliberately. A small reviewed table or asset
-edit can use the current fixed-size workflow; new mazes or substantial behavior
-changes should first introduce a documented expanded-ROM linker layout and a
-variant-specific validation contract.
+Extend the expanded asset pipeline one format at a time. Stage parameters are a
+good next candidate because they have a stable JSON codec and bounded records;
+redirect their consumer only after static layout checks and focused runtime
+evidence exist. Keep each additional asset independently reviewable.
 
 ## Resuming Work on Another Computer
 

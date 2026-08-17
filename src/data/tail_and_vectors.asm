@@ -6,7 +6,11 @@ unused_bank_padding:
 ; Pointer to the generated compressed maze stream.
 ; Fixed at $FFF8; the VECTORS segment starts at $FFFA.
 tbl_maze_rle_stream_ptr:
+.ifdef PACMAN_EXPANDED_MAZE
+    .word tbl_expanded_maze_rle_stream
+.else
     .word tbl_maze_rle_stream
+.endif
 
 .out .sprintf("Free bytes in bank FF: 0x%04X [%d]", ($FFFA - *), ($FFFA - *))
 

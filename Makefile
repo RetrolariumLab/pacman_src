@@ -23,6 +23,20 @@ HACK_CHR ?= $(GENERATED_CHR)
 HACK_MANIFEST ?= $(PROJECT_DIR)config/hack_variants.json
 HACK_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_hack_variant.lua
 HACK_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/hack_variant_runtime.txt
+EXPANDED_SOURCE ?= $(PROJECT_DIR)src/main_expanded.asm
+EXPANDED_CFG ?= $(PROJECT_DIR)src/nrom256_expanded.cfg
+EXPANDED_DIR ?= $(BUILD_DIR)/expanded
+EXPANDED_OBJ ?= $(EXPANDED_DIR)/pacman.o
+EXPANDED_PRG ?= $(EXPANDED_DIR)/pacman.prg
+EXPANDED_ROM ?= $(EXPANDED_DIR)/pacman.nes
+EXPANDED_LABELS ?= $(EXPANDED_DIR)/pacman.lbl
+EXPANDED_MAP ?= $(EXPANDED_DIR)/pacman.map
+EXPANDED_DEBUG ?= $(EXPANDED_DIR)/pacman.dbg
+EXPANDED_DEBUG_SUMMARY ?= $(EXPANDED_DIR)/debug_symbols.json
+EXPANDED_MAZE_JSON ?= $(PROJECT_DIR)hacks/local/maze.json
+EXPANDED_MAZE_BIN ?= $(EXPANDED_DIR)/assets/maze.rle
+EXPANDED_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_expanded_rom.lua
+EXPANDED_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/expanded_rom_runtime.txt
 DEBUG_SUMMARY ?= $(BUILD_DIR)/debug_symbols.json
 FCEUX_SYMBOL_DIR ?= $(BUILD_DIR)
 DEBUG_BREAKPOINTS ?= $(PROJECT_DIR)config/debugger_breakpoints.json
@@ -71,7 +85,7 @@ DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
+.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -144,6 +158,59 @@ validate-hack: build-dev symbols-hack
 		--result "$(HACK_RUNTIME_RESULT)" \
 		--expected-stage 5
 
+init-expanded-assets: _require-assets
+	$(PYTHON) "$(PROJECT_DIR)scripts/prepare_expanded_assets.py" init \
+		--source "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
+		--json "$(EXPANDED_MAZE_JSON)"
+
+expanded-assets:
+	$(PYTHON) "$(PROJECT_DIR)scripts/prepare_expanded_assets.py" encode \
+		--source "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
+		--json "$(EXPANDED_MAZE_JSON)" \
+		--output "$(EXPANDED_MAZE_BIN)"
+
+build-expanded: _require-assets expanded-assets
+	$(PYTHON) "$(PROJECT_DIR)scripts/build_expanded.py" \
+		--source "$(EXPANDED_SOURCE)" \
+		--config "$(EXPANDED_CFG)" \
+		--original-rom "$(ORIGINAL_ROM)" \
+		--chr "$(GENERATED_CHR)" \
+		--object "$(EXPANDED_OBJ)" \
+		--prg "$(EXPANDED_PRG)" \
+		--labels "$(EXPANDED_LABELS)" \
+		--map "$(EXPANDED_MAP)" \
+		--debug-info "$(EXPANDED_DEBUG)" \
+		--output-rom "$(EXPANDED_ROM)"
+
+verify-expanded: build-expanded
+	$(PYTHON) "$(PROJECT_DIR)scripts/verify_expanded.py" \
+		--original "$(ORIGINAL_ROM)" \
+		--candidate "$(EXPANDED_ROM)" \
+		--maze "$(EXPANDED_MAZE_BIN)"
+
+symbols-expanded: verify-expanded
+	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
+		--debug "$(EXPANDED_DEBUG)" \
+		--map "$(EXPANDED_MAP)" \
+		--labels "$(EXPANDED_LABELS)" \
+		--rom "$(EXPANDED_ROM)" \
+		--fceux-output-dir "$(EXPANDED_DIR)" \
+		--breakpoints "$(DEBUG_BREAKPOINTS)" \
+		--watches "$(DEBUG_WATCHES)" \
+		--summary "$(EXPANDED_DEBUG_SUMMARY)"
+
+validate-expanded: build-dev symbols-expanded
+	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp'); p.mkdir(parents=True, exist_ok=True); r=pathlib.Path(r'$(EXPANDED_RUNTIME_RESULT)'); r.unlink() if r.exists() else None"
+	set "PACMAN_EXPANDED_RUNTIME_RESULT=$(EXPANDED_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \
+		-playmovie "$(LONGPLAY_MOVIE_FILE)" \
+		-lua "$(subst /,\,$(EXPANDED_RUNTIME_LUA))" \
+		-max-frames "10000" \
+		-turbo 1 \
+		-nothrottle 1 \
+		"$(EXPANDED_ROM)"
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_expanded_runtime.py" \
+		--result "$(EXPANDED_RUNTIME_RESULT)"
+
 symbols: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
 		--debug "$(NATIVE_DEBUG)" \
@@ -183,6 +250,9 @@ run: build build-dev
 
 run-hack: build-hack build-dev
 	"$(FCEUX_EXE)" "$(HACK_ROM)"
+
+run-expanded: build-expanded build-dev
+	"$(FCEUX_EXE)" "$(EXPANDED_ROM)"
 
 clean:
 	$(PYTHON) "$(PROJECT_DIR)scripts/clean_artifacts.py"
@@ -336,6 +406,11 @@ help:
 	@echo   make verify-hack           Require only the documented default hack diff
 	@echo   make validate-hack         Prove the default hack starts on stage 5 in FCEUX
 	@echo   make run-hack              Build and run the default hack in FCEUX
+	@echo   make init-expanded-assets  Create editable local maze JSON once
+	@echo   make build-expanded        Build the JSON-backed NROM-256 variant
+	@echo   make verify-expanded       Verify expanded layout, fixed bank, and maze
+	@echo   make validate-expanded     Prove expanded maze access in FCEUX
+	@echo   make run-expanded          Build and run the expanded variant in FCEUX
 	@echo   make symbols               Build Mesen debug/map and FCEUX label artifacts
 	@echo   make test-debug-symbols    Run focused symbol conversion unit tests
 	@echo   make test-runtime-traces   Run focused runtime validator unit tests

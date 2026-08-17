@@ -29,6 +29,7 @@ diffs
 /reports
 /workflow
 /reference_projects
+/hacks/local/
 
 # Payloads generated locally from the reference ROM
 /assets/generated/

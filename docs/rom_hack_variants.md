@@ -40,6 +40,6 @@ variant declaration.
 6. Add runtime evidence when a byte-level assertion does not prove behavior.
 
 The original 16 KiB PRG has no free space. Same-size operand/table replacements
-fit the current layout; larger changes require a separately documented expanded
-ROM linker configuration. An expanded layout must never become the default or
-weaken `make verify`.
+fit the current layout. Larger changes use the separately documented NROM-256
+workflow in `docs/expanded_rom_assets.md`; that layout remains optional and
+never becomes the default or weakens `make verify`.

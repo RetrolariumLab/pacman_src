@@ -138,7 +138,7 @@ def validate_debug_artifacts(
 ) -> dict[str, int]:
     debug_lines = debug_path.read_text(encoding="utf-8").splitlines()
     counts: dict[str, int] = defaultdict(int)
-    segment_offsets: list[int] = []
+    segment_offsets: dict[str, int] = {}
     files: dict[int, str] = {}
     lines: dict[int, tuple[int, int]] = {}
     symbols: dict[str, dict[str, str]] = {}
@@ -152,13 +152,21 @@ def validate_debug_artifacts(
         elif kind == "sym" and "name" in fields:
             symbols[fields["name"]] = fields
         if kind == "seg" and Path(fields.get("oname", "")).name == rom_path.name:
-            segment_offsets.append(int(fields["ooffs"], 0))
+            segment_offsets[fields["name"]] = int(fields["ooffs"], 0)
     if counts["file"] < 30 or counts["line"] == 0 or counts["span"] == 0:
         raise ValueError("Debug file lacks source-line mapping records")
     if counts["sym"] == 0:
         raise ValueError("Debug file lacks symbols")
-    if sorted(segment_offsets) != [16, 16394]:
-        raise ValueError(f"Unexpected iNES segment offsets: {segment_offsets}")
+    rom = rom_path.read_bytes()
+    if len(rom) < 16 or rom[:4] != b"NES\x1a":
+        raise ValueError(f"Debugger ROM is not valid iNES: {rom_path}")
+    prg_size = rom[4] * 16_384
+    expected_fixed = 16 + prg_size - 16_384
+    expected_vectors = 16 + prg_size - 6
+    if segment_offsets.get("BANK_FF") != expected_fixed:
+        raise ValueError(f"Unexpected BANK_FF file offset: {segment_offsets}")
+    if segment_offsets.get("VECTORS") != expected_vectors:
+        raise ValueError(f"Unexpected VECTORS file offset: {segment_offsets}")
     map_text = map_path.read_text(encoding="utf-8")
     if "BANK_FF" not in map_text or "VECTORS" not in map_text:
         raise ValueError("Map file lacks fixed PRG segments")

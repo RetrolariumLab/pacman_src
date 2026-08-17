@@ -14,6 +14,8 @@ make trace-scoring        # slower scoring-event capture
 make preservation-audit   # complete release-candidate gate, including captures
 make verify-hack          # exact manifest-declared default variant difference
 make validate-hack        # default variant behavior in live FCEUX
+make verify-expanded      # NROM-256 layout, fixed-bank boundary, JSON maze
+make validate-expanded    # expanded-bank access in live FCEUX
 ```
 
 ## Fast lint
@@ -67,3 +69,9 @@ Variant validation is additive: it never replaces `make verify` or
 match `config/hack_variants.json`; `make validate-hack` then loads symbols for
 that candidate and proves its intended stage-5 start in FCEUX. See
 `docs/rom_hack_variants.md` for the isolation and review policy.
+
+The expanded variant adds two more layers. `make verify-expanded` requires a
+two-bank mapper-0 header, unchanged CHR, `$FF` padding after the generated maze,
+and an original fixed bank except for the declared `$FFF8` pointer. Then
+`make validate-expanded` uses generated symbols and FCEUX to prove the game
+reaches round initialization and reads the maze through `$8000`.

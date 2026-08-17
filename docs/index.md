@@ -12,6 +12,7 @@
 - [data_formats.md](./data_formats.md): six decoded binary formats and byte-identical round-trip workflow.
 - [preservation_source_1_0.md](./preservation_source_1_0.md): stable release contract, evidence matrix, and tagging procedure.
 - [rom_hack_variants.md](./rom_hack_variants.md): isolated optional builds, declared ROM differences, and runtime validation.
+- [expanded_rom_assets.md](./expanded_rom_assets.md): NROM-256 layout and editable JSON-to-ROM asset pipeline.
 - [postmortem.md](./postmortem.md): why the C reimplementation was removed and what replaced it.
 - [bank_ff_map.md](./bank_ff_map.md): top-level bank segmentation and annotation entry points.
 - [ram_fields.md](./ram_fields.md): key RAM fields and runtime roles.
@@ -72,3 +73,5 @@ After each edit batch:
   `make preservation-audit` reproduces its full validation matrix.
 - Optional ROM-hack variants (roadmap milestone 11) use separate entrypoints,
   outputs, byte-diff manifests, and FCEUX behavior checks.
+- The expanded NROM-256 variant (roadmap milestone 12) adds a free 16 KiB bank
+  and consumes an explicitly initialized editable maze JSON asset.
