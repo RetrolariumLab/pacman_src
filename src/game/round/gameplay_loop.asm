@@ -49,7 +49,13 @@ bra_clear_player_runtime_block:		; was: bra_C9B9_loop
     STA ram_sfx_plr_ready + $01
 ; Reset stage/high-score related counters before loop
 bra_reset_stage_counters:		; was: bra_C9CD
+.ifdef PACMAN_HACK_START_STAGE
+    .assert PACMAN_HACK_START_STAGE >= 1, error, "hack start stage must be at least 1"
+    .assert PACMAN_HACK_START_STAGE <= 255, error, "hack start stage must fit one byte"
+    LDA #(PACMAN_HACK_START_STAGE - 1)
+.else
     LDA #$FF
+.endif
     STA ram_stage_p1
     STA ram_stage_p2
     STA ram_ppu_buffer_hiscore

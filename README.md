@@ -117,6 +117,10 @@ pacman_src/
 make                            # Same as `make build`
 make build                      # Build the native ca65 ROM
 make verify                     # Build and require byte-identity
+make build-hack                 # Build the isolated default ROM-hack variant
+make verify-hack                # Require only its documented byte difference
+make validate-hack              # Prove its stage-5 behavior in FCEUX
+make run-hack                   # Build and run the default hack
 make symbols                    # Generate Mesen/FCEUX debugger artifacts
 make test-debug-symbols         # Test symbol parsing and conversion
 make validate-symbols           # Prove live symbol lookup and named breakpoint
@@ -164,9 +168,9 @@ checkout or the original ROM.
   a more specific interpretation. They are intentionally retained and tracked
   in [`docs/unknowns.md`](docs/unknowns.md), rather than guessed for the 1.0
   release.
-- Optional behavior-changing ROM variants remain future work and must not
-  replace the default byte-identical preservation build; see
-  [`docs/roadmap.md`](docs/roadmap.md).
+- Optional behavior-changing ROM variants must not replace the default
+  byte-identical preservation build. The isolated workflow is documented in
+  [`docs/rom_hack_variants.md`](docs/rom_hack_variants.md).
 
 ## Credits
 

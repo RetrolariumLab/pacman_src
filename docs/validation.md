@@ -12,6 +12,8 @@ make validate-symbols     # live debugger-symbol lookup and execution hook
 make trace-runtime        # slower focused emulator evidence
 make trace-scoring        # slower scoring-event capture
 make preservation-audit   # complete release-candidate gate, including captures
+make verify-hack          # exact manifest-declared default variant difference
+make validate-hack        # default variant behavior in live FCEUX
 ```
 
 ## Fast lint
@@ -57,3 +59,11 @@ format round-trips, live debugger validation, then fresh runtime and scoring
 captures with their semantic validators. It intentionally regenerates ignored
 evidence under `tmp/`; a stale local trace therefore cannot make the release
 gate pass. Run it on the exact commit intended for the stable tag.
+
+## Optional variant gates
+
+Variant validation is additive: it never replaces `make verify` or
+`make preservation-audit`. `make verify-hack` requires the complete ROM diff to
+match `config/hack_variants.json`; `make validate-hack` then loads symbols for
+that candidate and proves its intended stage-5 start in FCEUX. See
+`docs/rom_hack_variants.md` for the isolation and review policy.

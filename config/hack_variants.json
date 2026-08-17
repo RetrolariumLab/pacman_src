@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "variants": {
+    "default": {
+      "description": "Start a new game on stage 5 instead of stage 1",
+      "expected_differences": [
+        {
+          "region": "prg",
+          "offset": 2510,
+          "original": 255,
+          "variant": 4,
+          "description": "Immediate value stored in both player stage counters"
+        }
+      ]
+    }
+  }
+}

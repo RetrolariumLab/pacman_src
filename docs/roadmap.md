@@ -435,7 +435,7 @@ and format invariants, validates live debugger navigation, and captures fresh
 runtime evidence. The stable tag is deliberately applied to the reviewed merge
 commit in `main`, not to an unreviewed milestone branch.
 
-### 11. Optional ROM-Hack and Bug-Fix Variants
+### 11. Optional ROM-Hack and Bug-Fix Variants — Complete
 
 Only after the preservation source is mature should behavior changes become a
 normal project activity. Keep them behind explicit build variants:
@@ -456,12 +456,19 @@ strategy: reclaim verified unused space, optimize with measured equivalence, or
 introduce a documented expanded-ROM layout. Never let the modified layout
 replace or weaken the preservation target.
 
+Completed with the isolated workflow in `docs/rom_hack_variants.md`.
+`make build-hack` writes separate artifacts, `make verify-hack` permits only
+manifest-declared ROM byte changes, and `make validate-hack` proves the default
+stage-5 demonstration variant in FCEUX. The preservation entrypoint and
+byte-identical `make verify` contract remain unchanged. Expanded-ROM layouts
+remain an explicit future variant rather than an implicit part of this gate.
+
 ## Recommended Next Work Package
 
-Review and merge the Preservation Source 1.0 milestone series, run
-`make preservation-audit` on the resulting `main` commit, and apply the stable
-`preservation-source-1.0` tag. Only then begin milestone 11 work on explicit
-optional ROM-hack or bug-fix build variants.
+Choose the next optional variant deliberately. A small reviewed table or asset
+edit can use the current fixed-size workflow; new mazes or substantial behavior
+changes should first introduce a documented expanded-ROM linker layout and a
+variant-specific validation contract.
 
 ## Resuming Work on Another Computer
 

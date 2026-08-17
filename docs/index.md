@@ -11,6 +11,7 @@
 - [validation.md](./validation.md): fast lint, unit, binary, debugger, and emulator validation layers.
 - [data_formats.md](./data_formats.md): six decoded binary formats and byte-identical round-trip workflow.
 - [preservation_source_1_0.md](./preservation_source_1_0.md): stable release contract, evidence matrix, and tagging procedure.
+- [rom_hack_variants.md](./rom_hack_variants.md): isolated optional builds, declared ROM differences, and runtime validation.
 - [postmortem.md](./postmortem.md): why the C reimplementation was removed and what replaced it.
 - [bank_ff_map.md](./bank_ff_map.md): top-level bank segmentation and annotation entry points.
 - [ram_fields.md](./ram_fields.md): key RAM fields and runtime roles.
@@ -69,3 +70,5 @@ After each edit batch:
   and byte-identical verification through `make roundtrip-formats`.
 - Preservation Source 1.0 (roadmap milestone 10) is release-candidate complete;
   `make preservation-audit` reproduces its full validation matrix.
+- Optional ROM-hack variants (roadmap milestone 11) use separate entrypoints,
+  outputs, byte-diff manifests, and FCEUX behavior checks.
