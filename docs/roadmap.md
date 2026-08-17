@@ -476,12 +476,27 @@ Completed with the NROM-256 workflow in `docs/expanded_rom_assets.md`. The new
 JSON is encoded into the new bank, statically checked against the complete ROM
 layout, and exercised at `$8000` by `make validate-expanded` in FCEUX.
 
+### 13. Expanded Stage Parameter Assets — Complete
+
+Move the documented stage tuning family behind the same explicit editable JSON
+pipeline without shifting or deleting the preserved fixed-bank tables. Require
+every redirected operand and asset boundary to be mechanically reviewed, then
+prove a changed first-level parameter reaches runtime RAM.
+
+Completed with `hacks/local/stage_parameters.json`, placed after maze at
+`$81A0`. Active-table aliases retain original addresses in preservation builds
+and redirect 15 expanded round-setup reads. `config/expanded_layout.json`
+requires the exact 32 changed operand/pointer bytes and contiguous asset sizes.
+The demonstration doubles first-level frightened duration from 7 to 14, and
+`make validate-expanded` observes 14 in both expanded data and
+`ram_frightened_duration` under FCEUX.
+
 ## Recommended Next Work Package
 
-Extend the expanded asset pipeline one format at a time. Stage parameters are a
-good next candidate because they have a stable JSON codec and bounded records;
-redirect their consumer only after static layout checks and focused runtime
-evidence exist. Keep each additional asset independently reviewable.
+Extend the expanded asset pipeline one format at a time. Sound streams are the
+best next candidate because they already have bounded codecs and audible
+runtime evidence. Keep stream-pointer redirection, bank allocation, and each
+audible demonstration independently reviewable.
 
 ## Resuming Work on Another Computer
 

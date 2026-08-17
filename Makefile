@@ -35,6 +35,8 @@ EXPANDED_DEBUG ?= $(EXPANDED_DIR)/pacman.dbg
 EXPANDED_DEBUG_SUMMARY ?= $(EXPANDED_DIR)/debug_symbols.json
 EXPANDED_MAZE_JSON ?= $(PROJECT_DIR)hacks/local/maze.json
 EXPANDED_MAZE_BIN ?= $(EXPANDED_DIR)/assets/maze.rle
+EXPANDED_STAGE_JSON ?= $(PROJECT_DIR)hacks/local/stage_parameters.json
+EXPANDED_STAGE_BIN ?= $(EXPANDED_DIR)/assets/stage_parameters.bin
 EXPANDED_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_expanded_rom.lua
 EXPANDED_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/expanded_rom_runtime.txt
 DEBUG_SUMMARY ?= $(BUILD_DIR)/debug_symbols.json
@@ -160,14 +162,20 @@ validate-hack: build-dev symbols-hack
 
 init-expanded-assets: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/prepare_expanded_assets.py" init \
-		--source "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
-		--json "$(EXPANDED_MAZE_JSON)"
+		--maze-source "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
+		--maze-json "$(EXPANDED_MAZE_JSON)" \
+		--original-rom "$(ORIGINAL_ROM)" \
+		--stage-json "$(EXPANDED_STAGE_JSON)" \
+		--demo-frightened-duration 14
 
 expanded-assets:
 	$(PYTHON) "$(PROJECT_DIR)scripts/prepare_expanded_assets.py" encode \
-		--source "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
-		--json "$(EXPANDED_MAZE_JSON)" \
-		--output "$(EXPANDED_MAZE_BIN)"
+		--maze-source "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
+		--maze-json "$(EXPANDED_MAZE_JSON)" \
+		--maze-output "$(EXPANDED_MAZE_BIN)" \
+		--original-rom "$(ORIGINAL_ROM)" \
+		--stage-json "$(EXPANDED_STAGE_JSON)" \
+		--stage-output "$(EXPANDED_STAGE_BIN)"
 
 build-expanded: _require-assets expanded-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_expanded.py" \
@@ -186,7 +194,9 @@ verify-expanded: build-expanded
 	$(PYTHON) "$(PROJECT_DIR)scripts/verify_expanded.py" \
 		--original "$(ORIGINAL_ROM)" \
 		--candidate "$(EXPANDED_ROM)" \
-		--maze "$(EXPANDED_MAZE_BIN)"
+		--maze "$(EXPANDED_MAZE_BIN)" \
+		--stage "$(EXPANDED_STAGE_BIN)" \
+		--layout "$(PROJECT_DIR)config/expanded_layout.json"
 
 symbols-expanded: verify-expanded
 	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
@@ -209,7 +219,8 @@ validate-expanded: build-dev symbols-expanded
 		-nothrottle 1 \
 		"$(EXPANDED_ROM)"
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_expanded_runtime.py" \
-		--result "$(EXPANDED_RUNTIME_RESULT)"
+		--result "$(EXPANDED_RUNTIME_RESULT)" \
+		--stage-json "$(EXPANDED_STAGE_JSON)"
 
 symbols: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \

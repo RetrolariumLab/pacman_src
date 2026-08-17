@@ -1,0 +1,42 @@
+{
+  "format": 1,
+  "extra_bank": {"address": 32768, "size": 16384, "fill": 255},
+  "assets": [
+    {"name": "maze", "address": 32768, "size": 416},
+    {"name": "stage_parameters", "address": 33184, "size": 310}
+  ],
+  "fixed_bank_changes": [
+    {"address": 52920, "original": 66, "variant": 160},
+    {"address": 52921, "original": 235, "variant": 129},
+    {"address": 52937, "original": 204, "variant": 42},
+    {"address": 52938, "original": 235, "variant": 130},
+    {"address": 52950, "original": 66, "variant": 160},
+    {"address": 52951, "original": 235, "variant": 129},
+    {"address": 52961, "original": 58, "variant": 152},
+    {"address": 52962, "original": 236, "variant": 130},
+    {"address": 52966, "original": 58, "variant": 152},
+    {"address": 52967, "original": 236, "variant": 130},
+    {"address": 52982, "original": 66, "variant": 160},
+    {"address": 52983, "original": 235, "variant": 129},
+    {"address": 52991, "original": 66, "variant": 160},
+    {"address": 52992, "original": 235, "variant": 129},
+    {"address": 52996, "original": 90, "variant": 184},
+    {"address": 52997, "original": 236, "variant": 130},
+    {"address": 53002, "original": 90, "variant": 184},
+    {"address": 53003, "original": 236, "variant": 130},
+    {"address": 53017, "original": 104, "variant": 198},
+    {"address": 53018, "original": 236, "variant": 130},
+    {"address": 53035, "original": 104, "variant": 198},
+    {"address": 53036, "original": 236, "variant": 130},
+    {"address": 53051, "original": 66, "variant": 160},
+    {"address": 53052, "original": 235, "variant": 129},
+    {"address": 53059, "original": 104, "variant": 198},
+    {"address": 53060, "original": 236, "variant": 130},
+    {"address": 53123, "original": 66, "variant": 160},
+    {"address": 53124, "original": 235, "variant": 129},
+    {"address": 53132, "original": 66, "variant": 160},
+    {"address": 53133, "original": 235, "variant": 129},
+    {"address": 65528, "original": 120, "variant": 0},
+    {"address": 65529, "original": 236, "variant": 128}
+  ]
+}

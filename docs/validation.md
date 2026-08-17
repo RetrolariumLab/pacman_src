@@ -71,7 +71,8 @@ that candidate and proves its intended stage-5 start in FCEUX. See
 `docs/rom_hack_variants.md` for the isolation and review policy.
 
 The expanded variant adds two more layers. `make verify-expanded` requires a
-two-bank mapper-0 header, unchanged CHR, `$FF` padding after the generated maze,
-and an original fixed bank except for the declared `$FFF8` pointer. Then
-`make validate-expanded` uses generated symbols and FCEUX to prove the game
-reaches round initialization and reads the maze through `$8000`.
+two-bank mapper-0 header, unchanged CHR, contiguous manifest-declared JSON
+assets, `$FF` free space, and the exact reviewed set of fixed-bank operand
+changes. Then `make validate-expanded` uses generated symbols and FCEUX to
+prove the game reads maze through `$8000` and loads first-level stage tuning
+from `$81A0` into runtime RAM.

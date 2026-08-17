@@ -55,13 +55,9 @@ def main() -> int:
     paths["output_rom"].parent.mkdir(parents=True, exist_ok=True)
     paths["output_rom"].write_bytes(candidate)
 
-    fixed = bytearray(prg[16_384:])
-    fixed[0x3FF8:0x3FFA] = original_prg[0x3FF8:0x3FFA]
-    if bytes(fixed) != original_prg:
-        fail("Expanded fixed bank has changes beyond the maze pointer")
     print(f"[OK] Built expanded ROM: {paths['output_rom']}")
     print(f"[INFO] Expanded PRG SHA1={sha1(prg)} ROM SHA1={sha1(candidate)}")
-    print("[OK] Fixed bank differs only at the reviewed $FFF8 maze pointer.")
+    print("[INFO] Run verify-expanded to enforce the reviewed fixed-bank changes.")
     return 0
 
 

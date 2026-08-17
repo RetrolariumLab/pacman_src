@@ -75,3 +75,5 @@ After each edit batch:
   outputs, byte-diff manifests, and FCEUX behavior checks.
 - The expanded NROM-256 variant (roadmap milestone 12) adds a free 16 KiB bank
   and consumes an explicitly initialized editable maze JSON asset.
+- Expanded stage parameters (roadmap milestone 13) occupy `$81A0..$82D5`; an
+  exact operand manifest and FCEUX proof cover the first runtime tuning value.

@@ -1,15 +1,29 @@
 #!/usr/bin/env python3
-"""Verify the NROM-256 layout and its JSON-generated maze asset."""
+"""Verify the NROM-256 layout and its JSON-generated assets."""
 
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from build_native import parse_ines
 
 
-def validate_expanded(original: bytes, candidate: bytes, maze: bytes) -> None:
+def fixed_differences(original: bytes, candidate: bytes) -> list[dict[str, int]]:
+    return [
+        {"address": 0xC000 + offset, "original": left, "variant": right}
+        for offset, (left, right) in enumerate(zip(original, candidate))
+        if left != right
+    ]
+
+
+def validate_expanded(
+    original: bytes,
+    candidate: bytes,
+    assets: dict[str, bytes],
+    layout: dict[str, object],
+) -> None:
     original_header, original_prg, original_chr = parse_ines(original)
     header, prg, chr_data = parse_ines(candidate)
     if header[4] != 2 or header[5] != original_header[5]:
@@ -20,16 +34,38 @@ def validate_expanded(original: bytes, candidate: bytes, maze: bytes) -> None:
         raise ValueError(f"expanded PRG must be 32768 bytes, got {len(prg)}")
     if chr_data != original_chr:
         raise ValueError("expanded ROM CHR differs from the reference")
-    fixed = bytearray(prg[16_384:])
-    fixed[0x3FF8:0x3FFA] = original_prg[0x3FF8:0x3FFA]
-    if bytes(fixed) != original_prg:
-        raise ValueError("expanded fixed bank has changes beyond the maze pointer")
-    if prg[:len(maze)] != maze:
-        raise ValueError("expanded bank does not begin with the encoded maze")
-    if any(value != 0xFF for value in prg[len(maze):16_384]):
-        raise ValueError("unexpected data after maze in expanded bank")
-    if prg[0x7FF8:0x7FFA] != b"\x00\x80":
-        raise ValueError("fixed-bank maze pointer does not target $8000")
+
+    bank_spec = layout["extra_bank"]
+    bank_address = int(bank_spec["address"])
+    bank_size = int(bank_spec["size"])
+    fill = int(bank_spec["fill"])
+    if bank_address != 0x8000 or bank_size != 16_384:
+        raise ValueError("expanded layout must describe the mapper-0 $8000 bank")
+    cursor = 0
+    for spec in layout["assets"]:
+        name = str(spec["name"])
+        address = int(spec["address"])
+        size = int(spec["size"])
+        data = assets.get(name)
+        if data is None:
+            raise ValueError(f"missing expanded asset: {name}")
+        if address != bank_address + cursor:
+            raise ValueError(f"expanded asset is not contiguous: {name}")
+        if len(data) != size:
+            raise ValueError(f"expanded asset size mismatch for {name}: {len(data)} != {size}")
+        if prg[cursor:cursor + size] != data:
+            raise ValueError(f"expanded bank data mismatch for {name}")
+        cursor += size
+    if any(value != fill for value in prg[cursor:bank_size]):
+        raise ValueError("unexpected data after declared assets in expanded bank")
+
+    expected_changes = layout["fixed_bank_changes"]
+    observed_changes = fixed_differences(original_prg, prg[16_384:])
+    if observed_changes != expected_changes:
+        raise ValueError(
+            f"fixed-bank change manifest mismatch: expected {expected_changes}, "
+            f"observed {observed_changes}"
+        )
 
 
 def main() -> int:
@@ -37,17 +73,20 @@ def main() -> int:
     parser.add_argument("--original", required=True, type=Path)
     parser.add_argument("--candidate", required=True, type=Path)
     parser.add_argument("--maze", required=True, type=Path)
+    parser.add_argument("--stage", required=True, type=Path)
+    parser.add_argument("--layout", required=True, type=Path)
     args = parser.parse_args()
     try:
         validate_expanded(
             args.original.read_bytes(),
             args.candidate.read_bytes(),
-            args.maze.read_bytes(),
+            {"maze": args.maze.read_bytes(), "stage_parameters": args.stage.read_bytes()},
+            json.loads(args.layout.read_text(encoding="utf-8")),
         )
-    except ValueError as error:
+    except (KeyError, TypeError, ValueError) as error:
         print(f"[ERROR] Expanded ROM validation failed: {error}")
         return 1
-    print("[OK] Expanded NROM-256 layout, preserved fixed bank, and $8000 maze pointer.")
+    print("[OK] Expanded layout, two JSON assets, and exact fixed-bank change manifest.")
     return 0
 
 

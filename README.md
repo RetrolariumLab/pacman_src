@@ -121,10 +121,10 @@ make build-hack                 # Build the isolated default ROM-hack variant
 make verify-hack                # Require only its documented byte difference
 make validate-hack              # Prove its stage-5 behavior in FCEUX
 make run-hack                   # Build and run the default hack
-make init-expanded-assets       # Initialize editable local maze JSON once
+make init-expanded-assets       # Initialize editable maze/stage JSON once
 make build-expanded             # Build the JSON-backed NROM-256 variant
-make verify-expanded            # Verify its layout and fixed-bank boundary
-make validate-expanded          # Prove expanded maze access in FCEUX
+make verify-expanded            # Verify assets, layout, and fixed-bank operands
+make validate-expanded          # Prove expanded maze/stage access in FCEUX
 make run-expanded               # Build and run the NROM-256 variant
 make symbols                    # Generate Mesen/FCEUX debugger artifacts
 make test-debug-symbols         # Test symbol parsing and conversion

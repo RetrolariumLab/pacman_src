@@ -66,6 +66,20 @@ checked editable JSON decode/encode path that preserves original RLE token
 boundaries. Its pointer is stored separately at the bank tail, not adjacent to
 the stream.
 
+## Optional Expanded Stage Parameters
+
+The NROM-256 entrypoint can place an editable JSON representation of this
+entire stage-parameter family at `$81A0..$82D5` in the added PRG bank. Build-time
+aliases redirect every round-setup consumer to the relocated tables while the
+preservation entrypoint continues to use the original `$EB42` data unchanged.
+
+The expanded layout manifest fixes both asset ranges and enumerates every
+allowed operand-byte change in the original bank. `make validate-expanded`
+also proves in FCEUX that the first profile's frightened duration is read from
+the relocated asset and reaches runtime RAM. See
+[Expanded ROM Assets](expanded_rom_assets.md) for the editable workflow and
+layout contract.
+
 ## Padding and Fixed Tail
 
 The sound assets end at `$F427`. `unused_bank_padding` emits `$FF` from `$F428`

@@ -16,31 +16,48 @@ def rom(prg: bytes, banks: int) -> bytes:
 
 
 class VerifyExpandedTests(unittest.TestCase):
-    def candidate(self) -> tuple[bytes, bytes, bytes]:
+    def fixture(self) -> tuple[bytes, bytes, dict[str, bytes], dict[str, object]]:
         original_prg = bytearray(b"\x55" * 16_384)
-        original_prg[0x3FF8:0x3FFA] = b"\x78\xEC"
-        maze = b"\x12\x34"
-        extra = maze + b"\xFF" * (16_384 - len(maze))
         fixed = bytearray(original_prg)
-        fixed[0x3FF8:0x3FFA] = b"\x00\x80"
-        return rom(bytes(original_prg), 1), rom(extra + bytes(fixed), 2), maze
+        fixed[0] = 0x66
+        maze = b"\x12\x34"
+        stage = b"\x56\x78\x9A"
+        extra = maze + stage + b"\xFF" * (16_384 - len(maze) - len(stage))
+        layout = {
+            "extra_bank": {"address": 0x8000, "size": 16_384, "fill": 0xFF},
+            "assets": [
+                {"name": "maze", "address": 0x8000, "size": len(maze)},
+                {"name": "stage_parameters", "address": 0x8002, "size": len(stage)},
+            ],
+            "fixed_bank_changes": [
+                {"address": 0xC000, "original": 0x55, "variant": 0x66}
+            ],
+        }
+        assets = {"maze": maze, "stage_parameters": stage}
+        return rom(bytes(original_prg), 1), rom(extra + bytes(fixed), 2), assets, layout
 
-    def test_valid_layout_accepts_only_pointer_change(self) -> None:
-        validate_expanded(*self.candidate())
+    def test_valid_layout_accepts_declared_assets_and_fixed_change(self) -> None:
+        validate_expanded(*self.fixture())
 
     def test_other_fixed_bank_change_is_rejected(self) -> None:
-        original, candidate, maze = self.candidate()
+        original, candidate, assets, layout = self.fixture()
         changed = bytearray(candidate)
-        changed[16 + 16_384] ^= 1
-        with self.assertRaisesRegex(ValueError, "beyond the maze pointer"):
-            validate_expanded(original, bytes(changed), maze)
+        changed[16 + 16_384 + 1] ^= 1
+        with self.assertRaisesRegex(ValueError, "fixed-bank change manifest mismatch"):
+            validate_expanded(original, bytes(changed), assets, layout)
+
+    def test_asset_gap_is_rejected(self) -> None:
+        original, candidate, assets, layout = self.fixture()
+        layout["assets"][1]["address"] += 1
+        with self.assertRaisesRegex(ValueError, "not contiguous"):
+            validate_expanded(original, candidate, assets, layout)
 
     def test_unexpected_extra_bank_data_is_rejected(self) -> None:
-        original, candidate, maze = self.candidate()
+        original, candidate, assets, layout = self.fixture()
         changed = bytearray(candidate)
-        changed[16 + len(maze)] = 0
+        changed[16 + len(assets["maze"]) + len(assets["stage_parameters"])] = 0
         with self.assertRaisesRegex(ValueError, "unexpected data"):
-            validate_expanded(original, bytes(changed), maze)
+            validate_expanded(original, bytes(changed), assets, layout)
 
 
 if __name__ == "__main__":

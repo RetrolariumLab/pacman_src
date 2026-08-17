@@ -83,7 +83,7 @@ bra_calc_stage_table_offset:		; was: bra_CEAD_loop
 bra_stage_offset_ready:		; was: bra_CEB4
     STA zp_work0
     TAX
-    LDA tbl_stage_param_index_stream,X
+    LDA off_active_stage_profiles,X
     TAX
     LDA #$00
     CLC
@@ -99,25 +99,25 @@ bra_param_block_base_ready:		; was: bra_CEC5
     LDX #$00
 ; Copy level parameter block to runtime RAM 009F..00B4
 bra_copy_level_param_block:		; was: bra_CEC8_loop
-    LDA tbl_level_param_blocks_22bytes,Y
+    LDA off_active_level_parameter_blocks,Y
     STA ram_level_parameters,X
     INX
     INY
     CPX #con_level_parameter_block_size
     BNE bra_copy_level_param_block
     LDX zp_work0
-    LDA tbl_stage_param_index_stream,X
+    LDA off_active_stage_profiles,X
     ASL
     ASL
     ASL
     TAX
     LDY #$00
     STY ram_scatter_chase_phase
-    LDA tbl_speed_timer_blocks_8bytes,X
+    LDA off_active_speed_timer_blocks,X
     STA ram_scatter_chase_timer
 ; Copy 8-byte timer/speed block to runtime RAM 0097..009E
 bra_copy_timer_block:		; was: bra_CEE5_loop
-    LDA tbl_speed_timer_blocks_8bytes,X
+    LDA off_active_speed_timer_blocks,X
     STA ram_scatter_chase_durations,Y
     INX
     INY
@@ -125,24 +125,24 @@ bra_copy_timer_block:		; was: bra_CEE5_loop
     BNE bra_copy_timer_block
     INC zp_work0
     LDX zp_work0
-    LDA tbl_stage_param_index_stream,X
+    LDA off_active_stage_profiles,X
     STA ram_frightened_duration
     INC zp_work0
     LDX zp_work0
-    LDA tbl_stage_param_index_stream,X
+    LDA off_active_stage_profiles,X
     ASL ; multiply index by con_dot_threshold_pair_size
     TAX
-    LDA tbl_dot_counter_threshold_pairs,X
+    LDA off_active_dot_threshold_pairs,X
     STA ram_personal_release_thresholds
     INX
-    LDA tbl_dot_counter_threshold_pairs,X
+    LDA off_active_dot_threshold_pairs,X
     STA ram_personal_release_thresholds + $01
     INC zp_work0
     LDA ram_round_restart_flag
     BEQ bra_load_release_targets_from_table
     LDX #$0C
     LDY #$00
-    LDA tbl_release_target_special_case_quad - $0C,X
+    LDA off_active_restart_release_target - $0C,X
     STA ram_ghost_release_targets,Y
     INY
     INX
@@ -154,7 +154,7 @@ bra_copy_timer_block:		; was: bra_CEE5_loop
 bra_adjust_release_targets_by_pellets:		; was: bra_CF27_loop
     LDA zp_work1
     CLC
-    ADC tbl_release_target_special_case_quad - $0C,X
+    ADC off_active_restart_release_target - $0C,X
     STA ram_ghost_release_targets,Y
     INY
     INX
@@ -164,14 +164,14 @@ bra_adjust_release_targets_by_pellets:		; was: bra_CF27_loop
 ; Load default release target counters from table
 bra_load_release_targets_from_table:		; was: bra_CF38
     LDX zp_work0
-    LDA tbl_stage_param_index_stream,X
+    LDA off_active_stage_profiles,X
     ASL
     ASL ; multiply index by con_release_target_record_size
     TAX
     LDY #$00
 ; Copy 4-byte release target set to RAM 008F..0092
 bra_copy_release_target_quad:		; was: bra_CF42_loop
-    LDA tbl_ghost_release_target_quads,X
+    LDA off_active_ghost_release_targets,X
     STA ram_ghost_release_targets,Y
     INX
     INY
@@ -215,11 +215,11 @@ bra_finalize_round_runtime:		; was: bra_CF7A
     STA ram_global_release_target
     INC zp_work0
     LDX zp_work0
-    LDA tbl_stage_param_index_stream,X
+    LDA off_active_stage_profiles,X
     STA ram_stage_param_index
     INC zp_work0
     LDX zp_work0
-    LDA tbl_stage_param_index_stream,X
+    LDA off_active_stage_profiles,X
     STA ram_release_interval_seconds
     LDA ram_level_parameters + $06
     STA ram_pacman_move_fraction
