@@ -11,6 +11,7 @@ make roundtrip-formats    # six binary format decode/encode checks
 make validate-symbols     # live debugger-symbol lookup and execution hook
 make trace-runtime        # slower focused emulator evidence
 make trace-scoring        # slower scoring-event capture
+make preservation-audit   # complete release-candidate gate, including captures
 ```
 
 ## Fast lint
@@ -48,3 +49,11 @@ small synthetic inputs and do not start FCEUX.
 reference PRG and ROM hashes exactly. Debugger and trace targets are separate
 because they build or start external tooling and take longer. A green lint or
 unit-test run never substitutes for byte identity or behavioral evidence.
+
+## Preservation release gate
+
+`make preservation-audit` runs lint, all focused unit tests, byte identity and
+format round-trips, live debugger validation, then fresh runtime and scoring
+captures with their semantic validators. It intentionally regenerates ignored
+evidence under `tmp/`; a stale local trace therefore cannot make the release
+gate pass. Run it on the exact commit intended for the stable tag.

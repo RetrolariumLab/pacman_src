@@ -13,11 +13,16 @@ catch behavioural regressions frame by frame.
 
 ## Status
 
-The label / comment pass covers the major subsystems: boot and frame loop, the
-script state machine, Pac-Man movement, ghost AI, scoring, intermissions, and
-the sound engine. The source is split into address-ordered subsystem modules
-containing real 6502 instructions and ca65 data directives. Ongoing work is
-deepening their annotations and replacing generic RAM names.
+Preservation Source 1.0 is release-candidate complete. The annotated source
+covers every major subsystem, unresolved interpretations remain explicit in the
+unknowns registry, and the complete validation matrix is available through
+`make preservation-audit`. See
+[`docs/preservation_source_1_0.md`](docs/preservation_source_1_0.md) for the
+release contract and evidence summary.
+
+The source is split into address-ordered subsystem modules containing real 6502
+instructions and ca65 data directives. Further reverse engineering can deepen
+provisional annotations without weakening the preservation target.
 
 Modules are divided at natural procedure and data boundaries and remain below
 600 lines. [`docs/source_layout.md`](docs/source_layout.md) is the detailed
@@ -118,6 +123,7 @@ make validate-symbols           # Prove live symbol lookup and named breakpoint
 make lint                       # Check source, naming, docs, and Python syntax
 make test                       # Run all focused Python workflow tests
 make roundtrip-formats          # Decode/encode six binary format families
+make preservation-audit         # Run the complete Preservation Source 1.0 gate
 make trace-runtime              # Capture and validate focused gameplay traces
 make validate-runtime-traces    # Revalidate existing gameplay traces
 make run                        # Build and run the ROM in FCEUX
@@ -154,11 +160,12 @@ checkout or the original ROM.
 
 ## Known Gaps
 
-- Labels and comments cover all major systems, but many lower-level branches
-  and data fields can still be described more precisely.
-- Some neutral RAM and branch names remain where trace evidence does not yet
-  justify a more specific interpretation; see [`docs/unknowns.md`](docs/unknowns.md).
-- Focused runtime traces and decoded binary formats remain planned; see
+- Some neutral RAM and branch names remain where evidence does not yet justify
+  a more specific interpretation. They are intentionally retained and tracked
+  in [`docs/unknowns.md`](docs/unknowns.md), rather than guessed for the 1.0
+  release.
+- Optional behavior-changing ROM variants remain future work and must not
+  replace the default byte-identical preservation build; see
   [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Credits

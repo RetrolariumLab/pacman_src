@@ -59,7 +59,7 @@ DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
+.PHONY: build verify symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -247,6 +247,17 @@ roundtrip-formats: verify
 		--config "$(DATA_FORMAT_CONFIG)" \
 		--output-dir "$(DATA_FORMAT_OUTPUT_DIR)"
 
+# Release-candidate gate. Recursive calls keep emulator capture and validation
+# ordered even when the parent make is invoked with parallel jobs.
+preservation-audit:
+	$(MAKE) lint
+	$(MAKE) test
+	$(MAKE) roundtrip-formats
+	$(MAKE) validate-symbols
+	$(MAKE) trace-runtime
+	$(MAKE) trace-scoring
+	$(MAKE) validate-scoring-trace
+
 chunk: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/extract_rename_chunk.py" \
 		--source "$(NATIVE_SOURCE)" \
@@ -279,6 +290,7 @@ help:
 	@echo   make trace-runtime          Capture and validate focused runtime scenarios
 	@echo   make validate-runtime-traces Validate existing focused runtime traces
 	@echo   make roundtrip-formats      Decode and byte-round-trip documented data formats
+	@echo   make preservation-audit     Run the complete Preservation Source 1.0 gate
 	@echo   make chunk START=260 LINES=60  Prepare a rename/analysis chunk
 	@echo   make help                  Show these public targets
 

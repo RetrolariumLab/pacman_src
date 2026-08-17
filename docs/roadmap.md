@@ -411,7 +411,7 @@ intermission scene/animation tables, reloads the human-readable output, and
 requires byte-identical encoding. Generated files remain under ignored `tmp/`
 and are never consumed by the normal preservation build.
 
-### 10. Preservation Source 1.0
+### 10. Preservation Source 1.0 — Complete
 
 Declare a preservation milestone when:
 
@@ -427,6 +427,13 @@ Declare a preservation milestone when:
 
 Tag this state as a stable preservation release before beginning substantial
 behavior changes.
+
+Completed as the Preservation Source 1.0 release candidate. The criterion and
+evidence matrix is recorded in `docs/preservation_source_1_0.md`, while
+`make preservation-audit` rebuilds the reference ROM, exercises documentation
+and format invariants, validates live debugger navigation, and captures fresh
+runtime evidence. The stable tag is deliberately applied to the reviewed merge
+commit in `main`, not to an unreviewed milestone branch.
 
 ### 11. Optional ROM-Hack and Bug-Fix Variants
 
@@ -451,11 +458,10 @@ replace or weaken the preservation target.
 
 ## Recommended Next Work Package
 
-Perform the milestone 10 Preservation Source 1.0 audit: verify every completion
-criterion against source, docs, debugger navigation, runtime scenarios, format
-round-trips, and the unknowns registry. Resolve only evidence-backed gaps, run
-the complete validation matrix, and prepare a stable release summary without
-starting optional behavior-changing ROM variants.
+Review and merge the Preservation Source 1.0 milestone series, run
+`make preservation-audit` on the resulting `main` commit, and apply the stable
+`preservation-source-1.0` tag. Only then begin milestone 11 work on explicit
+optional ROM-hack or bug-fix build variants.
 
 ## Resuming Work on Another Computer
 
