@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "cpu_base": 49152,
+  "ines_header_size": 16,
+  "stage_parameters": {"address": 60226, "size": 310},
+  "actor_sprite_tables": {"address": 56153, "size": 624},
+  "maze": {"path": "maze/maze.rle", "rows": 27, "columns": 22},
+  "intermission_tables": [
+    {"name": "scene_dispatch", "address": 59241, "count": 3, "kind": "words"},
+    {"name": "scene_0_states", "address": 59262, "count": 4, "kind": "words"},
+    {"name": "scene_1_states", "address": 59490, "count": 3, "kind": "words"},
+    {"name": "scene_2_states", "address": 59657, "count": 4, "kind": "words"},
+    {"name": "animation_scene_dispatch", "address": 59951, "count": 3, "kind": "words"},
+    {"name": "animation_scene_0_states", "address": 59972, "count": 4, "kind": "words"},
+    {"name": "animation_cycle_tiles", "address": 59994, "count": 8, "kind": "bytes"},
+    {"name": "animation_cycle_pattern_indexes", "address": 60085, "count": 8, "kind": "bytes"},
+    {"name": "animation_banner_tile_quads", "address": 60093, "count": 12, "kind": "bytes"},
+    {"name": "animation_scene_1_states", "address": 60120, "count": 3, "kind": "words"},
+    {"name": "animation_scene_2_states", "address": 60168, "count": 4, "kind": "words"}
+  ],
+  "ppu_examples": {
+    "empty": "FF",
+    "palette_write": "3F151100FF",
+    "two_commands": "224150415553450020B40100FF"
+  }
+}

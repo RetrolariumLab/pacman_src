@@ -7,6 +7,7 @@ checks do not silently grow into emulator runs.
 make lint                 # tracked text, source, naming, docs, Python syntax
 make test                 # all focused Python workflow unit tests
 make verify               # authoritative byte-identical ROM gate
+make roundtrip-formats    # six binary format decode/encode checks
 make validate-symbols     # live debugger-symbol lookup and execution hook
 make trace-runtime        # slower focused emulator evidence
 make trace-scoring        # slower scoring-event capture

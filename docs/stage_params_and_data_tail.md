@@ -61,9 +61,10 @@ After the maze, the routine writes three eight-tile bottom-banner rows from a
 small fill table at `$21D6` or `$29D6`. It writes directly to PPU and therefore
 requires rendering/vblank ownership from its caller.
 
-The maze remains a generated opaque asset until a checked editable encoder
-exists. Its pointer is stored separately at the bank tail, not adjacent to the
-stream.
+The maze remains a generated asset, but `make roundtrip-formats` now provides a
+checked editable JSON decode/encode path that preserves original RLE token
+boundaries. Its pointer is stored separately at the bank tail, not adjacent to
+the stream.
 
 ## Padding and Fixed Tail
 

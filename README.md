@@ -117,6 +117,7 @@ make test-debug-symbols         # Test symbol parsing and conversion
 make validate-symbols           # Prove live symbol lookup and named breakpoint
 make lint                       # Check source, naming, docs, and Python syntax
 make test                       # Run all focused Python workflow tests
+make roundtrip-formats          # Decode/encode six binary format families
 make trace-runtime              # Capture and validate focused gameplay traces
 make validate-runtime-traces    # Revalidate existing gameplay traces
 make run                        # Build and run the ROM in FCEUX

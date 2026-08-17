@@ -377,7 +377,7 @@ resolution, assembly blank-line normalization, and syntax parsing of every
 tracked Python file. `make test` discovers all focused workflow tests while
 emulator-backed checks remain explicit slower targets.
 
-### 9. Decode and Document Binary Data Formats
+### 9. Decode and Document Binary Data Formats — Complete
 
 Write a specification and a small decoder/dumper for each format as it becomes
 understood:
@@ -403,6 +403,13 @@ binary asset -> decoded human-readable form -> encoded binary asset
 The encoded result must match the original asset before the format is declared
 stable. Editors and encoders must never run implicitly during `make build` in a
 way that overwrites local modifications.
+
+Completed with the six-format specification and JSON codec workflow in
+`docs/data_formats.md`. `make roundtrip-formats` decodes stage records, maze
+RLE, all sound streams, buffered PPU commands, actor sprite/OAM tables, and
+intermission scene/animation tables, reloads the human-readable output, and
+requires byte-identical encoding. Generated files remain under ignored `tmp/`
+and are never consumed by the normal preservation build.
 
 ### 10. Preservation Source 1.0
 
@@ -444,10 +451,11 @@ replace or weaken the preservation target.
 
 ## Recommended Next Work Package
 
-Begin milestone 9 with one binary format at a time. Prefer the already
-well-documented stage parameter records or buffered PPU packets, define a stable
-human-readable representation, and prove a byte-identical decode/encode
-round-trip before moving to maze, sound, actor, or intermission data.
+Perform the milestone 10 Preservation Source 1.0 audit: verify every completion
+criterion against source, docs, debugger navigation, runtime scenarios, format
+round-trips, and the unknowns registry. Resolve only evidence-backed gaps, run
+the complete validation matrix, and prepare a stable release summary without
+starting optional behavior-changing ROM variants.
 
 ## Resuming Work on Another Computer
 
