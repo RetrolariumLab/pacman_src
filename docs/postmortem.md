@@ -196,9 +196,110 @@ disassembly, but a **from-scratch reimplementation in C on top of
 It went further on gameplay than the in-repo baseline did: title screen, the
 original maze tile stream with correct palettes and attributes, real Pac-Man
 sprites and animation, four-direction grid movement with wall collision and
-buffered turns, pellets as level state with targeted VRAM clears. It still had
-no ghosts, no scoring, no lives, no round flow, no frightened mode, no HUD — and
-it did not reliably build.
+buffered turns, pellets as level state with targeted VRAM clears. Later work also
+added score and hi-score handling, lives and HUD support, four ghosts with
+targeting and house states, frightened mode, eyes returning to the house, and
+ghost-score chains. The repository's `README.md` and `PROGRESS.md` stopped being
+updated before those additions, which made the second attempt look much less
+complete than its source actually is.
+
+That additional implementation did not rescue the architecture. Playtesting
+showed unstable frame pacing, visible stalls, and actors disappearing when
+Pac-Man and several ghosts occupied the same horizontal band. Code inspection
+separates the last symptom from the performance problem.
+
+### Sprite disappearance was a PPU limit
+
+The NES PPU renders at most eight hardware sprites on one scanline. The second
+attempt represents Pac-Man and every ghost as a 16x16 metasprite made from four
+8x8 sprites. A scanline through one half of an actor therefore consumes two
+hardware sprites:
+
+- Pac-Man plus three aligned ghosts use all eight available slots;
+- Pac-Man plus four aligned ghosts require ten;
+- later sprites in OAM evaluation are omitted by the PPU.
+
+The Pac-Man-specific renderer assigned fixed OAM ranges to the player and each
+ghost. Unlike the starter kit's generic map-sprite renderer, it did not rotate
+actor priority to distribute overflow as controlled flicker. The same late
+actors could therefore disappear consistently.
+
+This was not a reduction in CPU speed or PPU frame rate, and it was not caused by
+C directly. It was an NES hardware constraint that the actor renderer failed to
+manage. The original game has the same eight-sprites-per-scanline limit, but its
+OAM construction and presentation were designed around that constraint from the
+beginning.
+
+### The actual slowdown was architectural
+
+The normal gameplay path performed banked calls for pellet polling, HUD updates,
+ghost-state queries, player preparation and movement, pellet consumption, ghost
+updates, and player rendering. On MMC1, every transition also pays for serial
+mapper writes, bank-stack bookkeeping, and the C call boundary.
+
+The ghost implementation added expensive work inside that fragmented frame:
+
+- four-direction searches with repeated map queries;
+- 16-bit distance values and comparisons on an 8-bit CPU;
+- per-pixel movement loops;
+- repeated collision and grid-alignment checks;
+- four C-to-assembly `oam_spr` calls for every actor.
+
+The HUD path was entered every gameplay frame even though its own comment noted
+that only changed fields should be updated. When this work crossed the next NMI,
+the main loop's `ppu_wait_nmi()` waited for a later one, making gameplay advance
+at 30 or 20 updates per second while the PPU continued producing video normally.
+
+No cycle profile was preserved, so these observations do not establish an exact
+cost ranking. They do identify avoidable pressure on the frame budget and explain
+why merely finishing the missing features would have made the problem worse.
+
+### The framework was the wrong shape
+
+The second attempt retained MMC1 banking, Tiled map conversion, generalized map
+and scrolling logic, sprite-zero split machinery, a separate generic map-sprite
+subsystem, a full FamiTracker driver, and reusable menu and error abstractions.
+Those are reasonable facilities for a new and larger NES game. Pac-Man is a
+small NROM program built around a fixed maze, compact data streams, manually
+managed RAM and OAM, and specialized movement, rendering, and sound routines.
+
+Making a viable C version would have required redesign rather than incremental
+repair: keep the hot loop in one bank, use one shadow-OAM composer and one DMA,
+rotate sprite priority, update HUD and VRAM through dirty queues, keep hot state
+8-bit, measure cycle budgets, and move NMI/OAM and probably movement, collision,
+and sound back into hand-written assembly. At that point it would be a hybrid
+engine inspired by the original, not a straightforward C reproduction.
+
+### A correct C rewrite would stop being a C rewrite
+
+This is the most important conclusion from the second attempt. Making it work
+would not mean sprinkling a few compiler hints over the existing code. It would
+mean redesigning the program around hot and cold paths:
+
+- **Cold, high-level code in C:** menus, coarse game-state transitions,
+  configuration, and logic that runs rarely or has a measured cycle margin.
+- **Hot code shaped for the 6502:** structure-of-arrays data, byte-sized state,
+  compile-time tables, fixed iteration counts, no general-purpose abstractions,
+  and no avoidable bank transitions inside a frame.
+- **Assembly escape hatches:** inline assembly or separate assembly routines for
+  NMI, OAM composition and DMA, bounded VRAM packet playback, controller reads,
+  collision and movement kernels, mapper writes, and likely the sound driver.
+- **A hardware-first frame pipeline:** prepare small updates during the visible
+  frame, commit only bounded work during VBlank, rotate OAM priority when sprite
+  overflow is unavoidable, and assign a cycle budget to every stage.
+
+In other words, C could remain the orchestration language, but it could not be
+allowed to dictate the runtime architecture. The architecture would still need
+to look like a hand-tuned NES assembly program. Its critical routines would use
+assembly explicitly, its data layout would be selected for 6502 addressing
+modes, and every abstraction would have to justify its generated instruction
+cost.
+
+That approach could produce a good NES game, but it would be a new hybrid port
+requiring substantial low-level engineering. It would neither preserve the
+original instruction stream nor be simpler than continuing the annotated
+assembly source. The apparent benefit of "rewriting it in C" disappears once all
+the hardware-sensitive behavior has to be rebuilt underneath C by hand.
 
 The useful part is that both attempts failed the same way, from different
 starting points. Starting from a framework does not help, because the framework
