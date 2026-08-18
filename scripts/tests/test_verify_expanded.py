@@ -77,7 +77,7 @@ class VerifyExpandedTests(unittest.TestCase):
         original, candidate, assets, layout = self.fixture()
         changed = bytearray(candidate)
         changed[16 + 7] ^= 1
-        with self.assertRaisesRegex(ValueError, "inline region mismatch"):
+        with self.assertRaisesRegex(ValueError, "region mismatch"):
             validate_expanded(original, bytes(changed), assets, layout)
 
 

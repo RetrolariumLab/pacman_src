@@ -74,5 +74,6 @@ The expanded variant adds two more layers. `make verify-expanded` requires a
 two-bank mapper-0 header, unchanged CHR, contiguous manifest-declared JSON
 assets, `$FF` free space, and the exact reviewed set of fixed-bank operand
 changes. Then `make validate-expanded` uses generated symbols and FCEUX to
-  prove stage 2 selects its maze at `$82D6` and loads second-level stage tuning
-  from `$81A0` into runtime RAM.
+prove stage 2 selects its maze at `$82D6`, loads second-level stage tuning from
+`$81A0`, and advances pellet slot 04 through the JSON-generated sound table at
+`$848F`.

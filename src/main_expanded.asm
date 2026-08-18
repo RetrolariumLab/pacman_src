@@ -33,13 +33,22 @@ bra_select_expanded_stage1_maze:
     STA z:zp_work1
     RTS
 
+tbl_expanded_sfx_stream_ptr_table:
+    .incbin "build/expanded/assets/sound_pointers.bin"
+
+tbl_expanded_sfx_streams:
+    .incbin "build/expanded/assets/sound_streams.bin"
+
 .assert tbl_expanded_maze_rle_stream = $8000, error, "expanded maze must begin at $8000"
 .assert tbl_expanded_stage_parameters = $81A0, error, "expanded stage data must begin at $81A0"
 .assert tbl_expanded_stage2_maze_rle_stream = $82D6, error, "stage-2 maze must begin at $82D6"
 .assert sub_select_expanded_maze = $8476, error, "maze selector must begin at $8476"
+.assert tbl_expanded_sfx_stream_ptr_table = $848F, error, "sound pointers must begin at $848F"
+.assert tbl_expanded_sfx_streams = $84AF, error, "sound streams must begin at $84AF"
 
 PACMAN_EXPANDED_MAZE = 1
 PACMAN_EXPANDED_STAGE = 1
 PACMAN_EXPANDED_MULTI_MAZE = 1
+PACMAN_EXPANDED_SOUND = 1
 
 .include "main.asm"

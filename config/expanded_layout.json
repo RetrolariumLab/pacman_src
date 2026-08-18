@@ -4,7 +4,9 @@
   "assets": [
     {"name": "maze_original", "address": 32768, "size": 416},
     {"name": "stage_parameters", "address": 33184, "size": 310},
-    {"name": "maze_stage2", "address": 33494, "size": 416}
+    {"name": "maze_stage2", "address": 33494, "size": 416},
+    {"name": "sound_pointer_table", "address": 33935, "size": 32},
+    {"name": "sound_streams", "address": 33967, "size": 890}
   ],
   "inline_regions": [
     {
@@ -54,6 +56,8 @@
     {"address": 57973, "original": 255, "variant": 234},
     {"address": 57974, "original": 133, "variant": 234},
     {"address": 57975, "original": 0, "variant": 234},
+    {"address": 61580, "original": 142, "variant": 143},
+    {"address": 61581, "original": 240, "variant": 132},
     {"address": 65528, "original": 120, "variant": 0},
     {"address": 65529, "original": 236, "variant": 128}
   ]

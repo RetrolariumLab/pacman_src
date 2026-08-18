@@ -37,6 +37,9 @@ EXPANDED_MAZE_JSON ?= $(PROJECT_DIR)hacks/local/maze.json
 EXPANDED_MAZE_BIN ?= $(EXPANDED_DIR)/assets/maze.rle
 EXPANDED_STAGE_JSON ?= $(PROJECT_DIR)hacks/local/stage_parameters.json
 EXPANDED_STAGE_BIN ?= $(EXPANDED_DIR)/assets/stage_parameters.bin
+EXPANDED_SOUND_JSON ?= $(PROJECT_DIR)hacks/local/sound_streams.json
+EXPANDED_SOUND_BIN ?= $(EXPANDED_DIR)/assets/sound_streams.bin
+EXPANDED_SOUND_POINTERS_BIN ?= $(EXPANDED_DIR)/assets/sound_pointers.bin
 EXPANDED_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_expanded_rom.lua
 EXPANDED_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/expanded_rom_runtime.txt
 DEBUG_SUMMARY ?= $(BUILD_DIR)/debug_symbols.json
@@ -166,6 +169,9 @@ init-expanded-assets: _require-assets
 		--maze-json "$(EXPANDED_MAZE_JSON)" \
 		--original-rom "$(ORIGINAL_ROM)" \
 		--stage-json "$(EXPANDED_STAGE_JSON)" \
+		--asset-manifest "$(ASSET_MANIFEST)" \
+		--asset-dir "$(GENERATED_ASSET_DIR)" \
+		--sound-json "$(EXPANDED_SOUND_JSON)" \
 		--demo-frightened-duration 14
 
 expanded-assets:
@@ -175,7 +181,12 @@ expanded-assets:
 		--maze-output "$(EXPANDED_MAZE_BIN)" \
 		--original-rom "$(ORIGINAL_ROM)" \
 		--stage-json "$(EXPANDED_STAGE_JSON)" \
-		--stage-output "$(EXPANDED_STAGE_BIN)"
+		--stage-output "$(EXPANDED_STAGE_BIN)" \
+		--asset-manifest "$(ASSET_MANIFEST)" \
+		--asset-dir "$(GENERATED_ASSET_DIR)" \
+		--sound-json "$(EXPANDED_SOUND_JSON)" \
+		--sound-output "$(EXPANDED_SOUND_BIN)" \
+		--sound-pointers-output "$(EXPANDED_SOUND_POINTERS_BIN)"
 
 build-expanded: _require-assets expanded-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_expanded.py" \
@@ -197,6 +208,8 @@ verify-expanded: build-expanded
 		--maze-original "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
 		--maze-stage2 "$(EXPANDED_MAZE_BIN)" \
 		--stage "$(EXPANDED_STAGE_BIN)" \
+		--sound-pointers "$(EXPANDED_SOUND_POINTERS_BIN)" \
+		--sound-streams "$(EXPANDED_SOUND_BIN)" \
 		--layout "$(PROJECT_DIR)config/expanded_layout.json"
 
 symbols-expanded: verify-expanded
@@ -221,7 +234,8 @@ validate-expanded: build-dev symbols-expanded
 		"$(EXPANDED_ROM)"
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_expanded_runtime.py" \
 		--result "$(EXPANDED_RUNTIME_RESULT)" \
-		--stage-json "$(EXPANDED_STAGE_JSON)"
+		--stage-json "$(EXPANDED_STAGE_JSON)" \
+		--sound-json "$(EXPANDED_SOUND_JSON)"
 
 symbols: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \

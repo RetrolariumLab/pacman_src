@@ -461,7 +461,11 @@ tbl_note_period_base_pairs:		; was: tbl_F074
 
 ; Pointer to active SFX stream pointer table
 tbl_sfx_stream_table_ptr:		; was: tbl_F08C
+.ifdef PACMAN_EXPANDED_SOUND
+    .word tbl_expanded_sfx_stream_ptr_table
+.else
     .word tbl_sfx_stream_ptr_table
+.endif
 
 ; SFX stream pointer table (16 entries)
 tbl_sfx_stream_ptr_table:		; was: tbl_F08E

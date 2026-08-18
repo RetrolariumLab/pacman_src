@@ -41,7 +41,7 @@ def validate_expanded(
     fill = int(bank_spec["fill"])
     if bank_address != 0x8000 or bank_size != 16_384:
         raise ValueError("expanded layout must describe the mapper-0 $8000 bank")
-    cursor = 0
+    regions: list[tuple[int, str, bytes]] = []
     for spec in layout["assets"]:
         name = str(spec["name"])
         address = int(spec["address"])
@@ -49,21 +49,21 @@ def validate_expanded(
         data = assets.get(name)
         if data is None:
             raise ValueError(f"missing expanded asset: {name}")
-        if address != bank_address + cursor:
-            raise ValueError(f"expanded asset is not contiguous: {name}")
         if len(data) != size:
             raise ValueError(f"expanded asset size mismatch for {name}: {len(data)} != {size}")
-        if prg[cursor:cursor + size] != data:
-            raise ValueError(f"expanded bank data mismatch for {name}")
-        cursor += size
+        regions.append((address, name, data))
     for spec in layout.get("inline_regions", []):
         name = str(spec["name"])
         address = int(spec["address"])
         data = bytes(spec["bytes"])
+        regions.append((address, name, data))
+
+    cursor = 0
+    for address, name, data in sorted(regions):
         if address != bank_address + cursor:
-            raise ValueError(f"expanded inline region is not contiguous: {name}")
+            raise ValueError(f"expanded region is not contiguous: {name}")
         if prg[cursor:cursor + len(data)] != data:
-            raise ValueError(f"expanded inline region mismatch for {name}")
+            raise ValueError(f"expanded region mismatch for {name}")
         cursor += len(data)
     if any(value != fill for value in prg[cursor:bank_size]):
         raise ValueError("unexpected data after declared assets in expanded bank")
@@ -84,6 +84,8 @@ def main() -> int:
     parser.add_argument("--maze-original", required=True, type=Path)
     parser.add_argument("--maze-stage2", required=True, type=Path)
     parser.add_argument("--stage", required=True, type=Path)
+    parser.add_argument("--sound-pointers", required=True, type=Path)
+    parser.add_argument("--sound-streams", required=True, type=Path)
     parser.add_argument("--layout", required=True, type=Path)
     args = parser.parse_args()
     try:
@@ -94,6 +96,8 @@ def main() -> int:
                 "maze_original": args.maze_original.read_bytes(),
                 "stage_parameters": args.stage.read_bytes(),
                 "maze_stage2": args.maze_stage2.read_bytes(),
+                "sound_pointer_table": args.sound_pointers.read_bytes(),
+                "sound_streams": args.sound_streams.read_bytes(),
             },
             json.loads(args.layout.read_text(encoding="utf-8")),
         )

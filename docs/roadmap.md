@@ -493,10 +493,75 @@ The demonstration doubles first-level frightened duration from 7 to 14, and
 
 ## Recommended Next Work Package
 
-Extend the expanded asset pipeline one format at a time. Sound streams are the
-best next candidate because they already have bounded codecs and audible
-runtime evidence. Keep stream-pointer redirection, bank allocation, and each
-audible demonstration independently reviewable.
+### 14. Expanded Sound Assets — Complete
+
+Move all 16 bounded sound streams behind the optional expanded JSON pipeline,
+without changing preservation payloads or decoder behavior. Generate the
+active pointer table deterministically, reject size/order drift, and prove an
+audible stream is decoded from the added bank.
+
+Completed with `hacks/local/sound_streams.json`, a generated pointer table at
+`$848F`, and 890 stream bytes at `$84AF`. The fixed bank changes only the
+two-byte active-table pointer. The demonstration changes pellet slot 04's first
+note from `$01` to `$B1`; FCEUX observes its expanded pointer, note byte, and
+advanced runtime cursor.
+
+## Recommended Next Work Package
+
+### 15. Variable-Length Sound Authoring Core — Planned
+
+Remove the current same-size restriction from expanded sound streams while
+keeping the 16-slot contract and generated pointer table deterministic. Add a
+musical note model, frame-based durations, size/bank budgets, MIDI import with
+explicit quantization, and an offline 2A03 APU preview renderer. Keep this layer
+usable from the command line and covered by golden encode/decode tests before a
+GUI depends on it.
+
+### 16. Local Sound Studio — Planned
+
+Build a fully local editor over milestone 15: slot selector, piano roll,
+note/duration and control-command inspector, original/edited comparison, APU
+preview, MIDI import, JSON save, ROM build, and FCEUX launch. It must expose
+lossy MIDI conversions and unsupported instrument/velocity data rather than
+silently pretending the Pac-Man sequencer is general MIDI.
+
+### 17. Maze and Tilemap Editor — Planned
+
+Provide a visual 27x22 maze editor backed by the existing boundary-preserving
+RLE codec. Show tile identities, pellets, power pellets, tunnels, ghost-house
+geometry, spawn/door assumptions, and compression cost. Add structural checks
+for reachable paths and runtime-sensitive tile classes before exporting a
+stage-specific expanded maze.
+
+### 18. Graphics, Sprites, and Palette Studio — Planned
+
+Decode CHR-ROM into editable 2bpp tiles and connect those tiles to the existing
+actor sprite/OAM table model. Support pixel editing, tile banks, four-tile
+metasprite previews, attributes, offsets, animation frames, and NES palette
+selection. Validate CHR size, tile indexes, palette limits, sprite flip bits,
+and OAM layout before ROM generation.
+
+### 19. Screens, Text, and Intermission Editor — Planned
+
+Model the game's tile-encoded text and static PPU command fragments instead of
+treating them as ASCII. Provide nametable previews for title/HUD/status content,
+editable text-to-tile mappings, palette attributes, and the already decoded
+intermission dispatch/animation tables. Keep code pointers separate from
+authored visual data and require emulator evidence for changed scene timing.
+
+### 20. Unified Local Content Studio — Planned
+
+Combine the mature editors behind one local project format and launcher without
+merging their codecs into an untestable monolith. A project selects stage
+parameters, per-stage mazes, sounds, CHR/sprites, palettes, text, and
+intermission data; the tool reports expanded-bank usage, builds a deterministic
+ROM, emits a reviewed manifest, and launches FCEUX. Original ROM inputs, local
+JSON projects, previews, and generated ROMs remain ignored.
+
+The recommended next implementation is milestone 15. A small contributor-facing
+variant recipe and packaging command should be developed alongside these tools,
+but should not become a substitute for format validation or the permanent
+byte-identical preservation gate.
 
 ## Resuming Work on Another Computer
 
