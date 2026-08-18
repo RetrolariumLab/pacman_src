@@ -6,7 +6,7 @@
     {"name": "stage_parameters", "address": 33184, "size": 310},
     {"name": "maze_stage2", "address": 33494, "size": 416},
     {"name": "sound_pointer_table", "address": 33935, "size": 32},
-    {"name": "sound_streams", "address": 33967, "size": 890}
+    {"name": "sound_streams", "address": 33967, "size": 8192}
   ],
   "inline_regions": [
     {

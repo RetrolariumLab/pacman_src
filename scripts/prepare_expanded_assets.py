@@ -23,6 +23,7 @@ STAGE_SIZE = 310
 PRG_CPU_BASE = 0xC000
 SOUND_POINTER_TABLE_ADDRESS = 0x848F
 SOUND_STREAMS_ADDRESS = SOUND_POINTER_TABLE_ADDRESS + 32
+SOUND_STREAMS_CAPACITY = 8192
 
 
 def write_once(path: Path, document: dict[str, object], description: str) -> None:
@@ -32,6 +33,35 @@ def write_once(path: Path, document: dict[str, object], description: str) -> Non
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
     print(f"[OK] Initialized editable {description} JSON: {path}")
+
+
+def encode_sound_collection(
+    document: dict[str, object],
+    base_address: int = SOUND_STREAMS_ADDRESS,
+    capacity: int = SOUND_STREAMS_CAPACITY,
+) -> tuple[bytes, bytes, int]:
+    if document.get("format") != "sound_stream_collection":
+        raise ValueError("Expanded sound JSON has the wrong format")
+    streams = document["streams"]
+    if len(streams) != 16:
+        raise ValueError("Expanded sound collection must contain 16 streams")
+    bundle = bytearray()
+    pointers = bytearray()
+    for slot, item in enumerate(streams):
+        prefix = f"audio/slot{slot:02x}_"
+        if not item["path"].startswith(prefix):
+            raise ValueError(f"Expanded sound stream order mismatch at slot {slot:02X}")
+        encoded = encode_sound(item["stream"])
+        address = base_address + len(bundle)
+        if address + len(encoded) > base_address + capacity:
+            raise ValueError(
+                f"Expanded sound streams exceed {capacity}-byte budget at slot {slot:02X}"
+            )
+        pointers.extend((address & 0xFF, address >> 8))
+        bundle.extend(encoded)
+    used = len(bundle)
+    bundle.extend(b"\xFF" * (capacity - used))
+    return bytes(pointers), bytes(bundle), used
 
 
 def main() -> int:
@@ -84,22 +114,7 @@ def main() -> int:
     maze = encode_maze(json.loads(args.maze_json.read_text(encoding="utf-8")))
     stage = encode_stage(json.loads(args.stage_json.read_text(encoding="utf-8")))
     sound_document = json.loads(args.sound_json.read_text(encoding="utf-8"))
-    expected_paths = [f"audio/slot{slot:02x}_" for slot in range(16)]
-    streams = sound_document["streams"]
-    if len(streams) != 16:
-        raise ValueError("Expanded sound collection must contain 16 streams")
-    sound_bundle = bytearray()
-    pointers = bytearray()
-    for slot, item in enumerate(streams):
-        if not item["path"].startswith(expected_paths[slot]):
-            raise ValueError(f"Expanded sound stream order mismatch at slot {slot:02X}")
-        encoded = encode_sound(item["stream"])
-        original_size = (args.asset_dir / item["path"]).stat().st_size
-        if len(encoded) != original_size:
-            raise ValueError(f"Expanded sound stream size changed: {item['path']}")
-        address = SOUND_STREAMS_ADDRESS + len(sound_bundle)
-        pointers.extend((address & 0xFF, address >> 8))
-        sound_bundle.extend(encoded)
+    pointers, sound_bundle, sound_used = encode_sound_collection(sound_document)
     args.maze_output.parent.mkdir(parents=True, exist_ok=True)
     args.stage_output.parent.mkdir(parents=True, exist_ok=True)
     args.maze_output.write_bytes(maze)
@@ -109,7 +124,10 @@ def main() -> int:
     args.sound_pointers_output.write_bytes(pointers)
     print(f"[OK] Encoded expanded maze asset: {args.maze_output} ({len(maze)} bytes)")
     print(f"[OK] Encoded expanded stage asset: {args.stage_output} ({len(stage)} bytes)")
-    print(f"[OK] Encoded expanded sound assets: 16 streams, {len(sound_bundle)} bytes")
+    print(
+        f"[OK] Encoded expanded sound assets: 16 streams, {sound_used}/"
+        f"{SOUND_STREAMS_CAPACITY} bytes used"
+    )
     return 0
 
 

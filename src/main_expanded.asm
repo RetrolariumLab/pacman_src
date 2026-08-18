@@ -38,6 +38,7 @@ tbl_expanded_sfx_stream_ptr_table:
 
 tbl_expanded_sfx_streams:
     .incbin "build/expanded/assets/sound_streams.bin"
+tbl_expanded_sfx_streams_end:
 
 .assert tbl_expanded_maze_rle_stream = $8000, error, "expanded maze must begin at $8000"
 .assert tbl_expanded_stage_parameters = $81A0, error, "expanded stage data must begin at $81A0"
@@ -45,6 +46,7 @@ tbl_expanded_sfx_streams:
 .assert sub_select_expanded_maze = $8476, error, "maze selector must begin at $8476"
 .assert tbl_expanded_sfx_stream_ptr_table = $848F, error, "sound pointers must begin at $848F"
 .assert tbl_expanded_sfx_streams = $84AF, error, "sound streams must begin at $84AF"
+.assert tbl_expanded_sfx_streams_end = $A4AF, error, "sound stream budget must be 8 KiB"
 
 PACMAN_EXPANDED_MAZE = 1
 PACMAN_EXPANDED_STAGE = 1

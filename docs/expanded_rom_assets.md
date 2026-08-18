@@ -9,8 +9,8 @@ $81A0..$82D5  JSON-generated stage parameters
 $82D6..$8475  JSON-generated stage-2-and-later maze RLE
 $8476..$848E  stage-aware maze selector
 $848F..$84AE  generated 16-entry sound pointer table
-$84AF..$8828  JSON-generated sound streams
-$8829..$BFFF  $FF free space for future assets
+$84AF..$A4AE  8 KiB variable-length JSON sound region
+$A4AF..$BFFF  $FF free space for future assets
 $C000..$FFF7  original fixed PRG bank
 $CEB8..$CF8D  reviewed stage-table operand bytes target $81A0..$82D2
 $E26E..$E277  fixed-width call to the expanded maze selector

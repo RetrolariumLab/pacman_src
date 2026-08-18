@@ -508,14 +508,15 @@ advanced runtime cursor.
 
 ## Recommended Next Work Package
 
-### 15. Variable-Length Sound Authoring Core — Planned
+### 15. Variable-Length Sound Authoring Core — Complete
 
-Remove the current same-size restriction from expanded sound streams while
-keeping the 16-slot contract and generated pointer table deterministic. Add a
-musical note model, frame-based durations, size/bank budgets, MIDI import with
-explicit quantization, and an offline 2A03 APU preview renderer. Keep this layer
-usable from the command line and covered by golden encode/decode tests before a
-GUI depends on it.
+The expanded build now packs actual stream lengths into a fixed 8 KiB budget,
+recalculates all 16 pointers, and rejects ordering or capacity violations. The
+dependency-free authoring API provides reversible Pac-Man/MIDI/note-name
+conversion, NTSC frame durations, monophonic PPQ MIDI import with tempo maps,
+and deterministic pulse WAV previews based on the game's timer table. Public
+`describe-sound`, `import-midi`, and `preview-sound` targets keep this core
+usable independently of the future GUI.
 
 ### 16. Local Sound Studio — Planned
 
@@ -524,6 +525,10 @@ note/duration and control-command inspector, original/edited comparison, APU
 preview, MIDI import, JSON save, ROM build, and FCEUX launch. It must expose
 lossy MIDI conversions and unsupported instrument/velocity data rather than
 silently pretending the Pac-Man sequencer is general MIDI.
+
+This is the recommended next implementation. Start with a local slot browser,
+piano roll, JSON save, and the milestone-15 preview API before adding ROM build
+and FCEUX launch controls.
 
 ### 17. Maze and Tilemap Editor — Planned
 
@@ -558,7 +563,7 @@ intermission data; the tool reports expanded-bank usage, builds a deterministic
 ROM, emits a reviewed manifest, and launches FCEUX. Original ROM inputs, local
 JSON projects, previews, and generated ROMs remain ignored.
 
-The recommended next implementation is milestone 15. A small contributor-facing
+The recommended next implementation is milestone 16. A small contributor-facing
 variant recipe and packaging command should be developed alongside these tools,
 but should not become a substitute for format validation or the permanent
 byte-identical preservation gate.

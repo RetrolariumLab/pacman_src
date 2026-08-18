@@ -108,8 +108,8 @@ updated asset evidence and preservation review.
 
 The optional expanded variant promotes all 16 streams to an ignored editable
 `hacks/local/sound_streams.json`. Its build emits a pointer table at `$848F`
-and fixed-size stream bundle at `$84AF`; preservation builds retain the original
-table and payload addresses. `make validate-expanded` requests pellet slot 04
+and an 8 KiB variable-length stream region at `$84AF`; preservation builds retain
+the original table and payload addresses. `make validate-expanded` requests pellet slot 04
 in FCEUX and proves that its cursor advances through the JSON-generated stream.
 
 ## Preservation Invariants

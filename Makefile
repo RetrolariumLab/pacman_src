@@ -40,6 +40,12 @@ EXPANDED_STAGE_BIN ?= $(EXPANDED_DIR)/assets/stage_parameters.bin
 EXPANDED_SOUND_JSON ?= $(PROJECT_DIR)hacks/local/sound_streams.json
 EXPANDED_SOUND_BIN ?= $(EXPANDED_DIR)/assets/sound_streams.bin
 EXPANDED_SOUND_POINTERS_BIN ?= $(EXPANDED_DIR)/assets/sound_pointers.bin
+SOUND_SLOT ?= 4
+SOUND_PREVIEW ?= $(PROJECT_DIR)tmp/sound_preview.wav
+MIDI_FILE ?=
+MIDI_TRACK ?= 0
+MIDI_CHANNEL ?= 0
+MIDI_OUTPUT ?= $(PROJECT_DIR)hacks/local/sound_streams.midi.json
 EXPANDED_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_expanded_rom.lua
 EXPANDED_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/expanded_rom_runtime.txt
 DEBUG_SUMMARY ?= $(BUILD_DIR)/debug_symbols.json
@@ -90,7 +96,7 @@ DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
+.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -280,6 +286,27 @@ run-hack: build-hack build-dev
 run-expanded: build-expanded build-dev
 	"$(FCEUX_EXE)" "$(EXPANDED_ROM)"
 
+describe-sound:
+	$(PYTHON) "$(PROJECT_DIR)scripts/sound_authoring.py" \
+		--input "$(EXPANDED_SOUND_JSON)" \
+		--slot "$(SOUND_SLOT)"
+
+preview-sound:
+	$(PYTHON) "$(PROJECT_DIR)scripts/render_sound_preview.py" \
+		--sound-json "$(EXPANDED_SOUND_JSON)" \
+		--slot "$(SOUND_SLOT)" \
+		--output "$(SOUND_PREVIEW)"
+
+import-midi:
+	@$(PYTHON) -c "import sys; sys.exit(0 if r'$(MIDI_FILE)' else 'Set MIDI_FILE=path/to/file.mid')"
+	$(PYTHON) "$(PROJECT_DIR)scripts/midi_to_sound.py" \
+		--midi "$(MIDI_FILE)" \
+		--sound-json "$(EXPANDED_SOUND_JSON)" \
+		--output "$(MIDI_OUTPUT)" \
+		--slot "$(SOUND_SLOT)" \
+		--track "$(MIDI_TRACK)" \
+		--channel "$(MIDI_CHANNEL)"
+
 clean:
 	$(PYTHON) "$(PROJECT_DIR)scripts/clean_artifacts.py"
 
@@ -437,6 +464,9 @@ help:
 	@echo   make verify-expanded       Verify expanded layout, fixed bank, and maze
 	@echo   make validate-expanded     Prove expanded maze access in FCEUX
 	@echo   make run-expanded          Build and run the expanded variant in FCEUX
+	@echo   make describe-sound        Show musical notes for SOUND_SLOT, default 4
+	@echo   make preview-sound         Render SOUND_SLOT to tmp/sound_preview.wav
+	@echo   make import-midi MIDI_FILE=x.mid  Import mono MIDI to an ignored JSON copy
 	@echo   make symbols               Build Mesen debug/map and FCEUX label artifacts
 	@echo   make test-debug-symbols    Run focused symbol conversion unit tests
 	@echo   make test-runtime-traces   Run focused runtime validator unit tests

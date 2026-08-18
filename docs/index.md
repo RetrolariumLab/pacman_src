@@ -24,6 +24,7 @@
 - [score_and_bonus.md](./score_and_bonus.md): pellets/fruit/score/1UP flow.
 - [intermission_flow.md](./intermission_flow.md): script0E/script10 and scene/substate transitions.
 - [sound_engine.md](./sound_engine.md): audio engine update loop, stream decoder, opcode table.
+- [sound_authoring.md](./sound_authoring.md): variable-length streams, musical notes, MIDI import, and WAV preview.
 - [stage_params_and_data_tail.md](./stage_params_and_data_tail.md): stage profile tables, maze RLE, vectors, tail layout.
 - [assets.md](./assets.md): policy and reproducible extraction of opaque ROM assets.
 
