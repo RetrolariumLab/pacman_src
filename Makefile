@@ -96,7 +96,7 @@ DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
+.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -286,6 +286,12 @@ run-hack: build-hack build-dev
 run-expanded: build-expanded build-dev
 	"$(FCEUX_EXE)" "$(EXPANDED_ROM)"
 
+sound-studio:
+	$(PYTHON) "$(PROJECT_DIR)scripts/sound_studio.py" \
+		--sound-json "$(EXPANDED_SOUND_JSON)" \
+		--asset-manifest "$(ASSET_MANIFEST)" \
+		--asset-dir "$(GENERATED_ASSET_DIR)"
+
 describe-sound:
 	$(PYTHON) "$(PROJECT_DIR)scripts/sound_authoring.py" \
 		--input "$(EXPANDED_SOUND_JSON)" \
@@ -464,6 +470,7 @@ help:
 	@echo   make verify-expanded       Verify expanded layout, fixed bank, and maze
 	@echo   make validate-expanded     Prove expanded maze access in FCEUX
 	@echo   make run-expanded          Build and run the expanded variant in FCEUX
+	@echo   make sound-studio          Open the local sound editor and piano roll
 	@echo   make describe-sound        Show musical notes for SOUND_SLOT, default 4
 	@echo   make preview-sound         Render SOUND_SLOT to tmp/sound_preview.wav
 	@echo   make import-midi MIDI_FILE=x.mid  Import mono MIDI to an ignored JSON copy

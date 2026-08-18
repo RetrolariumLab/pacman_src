@@ -4,6 +4,25 @@ Milestone 15 provides command-line authoring primitives beneath the planned
 local Sound Studio. It does not change the preservation build or pretend that
 the original sequencer is general MIDI.
 
+Milestone 16 adds the dependency-free local GUI over those primitives. Initialize
+the ignored editable assets once, then launch it with:
+
+```text
+make init-expanded-assets
+make sound-studio
+```
+
+The studio provides a 16-slot browser, scrollable piano roll, exact command
+inspector, note insertion/editing/removal, comparison against the original
+extracted streams, per-slot restore, WAV playback, guarded MIDI import, atomic
+JSON save, and explicit expanded-ROM build and FCEUX launch buttons. It uses
+Python's bundled Tkinter and adds no package dependency.
+
+The editable JSON remains the source of truth. The GUI never saves, builds, or
+launches implicitly. Closing with unsaved changes prompts before discarding;
+building is refused until edits are saved. `Save As` supports experiments without
+overwriting `hacks/local/sound_streams.json`.
+
 ## Expanded-bank allocation
 
 The expanded variant reserves `$84AF..$A4AE` as an 8 KiB sound region. All 16
@@ -43,6 +62,10 @@ The default output is the ignored `hacks/local/sound_streams.midi.json`; the
 working `hacks/local/sound_streams.json` is never overwritten implicitly.
 Review or rename the imported file before using it as the expanded build input.
 
+The GUI uses the same importer and presents the limitation before replacing a
+slot: the format is monophonic and contiguous, and MIDI velocity, instruments,
+polyphony, and rests cannot be preserved. Unsupported input remains an error.
+
 ## WAV preview
 
 ```text
@@ -55,3 +78,7 @@ pulse duty/volume encoded in the stream prologue. It is deterministic and
 useful for note editing, but is not a cycle-accurate APU emulator: arbitration,
 envelopes, sweeps, triangle/noise behavior, and frame-counter timing still
 require FCEUX validation.
+
+On Windows, the Sound Studio plays this WAV asynchronously through the standard
+system API. On other platforms it still writes the preview file but does not
+claim to provide a bundled audio player.

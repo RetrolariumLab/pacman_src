@@ -518,7 +518,7 @@ and deterministic pulse WAV previews based on the game's timer table. Public
 `describe-sound`, `import-midi`, and `preview-sound` targets keep this core
 usable independently of the future GUI.
 
-### 16. Local Sound Studio — Planned
+### 16. Local Sound Studio — Complete
 
 Build a fully local editor over milestone 15: slot selector, piano roll,
 note/duration and control-command inspector, original/edited comparison, APU
@@ -526,9 +526,12 @@ preview, MIDI import, JSON save, ROM build, and FCEUX launch. It must expose
 lossy MIDI conversions and unsupported instrument/velocity data rather than
 silently pretending the Pac-Man sequencer is general MIDI.
 
-This is the recommended next implementation. Start with a local slot browser,
-piano roll, JSON save, and the milestone-15 preview API before adding ROM build
-and FCEUX launch controls.
+Completed with a dependency-free Tkinter application over the milestone-15 API.
+It provides the 16-slot browser, piano roll, exact command inspector, guarded
+note edits and MIDI replacement, original/edited comparison and restore, atomic
+JSON save, WAV playback, plus explicit expanded-ROM build and FCEUX launch
+controls. The model is isolated from the GUI and unit-tested without requiring a
+display.
 
 ### 17. Maze and Tilemap Editor — Planned
 
@@ -563,7 +566,7 @@ intermission data; the tool reports expanded-bank usage, builds a deterministic
 ROM, emits a reviewed manifest, and launches FCEUX. Original ROM inputs, local
 JSON projects, previews, and generated ROMs remain ignored.
 
-The recommended next implementation is milestone 16. A small contributor-facing
+The recommended next implementation is milestone 17. A small contributor-facing
 variant recipe and packaging command should be developed alongside these tools,
 but should not become a substitute for format validation or the permanent
 byte-identical preservation gate.

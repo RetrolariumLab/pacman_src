@@ -78,3 +78,9 @@ After each edit batch:
   and consumes an explicitly initialized editable maze JSON asset.
 - Expanded stage parameters (roadmap milestone 13) occupy `$81A0..$82D5`; an
   exact operand manifest and FCEUX proof cover the first runtime tuning value.
+- Variable-length expanded sound streams and their command-line authoring model
+  (milestones 14-15) are available through deterministic JSON, MIDI, and WAV
+  workflows.
+- The local Sound Studio (roadmap milestone 16) provides a tested Tkinter slot
+  browser, piano roll, guarded editing/import, original comparison, preview,
+  save, build, and FCEUX launch workflow through `make sound-studio`.

@@ -126,6 +126,7 @@ make build-expanded             # Build the JSON-backed NROM-256 variant
 make verify-expanded            # Verify assets, layout, and fixed-bank operands
 make validate-expanded          # Prove expanded maze/stage/sound access in FCEUX
 make run-expanded               # Build and run the NROM-256 variant
+make sound-studio               # Open the local slot editor and piano roll
 make describe-sound SOUND_SLOT=4 # Inspect decoded musical notes
 make preview-sound SOUND_SLOT=4  # Render an ignored WAV preview
 make symbols                    # Generate Mesen/FCEUX debugger artifacts
