@@ -2,8 +2,16 @@
   "format": 1,
   "extra_bank": {"address": 32768, "size": 16384, "fill": 255},
   "assets": [
-    {"name": "maze", "address": 32768, "size": 416},
-    {"name": "stage_parameters", "address": 33184, "size": 310}
+    {"name": "maze_original", "address": 32768, "size": 416},
+    {"name": "stage_parameters", "address": 33184, "size": 310},
+    {"name": "maze_stage2", "address": 33494, "size": 416}
+  ],
+  "inline_regions": [
+    {
+      "name": "maze_selector",
+      "address": 33910,
+      "bytes": [173, 104, 0, 201, 1, 144, 9, 169, 214, 133, 0, 169, 130, 133, 1, 96, 169, 0, 133, 0, 169, 128, 133, 1, 96]
+    }
   ],
   "fixed_bank_changes": [
     {"address": 52920, "original": 66, "variant": 160},
@@ -36,6 +44,16 @@
     {"address": 53124, "original": 235, "variant": 129},
     {"address": 53132, "original": 66, "variant": 160},
     {"address": 53133, "original": 235, "variant": 129},
+    {"address": 57966, "original": 173, "variant": 32},
+    {"address": 57967, "original": 249, "variant": 118},
+    {"address": 57968, "original": 255, "variant": 132},
+    {"address": 57969, "original": 133, "variant": 234},
+    {"address": 57970, "original": 1, "variant": 234},
+    {"address": 57971, "original": 173, "variant": 234},
+    {"address": 57972, "original": 248, "variant": 234},
+    {"address": 57973, "original": 255, "variant": 234},
+    {"address": 57974, "original": 133, "variant": 234},
+    {"address": 57975, "original": 0, "variant": 234},
     {"address": 65528, "original": 120, "variant": 0},
     {"address": 65529, "original": 236, "variant": 128}
   ]

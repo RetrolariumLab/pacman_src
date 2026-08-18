@@ -18,12 +18,12 @@ def main() -> int:
         print(f"[ERROR] Missing expanded runtime result: {args.result}")
         return 1
     lines = args.result.read_text(encoding="utf-8").splitlines()
-    maze_match = re.fullmatch(r"maze,8000,8000,([0-9A-F]{2})", lines[0] if lines else "")
+    maze_match = re.fullmatch(r"maze,82D6,82D6,([0-9A-F]{2})", lines[0] if lines else "")
     stage_match = re.fullmatch(
         r"stage,81A0,([0-9A-F]{2}),([0-9A-F]{2})", lines[1] if len(lines) > 1 else ""
     )
     stage_document = json.loads(args.stage_json.read_text(encoding="utf-8"))
-    expected_duration = int(stage_document["stage_profiles"][0]["frightened_duration"])
+    expected_duration = int(stage_document["stage_profiles"][1]["frightened_duration"])
     if (
         maze_match is None
         or stage_match is None
@@ -34,8 +34,8 @@ def main() -> int:
         print(f"[ERROR] Expanded runtime validation failed: {lines}")
         return 1
     print(
-        f"[OK] FCEUX read maze at $8000 (token ${maze_match.group(1)}) and "
-        f"loaded stage-1 frightened duration {expected_duration} from $81A0."
+        f"[OK] FCEUX selected the stage-2 maze at $82D6 (token ${maze_match.group(1)}) "
+        f"and loaded its frightened duration {expected_duration} from $81A0."
     )
     return 0
 

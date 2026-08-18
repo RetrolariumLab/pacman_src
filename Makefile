@@ -194,7 +194,8 @@ verify-expanded: build-expanded
 	$(PYTHON) "$(PROJECT_DIR)scripts/verify_expanded.py" \
 		--original "$(ORIGINAL_ROM)" \
 		--candidate "$(EXPANDED_ROM)" \
-		--maze "$(EXPANDED_MAZE_BIN)" \
+		--maze-original "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
+		--maze-stage2 "$(EXPANDED_MAZE_BIN)" \
 		--stage "$(EXPANDED_STAGE_BIN)" \
 		--layout "$(PROJECT_DIR)config/expanded_layout.json"
 

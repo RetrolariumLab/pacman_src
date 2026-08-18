@@ -56,6 +56,15 @@ def validate_expanded(
         if prg[cursor:cursor + size] != data:
             raise ValueError(f"expanded bank data mismatch for {name}")
         cursor += size
+    for spec in layout.get("inline_regions", []):
+        name = str(spec["name"])
+        address = int(spec["address"])
+        data = bytes(spec["bytes"])
+        if address != bank_address + cursor:
+            raise ValueError(f"expanded inline region is not contiguous: {name}")
+        if prg[cursor:cursor + len(data)] != data:
+            raise ValueError(f"expanded inline region mismatch for {name}")
+        cursor += len(data)
     if any(value != fill for value in prg[cursor:bank_size]):
         raise ValueError("unexpected data after declared assets in expanded bank")
 
@@ -72,7 +81,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--original", required=True, type=Path)
     parser.add_argument("--candidate", required=True, type=Path)
-    parser.add_argument("--maze", required=True, type=Path)
+    parser.add_argument("--maze-original", required=True, type=Path)
+    parser.add_argument("--maze-stage2", required=True, type=Path)
     parser.add_argument("--stage", required=True, type=Path)
     parser.add_argument("--layout", required=True, type=Path)
     args = parser.parse_args()
@@ -80,13 +90,17 @@ def main() -> int:
         validate_expanded(
             args.original.read_bytes(),
             args.candidate.read_bytes(),
-            {"maze": args.maze.read_bytes(), "stage_parameters": args.stage.read_bytes()},
+            {
+                "maze_original": args.maze_original.read_bytes(),
+                "stage_parameters": args.stage.read_bytes(),
+                "maze_stage2": args.maze_stage2.read_bytes(),
+            },
             json.loads(args.layout.read_text(encoding="utf-8")),
         )
     except (KeyError, TypeError, ValueError) as error:
         print(f"[ERROR] Expanded ROM validation failed: {error}")
         return 1
-    print("[OK] Expanded layout, two JSON assets, and exact fixed-bank change manifest.")
+    print("[OK] Expanded layout, stage-specific mazes, and exact fixed-bank change manifest.")
     return 0
 
 
