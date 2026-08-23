@@ -223,7 +223,11 @@ bra_find_ppu_buffer_end_for_palette_cmd:		; was: bra_DFE5_loop
 bra_adjust_palette_cmd_offset:		; was: bra_DFF3
 ; Append frightened palette command bytes
 bra_append_frightened_palette_cmd:		; was: bra_DFF3_loop
+.ifdef PACMAN_EXPANDED_PALETTES
+    LDA tbl_expanded_frightened_palette_cmd_alt,X
+.else
     LDA tbl_frightened_palette_cmd_alt,X
+.endif
     STA ram_ppu_buffer_main,Y
     INY
     INX

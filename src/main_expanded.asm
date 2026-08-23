@@ -49,6 +49,17 @@ tbl_expanded_actor_alt_sprite_attrs = tbl_expanded_actor_data + $0234
 tbl_expanded_oam_quad_offsets = tbl_expanded_actor_data + $0268
 tbl_expanded_actor_data_end:
 
+tbl_expanded_palette_data:
+tbl_expanded_title_background_palette:
+    .incbin "build/expanded/assets/palettes.bin"
+tbl_expanded_attract_bg_spr_palette = tbl_expanded_palette_data + $0010
+tbl_expanded_round_gameplay_palette = tbl_expanded_palette_data + $0030
+tbl_expanded_intro_sprite_palette = tbl_expanded_palette_data + $0050
+tbl_expanded_frightened_palette_cmd = tbl_expanded_palette_data + $0060
+tbl_expanded_frightened_palette_cmd_alt = tbl_expanded_palette_data + $006A
+tbl_expanded_stage_fruit_palette_color = tbl_expanded_palette_data + $006F
+tbl_expanded_palette_data_end:
+
 .assert tbl_expanded_maze_rle_stream = $8000, error, "expanded maze must begin at $8000"
 .assert tbl_expanded_stage_parameters = $81A0, error, "expanded stage data must begin at $81A0"
 .assert tbl_expanded_stage2_maze_rle_stream = $82D6, error, "stage-2 maze must begin at $82D6"
@@ -58,11 +69,14 @@ tbl_expanded_actor_data_end:
 .assert tbl_expanded_sfx_streams_end = $A4AF, error, "sound stream budget must be 8 KiB"
 .assert tbl_expanded_actor_data = $A4AF, error, "actor mappings must begin at $A4AF"
 .assert tbl_expanded_actor_data_end = $A71F, error, "actor mappings must remain 624 bytes"
+.assert tbl_expanded_palette_data = $A71F, error, "palettes must begin at $A71F"
+.assert tbl_expanded_palette_data_end = $A79E, error, "palettes must remain 127 bytes"
 
 PACMAN_EXPANDED_MAZE = 1
 PACMAN_EXPANDED_STAGE = 1
 PACMAN_EXPANDED_MULTI_MAZE = 1
 PACMAN_EXPANDED_SOUND = 1
 PACMAN_EXPANDED_ACTORS = 1
+PACMAN_EXPANDED_PALETTES = 1
 
 .include "main.asm"

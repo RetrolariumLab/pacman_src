@@ -42,6 +42,8 @@ EXPANDED_SOUND_BIN ?= $(EXPANDED_DIR)/assets/sound_streams.bin
 EXPANDED_SOUND_POINTERS_BIN ?= $(EXPANDED_DIR)/assets/sound_pointers.bin
 EXPANDED_ACTOR_JSON ?= $(PROJECT_DIR)hacks/local/actor_sprites.json
 EXPANDED_ACTOR_BIN ?= $(EXPANDED_DIR)/assets/actor_sprites.bin
+EXPANDED_PALETTE_JSON ?= $(PROJECT_DIR)hacks/local/palettes.json
+EXPANDED_PALETTE_BIN ?= $(EXPANDED_DIR)/assets/palettes.bin
 SOUND_SLOT ?= 4
 SOUND_PREVIEW ?= $(PROJECT_DIR)tmp/sound_preview.wav
 MIDI_FILE ?=
@@ -182,6 +184,7 @@ init-expanded-assets: _require-assets
 		--asset-dir "$(GENERATED_ASSET_DIR)" \
 		--sound-json "$(EXPANDED_SOUND_JSON)" \
 		--actor-json "$(EXPANDED_ACTOR_JSON)" \
+		--palette-json "$(EXPANDED_PALETTE_JSON)" \
 		--demo-frightened-duration 14
 
 expanded-assets:
@@ -198,7 +201,9 @@ expanded-assets:
 		--sound-output "$(EXPANDED_SOUND_BIN)" \
 		--sound-pointers-output "$(EXPANDED_SOUND_POINTERS_BIN)" \
 		--actor-json "$(EXPANDED_ACTOR_JSON)" \
-		--actor-output "$(EXPANDED_ACTOR_BIN)"
+		--actor-output "$(EXPANDED_ACTOR_BIN)" \
+		--palette-json "$(EXPANDED_PALETTE_JSON)" \
+		--palette-output "$(EXPANDED_PALETTE_BIN)"
 
 build-expanded: _require-assets expanded-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_expanded.py" \
@@ -223,6 +228,7 @@ verify-expanded: build-expanded
 		--sound-pointers "$(EXPANDED_SOUND_POINTERS_BIN)" \
 		--sound-streams "$(EXPANDED_SOUND_BIN)" \
 		--actors "$(EXPANDED_ACTOR_BIN)" \
+		--palettes "$(EXPANDED_PALETTE_BIN)" \
 		--expected-chr "$(GENERATED_CHR)" \
 		--layout "$(PROJECT_DIR)config/expanded_layout.json"
 
@@ -249,7 +255,8 @@ validate-expanded: build-dev symbols-expanded
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_expanded_runtime.py" \
 		--result "$(EXPANDED_RUNTIME_RESULT)" \
 		--stage-json "$(EXPANDED_STAGE_JSON)" \
-		--sound-json "$(EXPANDED_SOUND_JSON)"
+		--sound-json "$(EXPANDED_SOUND_JSON)" \
+		--palette-json "$(EXPANDED_PALETTE_JSON)"
 
 symbols: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
@@ -311,6 +318,7 @@ graphics-studio:
 		--chr "$(GENERATED_ASSET_DIR)/chr/pacman.chr" \
 		--output "$(EDITED_CHR)" \
 		--actors "$(EXPANDED_ACTOR_JSON)" \
+		--palettes "$(EXPANDED_PALETTE_JSON)" \
 		--rom "$(ORIGINAL_ROM)" \
 		--project "$(PROJECT_DIR)"
 

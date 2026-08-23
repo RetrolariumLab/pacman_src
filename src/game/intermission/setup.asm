@@ -43,7 +43,11 @@ bra_wait_vblank_set_flag:		; was: bra_E65C_infinite_loop
     LDY #$00
 ; Upload sprite palette for intro/demo setup
 bra_upload_demo_sprite_palette:		; was: bra_E6A0_loop
+.ifdef PACMAN_EXPANDED_PALETTES
+    LDA tbl_expanded_intro_sprite_palette,Y
+.else
     LDA tbl_intro_sprite_palette,Y
+.endif
     STA PPUDATA
     INY
     CPY #$10

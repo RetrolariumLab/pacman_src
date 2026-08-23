@@ -91,6 +91,7 @@ def main() -> int:
     parser.add_argument("--sound-pointers", required=True, type=Path)
     parser.add_argument("--sound-streams", required=True, type=Path)
     parser.add_argument("--actors", required=True, type=Path)
+    parser.add_argument("--palettes", required=True, type=Path)
     parser.add_argument("--expected-chr", type=Path)
     parser.add_argument("--layout", required=True, type=Path)
     args = parser.parse_args()
@@ -105,6 +106,7 @@ def main() -> int:
                 "sound_pointer_table": args.sound_pointers.read_bytes(),
                 "sound_streams": args.sound_streams.read_bytes(),
                 "actor_mappings": args.actors.read_bytes(),
+                "palettes": args.palettes.read_bytes(),
             },
             json.loads(args.layout.read_text(encoding="utf-8")),
             args.expected_chr.read_bytes() if args.expected_chr else None,

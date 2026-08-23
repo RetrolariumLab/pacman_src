@@ -240,7 +240,11 @@ bra_clear_oam_buffer:		; was: bra_C180_loop
     LDY #$00
 ; Upload 16-byte title background palette
 bra_upload_background_palette:		; was: bra_C1A3_loop
+.ifdef PACMAN_EXPANDED_PALETTES
+    LDA tbl_expanded_title_background_palette,Y
+.else
     LDA tbl_title_background_palette,Y
+.endif
     STA PPUDATA
     INY
     CPY #$10

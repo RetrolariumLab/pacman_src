@@ -570,7 +570,11 @@ declared CHR while preserving the expanded PRG layout. A second slice makes all
 horizontal/vertical flip flags round-trip through an ignored JSON document and
 a fixed 624-byte expanded-bank asset. The OAM builder consumes that copy through
 a reviewed operand manifest, while the original build and shared 16x16 offsets
-remain unchanged. Runtime palette color editing remains a later data hook.
+remain unchanged. The completed palette slice catalogs title, attract,
+gameplay, intermission, frightened, and stage-fruit colors in a validated
+127-byte JSON-backed asset. Graphics Studio edits those `$00..$3F` indexes with
+instant previews, and FCEUX proves the gameplay palette plus its live fruit
+override reached PPU palette RAM.
 
 ### 19. Screens, Text, and Intermission Editor — Planned
 

@@ -210,7 +210,11 @@ bra_write_eight_attr_bytes:		; was: bra_C574_loop
     LDY #$00
 ; Upload 32-byte attract palette block
 bra_upload_attract_palette32:		; was: bra_C58D_loop
+.ifdef PACMAN_EXPANDED_PALETTES
+    LDA tbl_expanded_attract_bg_spr_palette,Y
+.else
     LDA tbl_attract_bg_spr_palette,Y
+.endif
     STA PPUDATA
     INY
     CPY #$20

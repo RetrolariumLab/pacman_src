@@ -50,6 +50,11 @@ for _ = 1, 10000 do
     emu.frameadvance()
 end
 
+local palette = {}
+for address = 0x3F00, 0x3F1F do
+    table.insert(palette, string.format("%02X", ppu.readbyte(address)))
+end
+
 memory.writebyte(demo_flag, 0)
 memory.writebyte(sound_requests + 4, 1)
 for _ = 1, 60 do emu.frameadvance() end
@@ -62,10 +67,11 @@ if not reached or selected_maze == nil then
 else
     output:write(string.format(
         "maze,%04X,%04X,%02X\nstage,%04X,%02X,%02X\n"
-            .. "sound,%04X,%04X,%04X,%02X\nOK\n",
+            .. "sound,%04X,%04X,%04X,%02X\npalette,%s\nOK\n",
         maze, selected_maze, memory.readbyte(selected_maze), stage,
         memory.readbyte(stage + 7), memory.readbyte(frightened_duration),
-        active_sound_table, pellet_stream, pellet_cursor, memory.readbyte(pellet_stream + 4)))
+        active_sound_table, pellet_stream, pellet_cursor, memory.readbyte(pellet_stream + 4),
+        table.concat(palette)))
 end
 output:close()
 emu.exit()

@@ -263,7 +263,11 @@ bra_upload_fruit_palette_color:		; was: bra_E5FF
 ; Clamp fruit color index by stage
 bra_clamp_fruit_color_index:		; was: bra_E611
     TAY
+.ifdef PACMAN_EXPANDED_PALETTES
+    LDA tbl_expanded_stage_fruit_palette_color,Y
+.else
     LDA tbl_stage_fruit_palette_color,Y
+.endif
     STA PPUDATA
     RTS
 

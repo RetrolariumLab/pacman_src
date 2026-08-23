@@ -7,7 +7,8 @@
     {"name": "maze_stage2", "address": 33494, "size": 416},
     {"name": "sound_pointer_table", "address": 33935, "size": 32},
     {"name": "sound_streams", "address": 33967, "size": 8192},
-    {"name": "actor_mappings", "address": 42159, "size": 624}
+    {"name": "actor_mappings", "address": 42159, "size": 624},
+    {"name": "palettes", "address": 42783, "size": 127}
   ],
   "inline_regions": [
     {
@@ -17,6 +18,12 @@
     }
   ],
   "fixed_bank_changes": [
+    {"address": 49572, "original": 149, "variant": 31},
+    {"address": 49573, "original": 195, "variant": 167},
+    {"address": 50574, "original": 179, "variant": 47},
+    {"address": 50575, "original": 197, "variant": 167},
+    {"address": 52841, "original": 96, "variant": 79},
+    {"address": 52842, "original": 208, "variant": 167},
     {"address": 52920, "original": 66, "variant": 160},
     {"address": 52921, "original": 235, "variant": 129},
     {"address": 52937, "original": 204, "variant": 42},
@@ -47,6 +54,8 @@
     {"address": 53124, "original": 235, "variant": 129},
     {"address": 53132, "original": 66, "variant": 160},
     {"address": 53133, "original": 235, "variant": 129},
+    {"address": 53558, "original": 5, "variant": 127},
+    {"address": 53559, "original": 210, "variant": 167},
     {"address": 55937, "original": 193, "variant": 23},
     {"address": 55938, "original": 221, "variant": 167},
     {"address": 55973, "original": 141, "variant": 227},
@@ -67,6 +76,8 @@
     {"address": 56093, "original": 221, "variant": 167},
     {"address": 56110, "original": 194, "variant": 24},
     {"address": 56111, "original": 221, "variant": 167},
+    {"address": 57332, "original": 91, "variant": 137},
+    {"address": 57333, "original": 224, "variant": 167},
     {"address": 57966, "original": 173, "variant": 32},
     {"address": 57967, "original": 249, "variant": 118},
     {"address": 57968, "original": 255, "variant": 132},
@@ -77,6 +88,10 @@
     {"address": 57973, "original": 255, "variant": 234},
     {"address": 57974, "original": 133, "variant": 234},
     {"address": 57975, "original": 0, "variant": 234},
+    {"address": 58899, "original": 69, "variant": 142},
+    {"address": 58900, "original": 230, "variant": 167},
+    {"address": 59041, "original": 59, "variant": 111},
+    {"address": 59042, "original": 231, "variant": 167},
     {"address": 61580, "original": 142, "variant": 143},
     {"address": 61581, "original": 240, "variant": 132},
     {"address": 65528, "original": 120, "variant": 0},

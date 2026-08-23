@@ -7,6 +7,7 @@ import argparse
 import subprocess
 import sys
 import tkinter as tk
+from collections.abc import Callable
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
@@ -17,6 +18,7 @@ from graphics_studio_model import (
     load_actor_tables,
     metasprite_pixels,
 )
+from palette_assets import PaletteDocument, decode_palette_collection, load_palette_document
 
 
 # A conventional RGB approximation used only by the editor preview. The ROM stores
@@ -32,16 +34,19 @@ NES_RGB = (
     "#E9E681", "#CEF481", "#B6FB9A", "#A9FAC3", "#A9F0F4", "#B8B8B8", "#000000", "#000000",
 )
 
-PREVIEW_PALETTES = [
-    [0x0F, 0x16, 0x29, 0x30],
-    [0x0F, 0x06, 0x17, 0x28],
-    [0x0F, 0x19, 0x2A, 0x30],
-    [0x0F, 0x12, 0x21, 0x30],
-]
+PALETTE_CONTEXTS = {
+    "Title BG": ("title_background", 0),
+    "Attract BG": ("attract_bg_spr", 0),
+    "Attract SPR": ("attract_bg_spr", 16),
+    "Gameplay BG": ("round_gameplay", 0),
+    "Gameplay SPR": ("round_gameplay", 16),
+    "Intermission SPR": ("intermission_sprites", 0),
+}
 
 
 class GraphicsStudio(tk.Tk):
-    def __init__(self, source: Path, output: Path, actor_path: Path, rom: Path, project: Path) -> None:
+    def __init__(self, source: Path, output: Path, actor_path: Path, palette_path: Path,
+                 rom: Path, project: Path) -> None:
         super().__init__()
         self.title("Pac-Man Graphics Studio")
         self.geometry("1240x820")
@@ -53,15 +58,21 @@ class GraphicsStudio(tk.Tk):
         original_actors = load_actor_tables(rom.read_bytes())
         self.actor_document: ActorDocument = load_actor_document(actor_path, original_actors)
         self.actors = self.actor_document.actors
+        original_palettes = decode_palette_collection(rom.read_bytes())
+        self.palette_document: PaletteDocument = load_palette_document(palette_path, original_palettes)
         self.tile_index = 0
         self.paint_color = tk.IntVar(value=1)
         self.preview_palette = tk.IntVar(value=0)
+        self.palette_context = tk.StringVar(value="Gameplay SPR")
+        self.fruit_stage = tk.IntVar(value=0)
         self.bank = tk.IntVar(value=0)
         self.actor_table = tk.StringVar(value="standard")
         self.actor_frame = tk.IntVar(value=0)
         self.status = tk.StringVar()
         self.palette_labels: list[list[tk.Label]] = []
         self.palette_picker: tk.Toplevel | None = None
+        self.frightened_labels: dict[str, tk.Label] = {}
+        self.fruit_color_label: tk.Label | None = None
         self.actor_tile_vars = [tk.IntVar() for _ in range(4)]
         self.actor_palette_vars = [tk.IntVar() for _ in range(4)]
         self.actor_priority_vars = [tk.BooleanVar() for _ in range(4)]
@@ -110,7 +121,11 @@ class GraphicsStudio(tk.Tk):
         self.pixel_canvas.bind("<Button-1>", self._paint)
         self.pixel_canvas.bind("<B1-Motion>", self._paint)
         self.pixel_canvas.bind("<ButtonRelease-1>", self._end_stroke)
-        ttk.Label(editor, text="Preview palettes (not written to ROM)").pack(anchor="w", pady=(12, 3))
+        ttk.Label(editor, text="Expanded-ROM palettes").pack(anchor="w", pady=(12, 3))
+        context_box = ttk.Combobox(editor, textvariable=self.palette_context,
+                                   values=tuple(PALETTE_CONTEXTS), state="readonly", width=22)
+        context_box.pack(anchor="w", pady=(0, 3))
+        context_box.bind("<<ComboboxSelected>>", lambda _event: self._palette_changed())
         palette_grid = ttk.Frame(editor)
         palette_grid.pack(anchor="w")
         for palette_index in range(4):
@@ -127,8 +142,24 @@ class GraphicsStudio(tk.Tk):
                            self.choose_nes_color(palette, slot))
                 row_labels.append(label)
             self.palette_labels.append(row_labels)
-        ttk.Label(editor, text="Select a row to recolor tile banks instantly. Left click chooses ink; right click edits color.",
+        ttk.Label(editor, text="Select a row for previews. Left click chooses ink; right click edits the saved NES color.",
                   wraplength=320).pack(anchor="w", pady=5)
+        special = ttk.LabelFrame(editor, text="Dynamic palette colors", padding=5)
+        special.pack(fill="x", pady=(5, 0))
+        ttk.Label(special, text="Frightened").grid(row=0, column=0, sticky="w")
+        for column, state in enumerate(("active", "normal"), 1):
+            label = tk.Label(special, width=10, relief="raised", cursor="hand2")
+            label.grid(row=0, column=column, padx=2)
+            label.bind("<Button-1>", lambda _event, name=state: self.choose_dynamic_color("frightened", name))
+            self.frightened_labels[state] = label
+        ttk.Label(special, text="Fruit stage").grid(row=1, column=0, sticky="w", pady=(4, 0))
+        fruit_spin = ttk.Spinbox(special, from_=0, to=15, textvariable=self.fruit_stage, width=4,
+                                 command=self.refresh_palette_labels)
+        fruit_spin.grid(row=1, column=1, pady=(4, 0))
+        fruit_spin.bind("<Return>", lambda _event: self.refresh_palette_labels())
+        self.fruit_color_label = tk.Label(special, width=10, relief="raised", cursor="hand2")
+        self.fruit_color_label.grid(row=1, column=2, padx=2, pady=(4, 0))
+        self.fruit_color_label.bind("<Button-1>", lambda _event: self.choose_dynamic_color("fruit", None))
 
         ttk.Label(actor, text="Actor metasprite inspector", font=("Segoe UI", 11, "bold")).pack(anchor="w")
         controls = ttk.Frame(actor)
@@ -170,19 +201,41 @@ class GraphicsStudio(tk.Tk):
         self.bind("<Control-z>", lambda _event: self.undo())
 
     def refresh(self) -> None:
-        marker = " *" if self.document.dirty or self.actor_document.dirty else ""
+        marker = " *" if (self.document.dirty or self.actor_document.dirty
+                           or self.palette_document.dirty) else ""
         self.status.set(f"{self.document.path}{marker}")
         changed = " · modified" if self.document.changed(self.tile_index) else ""
         self.tile_name.configure(text=f"Tile ${self.tile_index:03X}{changed}")
-        for palette_index, labels in enumerate(self.palette_labels):
-            for color_index, label in enumerate(labels):
-                value = PREVIEW_PALETTES[palette_index][color_index]
-                selected = self.preview_palette.get() == palette_index and self.paint_color.get() == color_index
-                label.configure(bg=NES_RGB[value], text=f"{color_index}: ${value:02X}",
-                                relief="sunken" if selected else "raised")
+        self.refresh_palette_labels()
         self.draw_bank()
         self.draw_tile()
         self.draw_actor()
+
+    def current_palettes(self) -> list[list[int]]:
+        section, offset = PALETTE_CONTEXTS[self.palette_context.get()]
+        values = self.palette_document.document[section][offset:offset + 16]
+        return [values[index:index + 4] for index in range(0, 16, 4)]
+
+    def refresh_palette_labels(self) -> None:
+        palettes = self.current_palettes()
+        for palette_index, labels in enumerate(self.palette_labels):
+            for color_index, label in enumerate(labels):
+                value = palettes[palette_index][color_index]
+                selected = self.preview_palette.get() == palette_index and self.paint_color.get() == color_index
+                label.configure(bg=NES_RGB[value], text=f"{color_index}: ${value:02X}",
+                                relief="sunken" if selected else "raised")
+        frightened = self.palette_document.document["frightened"]
+        for state, label in self.frightened_labels.items():
+            value = frightened[state]
+            label.configure(bg=NES_RGB[value], text=f"{state} ${value:02X}")
+        try:
+            stage = max(0, min(int(self.fruit_stage.get()), 15))
+        except (ValueError, tk.TclError):
+            stage = 0
+        self.fruit_stage.set(stage)
+        value = self.palette_document.document["fruit_by_stage"][stage]
+        if self.fruit_color_label is not None:
+            self.fruit_color_label.configure(bg=NES_RGB[value], text=f"${value:02X}")
 
     @staticmethod
     def _draw_pixels(canvas: tk.Canvas, pixels: list[list[int]], palette: list[int]) -> None:
@@ -200,7 +253,7 @@ class GraphicsStudio(tk.Tk):
         canvas.delete("all")
         cell = max(8, min(max(canvas.winfo_width(), 256), max(canvas.winfo_height(), 256)) // 16)
         first = self.bank.get() * 256
-        palette = PREVIEW_PALETTES[self.preview_palette.get()]
+        palette = self.current_palettes()[self.preview_palette.get()]
         for local in range(256):
             tile = self.document.tiles[first + local]
             base_x, base_y = (local % 16) * cell, (local // 16) * cell
@@ -219,7 +272,7 @@ class GraphicsStudio(tk.Tk):
 
     def draw_tile(self) -> None:
         self._draw_pixels(self.pixel_canvas, self.document.tiles[self.tile_index],
-                          PREVIEW_PALETTES[self.preview_palette.get()])
+                          self.current_palettes()[self.preview_palette.get()])
 
     def draw_actor(self) -> None:
         alternate = self.actor_table.get() == "alternate"
@@ -234,7 +287,7 @@ class GraphicsStudio(tk.Tk):
         cell = max(1, min(self.actor_canvas.winfo_width(), self.actor_canvas.winfo_height()) // 16)
         for row, values in enumerate(pixels):
             for column, (pixel, _palette_index) in enumerate(values):
-                color = NES_RGB[PREVIEW_PALETTES[self.preview_palette.get()][pixel]]
+                color = NES_RGB[self.current_palettes()[self.preview_palette.get()][pixel]]
                 self.actor_canvas.create_rectangle(column * cell, row * cell, (column + 1) * cell,
                                                    (row + 1) * cell, fill=color, outline="#404040")
         tile_key = "alternate_tile_quads" if alternate else "standard_tile_quads"
@@ -287,25 +340,45 @@ class GraphicsStudio(tk.Tk):
         self.refresh()
 
     def choose_nes_color(self, palette: int, slot: int) -> None:
+        self._open_color_picker(
+            f"NES color for palette {palette}, slot {slot}",
+            lambda value: self._set_palette_color(palette, slot, value),
+        )
+
+    def choose_dynamic_color(self, kind: str, state: str | None) -> None:
+        title = f"NES color for frightened {state}" if kind == "frightened" else "NES fruit color"
+        self._open_color_picker(title, lambda value: self._set_dynamic_color(kind, state, value))
+
+    def _open_color_picker(self, title: str, callback: Callable[[int], None]) -> None:
         if self.palette_picker is not None and self.palette_picker.winfo_exists():
             self.palette_picker.lift()
             self.palette_picker.focus_force()
             return
         picker = tk.Toplevel(self)
         self.palette_picker = picker
-        picker.title(f"NES color for slot {slot}")
+        picker.title(title)
         picker.resizable(False, False)
         picker.protocol("WM_DELETE_WINDOW", self._close_palette_picker)
         for value, color in enumerate(NES_RGB):
             button = tk.Button(picker, bg=color, text=f"{value:02X}", width=4, height=2,
-                               command=lambda selected=value: self._set_preview_color(palette, slot, selected, picker))
+                               command=lambda selected=value: self._apply_picker_color(callback, selected))
             button.grid(row=value // 16, column=value % 16)
 
-    def _set_preview_color(self, palette: int, slot: int, value: int, picker: tk.Toplevel) -> None:
-        PREVIEW_PALETTES[palette][slot] = value
-        picker.destroy()
-        self.palette_picker = None
+    def _apply_picker_color(self, callback: Callable[[int], None], value: int) -> None:
+        callback(value)
+        self._close_palette_picker()
         self.refresh()
+
+    def _set_palette_color(self, palette: int, slot: int, value: int) -> None:
+        section, offset = PALETTE_CONTEXTS[self.palette_context.get()]
+        self.palette_document.set_color(section, offset + palette * 4 + slot, value)
+
+    def _set_dynamic_color(self, kind: str, state: str | None, value: int) -> None:
+        if kind == "frightened" and state is not None:
+            self.palette_document.set_frightened(state, value)
+        else:
+            stage = max(0, min(int(self.fruit_stage.get()), 15))
+            self.palette_document.set_color("fruit_by_stage", stage, value)
 
     def _close_palette_picker(self) -> None:
         if self.palette_picker is not None:
@@ -366,11 +439,14 @@ class GraphicsStudio(tk.Tk):
         try:
             path = self.document.save()
             actor_path = self.actor_document.save()
+            palette_path = self.palette_document.save()
         except (OSError, ValueError) as error:
             messagebox.showerror("Save failed", str(error))
             return False
         self.refresh()
-        self.status.set(f"Saved CHR {path.name} and actor mappings {actor_path.name}")
+        self.status.set(
+            f"Saved {path.name}, {actor_path.name}, and {palette_path.name}"
+        )
         return True
 
     def save_as(self) -> None:
@@ -380,8 +456,8 @@ class GraphicsStudio(tk.Tk):
             self.save()
 
     def _make(self, target: str) -> None:
-        needs_save = (self.document.dirty or self.actor_document.dirty
-                      or not self.actor_document.path.exists())
+        needs_save = (self.document.dirty or self.actor_document.dirty or self.palette_document.dirty
+                      or not self.actor_document.path.exists() or not self.palette_document.path.exists())
         if needs_save and not self.save():
             return
         if target == "run-expanded":
@@ -394,6 +470,7 @@ class GraphicsStudio(tk.Tk):
             "make", target,
             f"GENERATED_CHR={self.document.path.resolve().as_posix()}",
             f"EXPANDED_ACTOR_JSON={self.actor_document.path.resolve().as_posix()}",
+            f"EXPANDED_PALETTE_JSON={self.palette_document.path.resolve().as_posix()}",
         ]
         try:
             completed = subprocess.run(command, cwd=self.project, check=False)
@@ -414,8 +491,9 @@ class GraphicsStudio(tk.Tk):
         self._make("run-expanded")
 
     def _close(self) -> None:
-        dirty = self.document.dirty or self.actor_document.dirty
-        if not dirty or messagebox.askyesno("Unsaved graphics", "Discard unsaved CHR or actor edits?"):
+        dirty = self.document.dirty or self.actor_document.dirty or self.palette_document.dirty
+        if not dirty or messagebox.askyesno(
+                "Unsaved graphics", "Discard unsaved CHR, actor, or palette edits?"):
             self.destroy()
 
 
@@ -424,6 +502,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--chr", type=Path, required=True, help="Original 8 KiB CHR source")
     parser.add_argument("--output", type=Path, required=True, help="Ignored local editable CHR")
     parser.add_argument("--actors", type=Path, required=True, help="Ignored local actor mapping JSON")
+    parser.add_argument("--palettes", type=Path, required=True, help="Ignored local palette JSON")
     parser.add_argument("--rom", type=Path, required=True, help="Original iNES ROM used for actor tables")
     parser.add_argument("--project", type=Path, default=Path(__file__).resolve().parents[1])
     return parser.parse_args()
@@ -433,7 +512,7 @@ def main() -> int:
     args = parse_args()
     try:
         app = GraphicsStudio(
-            args.chr.resolve(), args.output.resolve(), args.actors.resolve(),
+            args.chr.resolve(), args.output.resolve(), args.actors.resolve(), args.palettes.resolve(),
             args.rom.resolve(), args.project.resolve(),
         )
     except (OSError, ValueError) as error:

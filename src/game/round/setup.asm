@@ -36,7 +36,11 @@ bra_clear_oam_all:		; was: bra_CE53_loop
     LDY #$00
 ; Upload gameplay palette
 bra_upload_round_palette:		; was: bra_CE68_loop
+.ifdef PACMAN_EXPANDED_PALETTES
+    LDA tbl_expanded_round_gameplay_palette,Y
+.else
     LDA tbl_round_gameplay_palette,Y
+.endif
     STA PPUDATA
     INY
     CPY #$20

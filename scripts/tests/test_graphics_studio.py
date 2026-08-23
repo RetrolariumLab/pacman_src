@@ -15,6 +15,10 @@ from graphics_studio_model import (
     metasprite_pixels, transform_tile, validate_palette,
 )
 from build_expanded import validate_chr_input
+from palette_assets import (
+    ENCODED_SIZE, PaletteDocument, decode_palette_collection, encode_palette_collection,
+    load_palette_document,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -86,6 +90,29 @@ class GraphicsStudioTests(unittest.TestCase):
         validate_palette([0x0F, 0x16, 0x29, 0x30])
         with self.assertRaisesRegex(ValueError, "four values"):
             validate_palette([0, 1, 2, 0x40])
+
+    def test_palette_collection_round_trips_all_runtime_sections(self) -> None:
+        document = decode_palette_collection(ROM.read_bytes())
+        payload = encode_palette_collection(document)
+        self.assertEqual(len(payload), ENCODED_SIZE)
+        self.assertEqual(payload[:16], bytes(document["title_background"]))
+        self.assertEqual(payload[16:48], bytes(document["attract_bg_spr"]))
+        self.assertEqual(payload[48:80], bytes(document["round_gameplay"]))
+
+    def test_palette_document_persists_nes_color_edits(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "palettes.json"
+            model = PaletteDocument(decode_palette_collection(ROM.read_bytes()), path)
+            model.set_color("round_gameplay", 17, 0x2A)
+            model.set_color("round_gameplay", 16, 0x0C)
+            model.set_frightened("active", 0x12)
+            model.save()
+            reloaded = load_palette_document(path, {})
+            self.assertEqual(reloaded.document["round_gameplay"][17], 0x2A)
+            self.assertEqual(reloaded.document["round_gameplay"][0], 0x0C)
+            self.assertEqual(reloaded.document["frightened"]["active"], 0x12)
+            with self.assertRaisesRegex(ValueError, "NES range"):
+                reloaded.set_color("round_gameplay", 0, 0x40)
 
     def test_expanded_build_accepts_custom_fixed_size_chr(self) -> None:
         validate_chr_input(b"\x33" * 8192, CHR.read_bytes())
