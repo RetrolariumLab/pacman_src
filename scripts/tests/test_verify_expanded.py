@@ -52,6 +52,18 @@ class VerifyExpandedTests(unittest.TestCase):
     def test_valid_layout_accepts_declared_assets_and_fixed_change(self) -> None:
         validate_expanded(*self.fixture())
 
+    def test_declared_custom_chr_is_accepted_but_other_chr_is_rejected(self) -> None:
+        original, candidate, assets, layout = self.fixture()
+        custom_chr = b"\x33" * 8192
+        candidate = candidate[:-8192] + custom_chr
+        validate_expanded(original, candidate, assets, layout, custom_chr)
+        with self.assertRaisesRegex(ValueError, "declared CHR input"):
+            validate_expanded(original, candidate, assets, layout, b"\x44" * 8192)
+
+    def test_custom_chr_must_preserve_fixed_size(self) -> None:
+        with self.assertRaisesRegex(ValueError, "8 KiB"):
+            validate_expanded(*self.fixture(), b"too short")
+
     def test_other_fixed_bank_change_is_rejected(self) -> None:
         original, candidate, assets, layout = self.fixture()
         changed = bytearray(candidate)

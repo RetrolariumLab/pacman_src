@@ -57,6 +57,7 @@ DEBUG_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/debug_symbols_runtime.txt
 ASSET_MANIFEST ?= $(PROJECT_DIR)assets/manifest.json
 GENERATED_ASSET_DIR ?= $(PROJECT_DIR)assets/generated
 GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
+EDITED_CHR ?= $(PROJECT_DIR)hacks/local/pacman.chr
 
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
 FCEUX_DIR ?= ../fceux_automation
@@ -96,7 +97,7 @@ DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
+.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -216,6 +217,7 @@ verify-expanded: build-expanded
 		--stage "$(EXPANDED_STAGE_BIN)" \
 		--sound-pointers "$(EXPANDED_SOUND_POINTERS_BIN)" \
 		--sound-streams "$(EXPANDED_SOUND_BIN)" \
+		--expected-chr "$(GENERATED_CHR)" \
 		--layout "$(PROJECT_DIR)config/expanded_layout.json"
 
 symbols-expanded: verify-expanded
@@ -297,6 +299,13 @@ maze-studio:
 		--maze-json "$(EXPANDED_MAZE_JSON)" \
 		--original-rle "$(GENERATED_ASSET_DIR)/maze/maze.rle" \
 		--chr "$(GENERATED_CHR)"
+
+graphics-studio:
+	$(PYTHON) "$(PROJECT_DIR)scripts/graphics_studio.py" \
+		--chr "$(GENERATED_ASSET_DIR)/chr/pacman.chr" \
+		--output "$(EDITED_CHR)" \
+		--rom "$(ORIGINAL_ROM)" \
+		--project "$(PROJECT_DIR)"
 
 describe-sound:
 	$(PYTHON) "$(PROJECT_DIR)scripts/sound_authoring.py" \
@@ -476,6 +485,7 @@ help:
 	@echo   make verify-expanded       Verify expanded layout, fixed bank, and maze
 	@echo   make validate-expanded     Prove expanded maze access in FCEUX
 	@echo   make run-expanded          Build and run the expanded variant in FCEUX
+	@echo   make graphics-studio       Open the local CHR and metasprite editor
 	@echo   make sound-studio          Open the local sound editor and piano roll
 	@echo   make maze-studio           Open the local CHR-backed maze editor
 	@echo   make describe-sound        Show musical notes for SOUND_SLOT, default 4

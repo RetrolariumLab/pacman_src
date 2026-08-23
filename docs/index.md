@@ -26,6 +26,7 @@
 - [sound_engine.md](./sound_engine.md): audio engine update loop, stream decoder, opcode table.
 - [sound_authoring.md](./sound_authoring.md): variable-length streams, musical notes, MIDI import, and WAV preview.
 - [maze_authoring.md](./maze_authoring.md): CHR-backed maze editing, fixed RLE export, and runtime landmark guards.
+- [graphics_authoring.md](./graphics_authoring.md): reversible CHR pixel editing and actor metasprite inspection.
 - [stage_params_and_data_tail.md](./stage_params_and_data_tail.md): stage profile tables, maze RLE, vectors, tail layout.
 - [assets.md](./assets.md): policy and reproducible extraction of opaque ROM assets.
 
@@ -85,3 +86,8 @@ After each edit batch:
 - The local Sound Studio (roadmap milestone 16) provides a tested Tkinter slot
   browser, piano roll, guarded editing/import, original comparison, preview,
   save, build, and FCEUX launch workflow through `make sound-studio`.
+- The local Maze Studio (roadmap milestone 17) provides CHR-backed tilemap
+  editing, semantic overlays, structural validation, and guarded RLE export.
+- The local Graphics Studio (roadmap milestone 18) provides reversible CHR
+  pixel editing and a validated actor metasprite/OAM inspector through
+  `make graphics-studio`.

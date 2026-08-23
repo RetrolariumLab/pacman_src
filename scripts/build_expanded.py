@@ -12,6 +12,11 @@ from build_native import assemble_prg, fail, parse_ines, rooted, sha1
 EXPANDED_PRG_SIZE = 32_768
 
 
+def validate_chr_input(chr_data: bytes, reference_chr: bytes) -> None:
+    if len(chr_data) != len(reference_chr) or len(chr_data) != 8192:
+        fail(f"Expanded build requires exactly 8192 CHR bytes, got {len(chr_data)}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", required=True)
@@ -35,8 +40,7 @@ def main() -> int:
     reference = paths["original_rom"].read_bytes()
     header, original_prg, original_chr = parse_ines(reference)
     chr_data = paths["chr"].read_bytes()
-    if chr_data != original_chr:
-        fail("Default expanded build requires the reference CHR asset")
+    validate_chr_input(chr_data, original_chr)
     prg = assemble_prg(
         project_root,
         paths["source"],

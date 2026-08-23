@@ -550,13 +550,24 @@ Pac-Man and ghost spawn assumptions, and live power-pellet locations. Export
 rejects edits that block runtime-fixed spawn/tunnel coordinates or replace the
 special `$2C` house-door tile.
 
-### 18. Graphics, Sprites, and Palette Studio — Planned
+### 18. Graphics, Sprites, and Palette Studio — Complete
 
 Decode CHR-ROM into editable 2bpp tiles and connect those tiles to the existing
 actor sprite/OAM table model. Support pixel editing, tile banks, four-tile
 metasprite previews, attributes, offsets, animation frames, and NES palette
 selection. Validate CHR size, tile indexes, palette limits, sprite flip bits,
 and OAM layout before ROM generation.
+
+The first vertical slice provides a tested reversible 8 KiB CHR codec, separate
+background and sprite tile banks, a four-color pixel editor with undo and
+original-tile restore, NES color-index preview selection, and atomic export to
+an ignored local `.chr` file. A 77-frame actor inspector decodes the original
+four-tile layouts, palette selection, priority and flip attributes, and signed
+OAM offsets. Build and FCEUX controls feed the edited CHR to the expanded-ROM
+pipeline; verification requires the generated ROM to contain that exact
+declared CHR while preserving the expanded PRG layout. Runtime palette and OAM
+table editing remain deliberately read-only until those PRG tables receive an
+explicit expanded-data hook.
 
 ### 19. Screens, Text, and Intermission Editor — Planned
 
@@ -575,7 +586,7 @@ intermission data; the tool reports expanded-bank usage, builds a deterministic
 ROM, emits a reviewed manifest, and launches FCEUX. Original ROM inputs, local
 JSON projects, previews, and generated ROMs remain ignored.
 
-The recommended next implementation is milestone 17. A small contributor-facing
+The recommended next implementation is milestone 19. A small contributor-facing
 variant recipe and packaging command should be developed alongside these tools,
 but should not become a substitute for format validation or the permanent
 byte-identical preservation gate.

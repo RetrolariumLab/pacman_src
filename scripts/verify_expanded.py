@@ -23,6 +23,7 @@ def validate_expanded(
     candidate: bytes,
     assets: dict[str, bytes],
     layout: dict[str, object],
+    expected_chr: bytes | None = None,
 ) -> None:
     original_header, original_prg, original_chr = parse_ines(original)
     header, prg, chr_data = parse_ines(candidate)
@@ -32,8 +33,11 @@ def validate_expanded(
         raise ValueError("expanded ROM changed mapper, mirroring, or reserved header bytes")
     if len(prg) != 32_768:
         raise ValueError(f"expanded PRG must be 32768 bytes, got {len(prg)}")
-    if chr_data != original_chr:
-        raise ValueError("expanded ROM CHR differs from the reference")
+    expected_chr = original_chr if expected_chr is None else expected_chr
+    if len(expected_chr) != len(original_chr):
+        raise ValueError("expected CHR must preserve the reference 8 KiB size")
+    if chr_data != expected_chr:
+        raise ValueError("expanded ROM CHR differs from the declared CHR input")
 
     bank_spec = layout["extra_bank"]
     bank_address = int(bank_spec["address"])
@@ -86,6 +90,7 @@ def main() -> int:
     parser.add_argument("--stage", required=True, type=Path)
     parser.add_argument("--sound-pointers", required=True, type=Path)
     parser.add_argument("--sound-streams", required=True, type=Path)
+    parser.add_argument("--expected-chr", type=Path)
     parser.add_argument("--layout", required=True, type=Path)
     args = parser.parse_args()
     try:
@@ -100,6 +105,7 @@ def main() -> int:
                 "sound_streams": args.sound_streams.read_bytes(),
             },
             json.loads(args.layout.read_text(encoding="utf-8")),
+            args.expected_chr.read_bytes() if args.expected_chr else None,
         )
     except (KeyError, TypeError, ValueError) as error:
         print(f"[ERROR] Expanded ROM validation failed: {error}")
