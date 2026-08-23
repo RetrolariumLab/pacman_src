@@ -593,19 +593,25 @@ and connects every editable section through reviewed fixed-bank operands while
 the preservation build remains byte-identical. FCEUX observes the JSON title
 tile reaching its live PPU address.
 
-### 20. Unified Local Content Studio — Planned
+### 20. Unified Qt Content Studio — Planned, Low Priority
 
-Combine the mature editors behind one local project format and launcher without
-merging their codecs into an untestable monolith. A project selects stage
-parameters, per-stage mazes, sounds, CHR/sprites, palettes, text, and
-intermission data; the tool reports expanded-bank usage, builds a deterministic
-ROM, emits a reviewed manifest, and launches FCEUX. Original ROM inputs, local
-JSON projects, previews, and generated ROMs remain ignored.
+Optionally replace the separate Tkinter front ends with one native Qt desktop
+application organized into sound, maze, graphics, palette, screen/text, and
+build/run tabs. It should ship as a standalone executable that does not require
+a user-installed Python runtime, keep project state synchronized between tabs,
+and use responsive native drawing surfaces for pixel and tile editing.
 
-The recommended next implementation is milestone 20. A small contributor-facing
-variant recipe and packaging command should be developed alongside these tools,
-but should not become a substitute for format validation or the permanent
-byte-identical preservation gate.
+This is a convenience and packaging milestone, not a missing content feature.
+The existing Python editors, JSON schemas, codecs, Makefile targets, tests, and
+expanded-ROM pipeline are complete and remain the reference implementation.
+The Qt application should consume the same project documents and invoke the
+same deterministic validation rules rather than inventing a second asset
+format or weakening the byte-identical preservation gate.
+
+Priority is deliberately low. Start this milestone only when distribution as a
+single executable, cross-editor project state, or measured GUI responsiveness
+justifies the additional C++/Qt build and maintenance surface. Until then the
+four focused applications are the supported authoring workflow.
 
 ## Resuming Work on Another Computer
 

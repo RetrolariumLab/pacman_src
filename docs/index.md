@@ -95,3 +95,6 @@ After each edit batch:
 - The local Screen Studio (roadmap milestone 19) composes the title nametable,
   edits bounded text/HUD/intermission assets, and exports them to the expanded
   bank through `make screen-studio`.
+- A standalone tabbed Qt replacement for the four editor front ends is retained
+  as low-priority milestone 20. Current Python editors and JSON codecs remain
+  complete and supported independently of that optional packaging work.

@@ -13,12 +13,19 @@ catch behavioural regressions frame by frame.
 
 ## Status
 
-Preservation Source 1.0 is release-candidate complete. The annotated source
-covers every major subsystem, unresolved interpretations remain explicit in the
-unknowns registry, and the complete validation matrix is available through
-`make preservation-audit`. See
+Preservation Source 1.0 is complete and tagged as `preservation-source-1.0`.
+The annotated source covers every major subsystem, unresolved interpretations
+remain explicit in the unknowns registry, and the complete validation matrix
+is available through `make preservation-audit`. See
 [`docs/preservation_source_1_0.md`](docs/preservation_source_1_0.md) for the
 release contract and evidence summary.
+
+The optional NROM-256 content-authoring workflow is complete. Four focused
+local applications edit sound and music, the maze, CHR and actor mappings,
+palettes, screens, English game text, HUD data, and intermission visuals. They
+share validated ignored-local assets and one deterministic expanded-ROM build
+pipeline. A future unified Qt application is tracked as a low-priority
+convenience milestone; it is not required to use or maintain the current tools.
 
 The source is split into address-ordered subsystem modules containing real 6502
 instructions and ca65 data directives. Further reverse engineering can deepen
@@ -93,6 +100,10 @@ pacman_src/
 |   |-- workflow/                  # Analysis and reporting tools
 |   |-- build_native.py            # Native build and byte verification
 |   |-- build_dev.py               # FCEUX bootstrap
+|   |-- sound_studio.py            # Music and sound editor
+|   |-- maze_studio.py             # Maze editor
+|   |-- graphics_studio.py         # CHR, actor, and palette editor
+|   |-- screen_studio.py           # Screen, text, HUD, and intermission editor
 |   |-- clean_artifacts.py         # Generated-artifact cleanup
 |   `-- split_assets.py           # Validated ROM asset extractor
 |-- src/
@@ -121,10 +132,10 @@ make build-hack                 # Build the isolated default ROM-hack variant
 make verify-hack                # Require only its documented byte difference
 make validate-hack              # Prove its stage-5 behavior in FCEUX
 make run-hack                   # Build and run the default hack
-make init-expanded-assets       # Initialize editable maze/stage/sound JSON once
+make init-expanded-assets       # Initialize all editable local JSON once
 make build-expanded             # Build the JSON-backed NROM-256 variant
 make verify-expanded            # Verify assets, layout, and fixed-bank operands
-make validate-expanded          # Prove expanded maze/stage/sound access in FCEUX
+make validate-expanded          # Prove expanded assets are consumed in FCEUX
 make run-expanded               # Build and run the NROM-256 variant
 make sound-studio               # Open the local slot editor and piano roll
 make maze-studio                # Open the local 27x22 CHR-backed maze editor
