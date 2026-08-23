@@ -274,7 +274,11 @@ tbl_attract_ppu_packet_ptrs:		; was: tbl_C5D3
 off_attract_text_header_character_nickname:		; was: _off000_C5E7_00
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
     .dbyt $20E6
+.if PACMAN_REVISION = REVISION_JAPAN_V11
+    .byte                               $43, $48, $41, $52, $41, $43, $54, $45, $52, $20
+.else
     .byte                               $43, $48, $52, $41, $43, $54, $45, $52, $20, $20
+.endif
     .byte $3B, $20, $20, $4E, $49, $43, $4B, $4E, $41, $4D, $45
     .byte $FF   ; end token
 

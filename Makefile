@@ -64,6 +64,20 @@ ASSET_MANIFEST ?= $(PROJECT_DIR)assets/manifest.json
 GENERATED_ASSET_DIR ?= $(PROJECT_DIR)assets/generated
 GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
 EDITED_CHR ?= $(PROJECT_DIR)hacks/local/pacman.chr
+REVISION ?= japan_v10
+REVISION_BUILD_DIR ?= $(BUILD_DIR)/revisions/$(REVISION)
+
+ifeq ($(REVISION),japan_v10)
+REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
+REVISION_REFERENCE_ROM := $(PROJECT_DIR)Pac-Man (J) (V1.0) [!].nes
+REVISION_CA65_DEFINE := PACMAN_REVISION=0
+else ifeq ($(REVISION),japan_v11)
+REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
+REVISION_REFERENCE_ROM := $(PROJECT_DIR)Pac-Man (J) (V1.1) [!].nes
+REVISION_CA65_DEFINE := PACMAN_REVISION=1
+else
+$(error Unsupported REVISION '$(REVISION)'; expected japan_v10 or japan_v11)
+endif
 
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
 FCEUX_DIR ?= ../fceux_automation
@@ -103,7 +117,7 @@ DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
+.PHONY: build verify build-revision verify-revision build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -130,6 +144,35 @@ verify: _require-assets
 		--map "$(NATIVE_MAP)" \
 		--debug-info "$(NATIVE_DEBUG)" \
 		--output-rom "$(NATIVE_ROM)" \
+		--verify
+
+build-revision: _require-assets
+	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
+		--source "$(REVISION_SOURCE)" \
+		--define "$(REVISION_CA65_DEFINE)" \
+		--config "$(NATIVE_CFG)" \
+		--original-rom "$(REVISION_REFERENCE_ROM)" \
+		--chr "$(GENERATED_CHR)" \
+		--object "$(REVISION_BUILD_DIR)/pacman.o" \
+		--prg "$(REVISION_BUILD_DIR)/pacman.prg" \
+		--labels "$(REVISION_BUILD_DIR)/pacman.lbl" \
+		--map "$(REVISION_BUILD_DIR)/pacman.map" \
+		--debug-info "$(REVISION_BUILD_DIR)/pacman.dbg" \
+		--output-rom "$(REVISION_BUILD_DIR)/pacman.nes"
+
+verify-revision: _require-assets
+	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
+		--source "$(REVISION_SOURCE)" \
+		--define "$(REVISION_CA65_DEFINE)" \
+		--config "$(NATIVE_CFG)" \
+		--original-rom "$(REVISION_REFERENCE_ROM)" \
+		--chr "$(GENERATED_CHR)" \
+		--object "$(REVISION_BUILD_DIR)/pacman.o" \
+		--prg "$(REVISION_BUILD_DIR)/pacman.prg" \
+		--labels "$(REVISION_BUILD_DIR)/pacman.lbl" \
+		--map "$(REVISION_BUILD_DIR)/pacman.map" \
+		--debug-info "$(REVISION_BUILD_DIR)/pacman.dbg" \
+		--output-rom "$(REVISION_BUILD_DIR)/pacman.nes" \
 		--verify
 
 build-hack: _require-assets
@@ -506,6 +549,7 @@ help:
 	@echo Pac-Man disassembly targets:
 	@echo   make build                 Build the native ca65 ROM
 	@echo   make verify                Build and verify byte-identity
+	@echo   make verify-revision REVISION=japan_v11  Verify an official ROM revision
 	@echo   make build-hack            Build the isolated default ROM-hack variant
 	@echo   make verify-hack           Require only the documented default hack diff
 	@echo   make validate-hack         Prove the default hack starts on stage 5 in FCEUX

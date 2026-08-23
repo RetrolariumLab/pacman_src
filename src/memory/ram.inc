@@ -176,7 +176,11 @@ ram_sfx_release_counter_lo               = $060C
 ram_sfx_intermission_flag_a              = $060D
 ram_sfx_intermission_flag_b              = $060E
 ram_sfx_pause_toggle                     = $060F
+.if PACMAN_REVISION = REVISION_JAPAN_V11
+ram_sound_channel_state                 = $0620
+.else
 ram_sound_channel_state                 = $0625
+.endif
 
 ; $0700 page
 ram_oam                                  = $0700

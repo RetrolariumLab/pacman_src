@@ -2,6 +2,7 @@
 
 ## Navigation
 - [roadmap.md](./roadmap.md): project direction, evidence rules, milestones, and completion criteria.
+- [multi_revision_builds.md](./multi_revision_builds.md): verified official ROM profiles and the shared-source revision workflow.
 - [unknowns.md](./unknowns.md): canonical reverse-engineering backlog and evidence experiments.
 - [source_layout.md](./source_layout.md): address-ordered module map and file-sizing rules.
 - [macros.md](./macros.md): allowed ca65 abstractions and byte-identity rules.

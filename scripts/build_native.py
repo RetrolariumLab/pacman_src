@@ -56,6 +56,7 @@ def assemble_prg(
     debug_path: Path,
     output_rom_path: Path,
     expected_prg_size: int = PRG_SIZE,
+    defines: list[str] | None = None,
 ) -> bytes:
     object_path.parent.mkdir(parents=True, exist_ok=True)
     prg_path.parent.mkdir(parents=True, exist_ok=True)
@@ -65,20 +66,20 @@ def assemble_prg(
     raw_debug_path = debug_path.with_name(f"{debug_path.stem}.ld65.dbg")
     ca65 = resolve_tool("ca65", project_root)
     ld65 = resolve_tool("ld65", project_root)
-    run_tool(
-        ca65,
+    ca65_arguments = [str(source), "-g"]
+    for define in defines or []:
+        ca65_arguments.extend(["-D", define])
+    ca65_arguments.extend(
         [
-            str(source),
-            "-g",
             "-I",
             str(source.parent),
             "-I",
             str(project_root),
             "-o",
             str(object_path),
-        ],
-        project_root,
+        ]
     )
+    run_tool(ca65, ca65_arguments, project_root)
     run_tool(
         ld65,
         [
@@ -152,6 +153,13 @@ def main() -> int:
     parser.add_argument("--map", default="build/pacman.map")
     parser.add_argument("--debug-info", default="build/pacman.dbg")
     parser.add_argument("--output-rom", default="build/pacman.nes")
+    parser.add_argument(
+        "--define",
+        action="append",
+        default=[],
+        metavar="NAME=VALUE",
+        help="Pass a compile-time symbol to ca65; may be repeated",
+    )
     parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
 
@@ -188,6 +196,7 @@ def main() -> int:
         map_path,
         debug_path,
         output_rom,
+        defines=args.define,
     )
     candidate = header + prg + chr_data
     output_rom.parent.mkdir(parents=True, exist_ok=True)

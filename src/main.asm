@@ -3,6 +3,7 @@
 
 .setcpu "6502"
 
+.include "memory/revisions.inc"
 .include "memory/ram.inc"
 .include "memory/hardware.inc"
 .include "memory/constants.inc"
