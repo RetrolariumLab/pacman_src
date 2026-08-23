@@ -10,7 +10,13 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-from graphics_studio_model import GraphicsDocument, load_actor_tables, metasprite_pixels
+from graphics_studio_model import (
+    ActorDocument,
+    GraphicsDocument,
+    load_actor_document,
+    load_actor_tables,
+    metasprite_pixels,
+)
 
 
 # A conventional RGB approximation used only by the editor preview. The ROM stores
@@ -35,7 +41,7 @@ PREVIEW_PALETTES = [
 
 
 class GraphicsStudio(tk.Tk):
-    def __init__(self, source: Path, output: Path, rom: Path, project: Path) -> None:
+    def __init__(self, source: Path, output: Path, actor_path: Path, rom: Path, project: Path) -> None:
         super().__init__()
         self.title("Pac-Man Graphics Studio")
         self.geometry("1240x820")
@@ -44,7 +50,9 @@ class GraphicsStudio(tk.Tk):
         self.rom = rom
         load_path = output if output.exists() else source
         self.document = GraphicsDocument(load_path.read_bytes(), output)
-        self.actors = load_actor_tables(rom.read_bytes())
+        original_actors = load_actor_tables(rom.read_bytes())
+        self.actor_document: ActorDocument = load_actor_document(actor_path, original_actors)
+        self.actors = self.actor_document.actors
         self.tile_index = 0
         self.paint_color = tk.IntVar(value=1)
         self.preview_palette = tk.IntVar(value=0)
@@ -54,10 +62,16 @@ class GraphicsStudio(tk.Tk):
         self.status = tk.StringVar()
         self.palette_labels: list[list[tk.Label]] = []
         self.palette_picker: tk.Toplevel | None = None
+        self.actor_tile_vars = [tk.IntVar() for _ in range(4)]
+        self.actor_palette_vars = [tk.IntVar() for _ in range(4)]
+        self.actor_priority_vars = [tk.BooleanVar() for _ in range(4)]
+        self.actor_hflip_vars = [tk.BooleanVar() for _ in range(4)]
+        self.actor_vflip_vars = [tk.BooleanVar() for _ in range(4)]
         self._build_ui()
         self._bind_shortcuts()
         self.protocol("WM_DELETE_WINDOW", self._close)
         self.refresh()
+        self.load_actor_controls()
 
     def _build_ui(self) -> None:
         toolbar = ttk.Frame(self, padding=6)
@@ -125,15 +139,30 @@ class GraphicsStudio(tk.Tk):
         table_box.bind("<<ComboboxSelected>>", lambda _event: self._actor_table_changed())
         ttk.Label(controls, text="Frame").pack(side="left", padx=(10, 3))
         self.frame_spin = ttk.Spinbox(controls, from_=0, to=63, textvariable=self.actor_frame, width=5,
-                                     command=self.draw_actor)
+                                     command=self._actor_frame_changed)
         self.frame_spin.pack(side="left")
-        self.frame_spin.bind("<Return>", lambda _event: self.draw_actor())
+        self.frame_spin.bind("<Return>", lambda _event: self._actor_frame_changed())
         self.actor_canvas = tk.Canvas(actor, width=320, height=320, bg="#202020", highlightthickness=0)
         self.actor_canvas.pack(fill="x", pady=6)
+        mapping = ttk.LabelFrame(actor, text="Editable frame mapping", padding=5)
+        mapping.pack(fill="x", pady=(2, 6))
+        for column, title in enumerate(("Quad", "Tile", "Pal", "Behind", "H", "V")):
+            ttk.Label(mapping, text=title).grid(row=0, column=column, padx=2)
+        for quad in range(4):
+            ttk.Label(mapping, text=str(quad)).grid(row=quad + 1, column=0)
+            ttk.Spinbox(mapping, from_=0, to=255, textvariable=self.actor_tile_vars[quad],
+                        width=5).grid(row=quad + 1, column=1, padx=2)
+            ttk.Spinbox(mapping, from_=0, to=3, textvariable=self.actor_palette_vars[quad],
+                        width=3).grid(row=quad + 1, column=2, padx=2)
+            ttk.Checkbutton(mapping, variable=self.actor_priority_vars[quad]).grid(row=quad + 1, column=3)
+            ttk.Checkbutton(mapping, variable=self.actor_hflip_vars[quad]).grid(row=quad + 1, column=4)
+            ttk.Checkbutton(mapping, variable=self.actor_vflip_vars[quad]).grid(row=quad + 1, column=5)
+        ttk.Button(mapping, text="Apply frame mapping", command=self.apply_actor_mapping).grid(
+            row=5, column=0, columnspan=6, sticky="ew", pady=(5, 0))
         self.actor_details = ttk.Label(actor, justify="left", font=("Consolas", 9), wraplength=330)
         self.actor_details.pack(anchor="w")
-        note = ("Attributes and signed OAM offsets are decoded from the original PRG and validated here. "
-                "This milestone edits CHR only; changing actor layout or runtime palettes requires a future engine data hook.")
+        note = ("Tile, palette, priority, and flip edits are saved to the expanded actor table. "
+                "The shared signed 16x16 OAM offsets remain read-only.")
         ttk.Label(actor, text=note, wraplength=330).pack(anchor="w", pady=(14, 0))
 
     def _bind_shortcuts(self) -> None:
@@ -141,7 +170,7 @@ class GraphicsStudio(tk.Tk):
         self.bind("<Control-z>", lambda _event: self.undo())
 
     def refresh(self) -> None:
-        marker = " *" if self.document.dirty else ""
+        marker = " *" if self.document.dirty or self.actor_document.dirty else ""
         self.status.set(f"{self.document.path}{marker}")
         changed = " · modified" if self.document.changed(self.tile_index) else ""
         self.tile_name.configure(text=f"Tile ${self.tile_index:03X}{changed}")
@@ -287,6 +316,43 @@ class GraphicsStudio(tk.Tk):
         self.frame_spin.configure(to=12 if self.actor_table.get() == "alternate" else 63)
         self.actor_frame.set(0)
         self.draw_actor()
+        self.load_actor_controls()
+
+    def _actor_frame_changed(self) -> None:
+        self.draw_actor()
+        self.load_actor_controls()
+
+    def load_actor_controls(self) -> None:
+        alternate = self.actor_table.get() == "alternate"
+        frame = max(0, min(int(self.actor_frame.get()), 12 if alternate else 63))
+        tile_key = "alternate_tile_quads" if alternate else "standard_tile_quads"
+        attr_key = "alternate_attribute_quads" if alternate else "standard_attribute_quads"
+        for quad, (tile, attr) in enumerate(zip(self.actors[tile_key][frame], self.actors[attr_key][frame])):
+            self.actor_tile_vars[quad].set(tile)
+            self.actor_palette_vars[quad].set(attr & 0x03)
+            self.actor_priority_vars[quad].set(bool(attr & 0x20))
+            self.actor_hflip_vars[quad].set(bool(attr & 0x40))
+            self.actor_vflip_vars[quad].set(bool(attr & 0x80))
+
+    def apply_actor_mapping(self) -> None:
+        alternate = self.actor_table.get() == "alternate"
+        try:
+            frame = int(self.actor_frame.get())
+            tiles = [int(value.get()) for value in self.actor_tile_vars]
+            attributes = []
+            for quad in range(4):
+                attribute = int(self.actor_palette_vars[quad].get())
+                attribute |= 0x20 if self.actor_priority_vars[quad].get() else 0
+                attribute |= 0x40 if self.actor_hflip_vars[quad].get() else 0
+                attribute |= 0x80 if self.actor_vflip_vars[quad].get() else 0
+                attributes.append(attribute)
+            self.actor_document.set_frame(alternate, frame, tiles, attributes)
+        except (ValueError, tk.TclError) as error:
+            messagebox.showerror("Invalid actor mapping", str(error))
+            self.load_actor_controls()
+            return
+        self.draw_actor()
+        self.refresh()
 
     def undo(self) -> None:
         if self.document.undo():
@@ -299,11 +365,12 @@ class GraphicsStudio(tk.Tk):
     def save(self) -> bool:
         try:
             path = self.document.save()
+            actor_path = self.actor_document.save()
         except (OSError, ValueError) as error:
             messagebox.showerror("Save failed", str(error))
             return False
         self.refresh()
-        self.status.set(f"Saved validated 8 KiB CHR: {path}")
+        self.status.set(f"Saved CHR {path.name} and actor mappings {actor_path.name}")
         return True
 
     def save_as(self) -> None:
@@ -313,7 +380,9 @@ class GraphicsStudio(tk.Tk):
             self.save()
 
     def _make(self, target: str) -> None:
-        if self.document.dirty and not self.save():
+        needs_save = (self.document.dirty or self.actor_document.dirty
+                      or not self.actor_document.path.exists())
+        if needs_save and not self.save():
             return
         if target == "run-expanded":
             if not self._run_make("verify-expanded"):
@@ -321,7 +390,11 @@ class GraphicsStudio(tk.Tk):
         self._run_make(target)
 
     def _run_make(self, target: str) -> bool:
-        command = ["make", target, f"GENERATED_CHR={self.document.path.resolve().as_posix()}"]
+        command = [
+            "make", target,
+            f"GENERATED_CHR={self.document.path.resolve().as_posix()}",
+            f"EXPANDED_ACTOR_JSON={self.actor_document.path.resolve().as_posix()}",
+        ]
         try:
             completed = subprocess.run(command, cwd=self.project, check=False)
         except OSError as error:
@@ -341,7 +414,8 @@ class GraphicsStudio(tk.Tk):
         self._make("run-expanded")
 
     def _close(self) -> None:
-        if not self.document.dirty or messagebox.askyesno("Unsaved CHR", "Discard unsaved pixel edits?"):
+        dirty = self.document.dirty or self.actor_document.dirty
+        if not dirty or messagebox.askyesno("Unsaved graphics", "Discard unsaved CHR or actor edits?"):
             self.destroy()
 
 
@@ -349,6 +423,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--chr", type=Path, required=True, help="Original 8 KiB CHR source")
     parser.add_argument("--output", type=Path, required=True, help="Ignored local editable CHR")
+    parser.add_argument("--actors", type=Path, required=True, help="Ignored local actor mapping JSON")
     parser.add_argument("--rom", type=Path, required=True, help="Original iNES ROM used for actor tables")
     parser.add_argument("--project", type=Path, default=Path(__file__).resolve().parents[1])
     return parser.parse_args()
@@ -357,7 +432,10 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     try:
-        app = GraphicsStudio(args.chr.resolve(), args.output.resolve(), args.rom.resolve(), args.project.resolve())
+        app = GraphicsStudio(
+            args.chr.resolve(), args.output.resolve(), args.actors.resolve(),
+            args.rom.resolve(), args.project.resolve(),
+        )
     except (OSError, ValueError) as error:
         print(f"[ERROR] {error}", file=sys.stderr)
         return 1

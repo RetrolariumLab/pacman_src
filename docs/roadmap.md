@@ -565,9 +565,12 @@ an ignored local `.chr` file. A 77-frame actor inspector decodes the original
 four-tile layouts, palette selection, priority and flip attributes, and signed
 OAM offsets. Build and FCEUX controls feed the edited CHR to the expanded-ROM
 pipeline; verification requires the generated ROM to contain that exact
-declared CHR while preserving the expanded PRG layout. Runtime palette and OAM
-table editing remain deliberately read-only until those PRG tables receive an
-explicit expanded-data hook.
+declared CHR while preserving the expanded PRG layout. A second slice makes all
+77 actor frames editable by quadrant: tile ID, palette selector, priority, and
+horizontal/vertical flip flags round-trip through an ignored JSON document and
+a fixed 624-byte expanded-bank asset. The OAM builder consumes that copy through
+a reviewed operand manifest, while the original build and shared 16x16 offsets
+remain unchanged. Runtime palette color editing remains a later data hook.
 
 ### 19. Screens, Text, and Intermission Editor — Planned
 

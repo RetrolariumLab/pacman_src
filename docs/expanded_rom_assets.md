@@ -10,7 +10,8 @@ $82D6..$8475  JSON-generated stage-2-and-later maze RLE
 $8476..$848E  stage-aware maze selector
 $848F..$84AE  generated 16-entry sound pointer table
 $84AF..$A4AE  8 KiB variable-length JSON sound region
-$A4AF..$BFFF  $FF free space for future assets
+$A4AF..$A71E  JSON-generated actor tile/attribute mappings and OAM offsets
+$A71F..$BFFF  $FF free space for future assets
 $C000..$FFF7  original fixed PRG bank
 $CEB8..$CF8D  reviewed stage-table operand bytes target $81A0..$82D2
 $E26E..$E277  fixed-width call to the expanded maze selector
@@ -35,7 +36,8 @@ make init-expanded-assets
 This decodes `assets/generated/maze/maze.rle` into `hacks/local/maze.json` for
 the stage-2-and-later layout and the reference `$EB42..$EC77` region into
 `hacks/local/stage_parameters.json`. It also decodes all 16 manifest-managed
-streams into `hacks/local/sound_streams.json`. The demonstrations change
+streams into `hacks/local/sound_streams.json` and the 624-byte actor mapping
+block into `hacks/local/actor_sprites.json`. The demonstrations change
 first-level frightened duration from 7 to 14 and the first slot-04 pellet note
 from `$01` to `$B1`. Existing JSON files are left untouched, protecting local
 edits from an accidental bootstrap rerun.
@@ -49,21 +51,23 @@ make validate-expanded
 make run-expanded
 ```
 
-Every build explicitly encodes all three JSON files through the documented codecs
+Every build explicitly encodes all four JSON files through the documented codecs
 into `build/expanded/assets/`, links the original maze at `$8000`, stage
 parameters at `$81A0`, the editable maze at `$82D6`, and the sound pointer table
-and streams at `$848F`. All other artifacts remain below `build/expanded/`. Missing or
+and streams at `$848F`, and actor mappings at `$A4AF`. All other artifacts remain below
+`build/expanded/`. Missing or
 structurally invalid JSON fails the build instead of falling back to extracted
 binary data.
 
 `make verify-expanded` requires:
 
-- a mapper-0 iNES image with two PRG banks and the original CHR;
-- both maze copies, stage parameters, selector, sound pointers, and streams at contiguous
+- a mapper-0 iNES image with two PRG banks and the exact declared 8 KiB CHR;
+- both maze copies, stage parameters, selector, sound pointers, streams, and actor mappings at contiguous
   manifest-declared addresses;
 - only `$FF` free space after the final declared asset;
 - an exact manifest of 30 stage-table operand bytes, ten fixed-width selector
-  call-site bytes, two active-sound-table bytes, and two maze-pointer bytes
+  call-site bytes, twenty actor-table operand bytes, two active-sound-table bytes,
+  and two maze-pointer bytes
   changed in the fixed bank, with every other byte preserved.
 
 `make validate-expanded` additionally loads expanded-ROM symbols in FCEUX,

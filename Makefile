@@ -40,6 +40,8 @@ EXPANDED_STAGE_BIN ?= $(EXPANDED_DIR)/assets/stage_parameters.bin
 EXPANDED_SOUND_JSON ?= $(PROJECT_DIR)hacks/local/sound_streams.json
 EXPANDED_SOUND_BIN ?= $(EXPANDED_DIR)/assets/sound_streams.bin
 EXPANDED_SOUND_POINTERS_BIN ?= $(EXPANDED_DIR)/assets/sound_pointers.bin
+EXPANDED_ACTOR_JSON ?= $(PROJECT_DIR)hacks/local/actor_sprites.json
+EXPANDED_ACTOR_BIN ?= $(EXPANDED_DIR)/assets/actor_sprites.bin
 SOUND_SLOT ?= 4
 SOUND_PREVIEW ?= $(PROJECT_DIR)tmp/sound_preview.wav
 MIDI_FILE ?=
@@ -179,6 +181,7 @@ init-expanded-assets: _require-assets
 		--asset-manifest "$(ASSET_MANIFEST)" \
 		--asset-dir "$(GENERATED_ASSET_DIR)" \
 		--sound-json "$(EXPANDED_SOUND_JSON)" \
+		--actor-json "$(EXPANDED_ACTOR_JSON)" \
 		--demo-frightened-duration 14
 
 expanded-assets:
@@ -193,7 +196,9 @@ expanded-assets:
 		--asset-dir "$(GENERATED_ASSET_DIR)" \
 		--sound-json "$(EXPANDED_SOUND_JSON)" \
 		--sound-output "$(EXPANDED_SOUND_BIN)" \
-		--sound-pointers-output "$(EXPANDED_SOUND_POINTERS_BIN)"
+		--sound-pointers-output "$(EXPANDED_SOUND_POINTERS_BIN)" \
+		--actor-json "$(EXPANDED_ACTOR_JSON)" \
+		--actor-output "$(EXPANDED_ACTOR_BIN)"
 
 build-expanded: _require-assets expanded-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_expanded.py" \
@@ -217,6 +222,7 @@ verify-expanded: build-expanded
 		--stage "$(EXPANDED_STAGE_BIN)" \
 		--sound-pointers "$(EXPANDED_SOUND_POINTERS_BIN)" \
 		--sound-streams "$(EXPANDED_SOUND_BIN)" \
+		--actors "$(EXPANDED_ACTOR_BIN)" \
 		--expected-chr "$(GENERATED_CHR)" \
 		--layout "$(PROJECT_DIR)config/expanded_layout.json"
 
@@ -304,6 +310,7 @@ graphics-studio:
 	$(PYTHON) "$(PROJECT_DIR)scripts/graphics_studio.py" \
 		--chr "$(GENERATED_ASSET_DIR)/chr/pacman.chr" \
 		--output "$(EDITED_CHR)" \
+		--actors "$(EXPANDED_ACTOR_JSON)" \
 		--rom "$(ORIGINAL_ROM)" \
 		--project "$(PROJECT_DIR)"
 

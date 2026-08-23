@@ -1,5 +1,19 @@
 ; OAM construction and actor sprite tile/attribute tables
 
+.ifdef PACMAN_EXPANDED_ACTORS
+tbl_active_actor_sprite_tiles = tbl_expanded_actor_sprite_tiles
+tbl_active_actor_alt_sprite_tiles = tbl_expanded_actor_alt_sprite_tiles
+tbl_active_actor_sprite_attrs = tbl_expanded_actor_sprite_attrs
+tbl_active_actor_alt_sprite_attrs = tbl_expanded_actor_alt_sprite_attrs
+tbl_active_oam_quad_offsets = tbl_expanded_oam_quad_offsets
+.else
+tbl_active_actor_sprite_tiles = tbl_actor_sprite_tiles
+tbl_active_actor_alt_sprite_tiles = tbl_actor_alt_sprite_tiles
+tbl_active_actor_sprite_attrs = tbl_actor_sprite_attrs
+tbl_active_actor_alt_sprite_attrs = tbl_actor_alt_sprite_attrs
+tbl_active_oam_quad_offsets = tbl_oam_quad_offsets
+.endif
+
 ; Inputs: six staged actor positions, sprite-set indices, and actor attributes.
 ; Outputs: 24 four-byte entries in ram_oam; zero position axes map to $FF.
 ; Clobbers: A, X, Y and zp_work0..zp_work5.
@@ -25,7 +39,7 @@ loc_build_oam_quad_loop:		; was: loc_DA75_loop
 ; Apply Y offset from sprite offset table
 bra_apply_y_offset:		; was: bra_DA7F
     CLC
-    ADC tbl_oam_quad_offsets,X
+    ADC tbl_active_oam_quad_offsets,X
 ; Store OAM Y coordinate
 bra_store_oam_y:		; was: bra_DA83
     LDY #$00
@@ -41,19 +55,19 @@ bra_store_oam_y:		; was: bra_DA83
     BEQ bra_compose_sprite_set2
     BCC bra_compose_sprite_set1 ; con_actor_sprite_mode_alternate
 ; con_actor_sprite_mode_attr_offsets
-    ComposeActorOamEntry tbl_actor_sprite_attrs, tbl_oam_quad_offsets
+    ComposeActorOamEntry tbl_active_actor_sprite_attrs, tbl_active_oam_quad_offsets
     JMP loc_write_oam_quad_x_pass
 ; Compose sprite set 0 tiles/attrs
 bra_compose_sprite_set0:		; was: bra_DABC_00
-    ComposeActorOamEntry tbl_actor_sprite_tiles, tbl_actor_sprite_attrs
+    ComposeActorOamEntry tbl_active_actor_sprite_tiles, tbl_active_actor_sprite_attrs
     JMP loc_write_oam_quad_x_pass
 ; Compose sprite set 1 tiles/attrs
 bra_compose_sprite_set1:		; was: bra_DADF_01
-    ComposeActorOamEntry tbl_actor_alt_sprite_tiles, tbl_actor_alt_sprite_attrs
+    ComposeActorOamEntry tbl_active_actor_alt_sprite_tiles, tbl_active_actor_alt_sprite_attrs
     JMP loc_write_oam_quad_x_pass
 ; Compose sprite set 2 tiles/attrs
 bra_compose_sprite_set2:		; was: bra_DB02_02
-    ComposeActorOamEntry tbl_actor_sprite_attrs, tbl_oam_quad_offsets
+    ComposeActorOamEntry tbl_active_actor_sprite_attrs, tbl_active_oam_quad_offsets
 ; Write OAM X coordinates for current quad pass
 loc_write_oam_quad_x_pass:		; was: loc_DB22
     LDY #$00
@@ -64,7 +78,7 @@ loc_write_oam_quad_x_pass:		; was: loc_DB22
 ; Apply X offset from sprite offset table
 bra_apply_x_offset:		; was: bra_DB2C
     CLC
-    ADC tbl_oam_quad_offsets + $01,X
+    ADC tbl_active_oam_quad_offsets + $01,X
 ; Store OAM X coordinate
 bra_store_oam_x:		; was: bra_DB30
     LDY #$03

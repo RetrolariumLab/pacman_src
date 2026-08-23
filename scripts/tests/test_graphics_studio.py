@@ -11,7 +11,7 @@ SCRIPTS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPTS))
 
 from graphics_studio_model import (
-    GraphicsDocument, decode_chr, encode_chr, load_actor_tables,
+    ActorDocument, GraphicsDocument, decode_chr, encode_chr, load_actor_document, load_actor_tables,
     metasprite_pixels, transform_tile, validate_palette,
 )
 from build_expanded import validate_chr_input
@@ -64,6 +64,23 @@ class GraphicsStudioTests(unittest.TestCase):
             for frame in range(count):
                 image = metasprite_pixels(tiles, actors, frame, alternate)
                 self.assertEqual((len(image), len(image[0])), (16, 16))
+
+    def test_actor_mapping_edit_saves_fixed_round_trip_json(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "actors.json"
+            model = ActorDocument(load_actor_tables(ROM.read_bytes()), path)
+            model.set_quad(False, 0, 0, 0x7F, 0xE3)
+            self.assertTrue(model.dirty)
+            model.save()
+            self.assertFalse(model.dirty)
+            reloaded = load_actor_document(path, load_actor_tables(ROM.read_bytes()))
+            self.assertEqual(reloaded.actors["standard_tile_quads"][0][0], 0x7F)
+            self.assertEqual(reloaded.actors["standard_attribute_quads"][0][0], 0xE3)
+
+    def test_actor_mapping_rejects_reserved_oam_bits(self) -> None:
+        model = ActorDocument(load_actor_tables(ROM.read_bytes()), Path("ignored.json"))
+        with self.assertRaisesRegex(ValueError, "only palette"):
+            model.set_quad(False, 0, 0, 0, 0x04)
 
     def test_palette_rejects_non_nes_values(self) -> None:
         validate_palette([0x0F, 0x16, 0x29, 0x30])

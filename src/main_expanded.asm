@@ -40,6 +40,15 @@ tbl_expanded_sfx_streams:
     .incbin "build/expanded/assets/sound_streams.bin"
 tbl_expanded_sfx_streams_end:
 
+tbl_expanded_actor_sprite_tiles:
+tbl_expanded_actor_data:
+    .incbin "build/expanded/assets/actor_sprites.bin"
+tbl_expanded_actor_alt_sprite_tiles = tbl_expanded_actor_data + $0100
+tbl_expanded_actor_sprite_attrs = tbl_expanded_actor_data + $0134
+tbl_expanded_actor_alt_sprite_attrs = tbl_expanded_actor_data + $0234
+tbl_expanded_oam_quad_offsets = tbl_expanded_actor_data + $0268
+tbl_expanded_actor_data_end:
+
 .assert tbl_expanded_maze_rle_stream = $8000, error, "expanded maze must begin at $8000"
 .assert tbl_expanded_stage_parameters = $81A0, error, "expanded stage data must begin at $81A0"
 .assert tbl_expanded_stage2_maze_rle_stream = $82D6, error, "stage-2 maze must begin at $82D6"
@@ -47,10 +56,13 @@ tbl_expanded_sfx_streams_end:
 .assert tbl_expanded_sfx_stream_ptr_table = $848F, error, "sound pointers must begin at $848F"
 .assert tbl_expanded_sfx_streams = $84AF, error, "sound streams must begin at $84AF"
 .assert tbl_expanded_sfx_streams_end = $A4AF, error, "sound stream budget must be 8 KiB"
+.assert tbl_expanded_actor_data = $A4AF, error, "actor mappings must begin at $A4AF"
+.assert tbl_expanded_actor_data_end = $A71F, error, "actor mappings must remain 624 bytes"
 
 PACMAN_EXPANDED_MAZE = 1
 PACMAN_EXPANDED_STAGE = 1
 PACMAN_EXPANDED_MULTI_MAZE = 1
 PACMAN_EXPANDED_SOUND = 1
+PACMAN_EXPANDED_ACTORS = 1
 
 .include "main.asm"

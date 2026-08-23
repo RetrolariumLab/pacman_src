@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import copy
+import json
 from pathlib import Path
 
 from data_formats import decode_actors, encode_actors
@@ -177,3 +178,70 @@ class GraphicsDocument:
         self.path = destination
         self.saved = copy.deepcopy(self.tiles)
         return destination
+
+
+class ActorDocument:
+    def __init__(self, actors: dict[str, object], path: Path) -> None:
+        encode_actors(actors)
+        self.actors = copy.deepcopy(actors)
+        self.original = copy.deepcopy(actors)
+        self.saved = copy.deepcopy(actors)
+        self.path = path
+
+    @property
+    def dirty(self) -> bool:
+        return self.actors != self.saved
+
+    def set_quad(
+        self,
+        alternate: bool,
+        frame: int,
+        quad: int,
+        tile: int,
+        attribute: int,
+    ) -> None:
+        if not 0 <= frame < (13 if alternate else 64) or not 0 <= quad < 4:
+            raise ValueError("Actor frame coordinate is outside its table")
+        tile_key = "alternate_tile_quads" if alternate else "standard_tile_quads"
+        attr_key = "alternate_attribute_quads" if alternate else "standard_attribute_quads"
+        tiles = list(self.actors[tile_key][frame])
+        attributes = list(self.actors[attr_key][frame])
+        tiles[quad] = tile
+        attributes[quad] = attribute
+        self.set_frame(alternate, frame, tiles, attributes)
+
+    def set_frame(
+        self,
+        alternate: bool,
+        frame: int,
+        tiles: list[int],
+        attributes: list[int],
+    ) -> None:
+        tile_key = "alternate_tile_quads" if alternate else "standard_tile_quads"
+        attr_key = "alternate_attribute_quads" if alternate else "standard_attribute_quads"
+        count = 13 if alternate else 64
+        if not 0 <= frame < count or len(tiles) != 4 or len(attributes) != 4:
+            raise ValueError("Actor frame coordinate is outside its table")
+        if any(not 0 <= tile <= 0xFF for tile in tiles):
+            raise ValueError("Actor tile ID must be in $00..$FF")
+        if any(not 0 <= attribute <= 0xFF or attribute & 0x1C for attribute in attributes):
+            raise ValueError("Actor attribute may use only palette, priority, H-flip, and V-flip bits")
+        self.actors[tile_key][frame] = list(tiles)
+        self.actors[attr_key][frame] = list(attributes)
+        encode_actors(self.actors)
+
+    def save(self) -> Path:
+        payload = encode_actors(self.actors)
+        if len(payload) != 624:
+            raise ValueError("Actor mapping must encode to exactly 624 bytes")
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = self.path.with_name(self.path.name + ".tmp")
+        temporary.write_text(json.dumps(self.actors, indent=2) + "\n", encoding="utf-8")
+        temporary.replace(self.path)
+        self.saved = copy.deepcopy(self.actors)
+        return self.path
+
+
+def load_actor_document(path: Path, fallback: dict[str, object]) -> ActorDocument:
+    actors = json.loads(path.read_text(encoding="utf-8")) if path.exists() else fallback
+    return ActorDocument(actors, path)
