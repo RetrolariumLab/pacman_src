@@ -23,10 +23,38 @@
 
 ; !(WHY?) Data preceding reset entry; determine whether it is referenced. See DATA-004.
     .byte "COPY RIGHT 1984 "
+.if PACMAN_REVISION = REVISION_USA_NAMCO
+    .byte "1993 NAMCO LTD. "
+.else
     .byte "1980 NAMCO LTD. "
+.endif
     .byte "ALL RIGHTS RESERVED"
 ; Hardware reset entry: disables IRQ/PPU, clears RAM, validates warm-boot signature
 vec_reset_entry:		; was: vec_C033_RESET
+.if PACMAN_REVISION = REVISION_USA_NAMCO
+    LDX #$00
+    STX PPUCTRL
+    SEI
+    CLD
+    DEX
+    TXS
+    NOP
+    NOP
+    NOP
+    LDX #$02
+bra_namco_reset_vblank_pass:
+    LDA #PPUMASK_SHOW_LEFT_EDGE
+    STA PPUMASK
+    LDA PPUSTATUS
+bra_wait_namco_reset_vblank:
+    LDA PPUSTATUS
+    BPL bra_wait_namco_reset_vblank
+    LDA #$00
+    STA PPUSCROLL
+    STA PPUSCROLL
+    DEX
+    BNE bra_namco_reset_vblank_pass
+.else
     SEI
     CLD
     LDA #$00
@@ -39,6 +67,7 @@ bra_wait_vblank_ready:		; was: bra_C03D_loop
 loc_reset_after_initial_vblank:
     LDX #$FF
     TXS
+.endif
 ; clear 0000-003D
     LDA #$00
     TAY

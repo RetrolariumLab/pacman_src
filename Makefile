@@ -67,6 +67,7 @@ EDITED_CHR ?= $(PROJECT_DIR)hacks/local/pacman.chr
 REVISION ?= japan_v10
 REVISION_BUILD_DIR ?= $(BUILD_DIR)/revisions/$(REVISION)
 REVISION_REFERENCE_DIR ?= $(PROJECT_DIR)
+REVISION_CHR_OPTION := --chr "$(GENERATED_CHR)"
 
 ifeq ($(REVISION),japan_v10)
 REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
@@ -88,8 +89,13 @@ else ifeq ($(REVISION),japan_revb)
 REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
 REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)Pac-Man (Japan) (En) (Rev B).nes
 REVISION_CA65_DEFINE := PACMAN_REVISION=4
+else ifeq ($(REVISION),usa_namco)
+REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
+REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)Pac-Man (U) (Namco) [!].nes
+REVISION_CA65_DEFINE := PACMAN_REVISION=5
+REVISION_CHR_OPTION := --chr-from-reference
 else
-$(error Unsupported REVISION '$(REVISION)'; expected japan_v10, japan_v11, usa_tengen_unlicensed, usa_tengen, or japan_revb)
+$(error Unsupported REVISION '$(REVISION)'; expected japan_v10, japan_v11, usa_tengen_unlicensed, usa_tengen, japan_revb, or usa_namco)
 endif
 
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
@@ -165,7 +171,7 @@ build-revision: _require-assets
 		--define "$(REVISION_CA65_DEFINE)" \
 		--config "$(NATIVE_CFG)" \
 		--original-rom "$(REVISION_REFERENCE_ROM)" \
-		--chr "$(GENERATED_CHR)" \
+		$(REVISION_CHR_OPTION) \
 		--object "$(REVISION_BUILD_DIR)/pacman.o" \
 		--prg "$(REVISION_BUILD_DIR)/pacman.prg" \
 		--labels "$(REVISION_BUILD_DIR)/pacman.lbl" \
@@ -179,7 +185,7 @@ verify-revision: _require-assets
 		--define "$(REVISION_CA65_DEFINE)" \
 		--config "$(NATIVE_CFG)" \
 		--original-rom "$(REVISION_REFERENCE_ROM)" \
-		--chr "$(GENERATED_CHR)" \
+		$(REVISION_CHR_OPTION) \
 		--object "$(REVISION_BUILD_DIR)/pacman.o" \
 		--prg "$(REVISION_BUILD_DIR)/pacman.prg" \
 		--labels "$(REVISION_BUILD_DIR)/pacman.lbl" \
@@ -566,6 +572,7 @@ help:
 	@echo   make verify-revision REVISION=usa_tengen_unlicensed REVISION_REFERENCE_DIR=path/  Verify Tengen
 	@echo   make verify-revision REVISION=usa_tengen REVISION_REFERENCE_DIR=path/  Verify licensed Tengen
 	@echo   make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR=path/  Verify Japan Rev B
+	@echo   make verify-revision REVISION=usa_namco REVISION_REFERENCE_DIR=path/  Verify Namco USA
 	@echo   make build-hack            Build the isolated default ROM-hack variant
 	@echo   make verify-hack           Require only the documented default hack diff
 	@echo   make validate-hack         Prove the default hack starts on stage 5 in FCEUX

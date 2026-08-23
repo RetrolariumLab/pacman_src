@@ -27,6 +27,7 @@ zp_work11                                = $000C
 zp_work12                                = $000D
 zp_work13                                = $000E
 zp_work14                                = $000F
+ram_namco_title_delay                   = $000F
 ram_indirect_jmp                         = $0010
 ram_ppu_work_addr_lo                     = $0012
 ram_ppu_work_addr_hi                     = $0013

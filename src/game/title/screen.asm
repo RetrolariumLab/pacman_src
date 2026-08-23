@@ -5,14 +5,32 @@ tbl_script_handlers_title_flow:		; was: tbl_C1F5
     .word handler_script00_title_scroll_in
     .word handler_script02_title_menu_idle
     .word handler_script04_attract_intro
+.if PACMAN_REVISION = REVISION_USA_NAMCO
+    .word handler_script06_namco_title_delay
+
+; Script 06: hold the completed Namco title before enabling menu input.
+handler_script06_namco_title_delay:
+    DEC ram_namco_title_delay
+    BNE loc_script_dispatch_loop
+    LDA #con_title_script_menu_idle
+    STA ram_script
+    JMP loc_script_dispatch_loop
+.endif
 
 ; Script 00: title scroll-in and transition to menu script
 handler_script00_title_scroll_in:		; was: ofs_000_C1FB_00
     LDA ram_btn_1p
     AND #con_btns_SS
     BEQ bra_continue_title_scroll
+.if PACMAN_REVISION = REVISION_USA_NAMCO
+    LDA #con_title_script_namco_delay
+    STA ram_script
+    LDA #$5A
+    STA ram_namco_title_delay
+.else
     LDA #con_title_script_menu_idle
     STA ram_script
+.endif
     JMP loc_main_frame_bootstrap
 ; Advance title scroll until target Y reached
 bra_continue_title_scroll:		; was: bra_C208
@@ -24,8 +42,15 @@ bra_continue_title_scroll:		; was: bra_C208
     STA ram_scroll_Y
     LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH
     STA ram_ppuctrl_base
+.if PACMAN_REVISION = REVISION_USA_NAMCO
+    LDA #con_title_script_namco_delay
+    STA ram_script
+    LDA #$5A
+    STA ram_namco_title_delay
+.else
     LDA #con_title_script_menu_idle
     STA ram_script
+.endif
 ; Return to script dispatcher on next frame
 bra_dispatch_next_title_frame:		; was: bra_C21C
     JMP loc_script_dispatch_loop
@@ -65,7 +90,7 @@ bra_stream_logo_row_tiles:		; was: bra_C23E_loop
     DEC zp_work2
     BNE bra_draw_next_logo_row
 ; draw text
-.ifdef PACMAN_REVISION_TENGEN
+.if .defined(PACMAN_REVISION_TENGEN) .or PACMAN_REVISION = REVISION_USA_NAMCO
     LDA #$09    ; counter
 .else
     LDA #$06    ; counter
@@ -139,7 +164,31 @@ tbl_title_logo_tiles:		; was: tbl_C29F_pacman_logo
     .incbin "assets/generated/title/logo-tiles.bin", $73, $17  ; rom-asset .byte
 ; PPU command packets for title logo text
 tbl_title_logo_text_packets:		; was: tbl_C329_logo_text
-.ifdef PACMAN_REVISION_TENGEN
+.if PACMAN_REVISION = REVISION_USA_NAMCO
+    .dbyt $2065
+    .byte $B0, $B3, $B2, $20, $20, $20, $20, $B4, $B5, $B6, $B7
+    .byte $B8, $B9, $BA, $BB, $20, $20, $20, $B1, $B3, $B2, $FF
+    .dbyt $220C
+    .byte $31, $20, $50, $4C, $41, $59, $45, $52, $FF
+    .dbyt $224C
+    .byte $32, $20, $50, $4C, $41, $59, $45, $52, $53, $FF
+    .dbyt $22E3
+    .byte $54, $4D, $20, $CC, $20, $5D, $20, $31, $39, $38, $30
+    .byte $20, $31, $39, $39, $33, $20, $4E, $41, $4D, $43, $4F
+    .byte $20, $4C, $54, $44, $5B, $FF
+    .dbyt $2327
+    .byte $4E, $41, $4D, $43, $4F, $20, $48, $4F, $4D, $45, $54
+    .byte $45, $4B, $CD, $49, $4E, $43, $5B, $FF
+    .dbyt $2366
+    .byte $4C, $49, $43, $45, $4E, $53, $45, $44, $20, $42, $59
+    .byte $20, $4E, $49, $4E, $54, $45, $4E, $44, $4F, $FF
+    .dbyt $2293
+    .byte $CE, $CF, $FF
+    .dbyt $22AC
+    .byte $23, $24, $25, $26, $27, $28, $29, $2A, $2B, $FF
+    .dbyt $20FC
+    .byte $0E, $0F, $FF
+.elseif .defined(PACMAN_REVISION_TENGEN)
     .dbyt $2065
     .byte $B0, $B3, $B2, $20, $20, $20, $20, $B4, $B5, $B6, $B7
     .byte $B8, $B9, $BA, $BB, $20, $20, $20, $B1, $B3, $B2, $FF

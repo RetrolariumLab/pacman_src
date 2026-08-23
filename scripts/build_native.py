@@ -147,6 +147,11 @@ def main() -> int:
     parser.add_argument("--config", default="src/nrom128_prg_only.cfg")
     parser.add_argument("--original-rom", default="Pac-Man (J) (V1.0) [!].nes")
     parser.add_argument("--chr", default="assets/generated/chr/pacman.chr")
+    parser.add_argument(
+        "--chr-from-reference",
+        action="store_true",
+        help="Reuse CHR from the local reference ROM instead of a separate asset file",
+    )
     parser.add_argument("--object", default="build/pacman.o")
     parser.add_argument("--prg", default="build/pacman.prg")
     parser.add_argument("--labels", default="build/pacman.lbl")
@@ -174,13 +179,16 @@ def main() -> int:
     map_path = rooted(project_root, args.map)
     debug_path = rooted(project_root, args.debug_info)
     output_rom = rooted(project_root, args.output_rom)
-    for path in (source, config, original_rom, chr_path):
+    required_paths = [source, config, original_rom]
+    if not args.chr_from_reference:
+        required_paths.append(chr_path)
+    for path in required_paths:
         if not path.is_file():
             fail(f"Required file not found: {path}")
 
     reference = original_rom.read_bytes()
     header, original_prg, original_chr = parse_ines(reference)
-    chr_data = chr_path.read_bytes()
+    chr_data = original_chr if args.chr_from_reference else chr_path.read_bytes()
     if len(chr_data) != len(original_chr):
         fail(
             f"Generated CHR must be {len(original_chr)} bytes, "

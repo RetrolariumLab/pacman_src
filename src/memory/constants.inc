@@ -40,6 +40,7 @@ con_btns_SS                             = con_btn_Start + con_btn_Select        
 con_title_script_scroll_in              = $00
 con_title_script_menu_idle              = $02
 con_title_script_attract_intro          = $04
+con_title_script_namco_delay            = $06
 
 ; ram_script while the gameplay dispatcher is active
 ; Values are byte offsets into tbl_gameplay_script_handlers.
