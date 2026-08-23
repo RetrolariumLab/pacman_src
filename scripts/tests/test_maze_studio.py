@@ -47,6 +47,17 @@ class MazeStudioTests(unittest.TestCase):
         self.assertTrue(model.redo())
         self.assertTrue(model.changed(0, 0))
 
+    def test_one_undo_reverts_complete_brush_stroke(self) -> None:
+        model = MazeDocument(self.original, Path("maze.json"), self.original)
+        before = copy.deepcopy(model.grid)
+        model.begin_stroke()
+        model.paint(1, 2, 7)
+        model.paint(1, 3, 7)
+        model.end_stroke()
+        self.assertEqual(len(model.undo_stack), 1)
+        self.assertTrue(model.undo())
+        self.assertEqual(model.grid, before)
+
     def test_runtime_sensitive_pellet_counts_are_enforced(self) -> None:
         grid = copy.deepcopy(self.original["decoded_rows"])
         pellet = next((r, c) for r, row in enumerate(grid) for c, tile in enumerate(row) if tile == 3)

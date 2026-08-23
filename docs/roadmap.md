@@ -533,7 +533,7 @@ JSON save, WAV playback, plus explicit expanded-ROM build and FCEUX launch
 controls. The model is isolated from the GUI and unit-tested without requiring a
 display.
 
-### 17. Maze and Tilemap Editor — In Progress
+### 17. Maze and Tilemap Editor — Complete
 
 Provide a visual 27x22 maze editor backed by the existing boundary-preserving
 RLE codec. Show tile identities, pellets, power pellets, tunnels, ghost-house

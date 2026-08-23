@@ -16,6 +16,13 @@ from maze_studio_model import COLUMNS, ROWS, MazeDocument, inspect_grid, load_do
 ROOT = Path(__file__).resolve().parent.parent
 CELL = 24
 COLORS = ("#000000", "#001a8c", "#0868ff", "#ffffff")
+TILE_NAMES = {
+    0x00: "empty/passable", 0x01: "power pellet", 0x02: "hidden power pellet",
+    0x03: "pellet", 0x04: "left tunnel edge", 0x05: "right tunnel edge",
+    0x06: "tunnel floor", 0x07: "cleared floor", 0x08: "special floor",
+    0x09: "alternate pellet", 0x20: "space", 0x2C: "ghost-house door",
+    0x2D: "maze blank",
+}
 
 
 def chr_pixels(data: bytes, tile: int) -> list[list[int]]:
@@ -33,6 +40,7 @@ class MazeStudio(tk.Tk):
         self.tile = tk.IntVar(value=7)
         self.status = tk.StringVar()
         self.show_semantics = tk.BooleanVar(value=True)
+        self.hover = tk.StringVar(value="")
         self.images = [self._tile_image(chr_data, tile) for tile in range(64)]
         self.title("Pac-Man Maze Studio")
         self.protocol("WM_DELETE_WINDOW", self.close)
@@ -59,21 +67,48 @@ class MazeStudio(tk.Tk):
         body = ttk.Frame(self, padding=(7, 0)); body.pack(fill=tk.BOTH, expand=True)
         self.canvas = tk.Canvas(body, width=COLUMNS * CELL, height=ROWS * CELL, bg="#111")
         self.canvas.pack(side=tk.LEFT)
-        self.canvas.bind("<Button-1>", self.paint)
+        self.canvas.bind("<ButtonPress-1>", self.start_paint)
         self.canvas.bind("<B1-Motion>", self.paint)
+        self.canvas.bind("<ButtonRelease-1>", self.end_paint)
+        self.canvas.bind("<Button-3>", self.pick_tile)
+        self.canvas.bind("<Motion>", self.motion)
         palette = ttk.Labelframe(body, text="Tiles $00-$3F", padding=5); palette.pack(side=tk.LEFT, fill=tk.Y, padx=8)
         for tile in range(64):
             button = tk.Radiobutton(palette, image=self.images[tile], variable=self.tile, value=tile,
                                     indicatoron=False, selectcolor="#ffcc33", command=self.refresh)
             button.grid(row=tile // 8, column=tile % 8)
-        ttk.Label(palette, text="Blue outline: differs from original\nRed outline: selected tile",
+        ttk.Label(palette, text="Blue outline: differs from original\nYellow button: selected brush",
                   justify=tk.LEFT).grid(row=9, column=0, columnspan=8, sticky=tk.W, pady=8)
+        ttk.Label(palette, textvariable=self.hover, justify=tk.LEFT).grid(
+            row=10, column=0, columnspan=8, sticky=tk.W)
         ttk.Label(self, textvariable=self.status, padding=7, anchor=tk.W).pack(fill=tk.X)
 
+    def cell_at(self, event: tk.Event) -> tuple[int, int]:
+        return event.y // CELL, event.x // CELL
+
+    def start_paint(self, event: tk.Event) -> None:
+        self.model.begin_stroke(); self.paint(event)
+
+    def end_paint(self, _event: tk.Event) -> None:
+        self.model.end_stroke(); self.refresh()
+
     def paint(self, event: tk.Event) -> None:
-        row, column = event.y // CELL, event.x // CELL
+        row, column = self.cell_at(event)
         if 0 <= row < ROWS and 0 <= column < COLUMNS:
             self.model.paint(row, column, self.tile.get()); self.refresh()
+
+    def pick_tile(self, event: tk.Event) -> None:
+        row, column = self.cell_at(event)
+        if 0 <= row < ROWS and 0 <= column < COLUMNS:
+            self.tile.set(self.model.grid[row][column]); self.motion(event); self.refresh()
+
+    def motion(self, event: tk.Event) -> None:
+        row, column = self.cell_at(event)
+        if 0 <= row < ROWS and 0 <= column < COLUMNS:
+            tile = self.model.grid[row][column]
+            self.hover.set(f"Cursor: ({row},{column})  ${tile:02X} {TILE_NAMES.get(tile, 'wall/art tile')}\n"
+                           f"Brush: ${self.tile.get():02X} {TILE_NAMES.get(self.tile.get(), 'wall/art tile')}\n"
+                           "Right-click: pick tile")
 
     def refresh(self) -> None:
         self.canvas.delete("all")
@@ -133,6 +168,7 @@ class MazeStudio(tk.Tk):
         subprocess.Popen(["make", target, f"EXPANDED_MAZE_JSON={self.model.path.resolve()}"], cwd=ROOT)
 
     def close(self) -> None:
+        self.model.end_stroke()
         if self.model.dirty and not messagebox.askyesno("Unsaved edits", "Discard maze edits?"): return
         self.destroy()
 

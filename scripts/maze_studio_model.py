@@ -166,6 +166,7 @@ class MazeDocument:
         self.saved = copy.deepcopy(self.grid)
         self.undo_stack: list[list[list[int]]] = []
         self.redo_stack: list[list[list[int]]] = []
+        self.stroke_start: list[list[int]] | None = None
 
     @property
     def dirty(self) -> bool:
@@ -174,17 +175,33 @@ class MazeDocument:
     def changed(self, row: int, column: int) -> bool:
         return self.grid[row][column] != self.original[row][column]
 
+    def begin_stroke(self) -> None:
+        if self.stroke_start is None:
+            self.stroke_start = copy.deepcopy(self.grid)
+
+    def end_stroke(self) -> bool:
+        if self.stroke_start is None:
+            return False
+        changed = self.grid != self.stroke_start
+        if changed:
+            self.undo_stack.append(self.stroke_start)
+            self.redo_stack.clear()
+        self.stroke_start = None
+        return changed
+
     def paint(self, row: int, column: int, tile: int) -> bool:
         if not 0 <= row < ROWS or not 0 <= column < COLUMNS or not 0 <= tile <= 0x3F:
             raise ValueError("Paint location or tile is outside the maze format")
         if self.grid[row][column] == tile:
             return False
-        self.undo_stack.append(copy.deepcopy(self.grid))
-        self.redo_stack.clear()
+        if self.stroke_start is None:
+            self.undo_stack.append(copy.deepcopy(self.grid))
+            self.redo_stack.clear()
         self.grid[row][column] = tile
         return True
 
     def undo(self) -> bool:
+        self.end_stroke()
         if not self.undo_stack:
             return False
         self.redo_stack.append(copy.deepcopy(self.grid))
@@ -192,6 +209,7 @@ class MazeDocument:
         return True
 
     def redo(self) -> bool:
+        self.end_stroke()
         if not self.redo_stack:
             return False
         self.undo_stack.append(copy.deepcopy(self.grid))
