@@ -533,13 +533,18 @@ JSON save, WAV playback, plus explicit expanded-ROM build and FCEUX launch
 controls. The model is isolated from the GUI and unit-tested without requiring a
 display.
 
-### 17. Maze and Tilemap Editor — Planned
+### 17. Maze and Tilemap Editor — In Progress
 
 Provide a visual 27x22 maze editor backed by the existing boundary-preserving
 RLE codec. Show tile identities, pellets, power pellets, tunnels, ghost-house
 geometry, spawn/door assumptions, and compression cost. Add structural checks
 for reachable paths and runtime-sensitive tile classes before exporting a
 stage-specific expanded maze.
+
+The first vertical slice provides a CHR-backed 27x22 editor, all 64 tile IDs,
+original-cell comparison, undo/redo, atomic JSON export, fixed 416-byte
+row-bounded RLE packing, pellet/power-pellet and connectivity checks, plus
+explicit expanded-ROM build and FCEUX launch controls through `make maze-studio`.
 
 ### 18. Graphics, Sprites, and Palette Studio — Planned
 
