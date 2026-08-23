@@ -160,6 +160,9 @@ vec_nmi_handler:		; was: vec_C0FA_NMI
     STA OAMDMA
     JSR sub_write_buffer_to_ppu
     JSR sub_sample_tiles_at_obj_ppu_positions
+.ifdef PACMAN_REVISION_TENGEN
+    JSR sub_upload_tengen_palette_updates
+.endif
     LDA ram_scroll_X
     STA PPUSCROLL
     LDA ram_scroll_Y
@@ -179,11 +182,19 @@ vec_nmi_handler:		; was: vec_C0FA_NMI
 ; Shift in 8 controller bits for both gamepads
 bra_shift_in_controller_bits:		; was: bra_C138_loop
     LDA JOYPAD1
+.ifdef PACMAN_REVISION_TENGEN
+    AND #JOYPAD_SERIAL_BIT
+.else
     AND #JOYPAD_READ_MASK
+.endif
     CMP #JOYPAD_SERIAL_BIT
     ROR ram_btn_1p
     LDA JOYPAD2
+.ifdef PACMAN_REVISION_TENGEN
+    AND #JOYPAD_SERIAL_BIT
+.else
     AND #JOYPAD_READ_MASK
+.endif
     CMP #JOYPAD_SERIAL_BIT
     ROR ram_btn_2p
     DEX
@@ -211,6 +222,53 @@ bra_pop_regs_and_rti:		; was: bra_C162
 vec_irq_handler:
     RTI
 
+.ifdef PACMAN_REVISION_TENGEN
+; Tengen revisions can queue complete background and sprite palettes in RAM.
+; A universal-color marker of $0F makes the corresponding 16-byte half live.
+sub_upload_tengen_palette_updates:
+    LDA ram_tengen_bg_palette_update
+    CMP #$0F
+    BNE bra_check_tengen_sprite_palette
+    SetPpuAddress $3F00
+    LDY #$00
+bra_upload_tengen_bg_palette:
+    LDA ram_tengen_bg_palette_update,Y
+    STA PPUDATA
+    INY
+    CPY #$10
+    BNE bra_upload_tengen_bg_palette
+bra_check_tengen_sprite_palette:
+    LDA ram_tengen_sprite_palette_update
+    CMP #$0F
+    BNE bra_finish_tengen_palette_updates
+    SetPpuAddress $3F10
+    LDY #$00
+bra_upload_tengen_sprite_palette:
+    LDA ram_tengen_sprite_palette_update,Y
+    STA PPUDATA
+    INY
+    CPY #$10
+    BNE bra_upload_tengen_sprite_palette
+bra_finish_tengen_palette_updates:
+    LDA ram_tengen_bg_palette_update
+    CMP #$0F
+    BEQ bra_reset_tengen_palette_updates
+    LDA ram_tengen_sprite_palette_update
+    CMP #$0F
+    BEQ bra_reset_tengen_palette_updates
+    RTS
+bra_reset_tengen_palette_updates:
+    LDA #$30
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    STA PPUADDR
+    STA PPUADDR
+    STA ram_tengen_bg_palette_update
+    STA ram_tengen_sprite_palette_update
+    RTS
+.endif
+
 ; Main frame bootstrap: waits NMI, reinitializes title/game script context
 loc_main_frame_bootstrap:		; was: loc_C168
     LDA #$01
@@ -236,6 +294,15 @@ bra_clear_oam_buffer:		; was: bra_C180_loop
     JSR sub_upload_title_attribute_table
     JSR sub_draw_title_logo_and_text
     JSR sub_draw_score_hud_dual
+.ifdef PACMAN_REVISION_TENGEN
+    LDY #$00
+bra_copy_tengen_initial_palettes:
+    LDA tbl_title_background_palette,Y
+    STA ram_tengen_bg_palette_update,Y
+    INY
+    CPY #$20
+    BNE bra_copy_tengen_initial_palettes
+.else
     SetPpuAddress $3F00
     LDY #$00
 ; Upload 16-byte title background palette
@@ -249,7 +316,12 @@ bra_upload_background_palette:		; was: bra_C1A3_loop
     INY
     CPY #$10
     BNE bra_upload_background_palette
+.endif
+.ifdef PACMAN_REVISION_TENGEN
+    LDA #$20
+.else
     LDA #con_tile_maze_blank
+.endif
     STA ram_power_pellet_tile_p1
     STA ram_power_pellet_tile_p1 + $01
     STA ram_power_pellet_tile_p1 + $02

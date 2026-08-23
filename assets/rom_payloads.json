@@ -58,6 +58,15 @@
       }
     },
     {
+      "path": "palettes/attract-tengen.bin",
+      "size": 32,
+      "sha1": "84effe1542c5996158a48236bce3b2ff77b28052",
+      "sources": {
+        "usa-tengen-unlicensed": 1626,
+        "usa-tengen": 1626
+      }
+    },
+    {
       "path": "palettes/intermission-sprites.bin",
       "size": 16,
       "sha1": "b42defaad586242cededcab18d77d4c0df1545b3",

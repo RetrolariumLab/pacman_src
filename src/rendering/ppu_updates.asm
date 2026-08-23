@@ -43,7 +43,11 @@ bra_flush_score_hud_buffers:		; was: bra_DDF0
 ; score buffer
     LDA ram_ppu_buffer_score
     CMP #con_ppu_buffer_end
+.ifdef PACMAN_REVISION_TENGEN
+    BEQ bra_flush_hiscore_buffer
+.else
     BEQ bra_update_1up_blink    ; skip if buffer is empty
+.endif
     SetPpuAddressFrom ram_ppu_buf_score_hi
     LDY #$00
 ; Write score digits to PPU
@@ -57,7 +61,11 @@ bra_write_score_digits:		; was: bra_DE08_loop
     STA PPUDATA
     LDA #con_ppu_buffer_end
     STA ram_ppu_buffer_score
+.ifdef PACMAN_REVISION_TENGEN
+    BNE bra_update_1up_blink    ; A is $FF: Tengen flushes one score buffer per frame
+.endif
 ; hiscore buffer
+bra_flush_hiscore_buffer:
     LDA ram_ppu_buffer_hiscore
     CMP #con_ppu_buffer_end
     BEQ bra_update_1up_blink    ; skip if buffer is empty
@@ -105,6 +113,11 @@ bra_write_1up_clear_tiles:		; was: bra_DE76_loop
 bra_flush_power_pellet_and_main_ppu:		; was: bra_DE7E
 ; Flush power-pellet markers and generic PPU command buffer
 loc_flush_power_pellet_and_main_ppu:		; was: loc_DE7E
+.ifdef PACMAN_REVISION_TENGEN
+    LDA ram_frame_cnt
+    AND #$01
+    BEQ bra_flush_generic_ppu_buffer
+.endif
     LDY #$00
     LDX #$00
     LDA ram_current_player
@@ -127,6 +140,7 @@ bra_write_power_pellet_markers:		; was: bra_DE8A_loop
     INX
     CPX #$04
     BNE bra_write_power_pellet_markers
+bra_flush_generic_ppu_buffer:
     LDA PPUSTATUS
     LDY #$FF
 ; Scan [address hi][address lo][payload...][00] commands until FF.

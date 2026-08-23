@@ -32,6 +32,15 @@ bra_clear_oam_all:		; was: bra_CE53_loop
     STA ram_oam,X
     INX
     BNE bra_clear_oam_all
+.ifdef PACMAN_REVISION_TENGEN
+    LDY #$00
+bra_copy_tengen_round_palette:
+    LDA tbl_round_gameplay_palette,Y
+    STA ram_tengen_bg_palette_update,Y
+    INY
+    CPY #$20
+    BNE bra_copy_tengen_round_palette
+.else
     SetPpuAddress $3F00
     LDY #$00
 ; Upload gameplay palette
@@ -45,6 +54,7 @@ bra_upload_round_palette:		; was: bra_CE68_loop
     INY
     CPY #$20
     BNE bra_upload_round_palette
+.endif
     LDA #con_game_script_round_ready
     STA ram_script
     LDA ram_round_restart_flag

@@ -65,7 +65,11 @@ bra_stream_logo_row_tiles:		; was: bra_C23E_loop
     DEC zp_work2
     BNE bra_draw_next_logo_row
 ; draw text
+.ifdef PACMAN_REVISION_TENGEN
+    LDA #$09    ; counter
+.else
     LDA #$06    ; counter
+.endif
     STA zp_work0
     LDY #$00
 ; Draw next title text packet header+payload
@@ -117,7 +121,11 @@ bra_upload_next_attribute_byte:		; was: bra_C293_loop
 .endif
     STA PPUDATA
     INY
+.ifdef PACMAN_REVISION_TENGEN
+    CPY #$28
+.else
     CPY #$18
+.endif
     BNE bra_upload_next_attribute_byte
     RTS
 
@@ -131,6 +139,31 @@ tbl_title_logo_tiles:		; was: tbl_C29F_pacman_logo
     .incbin "assets/generated/title/logo-tiles.bin", $73, $17  ; rom-asset .byte
 ; PPU command packets for title logo text
 tbl_title_logo_text_packets:		; was: tbl_C329_logo_text
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $2065
+    .byte $B0, $B3, $B2, $20, $20, $20, $20, $B4, $B5, $B6, $B7
+    .byte $B8, $B9, $BA, $BB, $20, $20, $20, $B1, $B3, $B2, $FF
+    .dbyt $220A
+    .byte $5C, $20, $31, $20, $50, $4C, $41, $59, $45, $52, $FF
+    .dbyt $224C
+    .byte $32, $20, $50, $4C, $41, $59, $45, $52, $53, $FF
+    .dbyt $22A2
+    .byte $54, $4D, $20, $41, $4E, $44, $20, $5D, $20
+    .byte $31, $39, $38, $30, $20, $31, $39, $38, $34, $20
+    .byte $4E, $41, $4D, $43, $4F, $20, $4C, $54, $44, $5B, $FF
+    .dbyt $22ED
+    .byte $54, $45, $4E, $47, $45, $4E, $FF
+    .dbyt $2326
+    .byte $20, $20, $20, $20, $20, $20, $20, $20, $20, $20
+    .byte $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $FF
+    .dbyt $2369
+    .byte $20, $20, $20, $20, $20, $20, $20, $20
+    .byte $20, $20, $20, $20, $20, $20, $20, $FF
+    .dbyt $22C2
+    .byte $20, $FF
+    .dbyt $22D4
+    .byte $20, $FF
+.else
 ; 00
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
     .dbyt $2065
@@ -167,6 +200,7 @@ tbl_title_logo_text_packets:		; was: tbl_C329_logo_text
     .byte                                    $41, $4C, $4C, $20, $52, $49, $47, $48, $54
     .byte $53, $20, $52, $45, $53, $45, $52, $56, $45, $44
     .byte $FF   ; end token
+.endif
 
 ; Background palette for title screen
 tbl_title_background_palette:		; was: tbl_C395_background_palette
@@ -174,11 +208,22 @@ tbl_title_background_palette:		; was: tbl_C395_background_palette
     .incbin "assets/generated/palettes/title-background.bin", $4, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/title-background.bin", $8, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/title-background.bin", $C, $4  ; rom-asset .byte
+.ifdef PACMAN_REVISION_TENGEN
+    .incbin "assets/generated/palettes/attract-namco.bin", $10, $4  ; rom-asset .byte
+    .incbin "assets/generated/palettes/attract-namco.bin", $14, $4  ; rom-asset .byte
+    .incbin "assets/generated/palettes/attract-namco.bin", $18, $4  ; rom-asset .byte
+    .incbin "assets/generated/palettes/attract-namco.bin", $1C, $4  ; rom-asset .byte
+.endif
 ; Attribute bytes for title layout
 tbl_title_attribute_bytes:		; was: tbl_C3A5_background_attributes
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
     .byte                                         $80, $A0, $A0, $A0, $A0, $A0, $A0, $00
     .byte $00, $66, $55, $55, $55, $55, $DD, $00, $08, $0A, $0A, $0A, $0A, $0A, $0A, $00
+.ifdef PACMAN_REVISION_TENGEN
+tbl_tengen_title_transition_steps:
+    .byte $00, $00, $00, $00, $00, $00, $00, $00
+    .byte $F0, $F0, $F0, $F0, $F0, $F0, $F0, $F0
+.endif
 ; Script 02: title menu idle (1P/2P select, start, demo timeout)
 handler_script02_title_menu_idle:		; was: ofs_000_C3BD_02
     LDA ram_shared_state_0

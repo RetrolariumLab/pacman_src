@@ -121,7 +121,11 @@ loc_clear_nametable_fill_pass:		; was: loc_E310
     STA zp_work0
     LDA #$C0
     STA zp_work1
+.ifdef PACMAN_REVISION_TENGEN
+    LDA #con_tile_space
+.else
     LDA #con_tile_maze_blank
+.endif
 bra_fill_nametable_tiles:
     STA PPUDATA
     DEC zp_work1

@@ -181,6 +181,53 @@ bra_fill_frame_inner_row:		; was: bra_C53A_loop
 
 ; Setup attract-mode attributes and palette
 sub_setup_attract_palette_and_attrs:		; was: sub_C54E
+.ifdef PACMAN_REVISION_TENGEN
+    LDA #> $23C8
+    STA PPUADDR
+    LDA #< $23C8
+    STA PPUADDR
+    LDY #$00
+bra_upload_tengen_attract_attributes:
+    LDA tbl_tengen_attract_attribute_bytes,Y
+    STA PPUDATA
+    INY
+    CPY #$28
+    BNE bra_upload_tengen_attract_attributes
+    LDY #$00
+    LDA off_attract_text_header_character_nickname,Y
+    STA PPUADDR
+    INY
+    LDA off_attract_text_header_character_nickname,Y
+    STA PPUADDR
+    INY
+bra_upload_tengen_attract_header:
+    LDA off_attract_text_header_character_nickname,Y
+    CMP #con_ppu_buffer_end
+    BEQ bra_upload_tengen_attract_palette
+    STA PPUDATA
+    INY
+    BNE bra_upload_tengen_attract_header
+bra_upload_tengen_attract_palette:
+    LDA PPUSTATUS
+    LDA #> $3F00
+    STA PPUADDR
+    LDA #< $3F00
+    STA PPUADDR
+    LDY #$00
+bra_upload_tengen_attract_palette32:
+    LDA tbl_attract_bg_spr_palette,Y
+    STA PPUDATA
+    INY
+    CPY #$20
+    BNE bra_upload_tengen_attract_palette32
+    LDA #$3F
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    STA PPUADDR
+    STA PPUADDR
+    RTS
+.else
     LDA #> $23C0
     STA PPUADDR
     LDA #< $23C0
@@ -238,6 +285,7 @@ bra_upload_attract_palette32:		; was: bra_C58D_loop
     LDA #$22
     STA PPUDATA
     RTS
+.endif
 
 ; Attract scene BG+SPR palette block (32 bytes)
 tbl_attract_bg_spr_palette:		; was: tbl_C5B3_palette
@@ -245,7 +293,11 @@ tbl_attract_bg_spr_palette:		; was: tbl_C5B3_palette
     .incbin "assets/generated/palettes/attract-namco.bin", $0, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/attract-namco.bin", $4, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/attract-namco.bin", $8, $4  ; rom-asset .byte
+.ifdef PACMAN_REVISION_TENGEN
+    .incbin "assets/generated/palettes/attract-tengen.bin", $C, $4  ; rom-asset .byte
+.else
     .incbin "assets/generated/palettes/attract-namco.bin", $C, $4  ; rom-asset .byte
+.endif
 ; spr
     .incbin "assets/generated/palettes/attract-namco.bin", $10, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/attract-namco.bin", $14, $4  ; rom-asset .byte
@@ -273,92 +325,164 @@ tbl_attract_ppu_packet_ptrs:		; was: tbl_C5D3
 ; Attract packet: header CHARACTER/NICKNAME
 off_attract_text_header_character_nickname:		; was: _off000_C5E7_00
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $20EB
+    .byte $43, $48, $41, $52, $41, $43, $54, $45, $52, $FF
+.else
     .dbyt $20E6
 .if PACMAN_REVISION = REVISION_JAPAN_V11
     .byte                               $43, $48, $41, $52, $41, $43, $54, $45, $52, $20
 .else
     .byte                               $43, $48, $52, $41, $43, $54, $45, $52, $20, $20
-.endif
+    .endif
     .byte $3B, $20, $20, $4E, $49, $43, $4B, $4E, $41, $4D, $45
     .byte $FF   ; end token
+.endif
 
 ; Attract packet: alias text OIKAKE...
 off_attract_text_alias_oikake:		; was: _off000_C5FF_02
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $214D
+    .byte $2E, $2E, $2E, $2E, $FF, $00
+.else
     .dbyt $2148
     .byte                                         $4F, $49, $4B, $41, $4B, $45, $2E, $2E
     .byte $2E, $2E, $2E
     .byte $FF   ; end token
     .byte $00   ; condition
+.endif
 
 ; Attract packet: name AKABEI
 off_attract_text_name_akabei:		; was: _off000_C60E_04
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $2153
+    .byte $42, $4C, $49, $4E, $4B, $59, $FF
+.else
     .dbyt $2153
     .byte $5F, $41, $4B, $41, $42, $45, $49, $5F
     .byte $FF   ; end token
+.endif
 
 ; Attract packet: alias text MACHIBUSE..
 off_attract_text_alias_machibuse:		; was: _off000_C619_06
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $21AD
+    .byte $2E, $2E, $2E, $2E, $FF, $00
+.else
     .dbyt $21A8
     .byte $4D, $41, $43, $48, $49, $42, $55, $53
     .byte $45, $2E, $2E
     .byte $FF   ; end token
     .byte $00   ; condition
+.endif
 
 ; Attract packet: name PINKY
 off_attract_text_name_pinky:		; was: _off000_C628_08
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $21B3
+    .byte $50, $49, $4E, $4B, $59, $FF
+.else
     .dbyt $21B3
     .byte                $5F, $50, $49, $4E, $4B, $59, $5F
     .byte $FF   ; end token
+.endif
 
 ; Attract packet: alias text tile sequence (set 0A)
 off_attract_text_alias_tiles_0A:		; was: _off000_C632_0A
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $220D
+    .byte $2E, $2E, $2E, $2E, $FF, $00
+.else
     .dbyt $2208
     .byte                                         $C0, $C1, $C2, $C3, $C4, $C5, $C6, $C7
     .byte $03, $03, $03
     .byte $FF   ; end token
     .byte $00   ; condition
+.endif
 
 ; Attract packet: name tile sequence (set 0C)
 off_attract_text_name_tiles_0C:		; was: _off000_C641_0C
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $2213
+    .byte $49, $4E, $4B, $59, $FF
+.else
     .dbyt $2213
     .byte                $C8, $C3, $C9, $CA, $C5, $C0, $C7, $C8
     .byte $FF   ; end token
+.endif
 
 ; Attract packet: alias text OTOBOKE...
 off_attract_text_alias_otoboke:		; was: _off000_C64C_0E
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $226D
+    .byte $2E, $2E, $2E, $2E, $FF, $00
+.else
     .dbyt $2268
     .byte                                         $4F, $54, $4F, $42, $4F, $4B, $45, $2E
     .byte $2E, $2E, $2E
     .byte $FF   ; end token
     .byte $00   ; condition
+.endif
 
 ; Attract packet: name GUZUTA
 off_attract_text_name_guzuta:		; was: _off000_C65B_10
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $2273
+    .byte $43, $4C, $59, $44, $45, $FF
+.else
     .dbyt $2273
     .byte                $5F, $47, $55, $5A, $55, $54, $41, $5F
     .byte $FF   ; end token
+.endif
 
 ; Attract packet: points table entries
 off_attract_text_points_table:		; was: _off000_C666_12
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+.ifdef PACMAN_REVISION_TENGEN
+    .dbyt $22AD
+    .byte $03, $20, $31, $30, $20, $50, $54, $53, $00
+    .dbyt $22ED
+    .byte $01, $20, $35, $30, $20, $50, $54, $53, $00
+    .dbyt $234D
+    .byte $54, $45, $4E, $47, $45, $4E, $FF
+.else
     .dbyt $22AD
     .byte                                                                  $03, $20, $31
     .byte $30, $20, $50, $54, $53, $00, $22, $ED, $01, $20, $35, $30, $20, $50, $54, $53
     .byte $00, $23, $4C, $23, $24, $25, $26, $27, $28, $29, $2A, $2B
     .byte $FF   ; end token
+.endif
 ; !(UNKNOWN) Explain the legacy $05F7 read warning. See DATA-003.
 
 ; Sprite strip data used by optional attract packet payload
 tbl_attract_sprite_strip_data:		; was: tbl_C688_spr_data
 ; reading 4 lines bytes each time, start line depends on 0x000519
+.ifdef PACMAN_REVISION_TENGEN
+    .byte $48, $1C, $40, $46
+    .byte $48, $1B, $40, $4E
+    .byte $50, $1F, $40, $46
+    .byte $50, $1D, $40, $4E
+    .byte $60, $1C, $41, $46
+    .byte $60, $1B, $41, $4E
+    .byte $68, $1F, $41, $46
+    .byte $68, $1D, $41, $4E
+    .byte $78, $1C, $42, $46
+    .byte $78, $1B, $42, $4E
+    .byte $80, $1F, $42, $46
+    .byte $80, $1D, $42, $4E
+    .byte $90, $1C, $43, $46
+    .byte $90, $1B, $43, $4E
+    .byte $98, $1F, $43, $46
+    .byte $98, $1D, $43, $4E
+.else
     .byte $48, $1C, $40, $26   ; 02
     .byte $48, $1B, $40, $2E   ; 03
     .byte $50, $1F, $40, $26   ; 04
@@ -375,4 +499,13 @@ tbl_attract_sprite_strip_data:		; was: tbl_C688_spr_data
     .byte $90, $1B, $43, $2E
     .byte $98, $1F, $43, $26
     .byte $98, $1D, $43, $2E
+.endif
+.ifdef PACMAN_REVISION_TENGEN
+tbl_tengen_attract_attribute_bytes:
+    .byte $00, $00, $00, $00, $00, $00, $00, $00
+    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+    .byte $AA, $AA, $AA, $22, $00, $00, $00, $00
+.endif
 ; Attract scene: chase sequence state machine (ghost intro -> run -> reversal)

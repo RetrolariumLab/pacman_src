@@ -66,6 +66,7 @@ GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
 EDITED_CHR ?= $(PROJECT_DIR)hacks/local/pacman.chr
 REVISION ?= japan_v10
 REVISION_BUILD_DIR ?= $(BUILD_DIR)/revisions/$(REVISION)
+REVISION_REFERENCE_DIR ?= $(PROJECT_DIR)
 
 ifeq ($(REVISION),japan_v10)
 REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
@@ -73,10 +74,14 @@ REVISION_REFERENCE_ROM := $(PROJECT_DIR)Pac-Man (J) (V1.0) [!].nes
 REVISION_CA65_DEFINE := PACMAN_REVISION=0
 else ifeq ($(REVISION),japan_v11)
 REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
-REVISION_REFERENCE_ROM := $(PROJECT_DIR)Pac-Man (J) (V1.1) [!].nes
+REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)Pac-Man (J) (V1.1) [!].nes
 REVISION_CA65_DEFINE := PACMAN_REVISION=1
+else ifeq ($(REVISION),usa_tengen_unlicensed)
+REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
+REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)Pac-Man (Unl) (Tengen) [!].nes
+REVISION_CA65_DEFINE := PACMAN_REVISION=2
 else
-$(error Unsupported REVISION '$(REVISION)'; expected japan_v10 or japan_v11)
+$(error Unsupported REVISION '$(REVISION)'; expected japan_v10, japan_v11, or usa_tengen_unlicensed)
 endif
 
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
@@ -550,6 +555,7 @@ help:
 	@echo   make build                 Build the native ca65 ROM
 	@echo   make verify                Build and verify byte-identity
 	@echo   make verify-revision REVISION=japan_v11  Verify an official ROM revision
+	@echo   make verify-revision REVISION=usa_tengen_unlicensed REVISION_REFERENCE_DIR=path/  Verify Tengen
 	@echo   make build-hack            Build the isolated default ROM-hack variant
 	@echo   make verify-hack           Require only the documented default hack diff
 	@echo   make validate-hack         Prove the default hack starts on stage 5 in FCEUX

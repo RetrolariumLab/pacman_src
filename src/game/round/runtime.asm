@@ -53,6 +53,17 @@ bra_check_frightened_end_window:		; was: bra_D117
     LDA ram_shared_state_2
     CMP #$02
     BCS bra_release_and_fruit_tick
+.ifdef PACMAN_REVISION_TENGEN
+    LDX #$11
+    LDA ram_shared_state_3
+    AND #$08
+    BNE bra_apply_tengen_frightened_palette
+    LDX #$20
+bra_apply_tengen_frightened_palette:
+    STX ram_tengen_sprite_palette_update + $05
+    LDA #$0F
+    STA ram_tengen_sprite_palette_update
+.else
     LDX #$00
     LDA ram_shared_state_3
     AND #$08
@@ -84,6 +95,7 @@ bra_copy_frightened_palette_cmd:		; was: bra_D135_loop
     INX
     CMP #con_ppu_buffer_end
     BNE bra_copy_frightened_palette_cmd
+.endif
 ; Continue with release/fruit timers after frightened handling
 bra_release_and_fruit_tick:		; was: bra_D141
     LDA ram_shared_state_1
@@ -221,6 +233,7 @@ bra_advance_release_slot:		; was: bra_D1F6
 ; !(UNUSED) No pointer or fall-through reaches this duplicate table. See DATA-001.
     .byte $24, $25, $26, $27, $28, $29, $2A, $2B
 ; PPU command fragments for frightened palette writes
+.ifndef PACMAN_REVISION_TENGEN
 tbl_frightened_palette_cmd:		; was: tbl_D205
 ; 00
     .byte $00
@@ -232,6 +245,7 @@ tbl_frightened_palette_cmd:		; was: tbl_D205
     .dbyt $3F15
     .byte $20
     .byte $FF   ; end token
+.endif
 
 ; Check Pac-Man against the four ghost slots and the fruit slot.
 ;

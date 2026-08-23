@@ -208,6 +208,12 @@ bra_set_ghost_palette_frightened:		; was: bra_DFD8_loop
     STA ram_spr_pal + $01,X
     DEX
     BPL bra_set_ghost_palette_frightened
+.ifdef PACMAN_REVISION_TENGEN
+    LDA #$11
+    STA ram_tengen_sprite_palette_update + $05
+    LDA #$0F
+    STA ram_tengen_sprite_palette_update
+.else
     LDY #$FF
 ; Find PPU buffer end for frightened palette command
 bra_find_ppu_buffer_end_for_palette_cmd:		; was: bra_DFE5_loop
@@ -233,6 +239,7 @@ bra_append_frightened_palette_cmd:		; was: bra_DFF3_loop
     INX
     CMP #con_ppu_buffer_end
     BNE bra_append_frightened_palette_cmd
+.endif
     LDA #$00
     STA ram_kill_cnt
 ; Reverse eligible active ghosts for a frightened/scatter-chase transition.
@@ -296,11 +303,13 @@ bra_next_ghost_for_reversal:		; was: bra_E046
     RTS
 
 ; Frightened palette command bytes (alternate source)
+.ifndef PACMAN_REVISION_TENGEN
 tbl_frightened_palette_cmd_alt:		; was: tbl_E05B
     .byte $00
     .dbyt $3F15
     .byte $11
     .byte $FF   ; end token
+.endif
 
 ; Commit the pending BCD score transaction and refresh derived HUD state.
 ;
