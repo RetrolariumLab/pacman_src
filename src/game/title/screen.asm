@@ -154,11 +154,21 @@ tbl_title_logo_text_packets:		; was: tbl_C329_logo_text
     .dbyt $22ED
     .byte $54, $45, $4E, $47, $45, $4E, $FF
     .dbyt $2326
+.if PACMAN_REVISION = REVISION_USA_TENGEN_LICENSED
+    .byte $4C, $49, $43, $45, $4E, $53, $45, $44, $20, $42
+    .byte $59, $20, $4E, $49, $4E, $54, $45, $4E, $44, $4F, $FF
+.else
     .byte $20, $20, $20, $20, $20, $20, $20, $20, $20, $20
     .byte $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $FF
+.endif
     .dbyt $2369
+.if PACMAN_REVISION = REVISION_USA_TENGEN_LICENSED
+    .byte $4F, $46, $20, $41, $4D, $45, $52, $49
+    .byte $43, $41, $20, $49, $4E, $43, $5B, $FF
+.else
     .byte $20, $20, $20, $20, $20, $20, $20, $20
     .byte $20, $20, $20, $20, $20, $20, $20, $FF
+.endif
     .dbyt $22C2
     .byte $20, $FF
     .dbyt $22D4

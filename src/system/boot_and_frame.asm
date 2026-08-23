@@ -36,6 +36,7 @@ vec_reset_entry:		; was: vec_C033_RESET
 bra_wait_vblank_ready:		; was: bra_C03D_loop
     LDA PPUSTATUS
     BPL bra_wait_vblank_ready
+loc_reset_after_initial_vblank:
     LDX #$FF
     TXS
 ; clear 0000-003D

@@ -13,6 +13,7 @@ An official revision is selected explicitly:
 make build-revision REVISION=japan_v11
 make verify-revision REVISION=japan_v11
 make verify-revision REVISION=usa_tengen_unlicensed REVISION_REFERENCE_DIR="path/to/roms/"
+make verify-revision REVISION=usa_tengen REVISION_REFERENCE_DIR="path/to/roms/"
 ```
 
 Every revision assembles the single `src/main.asm` entrypoint. The build passes
@@ -32,7 +33,7 @@ include the 16-byte iNES header.
 | `japan_v11` | `Pac-Man (J) (V1.1) [!].nes` | `2BF9D836` | `160920895ec9ff4ed832cd16c9b2be5352feebae` | `49ABEEE6` | `b8be2bffb4592873cc211becb529bf64071c7f90` | byte-identical |
 | `europe` | `Pac-Man (E) [!].nes` | `6FA1193B` | `8fef2bdce0c0be2ece67b26587aa22097ba3c9cf` | `19C4AA76` | `feb45bcbcd2326c14280db17330b665ec6adc0cc` | structural analysis |
 | `usa_namco` | `Pac-Man (U) (Namco) [!].nes` | `347D7D34` | `aa1bba9a243c70eb4e9928b5efec9d4877579d08` | `ED9E2130` | `e7d818e128593109b5c480497a050facc0744f1b` | structural analysis |
-| `usa_tengen` | `Pac-Man (U) (Tengen) [!].nes` | `E35321BC` | `5dd6d83b9827793f1da12923f2212e4d7502cf9a` | `49ABEEE6` | `727176933c25de055e7daa92e8b943f67cae4d9b` | structural analysis |
+| `usa_tengen` | `Pac-Man (U) (Tengen) [!].nes` | `E35321BC` | `5dd6d83b9827793f1da12923f2212e4d7502cf9a` | `49ABEEE6` | `727176933c25de055e7daa92e8b943f67cae4d9b` | byte-identical |
 | `usa_tengen_unlicensed` | `Pac-Man (Unl) (Tengen) [!].nes` | `7154ACB5` | `799b199bdb43fe5f97a37bd37294802515a13dfa` | `49ABEEE6` | `f1d9eb92f931ed925bd6119d00d1023a45da583f` | byte-identical |
 
 The known Japan Rev B PRG (`B6214FA9`) is not present in the current local ROM
