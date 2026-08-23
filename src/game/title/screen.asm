@@ -218,7 +218,7 @@ tbl_title_background_palette:		; was: tbl_C395_background_palette
     .incbin "assets/generated/palettes/title-background.bin", $4, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/title-background.bin", $8, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/title-background.bin", $C, $4  ; rom-asset .byte
-.ifdef PACMAN_REVISION_TENGEN
+.ifdef PACMAN_REVISION_RAM_PALETTES
     .incbin "assets/generated/palettes/attract-namco.bin", $10, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/attract-namco.bin", $14, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/attract-namco.bin", $18, $4  ; rom-asset .byte

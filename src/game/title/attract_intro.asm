@@ -181,18 +181,26 @@ bra_fill_frame_inner_row:		; was: bra_C53A_loop
 
 ; Setup attract-mode attributes and palette
 sub_setup_attract_palette_and_attrs:		; was: sub_C54E
-.ifdef PACMAN_REVISION_TENGEN
+.ifdef PACMAN_REVISION_RAM_PALETTES
     LDA #> $23C8
     STA PPUADDR
     LDA #< $23C8
     STA PPUADDR
     LDY #$00
-bra_upload_tengen_attract_attributes:
+bra_upload_regional_attract_attributes:
+.if PACMAN_REVISION = REVISION_JAPAN_REVB
+    LDA tbl_japan_revb_attract_attribute_bytes,Y
+.else
     LDA tbl_tengen_attract_attribute_bytes,Y
+.endif
     STA PPUDATA
     INY
+.if PACMAN_REVISION = REVISION_JAPAN_REVB
+    CPY #$24
+.else
     CPY #$28
-    BNE bra_upload_tengen_attract_attributes
+.endif
+    BNE bra_upload_regional_attract_attributes
     LDY #$00
     LDA off_attract_text_header_character_nickname,Y
     STA PPUADDR
@@ -200,26 +208,26 @@ bra_upload_tengen_attract_attributes:
     LDA off_attract_text_header_character_nickname,Y
     STA PPUADDR
     INY
-bra_upload_tengen_attract_header:
+bra_upload_regional_attract_header:
     LDA off_attract_text_header_character_nickname,Y
     CMP #con_ppu_buffer_end
-    BEQ bra_upload_tengen_attract_palette
+    BEQ bra_upload_regional_attract_palette
     STA PPUDATA
     INY
-    BNE bra_upload_tengen_attract_header
-bra_upload_tengen_attract_palette:
+    BNE bra_upload_regional_attract_header
+bra_upload_regional_attract_palette:
     LDA PPUSTATUS
     LDA #> $3F00
     STA PPUADDR
     LDA #< $3F00
     STA PPUADDR
     LDY #$00
-bra_upload_tengen_attract_palette32:
+bra_upload_regional_attract_palette32:
     LDA tbl_attract_bg_spr_palette,Y
     STA PPUDATA
     INY
     CPY #$20
-    BNE bra_upload_tengen_attract_palette32
+    BNE bra_upload_regional_attract_palette32
     LDA #$3F
     STA PPUADDR
     LDA #$00
@@ -330,7 +338,7 @@ off_attract_text_header_character_nickname:		; was: _off000_C5E7_00
     .byte $43, $48, $41, $52, $41, $43, $54, $45, $52, $FF
 .else
     .dbyt $20E6
-.if PACMAN_REVISION = REVISION_JAPAN_V11
+.if PACMAN_REVISION = REVISION_JAPAN_V11 .or PACMAN_REVISION = REVISION_JAPAN_REVB
     .byte                               $43, $48, $41, $52, $41, $43, $54, $45, $52, $20
 .else
     .byte                               $43, $48, $52, $41, $43, $54, $45, $52, $20, $20
@@ -507,5 +515,13 @@ tbl_tengen_attract_attribute_bytes:
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $AA, $AA, $AA, $22, $00, $00, $00, $00
+.endif
+.if PACMAN_REVISION = REVISION_JAPAN_REVB
+tbl_japan_revb_attract_attribute_bytes:
+    .byte $00, $00, $00, $00, $00, $00, $00, $00
+    .byte $55, $55, $55, $55, $55, $55, $55, $55
+    .byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
+    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+    .byte $AA, $AA, $AA, $22
 .endif
 ; Attract scene: chase sequence state machine (ghost intro -> run -> reversal)

@@ -39,7 +39,7 @@ bra_wait_vblank_set_flag:		; was: bra_E65C_infinite_loop
     STA ram_obj_pos_X_lo + $04
     LDA #$00    ; every intermission scene begins at its first substate
     STA ram_shared_state_1
-.ifndef PACMAN_REVISION_TENGEN
+.ifndef PACMAN_REVISION_RAM_PALETTES
     SetPpuAddress $3F10
 .endif
     LDY #$00
@@ -50,8 +50,8 @@ bra_upload_demo_sprite_palette:		; was: bra_E6A0_loop
 .else
     LDA tbl_intro_sprite_palette,Y
 .endif
-.ifdef PACMAN_REVISION_TENGEN
-    STA ram_tengen_sprite_palette_update,Y
+.ifdef PACMAN_REVISION_RAM_PALETTES
+    STA ram_sprite_palette_update,Y
 .else
     STA PPUDATA
 .endif

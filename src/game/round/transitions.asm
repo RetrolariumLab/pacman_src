@@ -169,16 +169,16 @@ bra_stage_clear_flash_tick:		; was: bra_CCFB
     LDA ram_frame_cnt
     AND #$07
     BNE bra_stage_clear_tail_entry
-.ifdef PACMAN_REVISION_TENGEN
+.ifdef PACMAN_REVISION_RAM_PALETTES
     LDX #$11
     LDA ram_shared_state_0
     AND #$01
     BNE bra_apply_tengen_stage_flash
     LDX #$20
 bra_apply_tengen_stage_flash:
-    STX ram_tengen_bg_palette_update + $05
+    STX ram_bg_palette_update + $05
     LDA #$0F
-    STA ram_tengen_bg_palette_update
+    STA ram_bg_palette_update
 .else
     LDX #$00
     LDA ram_shared_state_0
@@ -237,7 +237,7 @@ loc_stage_clear_tail:		; was: loc_CD50
     JMP loc_gameplay_mainloop_wait_nmi
 
 ; PPU commands for stage-clear flash effect
-.ifndef PACMAN_REVISION_TENGEN
+.ifndef PACMAN_REVISION_RAM_PALETTES
 tbl_stage_clear_flash_cmd:		; was: tbl_CD59
     .byte $FF, $11, $05, $3F   ; 00
     .byte $FF, $20, $05, $3F   ; 04

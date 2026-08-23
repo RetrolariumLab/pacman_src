@@ -84,8 +84,12 @@ else ifeq ($(REVISION),usa_tengen)
 REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
 REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)Pac-Man (U) (Tengen) [!].nes
 REVISION_CA65_DEFINE := PACMAN_REVISION=3
+else ifeq ($(REVISION),japan_revb)
+REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
+REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)Pac-Man (Japan) (En) (Rev B).nes
+REVISION_CA65_DEFINE := PACMAN_REVISION=4
 else
-$(error Unsupported REVISION '$(REVISION)'; expected japan_v10, japan_v11, usa_tengen_unlicensed, or usa_tengen)
+$(error Unsupported REVISION '$(REVISION)'; expected japan_v10, japan_v11, usa_tengen_unlicensed, usa_tengen, or japan_revb)
 endif
 
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
@@ -561,6 +565,7 @@ help:
 	@echo   make verify-revision REVISION=japan_v11  Verify an official ROM revision
 	@echo   make verify-revision REVISION=usa_tengen_unlicensed REVISION_REFERENCE_DIR=path/  Verify Tengen
 	@echo   make verify-revision REVISION=usa_tengen REVISION_REFERENCE_DIR=path/  Verify licensed Tengen
+	@echo   make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR=path/  Verify Japan Rev B
 	@echo   make build-hack            Build the isolated default ROM-hack variant
 	@echo   make verify-hack           Require only the documented default hack diff
 	@echo   make validate-hack         Prove the default hack starts on stage 5 in FCEUX

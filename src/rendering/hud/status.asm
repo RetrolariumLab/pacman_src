@@ -268,7 +268,7 @@ bra_upload_history_mask_bytes:		; was: bra_E5E5_loop
     BNE bra_next_history_mask_row   ; jmp
 ; Upload stage fruit color into palette slot
 bra_upload_fruit_palette_color:		; was: bra_E5FF
-.ifndef PACMAN_REVISION_TENGEN
+.ifndef PACMAN_REVISION_RAM_PALETTES
     LDA #> $3F1D
     STA PPUADDR
     LDA #< $3F1D
@@ -286,10 +286,10 @@ bra_clamp_fruit_color_index:		; was: bra_E611
 .else
     LDA tbl_stage_fruit_palette_color,Y
 .endif
-.ifdef PACMAN_REVISION_TENGEN
-    STA ram_tengen_sprite_palette_update + $0D
+.ifdef PACMAN_REVISION_RAM_PALETTES
+    STA ram_sprite_palette_update + $0D
     LDA #$0F
-    STA ram_tengen_sprite_palette_update
+    STA ram_sprite_palette_update
 .else
     STA PPUDATA
 .endif

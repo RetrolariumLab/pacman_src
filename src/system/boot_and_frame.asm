@@ -161,8 +161,8 @@ vec_nmi_handler:		; was: vec_C0FA_NMI
     STA OAMDMA
     JSR sub_write_buffer_to_ppu
     JSR sub_sample_tiles_at_obj_ppu_positions
-.ifdef PACMAN_REVISION_TENGEN
-    JSR sub_upload_tengen_palette_updates
+.ifdef PACMAN_REVISION_RAM_PALETTES
+    JSR sub_upload_regional_palette_updates
 .endif
     LDA ram_scroll_X
     STA PPUSCROLL
@@ -223,50 +223,50 @@ bra_pop_regs_and_rti:		; was: bra_C162
 vec_irq_handler:
     RTI
 
-.ifdef PACMAN_REVISION_TENGEN
-; Tengen revisions can queue complete background and sprite palettes in RAM.
+.ifdef PACMAN_REVISION_RAM_PALETTES
+; Later regional revisions can queue complete background and sprite palettes in RAM.
 ; A universal-color marker of $0F makes the corresponding 16-byte half live.
-sub_upload_tengen_palette_updates:
-    LDA ram_tengen_bg_palette_update
+sub_upload_regional_palette_updates:
+    LDA ram_bg_palette_update
     CMP #$0F
-    BNE bra_check_tengen_sprite_palette
+    BNE bra_check_regional_sprite_palette
     SetPpuAddress $3F00
     LDY #$00
-bra_upload_tengen_bg_palette:
-    LDA ram_tengen_bg_palette_update,Y
+bra_upload_regional_bg_palette:
+    LDA ram_bg_palette_update,Y
     STA PPUDATA
     INY
     CPY #$10
-    BNE bra_upload_tengen_bg_palette
-bra_check_tengen_sprite_palette:
-    LDA ram_tengen_sprite_palette_update
+    BNE bra_upload_regional_bg_palette
+bra_check_regional_sprite_palette:
+    LDA ram_sprite_palette_update
     CMP #$0F
-    BNE bra_finish_tengen_palette_updates
+    BNE bra_finish_regional_palette_updates
     SetPpuAddress $3F10
     LDY #$00
-bra_upload_tengen_sprite_palette:
-    LDA ram_tengen_sprite_palette_update,Y
+bra_upload_regional_sprite_palette:
+    LDA ram_sprite_palette_update,Y
     STA PPUDATA
     INY
     CPY #$10
-    BNE bra_upload_tengen_sprite_palette
-bra_finish_tengen_palette_updates:
-    LDA ram_tengen_bg_palette_update
+    BNE bra_upload_regional_sprite_palette
+bra_finish_regional_palette_updates:
+    LDA ram_bg_palette_update
     CMP #$0F
-    BEQ bra_reset_tengen_palette_updates
-    LDA ram_tengen_sprite_palette_update
+    BEQ bra_reset_regional_palette_updates
+    LDA ram_sprite_palette_update
     CMP #$0F
-    BEQ bra_reset_tengen_palette_updates
+    BEQ bra_reset_regional_palette_updates
     RTS
-bra_reset_tengen_palette_updates:
+bra_reset_regional_palette_updates:
     LDA #$30
     STA PPUADDR
     LDA #$00
     STA PPUADDR
     STA PPUADDR
     STA PPUADDR
-    STA ram_tengen_bg_palette_update
-    STA ram_tengen_sprite_palette_update
+    STA ram_bg_palette_update
+    STA ram_sprite_palette_update
     RTS
 .endif
 
@@ -295,11 +295,11 @@ bra_clear_oam_buffer:		; was: bra_C180_loop
     JSR sub_upload_title_attribute_table
     JSR sub_draw_title_logo_and_text
     JSR sub_draw_score_hud_dual
-.ifdef PACMAN_REVISION_TENGEN
+.ifdef PACMAN_REVISION_RAM_PALETTES
     LDY #$00
 bra_copy_tengen_initial_palettes:
     LDA tbl_title_background_palette,Y
-    STA ram_tengen_bg_palette_update,Y
+    STA ram_bg_palette_update,Y
     INY
     CPY #$20
     BNE bra_copy_tengen_initial_palettes

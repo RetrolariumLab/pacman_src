@@ -53,16 +53,16 @@ bra_check_frightened_end_window:		; was: bra_D117
     LDA ram_shared_state_2
     CMP #$02
     BCS bra_release_and_fruit_tick
-.ifdef PACMAN_REVISION_TENGEN
+.ifdef PACMAN_REVISION_RAM_PALETTES
     LDX #$11
     LDA ram_shared_state_3
     AND #$08
     BNE bra_apply_tengen_frightened_palette
     LDX #$20
 bra_apply_tengen_frightened_palette:
-    STX ram_tengen_sprite_palette_update + $05
+    STX ram_sprite_palette_update + $05
     LDA #$0F
-    STA ram_tengen_sprite_palette_update
+    STA ram_sprite_palette_update
 .else
     LDX #$00
     LDA ram_shared_state_3
@@ -233,7 +233,7 @@ bra_advance_release_slot:		; was: bra_D1F6
 ; !(UNUSED) No pointer or fall-through reaches this duplicate table. See DATA-001.
     .byte $24, $25, $26, $27, $28, $29, $2A, $2B
 ; PPU command fragments for frightened palette writes
-.ifndef PACMAN_REVISION_TENGEN
+.ifndef PACMAN_REVISION_RAM_PALETTES
 tbl_frightened_palette_cmd:		; was: tbl_D205
 ; 00
     .byte $00

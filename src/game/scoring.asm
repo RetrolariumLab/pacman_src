@@ -208,11 +208,11 @@ bra_set_ghost_palette_frightened:		; was: bra_DFD8_loop
     STA ram_spr_pal + $01,X
     DEX
     BPL bra_set_ghost_palette_frightened
-.ifdef PACMAN_REVISION_TENGEN
+.ifdef PACMAN_REVISION_RAM_PALETTES
     LDA #$11
-    STA ram_tengen_sprite_palette_update + $05
+    STA ram_sprite_palette_update + $05
     LDA #$0F
-    STA ram_tengen_sprite_palette_update
+    STA ram_sprite_palette_update
 .else
     LDY #$FF
 ; Find PPU buffer end for frightened palette command
@@ -303,7 +303,7 @@ bra_next_ghost_for_reversal:		; was: bra_E046
     RTS
 
 ; Frightened palette command bytes (alternate source)
-.ifndef PACMAN_REVISION_TENGEN
+.ifndef PACMAN_REVISION_RAM_PALETTES
 tbl_frightened_palette_cmd_alt:		; was: tbl_E05B
     .byte $00
     .dbyt $3F15

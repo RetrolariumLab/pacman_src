@@ -159,9 +159,9 @@ ram_spr_pos_Y_hi                         = $0276
 ram_spr_pos_Y_lo                         = $0277
 ram_actor_sprite_set                     = $028C
 ram_actor_sprite_attrs                   = $0292
-.ifdef PACMAN_REVISION_TENGEN
-ram_tengen_bg_palette_update             = $0299
-ram_tengen_sprite_palette_update         = $02A9
+.ifdef PACMAN_REVISION_RAM_PALETTES
+ram_bg_palette_update                    = $0299
+ram_sprite_palette_update                = $02A9
 .endif
 
 ; $0600 page
@@ -182,7 +182,7 @@ ram_sfx_intermission_flag_b              = $060E
 ram_sfx_pause_toggle                     = $060F
 .if PACMAN_REVISION = REVISION_JAPAN_V11
 ram_sound_channel_state                 = $0620
-.elseif .defined(PACMAN_REVISION_TENGEN)
+.elseif .defined(PACMAN_REVISION_RAM_PALETTES)
 ram_sound_channel_state                 = $0620
 .else
 ram_sound_channel_state                 = $0625

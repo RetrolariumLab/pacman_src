@@ -32,11 +32,11 @@ bra_clear_oam_all:		; was: bra_CE53_loop
     STA ram_oam,X
     INX
     BNE bra_clear_oam_all
-.ifdef PACMAN_REVISION_TENGEN
+.ifdef PACMAN_REVISION_RAM_PALETTES
     LDY #$00
 bra_copy_tengen_round_palette:
     LDA tbl_round_gameplay_palette,Y
-    STA ram_tengen_bg_palette_update,Y
+    STA ram_bg_palette_update,Y
     INY
     CPY #$20
     BNE bra_copy_tengen_round_palette
