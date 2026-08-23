@@ -10,7 +10,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 from data_formats import decode_maze
-from maze_studio_model import COLUMNS, ROWS, MazeDocument, inspect_grid, load_document
+from maze_studio_model import COLUMNS, ROWS, MazeDocument, inspect_grid, load_document, semantic_overlays
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -32,6 +32,7 @@ class MazeStudio(tk.Tk):
         self.model = model
         self.tile = tk.IntVar(value=7)
         self.status = tk.StringVar()
+        self.show_semantics = tk.BooleanVar(value=True)
         self.images = [self._tile_image(chr_data, tile) for tile in range(64)]
         self.title("Pac-Man Maze Studio")
         self.protocol("WM_DELETE_WINDOW", self.close)
@@ -53,6 +54,8 @@ class MazeStudio(tk.Tk):
                                ("Build ROM", lambda: self.run_make("build-expanded")),
                                ("Run FCEUX", lambda: self.run_make("run-expanded"))):
             ttk.Button(bar, text=label, command=command).pack(side=tk.LEFT, padx=2)
+        ttk.Checkbutton(bar, text="Semantic overlays", variable=self.show_semantics,
+                        command=self.refresh).pack(side=tk.LEFT, padx=10)
         body = ttk.Frame(self, padding=(7, 0)); body.pack(fill=tk.BOTH, expand=True)
         self.canvas = tk.Canvas(body, width=COLUMNS * CELL, height=ROWS * CELL, bg="#111")
         self.canvas.pack(side=tk.LEFT)
@@ -80,12 +83,32 @@ class MazeStudio(tk.Tk):
                 self.canvas.create_image(x, y, image=self.images[tile], anchor=tk.NW)
                 color = "#39a9ff" if self.model.changed(row, column) else "#252525"
                 self.canvas.create_rectangle(x, y, x + CELL, y + CELL, outline=color)
+        if self.show_semantics.get(): self._draw_semantics()
         report = inspect_grid(self.model.grid)
         issues = report["errors"] or report["warnings"] or ["structural checks pass"]
         self.status.set(f"Tile ${self.tile.get():02X} | pellets {report['pellets']}/192 | "
                         f"power {report['power_pellets']}/4 | RLE {report['minimum_rle_bytes']} -> 416 | "
                         f"{'; '.join(issues)}")
         self.title("Pac-Man Maze Studio" + (" *" if self.model.dirty else ""))
+
+    def _draw_semantics(self) -> None:
+        colors = {"tunnel": "#ff9f43", "ghost_house": "#b56cff", "door": "#ff4d6d",
+                  "pacman": "#ffe600", "ghost": "#ff7675", "power": "#7bedff"}
+        for overlay in semantic_overlays(self.model.grid):
+            color = colors[overlay["kind"]]
+            if "bounds" in overlay:
+                top, left, bottom, right = overlay["bounds"]
+                self.canvas.create_rectangle(left * CELL, top * CELL, (right + 1) * CELL,
+                                             (bottom + 1) * CELL, outline=color, width=3)
+                self.canvas.create_text(left * CELL + 3, top * CELL + 3, text=overlay["label"],
+                                        fill=color, anchor=tk.NW, font=("TkDefaultFont", 8, "bold"))
+            for row, column in overlay.get("cells", []):
+                x, y = column * CELL, row * CELL
+                self.canvas.create_rectangle(x + 2, y + 2, x + CELL - 2, y + CELL - 2,
+                                             outline=color, width=2)
+                if overlay["kind"] in ("pacman", "ghost", "door"):
+                    self.canvas.create_text(x + CELL / 2, y + CELL / 2, text=overlay["label"],
+                                            fill=color, font=("TkDefaultFont", 9, "bold"))
 
     def undo(self) -> None: self.model.undo(); self.refresh()
     def redo(self) -> None: self.model.redo(); self.refresh()

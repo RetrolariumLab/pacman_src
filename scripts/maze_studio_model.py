@@ -16,6 +16,25 @@ COLUMNS = 22
 RLE_SIZE = 416
 PELLET_TILES = frozenset((0x01, 0x03, 0x09))
 POWER_PELLET_TILE = 0x01
+TUNNEL_ROW = 13
+GHOST_DOOR = (11, 11)
+PACMAN_SPAWN = (20, 11)
+GHOST_SPAWNS = ((10, 11), (13, 10), (13, 11), (13, 12))
+GHOST_HOUSE_BOUNDS = (11, 9, 14, 13)
+
+
+def semantic_overlays(grid: list[list[int]]) -> list[dict[str, object]]:
+    overlays = [
+        {"kind": "tunnel", "label": "TUNNEL", "cells": [(TUNNEL_ROW, 0), (TUNNEL_ROW, COLUMNS - 1)]},
+        {"kind": "ghost_house", "label": "GHOST HOUSE", "bounds": GHOST_HOUSE_BOUNDS},
+        {"kind": "door", "label": "DOOR", "cells": [GHOST_DOOR]},
+        {"kind": "pacman", "label": "P", "cells": [PACMAN_SPAWN]},
+        {"kind": "ghost", "label": "G", "cells": list(GHOST_SPAWNS)},
+    ]
+    power_cells = [(row, column) for row in range(ROWS) for column in range(COLUMNS)
+                   if grid[row][column] == POWER_PELLET_TILE]
+    overlays.append({"kind": "power", "label": "POWER", "cells": power_cells})
+    return overlays
 
 
 def validate_grid(grid: list[list[int]]) -> None:
@@ -101,6 +120,15 @@ def inspect_grid(grid: list[list[int]]) -> dict[str, object]:
         errors.append(f"maze has {pellet_count} collectible pellets; runtime round counter expects 192")
     if counts[POWER_PELLET_TILE] != 4:
         errors.append(f"maze has {counts[POWER_PELLET_TILE]} visible power pellets; runtime marker table expects 4")
+    if grid[GHOST_DOOR[0]][GHOST_DOOR[1]] != 0x2C:
+        errors.append("ghost-house door at (11,11) must remain tile $2C for ghost navigation")
+    for name, (row, column) in (("Pac-Man spawn", PACMAN_SPAWN),
+                                *((f"ghost spawn {index}", cell) for index, cell in enumerate(GHOST_SPAWNS))):
+        if grid[row][column] >= 0x10:
+            errors.append(f"{name} at ({row},{column}) is blocked by tile ${grid[row][column]:02X}")
+    for column in (0, COLUMNS - 1):
+        if grid[TUNNEL_ROW][column] >= 0x10:
+            errors.append(f"tunnel endpoint ({TUNNEL_ROW},{column}) must remain passable")
     components = passable_components(grid)
     if len(components) > 2 or (len(components) == 2 and components[1] > 6):
         errors.append(f"passable maze is unexpectedly disconnected: component sizes {components}")

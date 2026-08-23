@@ -54,6 +54,15 @@ class MazeStudioTests(unittest.TestCase):
         report = inspect_grid(grid)
         self.assertTrue(any("expects 192" in error for error in report["errors"]))
 
+    def test_door_spawn_and_tunnel_assumptions_are_enforced(self) -> None:
+        cases = (((11, 11), 7, "door"), ((20, 11), 0x10, "Pac-Man spawn"),
+                 ((13, 0), 0x10, "tunnel endpoint"))
+        for (row, column), tile, message in cases:
+            with self.subTest(message=message):
+                grid = copy.deepcopy(self.original["decoded_rows"])
+                grid[row][column] = tile
+                self.assertTrue(any(message in error for error in inspect_grid(grid)["errors"]))
+
     def test_save_is_atomic_and_round_trips(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "maze.json"

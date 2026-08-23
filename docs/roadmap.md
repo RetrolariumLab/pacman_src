@@ -545,6 +545,10 @@ The first vertical slice provides a CHR-backed 27x22 editor, all 64 tile IDs,
 original-cell comparison, undo/redo, atomic JSON export, fixed 416-byte
 row-bounded RLE packing, pellet/power-pellet and connectivity checks, plus
 explicit expanded-ROM build and FCEUX launch controls through `make maze-studio`.
+Semantic overlays identify the tunnel endpoints, ghost-house bounds and door,
+Pac-Man and ghost spawn assumptions, and live power-pellet locations. Export
+rejects edits that block runtime-fixed spawn/tunnel coordinates or replace the
+special `$2C` house-door tile.
 
 ### 18. Graphics, Sprites, and Palette Studio — Planned
 
