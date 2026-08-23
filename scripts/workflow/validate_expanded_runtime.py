@@ -15,6 +15,7 @@ def main() -> int:
     parser.add_argument("--stage-json", required=True, type=Path)
     parser.add_argument("--sound-json", required=True, type=Path)
     parser.add_argument("--palette-json", required=True, type=Path)
+    parser.add_argument("--screen-json", required=True, type=Path)
     args = parser.parse_args()
     if not args.result.is_file():
         print(f"[ERROR] Missing expanded runtime result: {args.result}")
@@ -31,6 +32,9 @@ def main() -> int:
     palette_match = re.fullmatch(
         r"palette,([0-9A-F]{64})", lines[3] if len(lines) > 3 else ""
     )
+    screen_match = re.fullmatch(
+        r"screen,A79E,([0-9A-F]{2}),1", lines[4] if len(lines) > 4 else ""
+    )
     stage_document = json.loads(args.stage_json.read_text(encoding="utf-8"))
     expected_duration = int(stage_document["stage_profiles"][1]["frightened_duration"])
     sound_document = json.loads(args.sound_json.read_text(encoding="utf-8"))
@@ -40,17 +44,21 @@ def main() -> int:
     expected_palette_values = list(palette_document["round_gameplay"])
     expected_palette_values[0x1D] = int(palette_document["fruit_by_stage"][1])
     expected_palette = bytes(expected_palette_values)
+    screen_document = json.loads(args.screen_json.read_text(encoding="utf-8"))
+    expected_title_tile = int(screen_document["title_logo"]["tiles"][0])
     if (
         maze_match is None
         or stage_match is None
         or sound_match is None
         or palette_match is None
-        or lines[4:] != ["OK"]
+        or screen_match is None
+        or lines[5:] != ["OK"]
         or int(stage_match.group(1), 16) != expected_duration
         or int(stage_match.group(2), 16) != expected_duration
         or int(sound_match.group(2), 16) <= int(sound_match.group(1), 16)
         or int(sound_match.group(3), 16) != expected_note
         or bytes.fromhex(palette_match.group(1)) != expected_palette
+        or int(screen_match.group(1), 16) != expected_title_tile
     ):
         print(f"[ERROR] Expanded runtime validation failed: {lines}")
         return 1
@@ -58,7 +66,8 @@ def main() -> int:
         f"[OK] FCEUX selected the stage-2 maze at $82D6 (token ${maze_match.group(1)}) "
         f"and loaded its frightened duration {expected_duration} from $81A0; "
         f"pellet slot 04 decoded JSON note ${expected_note:02X} through $848F; "
-        "PPU palette RAM matches the gameplay JSON plus its stage-1 fruit override."
+        "PPU palette RAM matches the gameplay JSON plus its stage-1 fruit override; "
+        f"title tile ${expected_title_tile:02X} from $A79E was observed at PPU $20E5."
     )
     return 0
 

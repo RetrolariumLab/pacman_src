@@ -46,7 +46,11 @@ bra_draw_next_logo_row:		; was: bra_C22D_loop
     STA zp_work3
 ; Stream one title logo row tile sequence
 bra_stream_logo_row_tiles:		; was: bra_C23E_loop
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_title_logo_tiles,Y
+.else
     LDA tbl_title_logo_tiles,Y
+.endif
     STA PPUDATA
     INY
     DEC zp_work3
@@ -67,15 +71,27 @@ bra_stream_logo_row_tiles:		; was: bra_C23E_loop
 ; Draw next title text packet header+payload
 bra_draw_next_logo_text_packet:		; was: bra_C260_loop
     LDA PPUSTATUS
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_title_logo_text_packets,Y
+.else
     LDA tbl_title_logo_text_packets,Y
+.endif
     STA PPUADDR
     INY
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_title_logo_text_packets,Y
+.else
     LDA tbl_title_logo_text_packets,Y
+.endif
     STA PPUADDR
     INY
 ; Stream text payload bytes until FF terminator
 bra_stream_logo_text_until_ff:		; was: bra_C271_loop
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_title_logo_text_packets,Y
+.else
     LDA tbl_title_logo_text_packets,Y
+.endif
     CMP #con_ppu_buffer_end
     BEQ bra_advance_to_next_logo_text_packet
     STA PPUDATA
@@ -94,7 +110,11 @@ sub_upload_title_attribute_table:		; was: sub_C284_set_bg_attr
     LDY #$00
 ; Upload next title attribute byte
 bra_upload_next_attribute_byte:		; was: bra_C293_loop
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_title_attribute_bytes,Y
+.else
     LDA tbl_title_attribute_bytes,Y
+.endif
     STA PPUDATA
     INY
     CPY #$18
@@ -167,7 +187,11 @@ handler_script02_title_menu_idle:		; was: ofs_000_C3BD_02
     LDY #$00
 ; Copy title menu prompt packet into main PPU buffer
 bra_copy_menu_prompt_to_ppu_buffer:		; was: bra_C3C5_loop
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_menu_prompt_tiles,Y
+.else
     LDA tbl_ppu_cmd_player_count_prompt,Y
+.endif
     STA ram_ppu_buffer_main,Y
     INY
     CMP #$FF
@@ -218,9 +242,17 @@ bra_handle_select_toggle:		; was: bra_C3F8
     INX
 ; Select glyph pair index for 1P/2P prompt
 bra_select_player_glyph_index:		; was: bra_C41B
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_player_count_glyph_pair,X
+.else
     LDA tbl_player_count_glyph_pair,X
+.endif
     STA ram_ppu_buffer_main + $02
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_player_count_glyph_pair + $01,X
+.else
     LDA tbl_player_count_glyph_pair + $01,X
+.endif
     STA ram_ppu_buffer_main + $06
     LDA #$22
     STA ram_ppu_buffer_main

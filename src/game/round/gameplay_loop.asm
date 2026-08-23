@@ -149,7 +149,11 @@ bra_store_pause_ppu_addr:		; was: bra_CA41
 bra_select_pause_text_variant:		; was: bra_CA58
 ; Copy pause/on-off tile sequence into PPU packet
 bra_copy_pause_tiles:		; was: bra_CA58_loop
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_pause_tiles,X
+.else
     LDA tbl_pause_text_tiles,X
+.endif
     STA ram_ppu_buffer_main + con_ppu_command_address_size,Y
     INX
     INY

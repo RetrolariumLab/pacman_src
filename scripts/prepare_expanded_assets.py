@@ -19,6 +19,7 @@ from data_formats import (
     encode_stage,
 )
 from palette_assets import decode_palette_collection, encode_palette_collection
+from screen_assets import decode_screen_collection, encode_screen_collection
 
 
 STAGE_CPU_ADDRESS = 0xEB42
@@ -87,6 +88,8 @@ def main() -> int:
     parser.add_argument("--actor-output", type=Path)
     parser.add_argument("--palette-json", required=True, type=Path)
     parser.add_argument("--palette-output", type=Path)
+    parser.add_argument("--screen-json", required=True, type=Path)
+    parser.add_argument("--screen-output", type=Path)
     parser.add_argument("--demo-frightened-duration", type=int, default=14)
     args = parser.parse_args()
 
@@ -102,6 +105,8 @@ def main() -> int:
         write_once(args.actor_json, actors, "actor mapping")
         palettes = decode_palette_collection(args.original_rom.read_bytes())
         write_once(args.palette_json, palettes, "palette")
+        screens = decode_screen_collection(args.original_rom.read_bytes())
+        write_once(args.screen_json, screens, "screen")
         manifest = json.loads(args.asset_manifest.read_text(encoding="utf-8"))
         audio_assets = sorted(
             (asset for asset in manifest["assets"] if asset["path"].startswith("audio/")),
@@ -124,13 +129,14 @@ def main() -> int:
 
     if (args.maze_output is None or args.stage_output is None or args.sound_output is None
             or args.sound_pointers_output is None or args.actor_output is None
-            or args.palette_output is None):
+            or args.palette_output is None or args.screen_output is None):
         parser.error("encode requires all binary output paths")
     maze = encode_maze(json.loads(args.maze_json.read_text(encoding="utf-8")))
     stage = encode_stage(json.loads(args.stage_json.read_text(encoding="utf-8")))
     sound_document = json.loads(args.sound_json.read_text(encoding="utf-8"))
     actors = encode_actors(json.loads(args.actor_json.read_text(encoding="utf-8")))
     palettes = encode_palette_collection(json.loads(args.palette_json.read_text(encoding="utf-8")))
+    screens = encode_screen_collection(json.loads(args.screen_json.read_text(encoding="utf-8")))
     pointers, sound_bundle, sound_used = encode_sound_collection(sound_document)
     args.maze_output.parent.mkdir(parents=True, exist_ok=True)
     args.stage_output.parent.mkdir(parents=True, exist_ok=True)
@@ -143,6 +149,8 @@ def main() -> int:
     args.actor_output.write_bytes(actors)
     args.palette_output.parent.mkdir(parents=True, exist_ok=True)
     args.palette_output.write_bytes(palettes)
+    args.screen_output.parent.mkdir(parents=True, exist_ok=True)
+    args.screen_output.write_bytes(screens)
     print(f"[OK] Encoded expanded maze asset: {args.maze_output} ({len(maze)} bytes)")
     print(f"[OK] Encoded expanded stage asset: {args.stage_output} ({len(stage)} bytes)")
     print(
@@ -151,6 +159,7 @@ def main() -> int:
     )
     print(f"[OK] Encoded expanded actor mappings: {len(actors)} bytes")
     print(f"[OK] Encoded expanded palettes: {len(palettes)} bytes")
+    print(f"[OK] Encoded expanded screens: {len(screens)} bytes")
     return 0
 
 

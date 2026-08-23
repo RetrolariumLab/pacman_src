@@ -109,9 +109,17 @@ bra_advance_substate_after_wait:		; was: bra_C4DA
 ; Build next attract/demo PPU update packet (and optional sprite strip)
 sub_build_attract_ppu_packet:		; was: sub_C4EC
     LDY ram_shared_state_0
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_attract_text_ptr_table,Y
+.else
     LDA tbl_attract_ppu_packet_ptrs,Y
+.endif
     STA zp_work0
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_attract_text_ptr_table + $01,Y
+.else
     LDA tbl_attract_ppu_packet_ptrs + $01,Y
+.endif
     STA zp_work1
     LDY #$00
 ; Copy attract PPU packet bytes into main PPU buffer

@@ -47,7 +47,11 @@ handler_anim_scene_base_cycle_alt:		; was: ofs_017_EA4C_04
     LDA ram_pacman_anim_phase
     AND #$07
     TAY
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_intermission_cycle_tiles,Y
+.else
     LDA tbl_anim_cycle_tiles,Y
+.endif
     STA ram_actor_sprite_set + $01
     RTS
 
@@ -112,15 +116,35 @@ handler_anim_scene00_banner_cycle:		; was: ofs_017_EA90_06
     LDA ram_pacman_anim_phase
     AND #$07
     TAY
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_intermission_cycle_pattern_indexes,Y
+.else
     LDA tbl_anim_cycle_to_pattern_index,Y
+.endif
     TAY
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_intermission_banner_tile_quads,Y
+.else
     LDA tbl_anim_banner_tile_quads,Y
+.endif
     STA ram_actor_sprite_set + $01
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_intermission_banner_tile_quads + $01,Y
+.else
     LDA tbl_anim_banner_tile_quads + $01,Y
+.endif
     STA ram_actor_sprite_set + $02
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_intermission_banner_tile_quads + $02,Y
+.else
     LDA tbl_anim_banner_tile_quads + $02,Y
+.endif
     STA ram_actor_sprite_set + $03
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_intermission_banner_tile_quads + $03,Y
+.else
     LDA tbl_anim_banner_tile_quads + $03,Y
+.endif
     STA ram_actor_sprite_set + $04
     BNE bra_anim_scene00_tail_tile_toggle    ; jmp
 

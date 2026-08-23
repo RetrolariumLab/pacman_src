@@ -252,7 +252,11 @@ bra_finalize_round_runtime:		; was: bra_CF7A
 bra_select_hud_packet:		; was: bra_CFBE
 ; Copy HUD PPU packet into RAM buffer
 bra_copy_hud_ppu_packet:		; was: bra_CFBE_loop
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_hud_player_packets,Y
+.else
     LDA tbl_hud_ppu_packets_by_player,Y
+.endif
     STA ram_ppu_buffer_hud,X
     INY
     INX

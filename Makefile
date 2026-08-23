@@ -44,6 +44,8 @@ EXPANDED_ACTOR_JSON ?= $(PROJECT_DIR)hacks/local/actor_sprites.json
 EXPANDED_ACTOR_BIN ?= $(EXPANDED_DIR)/assets/actor_sprites.bin
 EXPANDED_PALETTE_JSON ?= $(PROJECT_DIR)hacks/local/palettes.json
 EXPANDED_PALETTE_BIN ?= $(EXPANDED_DIR)/assets/palettes.bin
+EXPANDED_SCREEN_JSON ?= $(PROJECT_DIR)hacks/local/screens.json
+EXPANDED_SCREEN_BIN ?= $(EXPANDED_DIR)/assets/screens.bin
 SOUND_SLOT ?= 4
 SOUND_PREVIEW ?= $(PROJECT_DIR)tmp/sound_preview.wav
 MIDI_FILE ?=
@@ -101,7 +103,7 @@ DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
+.PHONY: build verify build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -185,6 +187,7 @@ init-expanded-assets: _require-assets
 		--sound-json "$(EXPANDED_SOUND_JSON)" \
 		--actor-json "$(EXPANDED_ACTOR_JSON)" \
 		--palette-json "$(EXPANDED_PALETTE_JSON)" \
+		--screen-json "$(EXPANDED_SCREEN_JSON)" \
 		--demo-frightened-duration 14
 
 expanded-assets:
@@ -203,7 +206,9 @@ expanded-assets:
 		--actor-json "$(EXPANDED_ACTOR_JSON)" \
 		--actor-output "$(EXPANDED_ACTOR_BIN)" \
 		--palette-json "$(EXPANDED_PALETTE_JSON)" \
-		--palette-output "$(EXPANDED_PALETTE_BIN)"
+		--palette-output "$(EXPANDED_PALETTE_BIN)" \
+		--screen-json "$(EXPANDED_SCREEN_JSON)" \
+		--screen-output "$(EXPANDED_SCREEN_BIN)"
 
 build-expanded: _require-assets expanded-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_expanded.py" \
@@ -229,6 +234,7 @@ verify-expanded: build-expanded
 		--sound-streams "$(EXPANDED_SOUND_BIN)" \
 		--actors "$(EXPANDED_ACTOR_BIN)" \
 		--palettes "$(EXPANDED_PALETTE_BIN)" \
+		--screens "$(EXPANDED_SCREEN_BIN)" \
 		--expected-chr "$(GENERATED_CHR)" \
 		--layout "$(PROJECT_DIR)config/expanded_layout.json"
 
@@ -256,7 +262,8 @@ validate-expanded: build-dev symbols-expanded
 		--result "$(EXPANDED_RUNTIME_RESULT)" \
 		--stage-json "$(EXPANDED_STAGE_JSON)" \
 		--sound-json "$(EXPANDED_SOUND_JSON)" \
-		--palette-json "$(EXPANDED_PALETTE_JSON)"
+		--palette-json "$(EXPANDED_PALETTE_JSON)" \
+		--screen-json "$(EXPANDED_SCREEN_JSON)"
 
 symbols: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
@@ -320,6 +327,14 @@ graphics-studio:
 		--actors "$(EXPANDED_ACTOR_JSON)" \
 		--palettes "$(EXPANDED_PALETTE_JSON)" \
 		--rom "$(ORIGINAL_ROM)" \
+		--project "$(PROJECT_DIR)"
+
+screen-studio:
+	$(PYTHON) "$(PROJECT_DIR)scripts/screen_studio.py" \
+		--rom "$(ORIGINAL_ROM)" \
+		--chr "$(GENERATED_CHR)" \
+		--screens "$(EXPANDED_SCREEN_JSON)" \
+		--palettes "$(EXPANDED_PALETTE_JSON)" \
 		--project "$(PROJECT_DIR)"
 
 describe-sound:
@@ -501,6 +516,7 @@ help:
 	@echo   make validate-expanded     Prove expanded maze access in FCEUX
 	@echo   make run-expanded          Build and run the expanded variant in FCEUX
 	@echo   make graphics-studio       Open the local CHR and metasprite editor
+	@echo   make screen-studio         Open the local screen, text, and HUD editor
 	@echo   make sound-studio          Open the local sound editor and piano roll
 	@echo   make maze-studio           Open the local CHR-backed maze editor
 	@echo   make describe-sound        Show musical notes for SOUND_SLOT, default 4

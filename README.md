@@ -129,6 +129,7 @@ make run-expanded               # Build and run the NROM-256 variant
 make sound-studio               # Open the local slot editor and piano roll
 make maze-studio                # Open the local 27x22 CHR-backed maze editor
 make graphics-studio            # Open the local CHR and metasprite editor
+make screen-studio              # Open the title, text, HUD, and intermission editor
 make describe-sound SOUND_SLOT=4 # Inspect decoded musical notes
 make preview-sound SOUND_SLOT=4  # Render an ignored WAV preview
 make symbols                    # Generate Mesen/FCEUX debugger artifacts

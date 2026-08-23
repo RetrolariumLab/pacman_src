@@ -13,6 +13,9 @@ local sound_table_pointer = debugger.getsymboloffset("tbl_sfx_stream_table_ptr")
 local sound_requests = debugger.getsymboloffset("ram_sfx")
 local sound_channels = debugger.getsymboloffset("ram_sound_channel_state")
 local demo_flag = debugger.getsymboloffset("ram_flag_demo")
+-- The FCEUX .nl format keeps only one alias at a shared address. The linker
+-- assert and expanded layout manifest independently pin this asset to $A79E.
+local screens = 0xA79E
 
 if round_init == nil or stage_ready == nil or maze == nil or stage == nil or maze_row == nil
         or stage_number == nil or frightened_duration == nil or sound_table_pointer == nil
@@ -32,6 +35,7 @@ local pellet_stream = memory.readbyte(pellet_pointer_entry)
 local forced = false
 local reached = false
 local selected_maze = nil
+local title_seen = false
 memory.registerexecute(round_init, function()
     if not forced then
         -- Round init increments this value before selecting stage data.
@@ -46,6 +50,7 @@ memory.registerexecute(maze_row, function()
 end)
 memory.registerexecute(stage_ready, function() reached = true end)
 for _ = 1, 10000 do
+    if ppu.readbyte(0x20E5) == memory.readbyte(screens) then title_seen = true end
     if reached then break end
     emu.frameadvance()
 end
@@ -67,11 +72,11 @@ if not reached or selected_maze == nil then
 else
     output:write(string.format(
         "maze,%04X,%04X,%02X\nstage,%04X,%02X,%02X\n"
-            .. "sound,%04X,%04X,%04X,%02X\npalette,%s\nOK\n",
+            .. "sound,%04X,%04X,%04X,%02X\npalette,%s\nscreen,%04X,%02X,%d\nOK\n",
         maze, selected_maze, memory.readbyte(selected_maze), stage,
         memory.readbyte(stage + 7), memory.readbyte(frightened_duration),
         active_sound_table, pellet_stream, pellet_cursor, memory.readbyte(pellet_stream + 4),
-        table.concat(palette)))
+        table.concat(palette), screens, memory.readbyte(screens), title_seen and 1 or 0))
 end
 output:close()
 emu.exit()

@@ -27,6 +27,7 @@
 - [sound_authoring.md](./sound_authoring.md): variable-length streams, musical notes, MIDI import, and WAV preview.
 - [maze_authoring.md](./maze_authoring.md): CHR-backed maze editing, fixed RLE export, and runtime landmark guards.
 - [graphics_authoring.md](./graphics_authoring.md): reversible CHR pixel editing and actor metasprite inspection.
+- [screen_authoring.md](./screen_authoring.md): title, text packet, HUD, and intermission visual editing.
 - [stage_params_and_data_tail.md](./stage_params_and_data_tail.md): stage profile tables, maze RLE, vectors, tail layout.
 - [assets.md](./assets.md): policy and reproducible extraction of opaque ROM assets.
 
@@ -91,3 +92,6 @@ After each edit batch:
 - The local Graphics Studio (roadmap milestone 18) provides reversible CHR
   pixel editing and a validated actor metasprite/OAM inspector through
   `make graphics-studio`.
+- The local Screen Studio (roadmap milestone 19) composes the title nametable,
+  edits bounded text/HUD/intermission assets, and exports them to the expanded
+  bank through `make screen-studio`.

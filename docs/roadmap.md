@@ -576,13 +576,22 @@ gameplay, intermission, frightened, and stage-fruit colors in a validated
 instant previews, and FCEUX proves the gameplay palette plus its live fruit
 override reached PPU palette RAM.
 
-### 19. Screens, Text, and Intermission Editor — Planned
+### 19. Screens, Text, and Intermission Editor — Complete
 
 Model the game's tile-encoded text and static PPU command fragments instead of
 treating them as ASCII. Provide nametable previews for title/HUD/status content,
 editable text-to-tile mappings, palette attributes, and the already decoded
 intermission dispatch/animation tables. Keep code pointers separate from
 authored visual data and require emulator evidence for changed scene timing.
+
+Completed with a separate Tkinter Screen Studio and validated 1042-byte JSON
+bundle. It composes a CHR- and palette-backed title nametable, edits the title
+logo, addressed title/attract packets, fixed HUD/pause blocks, and bounded
+intermission visual tables. Executable dispatch pointers remain read-only.
+The expanded encoder recalculates attract pointers, enforces fixed budgets,
+and connects every editable section through reviewed fixed-bank operands while
+the preservation build remains byte-identical. FCEUX observes the JSON title
+tile reaching its live PPU address.
 
 ### 20. Unified Local Content Studio — Planned
 
@@ -593,7 +602,7 @@ intermission data; the tool reports expanded-bank usage, builds a deterministic
 ROM, emits a reviewed manifest, and launches FCEUX. Original ROM inputs, local
 JSON projects, previews, and generated ROMs remain ignored.
 
-The recommended next implementation is milestone 19. A small contributor-facing
+The recommended next implementation is milestone 20. A small contributor-facing
 variant recipe and packaging command should be developed alongside these tools,
 but should not become a substitute for format validation or the permanent
 byte-identical preservation gate.

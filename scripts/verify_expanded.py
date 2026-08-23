@@ -72,7 +72,10 @@ def validate_expanded(
     if any(value != fill for value in prg[cursor:bank_size]):
         raise ValueError("unexpected data after declared assets in expanded bank")
 
-    expected_changes = layout["fixed_bank_changes"]
+    expected_changes = sorted(
+        layout["fixed_bank_changes"] + layout.get("screen_fixed_bank_changes", []),
+        key=lambda item: int(item["address"]),
+    )
     observed_changes = fixed_differences(original_prg, prg[16_384:])
     if observed_changes != expected_changes:
         raise ValueError(
@@ -92,6 +95,7 @@ def main() -> int:
     parser.add_argument("--sound-streams", required=True, type=Path)
     parser.add_argument("--actors", required=True, type=Path)
     parser.add_argument("--palettes", required=True, type=Path)
+    parser.add_argument("--screens", required=True, type=Path)
     parser.add_argument("--expected-chr", type=Path)
     parser.add_argument("--layout", required=True, type=Path)
     args = parser.parse_args()
@@ -107,6 +111,7 @@ def main() -> int:
                 "sound_streams": args.sound_streams.read_bytes(),
                 "actor_mappings": args.actors.read_bytes(),
                 "palettes": args.palettes.read_bytes(),
+                "screens": args.screens.read_bytes(),
             },
             json.loads(args.layout.read_text(encoding="utf-8")),
             args.expected_chr.read_bytes() if args.expected_chr else None,
@@ -114,7 +119,7 @@ def main() -> int:
     except (KeyError, TypeError, ValueError) as error:
         print(f"[ERROR] Expanded ROM validation failed: {error}")
         return 1
-    print("[OK] Expanded layout, stage-specific mazes, and exact fixed-bank change manifest.")
+    print("[OK] Expanded layout, all JSON assets, and exact fixed-bank change manifest.")
     return 0
 
 

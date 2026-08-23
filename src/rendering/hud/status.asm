@@ -7,7 +7,11 @@ bra_next_hud_block_page:		; was: bra_E47E_loop
     LDY #$00
 ; Stream one HUD block packet to PPU
 bra_stream_hud_block_packet:		; was: bra_E480_loop
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_hud_blocks,Y
+.else
     LDA tbl_hud_block_packets,Y
+.endif
     CPX #$00
     BNE bra_write_hud_block_addr_hi
     ADC #$07
@@ -15,15 +19,27 @@ bra_stream_hud_block_packet:		; was: bra_E480_loop
 bra_write_hud_block_addr_hi:		; was: bra_E489
     STA PPUADDR
     INY
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_hud_blocks,Y
+.else
     LDA tbl_hud_block_packets,Y
+.endif
     STA PPUADDR
     INY
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_hud_blocks,Y
+.else
     LDA tbl_hud_block_packets,Y
+.endif
     STA zp_work0
 ; Write HUD block payload bytes
 bra_write_hud_block_payload:		; was: bra_E499_loop
     INY
+.ifdef PACMAN_EXPANDED_SCREENS
+    LDA tbl_expanded_hud_blocks,Y
+.else
     LDA tbl_hud_block_packets,Y
+.endif
     STA PPUDATA
     DEC zp_work0
     BNE bra_write_hud_block_payload
