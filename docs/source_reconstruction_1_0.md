@@ -15,7 +15,7 @@ and changed safely.
 | RAM, constants, state machines, and tables are documented | `docs/ram_fields.md`, subsystem documents, `src/memory/`, and `docs/data_formats.md` |
 | Unresolved behavior is explicit | Stable IDs, evidence, hypotheses, and experiments in `docs/unknowns.md`; registry references enforced by lint |
 | Source-level debugger navigation works | ld65/FCEUX artifacts from `make symbols`; live lookup and semantic NMI break from `make validate-symbols` |
-| Main gameplay transactions have focused evidence | Nine lifecycle/runtime scenarios and six scoring scenarios documented in `docs/runtime_trace_scenarios.md` |
+| Main gameplay transactions have focused evidence | Five runtime trace configurations cover nine semantic checks documented in `docs/runtime_trace_scenarios.md`; six scoring scenarios are documented in `docs/scoring_trace_scenarios.md` |
 | A subsystem can be changed in isolation | `docs/source_layout.md`, subsystem index in `docs/index.md`, bounded semantic modules, and format-specific JSON codecs |
 | The default build remains preservation-safe | `make verify` checks reference PRG and ROM SHA-1 values; generated JSON and trace artifacts remain ignored |
 
@@ -38,7 +38,8 @@ The command performs, in order:
 2. all focused workflow unit tests;
 3. byte-identical native ROM build and six format round-trips;
 4. live FCEUX symbol lookup and named NMI breakpoint validation;
-5. fresh capture and semantic validation of nine focused runtime scenarios;
+5. fresh capture from five runtime trace configurations and validation of nine
+   focused semantic checks;
 6. fresh scoring capture and semantic validation of six scoring scenarios.
 
 Passing only an individual layer is insufficient for a stable release. Runtime

@@ -15,8 +15,8 @@ make reconstruction-audit # complete Source Reconstruction 1.0 release gate
 make reconstruction-audit-2 # strict seven-revision and regional runtime gate
 make verify-hack          # exact manifest-declared default variant difference
 make validate-hack        # default variant behavior in live FCEUX
-make verify-expanded      # NROM-256 layout, fixed-bank boundary, JSON maze
-make validate-expanded    # expanded-bank access in live FCEUX
+make verify-expanded      # all NROM-256 assets and fixed-bank operands
+make validate-expanded    # expanded-asset consumption in live FCEUX
 ```
 
 ## Fast lint
@@ -77,9 +77,10 @@ that candidate and proves its intended stage-5 start in FCEUX. See
 `docs/rom_hack_variants.md` for the isolation and review policy.
 
 The expanded variant adds two more layers. `make verify-expanded` requires a
-two-bank mapper-0 header, unchanged CHR, contiguous manifest-declared JSON
-assets, `$FF` free space, and the exact reviewed set of fixed-bank operand
-changes. Then `make validate-expanded` uses generated symbols and FCEUX to
-prove stage 2 selects its maze at `$82D6`, loads second-level stage tuning from
-`$81A0`, and advances pellet slot 04 through the JSON-generated sound table at
-`$848F`.
+two-bank mapper-0 header, the declared CHR, contiguous manifest-declared maze,
+stage, sound, actor, palette, and screen assets, `$FF` free space, and the exact
+reviewed set of fixed-bank operand changes. Then `make validate-expanded` uses
+generated symbols and FCEUX to prove stage 2 selects its maze at `$82D6`, loads
+second-level stage tuning from `$81A0`, advances pellet slot 04 through the
+JSON-generated sound table at `$848F`, applies the live 32-byte palette, and
+renders the JSON title-logo tile.

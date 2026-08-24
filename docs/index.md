@@ -1,4 +1,4 @@
-# Bank FF Docs Index
+# Documentation Index
 
 ## Navigation
 - [roadmap.md](./roadmap.md): project direction, evidence rules, milestones, and completion criteria.
@@ -11,6 +11,7 @@
 - [naming.md](./naming.md): semantic symbol names and control-flow prefixes.
 - [debugger_workflow.md](./debugger_workflow.md): Mesen/FCEUX symbols, source navigation, breakpoints, and RAM watches.
 - [runtime_trace_scenarios.md](./runtime_trace_scenarios.md): natural and controlled gameplay trace evidence.
+- [scoring_trace_scenarios.md](./scoring_trace_scenarios.md): scoring-event capture and semantic validation.
 - [validation.md](./validation.md): fast lint, unit, binary, debugger, and emulator validation layers.
 - [data_formats.md](./data_formats.md): six decoded binary formats and byte-identical round-trip workflow.
 - [source_reconstruction_1_0.md](./source_reconstruction_1_0.md): stable release contract, evidence matrix, and tagging procedure.

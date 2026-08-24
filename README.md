@@ -83,10 +83,11 @@ cd pacman_src
 #   Pac-Man (J) (V1.0) [!].nes
 
 make split
-make build
+make verify
 ```
 
-A successful run reports `[OK] Byte-identical ROM reproduced.`
+A successful verification reports
+`[OK] Byte-identical ROM reproduced from native ca65 source.`
 
 Run `make split` once to validate the reference ROM and extract the ignored CHR,
 maze, and audio assets described by `assets/manifest.json`. This command is
@@ -110,6 +111,7 @@ pacman_src/
 |-- config/                        # Emulator/reference configuration
 |-- docs/                          # Architecture and RE notes
 |-- movies/                        # FM2 inputs for automated capture
+|-- scenarios/                     # Runtime, scoring, and revision smoke cases
 |-- scripts/
 |   |-- workflow/                  # Analysis and reporting tools
 |   |-- build_native.py            # Native build and byte verification
@@ -122,6 +124,11 @@ pacman_src/
 |   `-- split_assets.py           # Validated ROM asset extractor
 |-- src/
 |   |-- main.asm                   # Address-ordered ca65 entrypoint
+|   |-- main_hack.asm              # Isolated behavior-changing entrypoint
+|   |-- main_expanded.asm          # JSON-backed NROM-256 entrypoint
+|   |-- nrom128_prg_only.cfg       # Reference linker layout
+|   |-- nrom256_expanded.cfg       # Expanded linker layout
+|   |-- macros/                    # Byte-preserving ca65 abstractions
 |   |-- system/
 |   |-- game/
 |   |-- rendering/
@@ -143,6 +150,7 @@ tracked. The source tools under `scripts/workflow/` are tracked. See
 make                            # Same as `make build`
 make build                      # Build the native ca65 ROM
 make verify                     # Build and require byte-identity
+make build-revision REVISION=europe # Build one official revision
 make verify-revision REVISION=europe # Verify one official revision
 make verify-revisions           # Verify every available official revision
 make smoke-regional-revisions   # Boot USA Namco and Europe in FCEUX

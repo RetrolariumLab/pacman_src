@@ -31,6 +31,12 @@ Revision differences must be represented as semantic source alternatives:
 text, constants, RAM layout, code, tables, or vectors. Raw binary patches are
 not accepted.
 
+`src/memory/revisions.inc` owns the profile constants and derives the broader
+Tengen, RAM-palette, and late-Namco feature flags used by shared conditional
+source. `src/data/active_tables.inc` is separate from revision selection: it
+switches stage-data aliases between reference and expanded-ROM tables without
+emitting bytes of its own.
+
 The complete matrix uses `config/revisions.json` as its canonical list of
 profiles, filenames, and full-ROM SHA-1 values. A missing local ROM is reported
 as `MISSING`; a wrong hash or non-identical build is `FAIL`. The regional smoke

@@ -59,9 +59,14 @@ call sites; they do not own ROM ranges. See [macros.md](./macros.md).
 
 Shared address and constant definitions live under `src/memory/`:
 
+- `revisions.inc` defines the seven official profiles and derives the
+  `PACMAN_REVISION_TENGEN`, `PACMAN_REVISION_RAM_PALETTES`, and
+  `PACMAN_REVISION_LATE_NAMCO` feature flags from `PACMAN_REVISION`;
 - `hardware.inc` names CPU-visible NES registers and proven register bit masks;
 - `ram.inc` maps runtime RAM fields;
 - `constants.inc` defines verified gameplay and data-format constants.
 
 These includes emit no bytes and are loaded by `src/main.asm` before macros and
-address-ordered ROM modules.
+address-ordered ROM modules. `src/data/active_tables.inc` also emits no bytes;
+it aliases stage-data consumers to either the reference tables or the expanded
+bank selected by `PACMAN_EXPANDED_STAGE`.

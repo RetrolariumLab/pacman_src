@@ -609,9 +609,10 @@ chunk: build
 	@echo Rename template: $(WORKFLOW_DIR)/rename_chunk.csv
 
 help:
-	@echo Pac-Man disassembly targets:
+	@echo Pac-Man NES Source Reconstruction targets:
 	@echo   make build                 Build the native ca65 ROM
 	@echo   make verify                Build and verify byte-identity
+	@echo   make build-revision REVISION=japan_v11  Build an official ROM revision
 	@echo   make verify-revision REVISION=japan_v11  Verify an official ROM revision
 	@echo   make verify-revision REVISION=usa_tengen_unlicensed REVISION_REFERENCE_DIR=path/  Verify Tengen
 	@echo   make verify-revision REVISION=usa_tengen REVISION_REFERENCE_DIR=path/  Verify licensed Tengen
@@ -624,10 +625,10 @@ help:
 	@echo   make verify-hack           Require only the documented default hack diff
 	@echo   make validate-hack         Prove the default hack starts on stage 5 in FCEUX
 	@echo   make run-hack              Build and run the default hack in FCEUX
-	@echo   make init-expanded-assets  Create editable local maze JSON once
+	@echo   make init-expanded-assets  Create all six editable local JSON assets once
 	@echo   make build-expanded        Build the JSON-backed NROM-256 variant
-	@echo   make verify-expanded       Verify expanded layout, fixed bank, and maze
-	@echo   make validate-expanded     Prove expanded maze access in FCEUX
+	@echo   make verify-expanded       Verify all expanded assets and fixed-bank operands
+	@echo   make validate-expanded     Prove expanded assets are consumed in FCEUX
 	@echo   make run-expanded          Build and run the expanded variant in FCEUX
 	@echo   make graphics-studio       Open the local CHR and metasprite editor
 	@echo   make screen-studio         Open the local screen, text, and HUD editor

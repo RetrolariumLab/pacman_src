@@ -611,7 +611,7 @@ single executable, cross-editor project state, or measured GUI responsiveness
 justifies the additional C++/Qt build and maintenance surface. Until then the
 four focused applications are the supported authoring workflow.
 
-### 21. Official Multi-Revision Source Builds — Completed
+### 21. Official Multi-Revision Source Builds — Complete
 
 Build verified official Pac-Man cartridge revisions from shared semantic ca65
 source while keeping Japan V1.0 as the permanent default preservation gate.
@@ -631,7 +631,7 @@ byte as new logic.
 See [multi_revision_builds.md](./multi_revision_builds.md) for the verified ROM
 matrix, build interface, evidence, and analysis method.
 
-### 22. Revision Verification and Regional Runtime Gates — Completed
+### 22. Revision Verification and Regional Runtime Gates — Complete
 
 Turn the seven Milestone 21 profiles into one repeatable verification matrix.
 `make verify-revisions` reads the canonical hashes and filenames from

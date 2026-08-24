@@ -40,7 +40,7 @@ annotations use `!(OBS)`, `!(ASSUME)`, `!(WHY?)`, `!(UNKNOWN)`, `!(BUG?)`, and
 - **Smallest experiment:** build a per-script access table and trace the four
   bytes at script transitions; alias only unambiguous lifetimes.
 
-### RAM-003 - release-wave field semantics
+### RAM-003 — release-wave field semantics
 
 - **Subsystem/address:** ghost-house release; `ram_release_wave_timer`
 - **Status/confidence:** open; medium
@@ -72,7 +72,7 @@ annotations use `!(OBS)`, `!(ASSUME)`, `!(WHY?)`, `!(UNKNOWN)`, `!(BUG?)`, and
   selected stream, and claimed APU channel.
 
 
-### DATA-003 - attract sprite strip and `$05F7`
+### DATA-003 — attract sprite strip and `$05F7`
 
 - **Subsystem/status/confidence:** attract rendering; open; low
 - **Established:** an optional packet tail copies a selected 16-byte strip; a
@@ -82,7 +82,7 @@ annotations use `!(OBS)`, `!(ASSUME)`, `!(WHY?)`, `!(UNKNOWN)`, `!(BUG?)`, and
 - **Experiment:** log substate, indexes, destination, and reads near `$05F7`.
 
 
-### DATA-004 - copyright bytes before reset
+### DATA-004 — copyright bytes before reset
 
 - **Subsystem/status/confidence:** boot/data header; open; low
 - **Established:** three strings occupy ROM before `vec_reset_entry`.
@@ -96,7 +96,7 @@ Move entries here only after static analysis, runtime evidence, or a controlled
 experiment supports the conclusion. Preserve ID, result, evidence, and the
 change that closed it.
 
-### CODE-003 - row-stride operand invariant
+### CODE-003 — row-stride operand invariant
 
 - **Subsystem/status:** tile coordinates; resolved
 - **Result:** both row-stride helpers always receive `$0020`. Each helper has
@@ -108,7 +108,7 @@ change that closed it.
 - **Resolution:** retain the original RAM-based operations for byte identity;
   source annotations now record the invariant as `!(OBS)`.
 
-### CODE-004 - sound fetch stack round trip
+### CODE-004 — sound fetch stack round trip
 
 - **Subsystem/status:** sound engine; resolved
 - **Result:** the `PHA`/`PLA` round trip is functionally redundant. The routine
@@ -120,7 +120,7 @@ change that closed it.
   `sub_fetch_stream_byte_and_advance_ptr` in `src/audio/engine.asm`.
 - **Resolution:** retain the original sequence because changing its cycles,
   addresses, and bytes is outside the preservation target.
-### SND-002 - inactive sound control opcodes
+### SND-002 — inactive sound control opcodes
 
 - **Subsystem/status:** sound decoder; resolved
 - **Result:** grammar-aware decoding of all 16 extracted streams reaches their
@@ -133,7 +133,7 @@ change that closed it.
 - **Resolution:** retain dormant handlers as part of the original engine. The
   final two `$FF` bytes in slot 0F occur after `F0` and are tracked as
   DATA-005 rather than interpreted as opcodes.
-### CODE-002 - duplicate ghost-release routine in scoring
+### CODE-002 — duplicate ghost-release routine in scoring
 
 - **Subsystem/status:** scoring/ghost house; unused
 - **Result:** the duplicate routine at `$DFAC..$DFBD` is statically unreachable.
@@ -144,7 +144,7 @@ change that closed it.
 - **Evidence:** whole-PRG pointer/relative-target scan and local control flow in
   `src/game/scoring.asm`.
 - **Resolution:** annotate as `!(UNUSED)`; retain the original bytes.
-### DATA-001 - repeated fruit-tile sequence
+### DATA-001 — repeated fruit-tile sequence
 
 - **Subsystem/status:** round runtime data; unused
 - **Result:** the eight bytes at `$D1FD..$D204` are statically unreachable as
@@ -154,7 +154,7 @@ change that closed it.
 - **Evidence:** whole-PRG pointer scan, linker labels, and local control flow in
   `src/game/round/runtime.asm`.
 - **Resolution:** annotate as `!(UNUSED)`; retain the duplicate bytes.
-### CODE-001 - attract gameplay-bootstrap block
+### CODE-001 — attract gameplay-bootstrap block
 
 - **Subsystem/status:** attract intro; unused
 - **Result:** the instruction block at `$C4E5..$C4EB` is statically
@@ -165,7 +165,7 @@ change that closed it.
   flow in `src/game/title/attract_intro.asm`.
 - **Resolution:** annotate as `!(UNUSED)`; retain the original bytes.
 
-### DATA-002 - bytes after life-icon PPU packets
+### DATA-002 — bytes after life-icon PPU packets
 
 - **Subsystem/status:** scoring data; unused
 - **Result:** the four `$4A` bytes at `$E144..$E147` are statically
@@ -176,7 +176,7 @@ change that closed it.
   flow in `src/game/scoring.asm`.
 - **Resolution:** annotate as `!(UNUSED)`; retain the bytes.
 
-### DATA-005 - bytes after the pause-toggle stream terminator
+### DATA-005 — bytes after the pause-toggle stream terminator
 
 - **Subsystem/status:** audio/data tail; unused
 - **Result:** `$F426..$F427` are not decoded as part of slot 0F. Its only
