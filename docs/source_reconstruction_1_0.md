@@ -1,6 +1,6 @@
-# Preservation Source 1.0
+# Source Reconstruction 1.0
 
-Preservation Source 1.0 is the stable, behavior-preserving reconstruction of
+Source Reconstruction 1.0 is the stable, behavior-preserving reconstruction of
 `Pac-Man (J) (V1.0) [!]`. Its default build is native ca65 source and must
 remain byte-identical to the reference ROM. The release does not claim that
 every original implementation detail is known; it claims that uncertainty is
@@ -29,7 +29,7 @@ Prerequisites are the original ROM, extracted local assets, Python, the bundled
 ca65/ld65 tools, and a usable `fceux_automation` checkout. Then run:
 
 ```text
-make preservation-audit
+make reconstruction-audit
 ```
 
 The command performs, in order:
@@ -49,7 +49,7 @@ previous local evidence cannot mask a regression.
 
 The milestone commit is first reviewed and merged into `main`. Run the complete
 audit on that exact merge result, verify the worktree is clean, and then create
-the annotated `preservation-source-1.0` tag. The tag must identify the reviewed
+the annotated `source-reconstruction-1.0` tag. The tag must identify the reviewed
 `main` commit; it must not point at an intermediate milestone branch.
 
 Behavior-changing work begins only after that tag and uses an explicit build

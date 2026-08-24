@@ -164,7 +164,7 @@ bra_next_release_slot_legacy:		; was: bra_DFB7
 
 ; Fruit sprite tile ID by stage
 tbl_fruit_sprite_tile_by_stage:		; was: tbl_DFBE_fruit_id
-; !(OBS) Values are consecutive, but the preservation source retains the table.
+; !(OBS) Values are consecutive, but the source reconstruction retains the table.
     .byte $24   ; 00
     .byte $25   ; 01
     .byte $26   ; 02

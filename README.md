@@ -1,6 +1,8 @@
-# Pac-Man (NES, JP) Disassembly
+# Pac-Man NES Source Reconstruction
 
-Reverse-engineering and reconstruction of Pac-Man (J) (V1.0) for the NES.
+Reverse-engineering and byte-identical reconstruction of seven official NES
+Pac-Man revisions from one shared ca65 source, with Japan V1.0 retained as the
+default preservation baseline.
 
 The project is an annotated, native ca65 reconstruction of the game's single
 6502 PRG bank, plus tooling that rebuilds the ROM, compares it byte for byte
@@ -13,12 +15,18 @@ catch behavioural regressions frame by frame.
 
 ## Status
 
-Preservation Source 1.0 is complete and tagged as `preservation-source-1.0`.
+Source Reconstruction 2.0 is release-ready. It retains the 1.0 preservation
+contract and adds the completed content-authoring pipeline, seven byte-identical
+official revision profiles, and strict regional runtime gates. See
+[`docs/source_reconstruction_2_0.md`](docs/source_reconstruction_2_0.md) for the
+release contract. The original release remains tagged as
+`source-reconstruction-1.0`.
+
 The annotated source covers every major subsystem, unresolved interpretations
 remain explicit in the unknowns registry, and the complete validation matrix
-is available through `make preservation-audit`. See
-[`docs/preservation_source_1_0.md`](docs/preservation_source_1_0.md) for the
-release contract and evidence summary.
+is available through `make reconstruction-audit-2`. See
+[`docs/source_reconstruction_1_0.md`](docs/source_reconstruction_1_0.md) for the
+original preservation contract and evidence summary.
 
 The optional NROM-256 content-authoring workflow is complete. Four focused
 local applications edit sound and music, the maze, CHR and actor mappings,
@@ -26,6 +34,12 @@ palettes, screens, English game text, HUD data, and intermission visuals. They
 share validated ignored-local assets and one deterministic expanded-ROM build
 pipeline. A future unified Qt application is tracked as a low-priority
 convenience milestone; it is not required to use or maintain the current tools.
+
+Seven official cartridge profiles rebuild byte-identically from the shared
+source. `make verify-revisions` checks every locally available reference, while
+`make smoke-regional-revisions` boots the USA Namco and European profiles in
+FCEUX and validates their regional title/OAM behavior. ROM images remain local
+and ignored.
 
 The source is split into address-ordered subsystem modules containing real 6502
 instructions and ca65 data directives. Further reverse engineering can deepen
@@ -149,7 +163,7 @@ make validate-symbols           # Prove live symbol lookup and named breakpoint
 make lint                       # Check source, naming, docs, and Python syntax
 make test                       # Run all focused Python workflow tests
 make roundtrip-formats          # Decode/encode six binary format families
-make preservation-audit         # Run the complete Preservation Source 1.0 gate
+make reconstruction-audit       # Run the complete Source Reconstruction 1.0 gate
 make trace-runtime              # Capture and validate focused gameplay traces
 make validate-runtime-traces    # Revalidate existing gameplay traces
 make run                        # Build and run the ROM in FCEUX

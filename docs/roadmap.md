@@ -411,7 +411,7 @@ intermission scene/animation tables, reloads the human-readable output, and
 requires byte-identical encoding. Generated files remain under ignored `tmp/`
 and are never consumed by the normal preservation build.
 
-### 10. Preservation Source 1.0 — Complete
+### 10. Source Reconstruction 1.0 — Complete
 
 Declare a preservation milestone when:
 
@@ -428,16 +428,16 @@ Declare a preservation milestone when:
 Tag this state as a stable preservation release before beginning substantial
 behavior changes.
 
-Completed as the Preservation Source 1.0 release candidate. The criterion and
-evidence matrix is recorded in `docs/preservation_source_1_0.md`, while
-`make preservation-audit` rebuilds the reference ROM, exercises documentation
+Completed as the Source Reconstruction 1.0 release candidate. The criterion and
+evidence matrix is recorded in `docs/source_reconstruction_1_0.md`, while
+`make reconstruction-audit` rebuilds the reference ROM, exercises documentation
 and format invariants, validates live debugger navigation, and captures fresh
 runtime evidence. The stable tag is deliberately applied to the reviewed merge
 commit in `main`, not to an unreviewed milestone branch.
 
 ### 11. Optional ROM-Hack and Bug-Fix Variants — Complete
 
-Only after the preservation source is mature should behavior changes become a
+Only after the source reconstruction is mature should behavior changes become a
 normal project activity. Keep them behind explicit build variants:
 
 ```text
@@ -633,6 +633,26 @@ byte as new logic.
 See [multi_revision_builds.md](./multi_revision_builds.md) for the verified ROM
 matrix, build interface, evidence, and analysis method.
 
+### 22. Revision Verification and Regional Runtime Gates — Completed
+
+Turn the seven Milestone 21 profiles into one repeatable verification matrix.
+`make verify-revisions` reads the canonical hashes and filenames from
+`config/revisions.json`, verifies every locally available official reference,
+and reports missing private inputs separately from hash or build failures.
+
+`make smoke-regional-revisions` provides focused FCEUX coverage for the two
+late Namco profiles whose boot and rendering paths differ most. USA Namco and
+Europe must reach the semantic title-menu handler with NMI active. At that
+boundary their complete shadow-OAM pages must retain the expected regional
+fill (`$00` and `$EF`, respectively), catching regressions in reset, title
+dispatch, debug symbols, and the PAL hidden-sprite path without distributing
+ROM images.
+
+An exploratory GoodNES derivative survey is recorded in
+[goodnes_variant_notes.md](./goodnes_variant_notes.md). It found no additional
+clean official profile; overdumps and hacks remain research inputs rather than
+revision targets.
+
 ## Resuming Work on Another Computer
 
 The repository intentionally does not distribute the original ROM or extracted
@@ -704,11 +724,11 @@ ROM SHA-1: adb4d7d7d28c89ca177aad231e0fdad992c0fbfb
 ```
 
 Use the narrowest relevant checks during development, but run `make verify`
-before every preservation-source commit.
+before every source-reconstruction commit.
 
 ## Definition of Done
 
-The preservation source is complete when:
+The source reconstruction is complete when:
 
 - the native ca65 modules build the reference ROM byte for byte;
 - major procedures have verified purpose and calling-contract comments;

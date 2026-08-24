@@ -1,6 +1,6 @@
 # Validation Workflow
 
-The preservation source uses separate validation layers so fast structural
+The source reconstruction uses separate validation layers so fast structural
 checks do not silently grow into emulator runs.
 
 ```text
@@ -11,7 +11,7 @@ make roundtrip-formats    # six binary format decode/encode checks
 make validate-symbols     # live debugger-symbol lookup and execution hook
 make trace-runtime        # slower focused emulator evidence
 make trace-scoring        # slower scoring-event capture
-make preservation-audit   # complete release-candidate gate, including captures
+make reconstruction-audit # complete release-candidate gate, including captures
 make verify-hack          # exact manifest-declared default variant difference
 make validate-hack        # default variant behavior in live FCEUX
 make verify-expanded      # NROM-256 layout, fixed-bank boundary, JSON maze
@@ -56,7 +56,7 @@ unit-test run never substitutes for byte identity or behavioral evidence.
 
 ## Preservation release gate
 
-`make preservation-audit` runs lint, all focused unit tests, byte identity and
+`make reconstruction-audit` runs lint, all focused unit tests, byte identity and
 format round-trips, live debugger validation, then fresh runtime and scoring
 captures with their semantic validators. It intentionally regenerates ignored
 evidence under `tmp/`; a stale local trace therefore cannot make the release
@@ -65,7 +65,7 @@ gate pass. Run it on the exact commit intended for the stable tag.
 ## Optional variant gates
 
 Variant validation is additive: it never replaces `make verify` or
-`make preservation-audit`. `make verify-hack` requires the complete ROM diff to
+`make reconstruction-audit`. `make verify-hack` requires the complete ROM diff to
 match `config/hack_variants.json`; `make validate-hack` then loads symbols for
 that candidate and proves its intended stage-5 start in FCEUX. See
 `docs/rom_hack_variants.md` for the isolation and review policy.

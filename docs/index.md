@@ -2,7 +2,9 @@
 
 ## Navigation
 - [roadmap.md](./roadmap.md): project direction, evidence rules, milestones, and completion criteria.
+- [source_reconstruction_2_0.md](./source_reconstruction_2_0.md): release scope and strict audit for authoring plus official revisions.
 - [multi_revision_builds.md](./multi_revision_builds.md): verified official ROM profiles and the shared-source revision workflow.
+- [goodnes_variant_notes.md](./goodnes_variant_notes.md): reproducible classification of overdumps, hacks, and structural derivative evidence.
 - [unknowns.md](./unknowns.md): canonical reverse-engineering backlog and evidence experiments.
 - [source_layout.md](./source_layout.md): address-ordered module map and file-sizing rules.
 - [macros.md](./macros.md): allowed ca65 abstractions and byte-identity rules.
@@ -11,7 +13,7 @@
 - [runtime_trace_scenarios.md](./runtime_trace_scenarios.md): natural and controlled gameplay trace evidence.
 - [validation.md](./validation.md): fast lint, unit, binary, debugger, and emulator validation layers.
 - [data_formats.md](./data_formats.md): six decoded binary formats and byte-identical round-trip workflow.
-- [preservation_source_1_0.md](./preservation_source_1_0.md): stable release contract, evidence matrix, and tagging procedure.
+- [source_reconstruction_1_0.md](./source_reconstruction_1_0.md): stable release contract, evidence matrix, and tagging procedure.
 - [rom_hack_variants.md](./rom_hack_variants.md): isolated optional builds, declared ROM differences, and runtime validation.
 - [expanded_rom_assets.md](./expanded_rom_assets.md): NROM-256 layout and editable JSON-to-ROM asset pipeline.
 - [postmortem.md](./postmortem.md): why the C reimplementation was removed and what replaced it.
@@ -74,8 +76,8 @@ After each edit batch:
   through the fast `make lint` and aggregate `make test` gates.
 - Six binary format families (roadmap milestone 9) have documented JSON codecs
   and byte-identical verification through `make roundtrip-formats`.
-- Preservation Source 1.0 (roadmap milestone 10) is release-candidate complete;
-  `make preservation-audit` reproduces its full validation matrix.
+- Source Reconstruction 1.0 (roadmap milestone 10) is release-candidate complete;
+  `make reconstruction-audit` reproduces its full validation matrix.
 - Optional ROM-hack variants (roadmap milestone 11) use separate entrypoints,
   outputs, byte-diff manifests, and FCEUX behavior checks.
 - The expanded NROM-256 variant (roadmap milestone 12) adds a free 16 KiB bank
@@ -99,3 +101,6 @@ After each edit batch:
 - A standalone tabbed Qt replacement for the four editor front ends is retained
   as low-priority milestone 20. Current Python editors and JSON codecs remain
   complete and supported independently of that optional packaging work.
+- The official revision matrix and focused USA Namco/Europe FCEUX boot gates
+  (roadmap milestone 22) are available as `make verify-revisions` and
+  `make smoke-regional-revisions`.

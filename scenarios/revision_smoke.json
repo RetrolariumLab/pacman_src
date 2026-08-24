@@ -1,0 +1,15 @@
+{
+  "format": 1,
+  "profiles": [
+    {
+      "id": "usa_namco",
+      "max_frames": 900,
+      "title_oam_fill": 0
+    },
+    {
+      "id": "europe",
+      "max_frames": 900,
+      "title_oam_fill": 239
+    }
+  ]
+}

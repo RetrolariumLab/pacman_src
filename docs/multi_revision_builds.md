@@ -1,6 +1,6 @@
 # Official ROM Revision Builds
 
-Milestone 21 extends the preservation source to verified official Pac-Man ROM
+Milestone 21 extends the source reconstruction to verified official Pac-Man ROM
 revisions without weakening the Japan V1.0 reference build. ROM images remain
 local inputs and are never distributed by this repository.
 
@@ -21,6 +21,8 @@ make verify-revision REVISION=usa_tengen REVISION_REFERENCE_DIR="path/to/roms"
 make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR="path/to/roms"
 make verify-revision REVISION=usa_namco REVISION_REFERENCE_DIR="path/to/roms"
 make verify-revision REVISION=europe REVISION_REFERENCE_DIR="path/to/roms"
+make verify-revisions REVISION_REFERENCE_DIR="path/to/roms"
+make smoke-regional-revisions REVISION_REFERENCE_DIR="path/to/roms"
 ```
 
 Every revision assembles the single `src/main.asm` entrypoint. The build passes
@@ -28,6 +30,13 @@ the selected `PACMAN_REVISION` profile to ca65 as a compile-time definition.
 Revision differences must be represented as semantic source alternatives:
 text, constants, RAM layout, code, tables, or vectors. Raw binary patches are
 not accepted.
+
+The complete matrix uses `config/revisions.json` as its canonical list of
+profiles, filenames, and full-ROM SHA-1 values. A missing local ROM is reported
+as `MISSING`; a wrong hash or non-identical build is `FAIL`. The regional smoke
+command additionally boots USA Namco and Europe in FCEUX, reaches the title
+menu through generated semantic labels, confirms NMI activity, and verifies
+the full shadow-OAM initialization pattern (`$00` for USA and `$EF` for PAL).
 
 ## Verified Local Reference Matrix
 

@@ -67,6 +67,12 @@ EDITED_CHR ?= $(PROJECT_DIR)hacks/local/pacman.chr
 REVISION ?= japan_v10
 REVISION_BUILD_DIR ?= $(BUILD_DIR)/revisions/$(REVISION)
 REVISION_REFERENCE_DIR ?= $(PROJECT_DIR)
+REVISION_MANIFEST ?= $(PROJECT_DIR)config/revisions.json
+REVISION_DEBUG_SUMMARY ?= $(REVISION_BUILD_DIR)/debug_symbols.json
+REVISION_SMOKE_SCENARIOS ?= $(PROJECT_DIR)scenarios/revision_smoke.json
+REVISION_SMOKE_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_revision_smoke.lua
+REVISION_SMOKE_DIR ?= $(PROJECT_DIR)tmp/revision_smokes
+REVISION_REQUIRE_ALL ?=
 REVISION_CHR_OPTION := --chr "$(GENERATED_CHR)"
 
 ifeq ($(REVISION),japan_v10)
@@ -141,7 +147,7 @@ DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-revision verify-revision build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats preservation-audit run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
+.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats reconstruction-audit reconstruction-audit-2 run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -198,6 +204,35 @@ verify-revision: _require-assets
 		--debug-info "$(REVISION_BUILD_DIR)/pacman.dbg" \
 		--output-rom "$(REVISION_BUILD_DIR)/pacman.nes" \
 		--verify
+
+verify-revisions:
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/verify_revision_matrix.py" \
+		--manifest "$(REVISION_MANIFEST)" \
+		--reference-dir "$(REVISION_REFERENCE_DIR)" \
+		--project-dir "$(PROJECT_DIR)" \
+		--make "$(MAKE)" $(REVISION_REQUIRE_ALL)
+
+symbols-revision: build-revision
+	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
+		--debug "$(REVISION_BUILD_DIR)/pacman.dbg" \
+		--map "$(REVISION_BUILD_DIR)/pacman.map" \
+		--labels "$(REVISION_BUILD_DIR)/pacman.lbl" \
+		--rom "$(REVISION_BUILD_DIR)/pacman.nes" \
+		--fceux-output-dir "$(REVISION_BUILD_DIR)" \
+		--breakpoints "$(DEBUG_BREAKPOINTS)" \
+		--watches "$(DEBUG_WATCHES)" \
+		--summary "$(REVISION_DEBUG_SUMMARY)"
+
+smoke-regional-revisions: build-dev
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_revision_smokes.py" \
+		--manifest "$(REVISION_MANIFEST)" \
+		--scenarios "$(REVISION_SMOKE_SCENARIOS)" \
+		--reference-dir "$(REVISION_REFERENCE_DIR)" \
+		--project-dir "$(PROJECT_DIR)" \
+		--fceux "$(FCEUX_EXE)" \
+		--lua "$(REVISION_SMOKE_LUA)" \
+		--output-dir "$(REVISION_SMOKE_DIR)" \
+		--make "$(MAKE)" $(REVISION_REQUIRE_ALL)
 
 build-hack: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -549,7 +584,7 @@ roundtrip-formats: verify
 
 # Release-candidate gate. Recursive calls keep emulator capture and validation
 # ordered even when the parent make is invoked with parallel jobs.
-preservation-audit:
+reconstruction-audit:
 	$(MAKE) lint
 	$(MAKE) test
 	$(MAKE) roundtrip-formats
@@ -557,6 +592,10 @@ preservation-audit:
 	$(MAKE) trace-runtime
 	$(MAKE) trace-scoring
 	$(MAKE) validate-scoring-trace
+
+reconstruction-audit-2: reconstruction-audit
+	$(MAKE) verify-revisions REVISION_REQUIRE_ALL=--require-all
+	$(MAKE) smoke-regional-revisions REVISION_REQUIRE_ALL=--require-all
 
 chunk: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/extract_rename_chunk.py" \
@@ -579,6 +618,8 @@ help:
 	@echo   make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR=path/  Verify Japan Rev B
 	@echo   make verify-revision REVISION=usa_namco REVISION_REFERENCE_DIR=path/  Verify Namco USA
 	@echo   make verify-revision REVISION=europe REVISION_REFERENCE_DIR=path/  Verify Europe
+	@echo   make verify-revisions       Verify every locally available official revision
+	@echo   make smoke-regional-revisions  Boot USA Namco and Europe in FCEUX and check OAM
 	@echo   make build-hack            Build the isolated default ROM-hack variant
 	@echo   make verify-hack           Require only the documented default hack diff
 	@echo   make validate-hack         Prove the default hack starts on stage 5 in FCEUX
@@ -612,7 +653,8 @@ help:
 	@echo   make trace-runtime          Capture and validate focused runtime scenarios
 	@echo   make validate-runtime-traces Validate existing focused runtime traces
 	@echo   make roundtrip-formats      Decode and byte-round-trip documented data formats
-	@echo   make preservation-audit     Run the complete Preservation Source 1.0 gate
+	@echo   make reconstruction-audit   Run the complete Source Reconstruction 1.0 gate
+	@echo   make reconstruction-audit-2 Run the strict Source Reconstruction 2.0 gate
 	@echo   make chunk START=260 LINES=60  Prepare a rename/analysis chunk
 	@echo   make help                  Show these public targets
 
