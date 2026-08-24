@@ -613,7 +613,7 @@ single executable, cross-editor project state, or measured GUI responsiveness
 justifies the additional C++/Qt build and maintenance surface. Until then the
 four focused applications are the supported authoring workflow.
 
-### 21. Official Multi-Revision Source Builds — In Progress
+### 21. Official Multi-Revision Source Builds — Completed
 
 Build verified official Pac-Man cartridge revisions from shared semantic ca65
 source while keeping Japan V1.0 as the permanent default preservation gate.
@@ -622,11 +622,13 @@ compile-time flag, have documented reference hashes, isolated output artifacts,
 and a byte-identical verification command. Differences use source-level constants,
 text, data, code, or vector alternatives rather than post-link binary patches.
 
-Japan V1.1 / Rev A is the first completed profile. Its eight changed PRG bytes
-are represented by the corrected attract header and the original revision's
-sound-channel RAM base. Regional Namco, Tengen, and European builds require a
-structural comparison that aligns relocated blocks and normalized instruction
-sequences instead of treating every changed same-offset byte as new logic.
+All seven verified local references now rebuild byte-identically: Japan V1.0,
+Japan V1.1 / Rev A, Japan Rev B, licensed and unlicensed USA Tengen, USA Namco,
+and Europe. The regional profiles share the same entrypoint and express their
+title, attract, reset, RAM-palette, PAL timing, data-layout, and vector changes
+as source alternatives. Structural comparison aligned relocated blocks and
+normalized instruction sequences instead of treating every changed same-offset
+byte as new logic.
 
 See [multi_revision_builds.md](./multi_revision_builds.md) for the verified ROM
 matrix, build interface, evidence, and analysis method.

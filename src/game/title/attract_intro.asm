@@ -338,7 +338,7 @@ off_attract_text_header_character_nickname:		; was: _off000_C5E7_00
     .byte $43, $48, $41, $52, $41, $43, $54, $45, $52, $FF
 .else
     .dbyt $20E6
-.if PACMAN_REVISION = REVISION_JAPAN_V11 .or PACMAN_REVISION = REVISION_JAPAN_REVB .or PACMAN_REVISION = REVISION_USA_NAMCO
+.if PACMAN_REVISION = REVISION_JAPAN_V11 .or PACMAN_REVISION = REVISION_JAPAN_REVB .or .defined(PACMAN_REVISION_LATE_NAMCO)
     .byte                               $43, $48, $41, $52, $41, $43, $54, $45, $52, $20
 .else
     .byte                               $43, $48, $52, $41, $43, $54, $45, $52, $20, $20
@@ -350,7 +350,7 @@ off_attract_text_header_character_nickname:		; was: _off000_C5E7_00
 ; Attract packet: alias text OIKAKE...
 off_attract_text_alias_oikake:		; was: _off000_C5FF_02
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2148
     .byte $3A, $53, $48, $41, $44, $4F, $57, $FF, $00
 .elseif .defined(PACMAN_REVISION_TENGEN)
@@ -367,7 +367,7 @@ off_attract_text_alias_oikake:		; was: _off000_C5FF_02
 ; Attract packet: name AKABEI
 off_attract_text_name_akabei:		; was: _off000_C60E_04
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2153
     .byte $5F, $42, $4C, $49, $4E, $4B, $59, $5F, $FF
 .elseif .defined(PACMAN_REVISION_TENGEN)
@@ -382,7 +382,7 @@ off_attract_text_name_akabei:		; was: _off000_C60E_04
 ; Attract packet: alias text MACHIBUSE..
 off_attract_text_alias_machibuse:		; was: _off000_C619_06
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $21A8
     .byte $3A, $53, $50, $45, $45, $44, $59, $FF, $00
 .elseif .defined(PACMAN_REVISION_TENGEN)
@@ -399,7 +399,7 @@ off_attract_text_alias_machibuse:		; was: _off000_C619_06
 ; Attract packet: name PINKY
 off_attract_text_name_pinky:		; was: _off000_C628_08
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $21B3
     .byte $5F, $50, $49, $4E, $4B, $59, $5F, $FF
 .elseif .defined(PACMAN_REVISION_TENGEN)
@@ -414,7 +414,7 @@ off_attract_text_name_pinky:		; was: _off000_C628_08
 ; Attract packet: alias text tile sequence (set 0A)
 off_attract_text_alias_tiles_0A:		; was: _off000_C632_0A
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2208
     .byte $B6, $C1, $C3, $B7, $B4, $C2, $B3, $C4, $FF, $00
 .elseif .defined(PACMAN_REVISION_TENGEN)
@@ -431,7 +431,7 @@ off_attract_text_alias_tiles_0A:		; was: _off000_C632_0A
 ; Attract packet: name tile sequence (set 0C)
 off_attract_text_name_tiles_0C:		; was: _off000_C641_0C
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2213
     .byte $C8, $B5, $C5, $C0, $C6, $C8, $FF
 .elseif .defined(PACMAN_REVISION_TENGEN)
@@ -446,7 +446,7 @@ off_attract_text_name_tiles_0C:		; was: _off000_C641_0C
 ; Attract packet: alias text OTOBOKE...
 off_attract_text_alias_otoboke:		; was: _off000_C64C_0E
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2268
     .byte $3A, $50, $4F, $4B, $45, $59, $FF, $00
 .elseif .defined(PACMAN_REVISION_TENGEN)
@@ -463,7 +463,7 @@ off_attract_text_alias_otoboke:		; was: _off000_C64C_0E
 ; Attract packet: name GUZUTA
 off_attract_text_name_guzuta:		; was: _off000_C65B_10
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2273
     .byte $5F, $43, $4C, $59, $44, $45, $5F, $FF
 .elseif .defined(PACMAN_REVISION_TENGEN)
@@ -478,13 +478,15 @@ off_attract_text_name_guzuta:		; was: _off000_C65B_10
 ; Attract packet: points table entries
 off_attract_text_points_table:		; was: _off000_C666_12
 ;                                              00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $22AD
     .byte $03, $20, $31, $30, $20, $50, $54, $53, $00
     .dbyt $22ED
     .byte $01, $20, $35, $30, $20, $50, $54, $53, $00
+.if PACMAN_REVISION = REVISION_USA_NAMCO
     .dbyt $2334
     .byte $CE, $CF, $00
+.endif
     .dbyt $234D
     .byte $23, $24, $25, $26, $27, $28, $29, $2A, $2B, $FF
 .elseif .defined(PACMAN_REVISION_TENGEN)
@@ -549,7 +551,7 @@ tbl_tengen_attract_attribute_bytes:
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $AA, $AA, $AA, $22, $00, $00, $00, $00
 .endif
-.if PACMAN_REVISION = REVISION_JAPAN_REVB .or PACMAN_REVISION = REVISION_USA_NAMCO
+.if PACMAN_REVISION = REVISION_JAPAN_REVB .or .defined(PACMAN_REVISION_LATE_NAMCO)
 tbl_japan_revb_attract_attribute_bytes:
     .byte $00, $00, $00, $00, $00, $00, $00, $00
     .byte $55, $55, $55, $55, $55, $55, $55, $55

@@ -34,7 +34,11 @@ loc_build_oam_quad_loop:		; was: loc_DA75_loop
     LDY #$02
     LDA (zp_work0),Y    ; 0276 027A 027E 0282 0286 028A
     BNE bra_apply_y_offset
+.if PACMAN_REVISION = REVISION_EUROPE
+    LDA #$EF
+.else
     LDA #$FF
+.endif
     BNE bra_store_oam_y    ; jmp
 ; Apply Y offset from sprite offset table
 bra_apply_y_offset:		; was: bra_DA7F

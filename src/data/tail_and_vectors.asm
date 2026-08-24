@@ -20,7 +20,7 @@ bra_wait_tengen_licensed_second_vblank:
     BPL bra_wait_tengen_licensed_second_vblank
     JMP loc_reset_after_initial_vblank
 .endif
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .res $FFF6 - *, $FF
 tbl_namco_maze_rle_stream_ptr:
     .word tbl_maze_rle_stream
@@ -30,7 +30,7 @@ tbl_namco_maze_rle_stream_ptr:
 ; Pointer to the generated compressed maze stream.
 ; Fixed at $FFF8; the VECTORS segment starts at $FFFA.
 tbl_maze_rle_stream_ptr:
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .word vec_nmi_handler
 .elseif .defined(PACMAN_EXPANDED_MAZE)
     .word tbl_expanded_maze_rle_stream

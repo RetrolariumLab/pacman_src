@@ -23,7 +23,7 @@ bra_select_maze_target_nametable:		; was: bra_E26E
         NOP
     .endrepeat
 .else
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     LDA tbl_namco_maze_rle_stream_ptr + $01
     STA zp_work1
     LDA tbl_namco_maze_rle_stream_ptr

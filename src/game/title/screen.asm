@@ -90,7 +90,9 @@ bra_stream_logo_row_tiles:		; was: bra_C23E_loop
     DEC zp_work2
     BNE bra_draw_next_logo_row
 ; draw text
-.if .defined(PACMAN_REVISION_TENGEN) .or PACMAN_REVISION = REVISION_USA_NAMCO
+.if PACMAN_REVISION = REVISION_EUROPE
+    LDA #$07    ; counter
+.elseif .defined(PACMAN_REVISION_TENGEN) .or PACMAN_REVISION = REVISION_USA_NAMCO
     LDA #$09    ; counter
 .else
     LDA #$06    ; counter
@@ -164,7 +166,26 @@ tbl_title_logo_tiles:		; was: tbl_C29F_pacman_logo
     .incbin "assets/generated/title/logo-tiles.bin", $73, $17  ; rom-asset .byte
 ; PPU command packets for title logo text
 tbl_title_logo_text_packets:		; was: tbl_C329_logo_text
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.if PACMAN_REVISION = REVISION_EUROPE
+    .dbyt $2065
+    .byte $B0, $B3, $B2, $20, $20, $20, $20, $B4, $B5, $B6, $B7
+    .byte $B8, $B9, $BA, $BB, $20, $20, $20, $B1, $B3, $B2, $FF
+    .dbyt $220A
+    .byte $5C, $2D, $31, $20, $50, $4C, $41, $59, $45, $52, $FF
+    .dbyt $224C
+    .byte $32, $20, $50, $4C, $41, $59, $45, $52, $53, $FF
+    .dbyt $2323
+    .byte $54, $4D, $20, $CC, $20, $5D, $20, $31, $39, $38, $30
+    .byte $20, $31, $39, $39, $33, $20, $4E, $41, $4D, $43, $4F
+    .byte $20, $4C, $54, $44, $5B, $FF
+    .dbyt $2366
+    .byte $4C, $49, $43, $45, $4E, $53, $45, $44, $20, $54, $4F
+    .byte $20, $4E, $49, $4E, $54, $45, $4E, $44, $4F, $FF
+    .dbyt $22AC
+    .byte $23, $24, $25, $26, $27, $28, $29, $2A, $2B, $FF
+    .dbyt $20FC
+    .byte $0E, $0F, $FF
+.elseif PACMAN_REVISION = REVISION_USA_NAMCO
     .dbyt $2065
     .byte $B0, $B3, $B2, $20, $20, $20, $20, $B4, $B5, $B6, $B7
     .byte $B8, $B9, $BA, $BB, $20, $20, $20, $B1, $B3, $B2, $FF

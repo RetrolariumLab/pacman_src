@@ -168,6 +168,19 @@ bra_run_frame_when_no_new_start:		; was: bra_CA67
     JMP loc_gameplay_mainloop_wait_nmi
 ; Run gameplay update chain when not paused
 bra_run_unpaused_gameplay_step:		; was: bra_CA70
+.if PACMAN_REVISION = REVISION_EUROPE
+; PAL Namco hides every shadow-OAM entry before rebuilding active sprites.
+    LDA #> ram_oam
+    STA zp_work1
+    LDA #< ram_oam
+    STA zp_work0
+    TAY
+    LDA #$EF
+bra_hide_europe_oam_before_gameplay:
+    STA (zp_work0),Y
+    INY
+    BNE bra_hide_europe_oam_before_gameplay
+.endif
     JSR sub_update_round_timers_and_frightened
     JSR sub_check_for_eating_pellets
     JSR sub_update_pacman_movement

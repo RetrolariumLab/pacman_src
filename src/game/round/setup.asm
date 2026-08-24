@@ -26,6 +26,9 @@ bra_clear_runtime_block:		; was: bra_CE4B_loop
     CPX #$69
     BNE bra_clear_runtime_block
     TAX
+.if PACMAN_REVISION = REVISION_EUROPE
+    LDA #$EF
+.endif
 ; Clear full OAM shadow
 bra_clear_oam_all:		; was: bra_CE53_loop
 ; 0700-07FF

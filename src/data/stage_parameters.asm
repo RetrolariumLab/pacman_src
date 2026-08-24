@@ -170,11 +170,20 @@ tbl_stage_param_index_stream:		; was: tbl_EB42
 ; Level parameter blocks copied to runtime RAM 009F..00B4 (22 bytes each)
 tbl_level_param_blocks_22bytes:		; was: tbl_EBCC
 ;                                             009F 00A0 00A1 00A2 00A3 00A4 00A5 00A6 00A7 00A8 00A9 00AA 00AB 00AC 00AD 00AE 00AF 00B0 00B1 00B2 00B3 00B4
+.if PACMAN_REVISION = REVISION_EUROPE
+; PAL timing equivalents of the five NTSC movement profiles below.
+    .byte $FA, $00, $E6, $00, $C0, $00, $D3, $00, $C0, $00, $9A, $00, $C0, $00, $D3, $00, $AD, $00, $60, $00, $60, $00   ; 00
+    .byte $FA, $00, $E6, $00, $C0, $00, $D3, $00, $C0, $00, $9A, $00, $D3, $00, $E6, $00, $C0, $00, $60, $00, $60, $00   ; 01
+    .byte $20, $01, $0D, $01, $E6, $00, $0D, $01, $FA, $00, $D3, $00, $0D, $01, $20, $01, $FA, $00, $86, $00, $86, $00   ; 02
+    .byte $33, $01, $20, $01, $FA, $00, $33, $01, $20, $01, $FA, $00, $33, $01, $46, $01, $20, $01, $9A, $00, $9A, $00   ; 03
+    .byte $33, $01, $20, $01, $FA, $00, $33, $01, $20, $01, $FA, $00, $5A, $01, $6D, $01, $46, $01, $9A, $00, $9A, $00   ; 04
+.else
     .byte $D0, $00, $C0, $00, $A0, $00, $B0, $00, $A0, $00, $80, $00, $A0, $00, $B0, $00, $90, $00, $50, $00, $50, $00   ; 00
     .byte $D0, $00, $C0, $00, $A0, $00, $B0, $00, $A0, $00, $80, $00, $B0, $00, $C0, $00, $A0, $00, $50, $00, $50, $00   ; 01
     .byte $F0, $00, $E0, $00, $C0, $00, $E0, $00, $D0, $00, $B0, $00, $E0, $00, $F0, $00, $D0, $00, $70, $00, $70, $00   ; 02
     .byte $00, $01, $F0, $00, $D0, $00, $00, $01, $F0, $00, $D0, $00, $00, $01, $10, $01, $F0, $00, $80, $00, $80, $00   ; 03
     .byte $00, $01, $F0, $00, $D0, $00, $00, $01, $F0, $00, $D0, $00, $20, $01, $30, $01, $10, $01, $80, $00, $80, $00   ; 04
+.endif
 
 ; Per-level speed/timer control windows copied to RAM 0097..009E.
 ; Profile id 4 reads the eight bytes immediately following these four rows,

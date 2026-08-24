@@ -23,7 +23,7 @@
 
 ; !(WHY?) Data preceding reset entry; determine whether it is referenced. See DATA-004.
     .byte "COPY RIGHT 1984 "
-.if PACMAN_REVISION = REVISION_USA_NAMCO
+.ifdef PACMAN_REVISION_LATE_NAMCO
     .byte "1993 NAMCO LTD. "
 .else
     .byte "1980 NAMCO LTD. "
@@ -78,7 +78,11 @@ bra_clear_boot_workspace:		; was: bra_C048_loop
     CPY #$3E
     BNE bra_clear_boot_workspace
 ; A = 00
+.if PACMAN_REVISION = REVISION_EUROPE
+    LDX #$07
+.else
     LDX #$08
+.endif
     LDY #$87
 ; Bulk-clear general RAM area (0087-07FF)
 bra_clear_runtime_ram:		; was: bra_C054_loop
@@ -88,6 +92,19 @@ bra_clear_runtime_ram:		; was: bra_C054_loop
     INC zp_work1
     CPX zp_work1
     BNE bra_clear_runtime_ram
+.if PACMAN_REVISION = REVISION_EUROPE
+; PAL Namco initializes the OAM shadow page to an off-screen Y coordinate.
+    LDA #> ram_oam
+    STA zp_work1
+    LDA #< ram_oam
+    STA zp_work0
+    TAY
+    LDA #$EF
+bra_hide_europe_oam_entries:
+    STA (zp_work0),Y
+    INY
+    BNE bra_hide_europe_oam_entries
+.endif
     LDA #PPUMASK_SHOW_LEFT_EDGE
     STA PPUMASK
     LDA #$00
@@ -314,11 +331,17 @@ bra_wait_nmi_before_main_bootstrap:		; was: bra_C16C_infinite_loop
     LDA #$00
     STA PPUMASK
     TAX
+.if PACMAN_REVISION = REVISION_EUROPE
+    LDA #$EF
+.endif
 ; Clear OAM shadow RAM
 bra_clear_oam_buffer:		; was: bra_C180_loop
     STA ram_oam,X   ; 0700-07FF
     INX
     BNE bra_clear_oam_buffer
+.if PACMAN_REVISION = REVISION_EUROPE
+    LDA #$00
+.endif
     STA ram_current_player
     JSR sub_clear_bg_nametables_and_attrs
     JSR sub_upload_title_attribute_table

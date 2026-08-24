@@ -94,8 +94,13 @@ REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
 REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)Pac-Man (U) (Namco) [!].nes
 REVISION_CA65_DEFINE := PACMAN_REVISION=5
 REVISION_CHR_OPTION := --chr-from-reference
+else ifeq ($(REVISION),europe)
+REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
+REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)Pac-Man (E) [!].nes
+REVISION_CA65_DEFINE := PACMAN_REVISION=6
+REVISION_CHR_OPTION := --chr-from-reference
 else
-$(error Unsupported REVISION '$(REVISION)'; expected japan_v10, japan_v11, usa_tengen_unlicensed, usa_tengen, japan_revb, or usa_namco)
+$(error Unsupported REVISION '$(REVISION)'; expected japan_v10, japan_v11, usa_tengen_unlicensed, usa_tengen, japan_revb, usa_namco, or europe)
 endif
 
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
@@ -573,6 +578,7 @@ help:
 	@echo   make verify-revision REVISION=usa_tengen REVISION_REFERENCE_DIR=path/  Verify licensed Tengen
 	@echo   make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR=path/  Verify Japan Rev B
 	@echo   make verify-revision REVISION=usa_namco REVISION_REFERENCE_DIR=path/  Verify Namco USA
+	@echo   make verify-revision REVISION=europe REVISION_REFERENCE_DIR=path/  Verify Europe
 	@echo   make build-hack            Build the isolated default ROM-hack variant
 	@echo   make verify-hack           Require only the documented default hack diff
 	@echo   make validate-hack         Prove the default hack starts on stage 5 in FCEUX

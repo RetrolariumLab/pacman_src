@@ -20,6 +20,7 @@ make verify-revision REVISION=usa_tengen_unlicensed REVISION_REFERENCE_DIR="path
 make verify-revision REVISION=usa_tengen REVISION_REFERENCE_DIR="path/to/roms/"
 make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR="path/to/roms/"
 make verify-revision REVISION=usa_namco REVISION_REFERENCE_DIR="path/to/roms/"
+make verify-revision REVISION=europe REVISION_REFERENCE_DIR="path/to/roms/"
 ```
 
 Every revision assembles the single `src/main.asm` entrypoint. The build passes
@@ -38,7 +39,7 @@ include the 16-byte iNES header.
 | `japan_v10` | `Pac-Man (J) (V1.0) [!].nes` | `BB1B591B` | `20f0fc7664983b5d4f166866302f1ad20efb727d` | `49ABEEE6` | `adb4d7d7d28c89ca177aad231e0fdad992c0fbfb` | byte-identical |
 | `japan_v11` | `Pac-Man (J) (V1.1) [!].nes` | `2BF9D836` | `160920895ec9ff4ed832cd16c9b2be5352feebae` | `49ABEEE6` | `b8be2bffb4592873cc211becb529bf64071c7f90` | byte-identical |
 | `japan_revb` | `Pac-Man (Japan) (En) (Rev B).nes` | `B6214FA9` | `1b66f8ac67c1e72ca4ec97494fb06aaeb05cd68d` | `49ABEEE6` | `8b874a704e37557941179b232bac41644f6d01fc` | byte-identical |
-| `europe` | `Pac-Man (E) [!].nes` | `6FA1193B` | `8fef2bdce0c0be2ece67b26587aa22097ba3c9cf` | `19C4AA76` | `feb45bcbcd2326c14280db17330b665ec6adc0cc` | structural analysis |
+| `europe` | `Pac-Man (E) [!].nes` | `6FA1193B` | `8fef2bdce0c0be2ece67b26587aa22097ba3c9cf` | `19C4AA76` | `feb45bcbcd2326c14280db17330b665ec6adc0cc` | byte-identical |
 | `usa_namco` | `Pac-Man (U) (Namco) [!].nes` | `347D7D34` | `aa1bba9a243c70eb4e9928b5efec9d4877579d08` | `ED9E2130` | `e7d818e128593109b5c480497a050facc0744f1b` | byte-identical |
 | `usa_tengen` | `Pac-Man (U) (Tengen) [!].nes` | `E35321BC` | `5dd6d83b9827793f1da12923f2212e4d7502cf9a` | `49ABEEE6` | `727176933c25de055e7daa92e8b943f67cae4d9b` | byte-identical |
 | `usa_tengen_unlicensed` | `Pac-Man (Unl) (Tengen) [!].nes` | `7154ACB5` | `799b199bdb43fe5f97a37bd37294802515a13dfa` | `49ABEEE6` | `f1d9eb92f931ed925bd6119d00d1023a45da583f` | byte-identical |
@@ -66,6 +67,13 @@ delay state, and places the active maze-data pointer at `$FFF6` while retaining
 a legacy vector word at `$FFF8`. Its regional CHR is read from the selected
 local reference ROM; both the reconstructed PRG and complete ROM are verified
 byte for byte.
+
+The European release shares the 1993 Namco copyright, localized attract text,
+RAM-backed palette queues, and regional CHR, but not the longer USA title delay
+or reset sequence. Its PAL-specific paths initialize hidden shadow-OAM entries
+to `$EF` during boot, title, READY, round setup, and normal gameplay. Five
+movement profiles are scaled for the 50 Hz frame rate. These differences remain
+semantic source alternatives, and the complete European ROM is byte-identical.
 
 ## Structural Comparison Method
 

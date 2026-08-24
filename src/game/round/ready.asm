@@ -110,6 +110,9 @@ bra_ready_timer_reached_78:		; was: bra_CB2E_78
     STA ram_obj_pos_Y_hi + $10
     LDA #$00
     TAY
+.if PACMAN_REVISION = REVISION_EUROPE
+    LDA #$EF
+.endif
 ; Clear OAM window used by READY text
 bra_clear_ready_oam_window:		; was: bra_CB4F_loop
 ; 0778-079B
@@ -170,6 +173,9 @@ loc_wait_ready_sfx_done:		; was: loc_CBB2
     LDA #$00
     STA ram_round_restart_flag
     TAY
+.if PACMAN_REVISION = REVISION_EUROPE
+    LDA #$EF
+.endif
 ; Clear READY text OAM tail before script switch
 bra_clear_ready_oam_tail:		; was: bra_CBC3_loop
 ; 0760-07FF
