@@ -16,11 +16,11 @@ An official revision is selected explicitly:
 ```text
 make build-revision REVISION=japan_v11
 make verify-revision REVISION=japan_v11
-make verify-revision REVISION=usa_tengen_unlicensed REVISION_REFERENCE_DIR="path/to/roms/"
-make verify-revision REVISION=usa_tengen REVISION_REFERENCE_DIR="path/to/roms/"
-make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR="path/to/roms/"
-make verify-revision REVISION=usa_namco REVISION_REFERENCE_DIR="path/to/roms/"
-make verify-revision REVISION=europe REVISION_REFERENCE_DIR="path/to/roms/"
+make verify-revision REVISION=usa_tengen_unlicensed REVISION_REFERENCE_DIR="path/to/roms"
+make verify-revision REVISION=usa_tengen REVISION_REFERENCE_DIR="path/to/roms"
+make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR="path/to/roms"
+make verify-revision REVISION=usa_namco REVISION_REFERENCE_DIR="path/to/roms"
+make verify-revision REVISION=europe REVISION_REFERENCE_DIR="path/to/roms"
 ```
 
 Every revision assembles the single `src/main.asm` entrypoint. The build passes
@@ -43,6 +43,45 @@ include the 16-byte iNES header.
 | `usa_namco` | `Pac-Man (U) (Namco) [!].nes` | `347D7D34` | `aa1bba9a243c70eb4e9928b5efec9d4877579d08` | `ED9E2130` | `e7d818e128593109b5c480497a050facc0744f1b` | byte-identical |
 | `usa_tengen` | `Pac-Man (U) (Tengen) [!].nes` | `E35321BC` | `5dd6d83b9827793f1da12923f2212e4d7502cf9a` | `49ABEEE6` | `727176933c25de055e7daa92e8b943f67cae4d9b` | byte-identical |
 | `usa_tengen_unlicensed` | `Pac-Man (Unl) (Tengen) [!].nes` | `7154ACB5` | `799b199bdb43fe5f97a37bd37294802515a13dfa` | `49ABEEE6` | `f1d9eb92f931ed925bd6119d00d1023a45da583f` | byte-identical |
+
+## Revision Family Tree
+
+This tree describes relationships proven by aligned code, shared data layouts,
+and the byte-identical source alternatives. It is a structural family tree, not
+a claim about Namco's unreleased source-control history.
+
+```text
+Shared original game core
+|
++-- Early Japanese line
+|   `-- Japan V1.0 (preservation baseline)
+|       `-- Japan V1.1 / Rev A
+|           corrected CHARACTER text + relocated sound-channel RAM
+|
+`-- Later regional architecture
+    RAM-backed palette queues + relocated regional code/data
+    |
+    +-- Japan Rev B
+    |   Japanese presentation on the later rendering architecture
+    |
+    +-- Tengen branch
+    |   +-- USA Tengen, unlicensed
+    |   `-- USA Tengen, Nintendo-licensed
+    |       unlicensed program + license text + reset trampoline/vector
+    |
+    `-- Namco 1993 branch
+        +-- USA Namco
+        |   extended title delay + USA reset sequence
+        `-- Europe PAL
+            compact title flow + 50 Hz movement profiles + PAL OAM hiding
+```
+
+The arrows and nesting are intentionally conservative. Japan V1.1 is a direct
+eight-byte refinement of V1.0, and licensed Tengen is a small, clearly bounded
+variant of the unlicensed Tengen program. Rev B, Tengen, and the 1993 Namco
+releases share later architecture, but are shown as sibling branches where the
+binary evidence does not establish a unique chronological parent. USA Namco
+and Europe are likewise sibling regional variants of their shared 1993 branch.
 
 ## Proven Japan V1.1 Differences
 
