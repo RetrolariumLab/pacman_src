@@ -1,8 +1,8 @@
 # Official ROM Revision Builds
 
-Milestone 21 extends the source reconstruction to verified official Pac-Man ROM
-revisions without weakening the Japan V1.0 reference build. ROM images remain
-local inputs and are never distributed by this repository.
+The shared source supports verified official Pac-Man ROM revisions without
+weakening the Japan V1.0 reference build. ROM images remain local inputs and
+are never distributed by this repository.
 
 Profiles whose CHR differs from the preservation baseline reuse those bytes
 directly from the selected local reference ROM during assembly. They do not

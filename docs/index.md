@@ -34,73 +34,17 @@
 - [stage_params_and_data_tail.md](./stage_params_and_data_tail.md): stage profile tables, maze RLE, vectors, tail layout.
 - [assets.md](./assets.md): policy and reproducible extraction of opaque ROM assets.
 
-## Suggested Annotation Order
-1. Core loop shell:
-`C98A..CA1E` + `script 00/02/04/06/08/0C` dispatcher and transitions.
-
-2. Rendering-safe gameplay data path:
-`DEDF..E148` (pellet/fruit/score/1UP), then HUD writers needed by it.
-
-3. Movement/collision foundation:
-`E154..E24E` tile probes/conversion + `D2FB..D4C1` Pac-Man movement.
-
-4. Enemy logic:
-`D4C2..D8F8` ghost states, targeting and speed tables.
-
-5. Intermissions:
-`E655..EB41` scene runtime + animation dispatch.
-
-6. Audio engine:
-`EE18..F0AD` decoder/tables and `F0AE..F427` generated SFX streams.
-
-7. Data tail integration:
-`EB42..FFFF` stage profile multiplexer, parameter blocks, maze stream pointer, vectors.
-
 ## Verification Rule
 After each edit batch:
 - run `make verify`
 - require `[OK] Byte-identical ROM reproduced from native ca65 source.`
 
-## Current Status
-- Systematic subsystem documentation (roadmap milestone 5) is complete across
-  all seven planned subsystem passes.
-- Native ca65 source is split into semantic subsystem directories under `src/`,
-  with `src/main.asm` retaining the modules' address order.
-- Debugger symbols and source-level navigation (roadmap milestone 6) are
-  available through `make symbols` and validated at runtime with
-  `make validate-symbols`.
-- Focused runtime traces (roadmap milestone 7) cover lifecycle, ghost releases,
-  mode changes, intermissions, pause/player handoff, and sound byte classes via
-  `make trace-runtime`.
-- Automated source and documentation checks (roadmap milestone 8) are available
-  through the fast `make lint` and aggregate `make test` gates.
-- Six binary format families (roadmap milestone 9) have documented JSON codecs
-  and byte-identical verification through `make roundtrip-formats`.
-- Source Reconstruction 1.0 (roadmap milestone 10) is release-candidate complete;
-  `make reconstruction-audit` reproduces its full validation matrix.
-- Optional ROM-hack variants (roadmap milestone 11) use separate entrypoints,
-  outputs, byte-diff manifests, and FCEUX behavior checks.
-- The expanded NROM-256 variant (roadmap milestone 12) adds a free 16 KiB bank
-  and consumes an explicitly initialized editable maze JSON asset.
-- Expanded stage parameters (roadmap milestone 13) occupy `$81A0..$82D5`; an
-  exact operand manifest and FCEUX proof cover the first runtime tuning value.
-- Variable-length expanded sound streams and their command-line authoring model
-  (milestones 14-15) are available through deterministic JSON, MIDI, and WAV
-  workflows.
-- The local Sound Studio (roadmap milestone 16) provides a tested Tkinter slot
-  browser, piano roll, guarded editing/import, original comparison, preview,
-  save, build, and FCEUX launch workflow through `make sound-studio`.
-- The local Maze Studio (roadmap milestone 17) provides CHR-backed tilemap
-  editing, semantic overlays, structural validation, and guarded RLE export.
-- The local Graphics Studio (roadmap milestone 18) provides reversible CHR
-  pixel editing and a validated actor metasprite/OAM inspector through
-  `make graphics-studio`.
-- The local Screen Studio (roadmap milestone 19) composes the title nametable,
-  edits bounded text/HUD/intermission assets, and exports them to the expanded
-  bank through `make screen-studio`.
-- A standalone tabbed Qt replacement for the four editor front ends is retained
-  as low-priority milestone 20. Current Python editors and JSON codecs remain
-  complete and supported independently of that optional packaging work.
-- The official revision matrix and focused USA Namco/Europe FCEUX boot gates
-  (roadmap milestone 22) are available as `make verify-revisions` and
-  `make smoke-regional-revisions`.
+## Project Snapshot
+- `source-reconstruction-2.0` is the current tagged release.
+- One shared source tree reproduces seven verified official ROM profiles.
+- `make reconstruction-audit-2` is the strict release gate for the reference
+  build, official revisions, runtime evidence, and authoring pipelines.
+- Sound, maze, graphics, and screen editors are available as local Python tools;
+  their JSON assets feed the isolated expanded NROM-256 build.
+- The unknown registry remains the active evidence backlog. A unified Qt editor
+  is retained as a low-priority packaging improvement, not a release blocker.

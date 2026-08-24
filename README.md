@@ -15,12 +15,12 @@ catch behavioural regressions frame by frame.
 
 ## Status
 
-Source Reconstruction 2.0 is release-ready. It retains the 1.0 preservation
-contract and adds the completed content-authoring pipeline, seven byte-identical
-official revision profiles, and strict regional runtime gates. See
+Source Reconstruction 2.0 is the current tagged release. It retains the 1.0
+preservation contract and adds the completed content-authoring pipeline, seven
+byte-identical official revision profiles, and strict regional runtime gates. See
 [`docs/source_reconstruction_2_0.md`](docs/source_reconstruction_2_0.md) for the
-release contract. The original release remains tagged as
-`source-reconstruction-1.0`.
+release contract. The release tags are `source-reconstruction-1.0` and
+`source-reconstruction-2.0`.
 
 The annotated source covers every major subsystem, unresolved interpretations
 remain explicit in the unknowns registry, and the complete validation matrix
@@ -132,8 +132,9 @@ pacman_src/
 `-- Pac-Man (J) (V1.0) [!].nes   # Original ROM (not distributed)
 ```
 
-`assets/generated/`, `build/`, `reference/`, `diffs/`, `reports/` and
-`workflow/` are generated artifacts and are not tracked. See
+`assets/generated/`, `build/`, `reference/`, `diffs/`, `reports/`, and the
+root-level `workflow/` analysis output are generated artifacts and are not
+tracked. The source tools under `scripts/workflow/` are tracked. See
 [`docs/assets.md`](docs/assets.md) for the source-versus-asset policy.
 
 ## Make Targets
@@ -142,6 +143,9 @@ pacman_src/
 make                            # Same as `make build`
 make build                      # Build the native ca65 ROM
 make verify                     # Build and require byte-identity
+make verify-revision REVISION=europe # Verify one official revision
+make verify-revisions           # Verify every available official revision
+make smoke-regional-revisions   # Boot USA Namco and Europe in FCEUX
 make build-hack                 # Build the isolated default ROM-hack variant
 make verify-hack                # Require only its documented byte difference
 make validate-hack              # Prove its stage-5 behavior in FCEUX
@@ -157,6 +161,7 @@ make graphics-studio            # Open the local CHR and metasprite editor
 make screen-studio              # Open the title, text, HUD, and intermission editor
 make describe-sound SOUND_SLOT=4 # Inspect decoded musical notes
 make preview-sound SOUND_SLOT=4  # Render an ignored WAV preview
+make import-midi MIDI_FILE=x.mid # Import monophonic MIDI to ignored JSON
 make symbols                    # Generate Mesen/FCEUX debugger artifacts
 make test-debug-symbols         # Test symbol parsing and conversion
 make validate-symbols           # Prove live symbol lookup and named breakpoint
@@ -164,6 +169,9 @@ make lint                       # Check source, naming, docs, and Python syntax
 make test                       # Run all focused Python workflow tests
 make roundtrip-formats          # Decode/encode six binary format families
 make reconstruction-audit       # Run the complete Source Reconstruction 1.0 gate
+make reconstruction-audit-2     # Run the strict Source Reconstruction 2.0 gate
+make trace-scoring              # Capture semantic scoring events
+make validate-scoring-trace     # Revalidate an existing scoring trace
 make trace-runtime              # Capture and validate focused gameplay traces
 make validate-runtime-traces    # Revalidate existing gameplay traces
 make run                        # Build and run the ROM in FCEUX

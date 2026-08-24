@@ -1,6 +1,6 @@
 # Maze Authoring
 
-Milestone 17 provides a local editor for the expanded variant's stage-2 maze:
+Maze Studio is the local editor for the expanded variant's stage-2 maze:
 
 ```text
 make init-expanded-assets

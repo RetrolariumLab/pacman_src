@@ -1,7 +1,7 @@
 # Binary Data Format Round-Trips
 
-Milestone 9 provides one JSON decoder/encoder implementation for six binary
-format families. The preservation ROM and extracted assets remain the source of
+The project provides one JSON decoder/encoder implementation for six binary
+format families. The reference ROM and extracted assets remain the source of
 truth; generated JSON is an editable inspection format, not an implicit build
 input.
 

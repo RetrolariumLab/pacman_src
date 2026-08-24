@@ -1,7 +1,7 @@
 # Screen, Text, and Intermission Authoring
 
-Milestone 19 provides a separate local Tkinter editor for the screen-oriented
-data that does not belong in the maze or CHR editors:
+Screen Studio is the local Tkinter editor for screen-oriented data that does
+not belong in the maze or CHR editors:
 
 ```text
 make init-expanded-assets

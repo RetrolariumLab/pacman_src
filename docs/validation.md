@@ -11,7 +11,8 @@ make roundtrip-formats    # six binary format decode/encode checks
 make validate-symbols     # live debugger-symbol lookup and execution hook
 make trace-runtime        # slower focused emulator evidence
 make trace-scoring        # slower scoring-event capture
-make reconstruction-audit # complete release-candidate gate, including captures
+make reconstruction-audit # complete Source Reconstruction 1.0 release gate
+make reconstruction-audit-2 # strict seven-revision and regional runtime gate
 make verify-hack          # exact manifest-declared default variant difference
 make validate-hack        # default variant behavior in live FCEUX
 make verify-expanded      # NROM-256 layout, fixed-bank boundary, JSON maze
@@ -54,13 +55,18 @@ reference PRG and ROM hashes exactly. Debugger and trace targets are separate
 because they build or start external tooling and take longer. A green lint or
 unit-test run never substitutes for byte identity or behavioral evidence.
 
-## Preservation release gate
+## Reconstruction release gates
 
 `make reconstruction-audit` runs lint, all focused unit tests, byte identity and
 format round-trips, live debugger validation, then fresh runtime and scoring
 captures with their semantic validators. It intentionally regenerates ignored
 evidence under `tmp/`; a stale local trace therefore cannot make the release
 gate pass. Run it on the exact commit intended for the stable tag.
+
+`make reconstruction-audit-2` adds strict verification of all seven official
+revision profiles and the USA Namco/Europe FCEUX title/OAM smoke tests. Unlike
+the convenient standalone matrix commands, the release gate treats every
+missing reference ROM as a failure.
 
 ## Optional variant gates
 

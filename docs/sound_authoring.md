@@ -1,11 +1,9 @@
 # Sound Authoring Core
 
-Milestone 15 provides command-line authoring primitives beneath the planned
-local Sound Studio. It does not change the preservation build or pretend that
-the original sequencer is general MIDI.
-
-Milestone 16 adds the dependency-free local GUI over those primitives. Initialize
-the ignored editable assets once, then launch it with:
+The sound authoring stack combines command-line primitives with the
+dependency-free local Sound Studio. It does not change the reference build or
+pretend that the original sequencer is general MIDI. Initialize the ignored
+editable assets once, then launch the studio with:
 
 ```text
 make init-expanded-assets
@@ -31,9 +29,9 @@ rebuilt at `$848F`, and unused capacity is filled with `$FF`. The build rejects
 a missing/reordered slot, malformed bytecode, an address overflow, or a total
 larger than 8192 bytes.
 
-This replaces milestone 14's same-size-per-stream restriction while retaining
-a stable outer ROM layout for review. `make verify-expanded` checks the complete
-padded region, not merely its used prefix.
+Variable-length storage removes the earlier same-size-per-stream restriction
+while retaining a stable outer ROM layout for review. `make verify-expanded`
+checks the complete padded region, not merely its used prefix.
 
 ## Musical model
 

@@ -19,9 +19,11 @@ The project targets the local `Pac-Man (J) (V1.0) [!].nes` image:
 - PRG CRC32: `BB1B591B`
 - PRG SHA-1: `20f0fc7664983b5d4f166866302f1ad20efb727d`
 
-Other revisions, including V1.1 disassemblies, may be useful references but
-must not be merged by address or name alone. Every imported fact must be
-checked against this ROM's bytes and behavior.
+Six additional official revisions are supported through explicit build
+profiles while Japan V1.0 remains the default baseline. Facts transferred
+between revisions must be checked against the selected ROM's bytes and
+behavior rather than merged by address or name alone. See
+`docs/multi_revision_builds.md` for the complete matrix.
 
 ## Current Baseline
 
@@ -428,12 +430,12 @@ Declare a preservation milestone when:
 Tag this state as a stable preservation release before beginning substantial
 behavior changes.
 
-Completed as the Source Reconstruction 1.0 release candidate. The criterion and
-evidence matrix is recorded in `docs/source_reconstruction_1_0.md`, while
+Released and tagged as `source-reconstruction-1.0`. The criteria and evidence
+matrix are recorded in `docs/source_reconstruction_1_0.md`, while
 `make reconstruction-audit` rebuilds the reference ROM, exercises documentation
 and format invariants, validates live debugger navigation, and captures fresh
 runtime evidence. The stable tag is deliberately applied to the reviewed merge
-commit in `main`, not to an unreviewed milestone branch.
+commit in `main`.
 
 ### 11. Optional ROM-Hack and Bug-Fix Variants — Complete
 
@@ -460,8 +462,8 @@ Completed with the isolated workflow in `docs/rom_hack_variants.md`.
 `make build-hack` writes separate artifacts, `make verify-hack` permits only
 manifest-declared ROM byte changes, and `make validate-hack` proves the default
 stage-5 demonstration variant in FCEUX. The preservation entrypoint and
-byte-identical `make verify` contract remain unchanged. Expanded-ROM layouts
-remain an explicit future variant rather than an implicit part of this gate.
+byte-identical `make verify` contract remain unchanged. Larger changes use the
+separate expanded-ROM workflow completed in milestone 12.
 
 ### 12. Expanded ROM and JSON Asset Pipeline — Complete
 
@@ -491,8 +493,6 @@ The demonstration doubles first-level frightened duration from 7 to 14, and
 `make validate-expanded` observes 14 in both expanded data and
 `ram_frightened_duration` under FCEUX.
 
-## Recommended Next Work Package
-
 ### 14. Expanded Sound Assets — Complete
 
 Move all 16 bounded sound streams behind the optional expanded JSON pipeline,
@@ -506,8 +506,6 @@ two-byte active-table pointer. The demonstration changes pellet slot 04's first
 note from `$01` to `$B1`; FCEUX observes its expanded pointer, note byte, and
 advanced runtime cursor.
 
-## Recommended Next Work Package
-
 ### 15. Variable-Length Sound Authoring Core — Complete
 
 The expanded build now packs actual stream lengths into a fixed 8 KiB budget,
@@ -516,17 +514,17 @@ dependency-free authoring API provides reversible Pac-Man/MIDI/note-name
 conversion, NTSC frame durations, monophonic PPQ MIDI import with tempo maps,
 and deterministic pulse WAV previews based on the game's timer table. Public
 `describe-sound`, `import-midi`, and `preview-sound` targets keep this core
-usable independently of the future GUI.
+usable independently of the GUI.
 
 ### 16. Local Sound Studio — Complete
 
-Build a fully local editor over milestone 15: slot selector, piano roll,
-note/duration and control-command inspector, original/edited comparison, APU
-preview, MIDI import, JSON save, ROM build, and FCEUX launch. It must expose
+Build a fully local editor over the sound-authoring API: slot selector, piano
+roll, note/duration and control-command inspector, original/edited comparison,
+APU preview, MIDI import, JSON save, ROM build, and FCEUX launch. It must expose
 lossy MIDI conversions and unsupported instrument/velocity data rather than
 silently pretending the Pac-Man sequencer is general MIDI.
 
-Completed with a dependency-free Tkinter application over the milestone-15 API.
+Completed with a dependency-free Tkinter application over that API.
 It provides the 16-slot browser, piano roll, exact command inspector, guarded
 note edits and MIDI replacement, original/edited comparison and restore, atomic
 JSON save, WAV playback, plus explicit expanded-ROM build and FCEUX launch
@@ -653,56 +651,6 @@ An exploratory GoodNES derivative survey is recorded in
 clean official profile; overdumps and hacks remain research inputs rather than
 revision targets.
 
-## Resuming Work on Another Computer
-
-The repository intentionally does not distribute the original ROM or extracted
-proprietary assets. To recreate the local environment:
-
-1. Clone the repository and enter its directory.
-2. Check out the intended branch and confirm that the working tree is clean.
-3. Place the exact reference ROM in the repository root as:
-   `Pac-Man (J) (V1.0) [!].nes`.
-4. Run `make split` once to validate the ROM and extract ignored local assets.
-5. Run `make verify` and require the expected PRG and ROM SHA-1 values.
-6. Run `make build-dev` only if the instrumented FCEUX checkout is needed.
-7. Run `make reference` only when a new longplay reference capture is actually
-   required; it is intentionally expensive and never implicit.
-
-Minimal bootstrap:
-
-```bash
-git clone <repo>
-cd pacman_src
-
-# Copy the exact reference ROM into this directory first.
-make split
-make verify
-
-# Optional emulator and behavioral-analysis setup.
-make build-dev
-```
-
-Before starting new reverse engineering:
-
-```bash
-git status
-git log --oneline -10
-make verify
-```
-
-Then read, in order:
-
-1. `docs/roadmap.md`;
-2. `docs/unknowns.md`;
-3. `docs/naming.md`;
-4. `docs/macros.md`;
-5. the subsystem document related to the intended change;
-6. the matching files under `src/`.
-
-Do not commit the reference ROM, `assets/generated/`, `build/`, `workflow/`,
-`reference/`, `diffs/`, or emulator binaries. `make split` is explicit because
-it overwrites extracted assets; `make build` and `make verify` never do.
-
 ## Verification Gates
 
 Every source edit batch must pass:
@@ -726,9 +674,9 @@ ROM SHA-1: adb4d7d7d28c89ca177aad231e0fdad992c0fbfb
 Use the narrowest relevant checks during development, but run `make verify`
 before every source-reconstruction commit.
 
-## Definition of Done
+## Permanent Project Invariants
 
-The source reconstruction is complete when:
+Completed and future work must preserve these properties:
 
 - the native ca65 modules build the reference ROM byte for byte;
 - major procedures have verified purpose and calling-contract comments;

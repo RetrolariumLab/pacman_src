@@ -1,8 +1,7 @@
 # BANK_FF Map
 
 ## Purpose
-Quick navigation map for the modules included by `src/main.asm`, with annotation
-priorities.
+Quick navigation map for the modules included by `src/main.asm`.
 
 ## Subsystem Ranges
 | Range | Area | Key Entrypoints | Notes |
@@ -31,11 +30,3 @@ priorities.
 - `ram_scatter_chase_timer`, `ram_scatter_chase_phase`, `ram_scatter_chase_second_divider`: scatter/chase countdown system.
 - `ram_release_wave_timer`, `ram_global_release_target`, `ram_personal_release_stage`, `ram_release_timer_seconds`, `ram_release_timer_ticks`: release target/counter pipeline.
 - `ram_fruit_timer_hi`, `ram_fruit_timer_lo`: fruit visibility timer.
-
-## Suggested Annotation Order
-1. `C98A..CA1E` script dispatcher and loop shell.
-2. `CE35..D04D` round init and data-load pipeline.
-3. `D2FB..D4C1` Pac-Man movement.
-4. `D0EF..D2FA` timers/collision/scoring.
-5. `D4C2..E25B` ghost AI/state machine.
-6. Intermission (`E655..EB41`) last.

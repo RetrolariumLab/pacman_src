@@ -1,7 +1,7 @@
 # Focused Runtime Trace Scenarios
 
-Roadmap milestone 7 adds compact semantic traces for gameplay transactions that
-are not specific to scoring. The trace captures state transitions and selected
+Compact semantic traces cover gameplay transactions that are not specific to
+scoring. Each trace captures state transitions and selected
 execution hooks rather than screenshots or full memory dumps.
 
 ## Workflow
