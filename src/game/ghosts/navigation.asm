@@ -239,8 +239,8 @@ bra_check_house_entry_trigger:		; was: bra_D5D9
     LDA #$00
     CLC
     SBC zp_work4
-    AND ram_shared_state_1
-    STA ram_shared_state_1
+    AND ram_frightened_ghost_mask
+    STA ram_frightened_ghost_mask
     TXA
     LSR
     TAY
@@ -266,7 +266,7 @@ bra_select_target_mode:		; was: bra_D617
 ; 1) frightened flag path -> pseudo-random legal turn pick
 ; 2) scatter/chase gate -> corner target or slot-specific chase formula
     LDA zp_work4
-    AND ram_shared_state_1
+    AND ram_frightened_ghost_mask
     BNE bra_pick_turn_from_tile_options
     LDA zp_work4
     AND ram_shared_state_0

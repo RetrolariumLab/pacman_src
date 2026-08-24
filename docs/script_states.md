@@ -57,7 +57,7 @@ and separate `con_title_script_*` constants.
 | Script context | Shared fields |
 |---|---|
 | `round_ready` | `ram_shared_state_0` is the READY timer. |
-| `pause` | `ram_shared_state_1` is the frightened-ghost mask; bytes 2/3 are its timer. |
+| `pause` | `ram_frightened_ghost_mask` and the seconds/frame aliases own bytes 1..3. |
 | `death` | `ram_shared_state_0` selects pre-animation versus animation phase. |
 | `game_over` | `ram_shared_state_0` is the wrapping timeout counter. |
 | `stage_clear` | `ram_shared_state_0` drives initialization and flash phases, then temporarily selects the intermission scene. |

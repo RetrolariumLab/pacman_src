@@ -1,12 +1,12 @@
 ; Intermission tile-animation dispatch and scene animation states
 
 ; Dispatch the animation layer by the same even scene/substate keys as scene logic.
-; Inputs: ram_shared_state_0/1, frame/animation phase, and staged actor positions.
+; Inputs: intermission scene/substate, frame/animation phase, and actor positions.
 ; Outputs: current scene's actor sprite-set indices.
 ; Side effects: may advance ram_pacman_anim_phase; never advances scene substate.
 ; Clobbers: A, Y and ram_indirect_jmp.
 sub_run_intermission_animation_dispatch:		; was: sub_EA20
-    LDY ram_shared_state_0
+    LDY ram_intermission_scene
     LDA tbl_intermission_anim_scene_handlers,Y
     STA ram_indirect_jmp
     LDA tbl_intermission_anim_scene_handlers + $01,Y
@@ -21,7 +21,7 @@ tbl_intermission_anim_scene_handlers:		; was: tbl_EA2F
 
 ; Animation state machine for intermission scene00
 handler_anim_scene00_dispatch:		; was: ofs_016_EA35_00
-    LDY ram_shared_state_1
+    LDY ram_intermission_substate
     LDA tbl_anim_scene00_state_handlers,Y
     STA ram_indirect_jmp
     LDA tbl_anim_scene00_state_handlers + $01,Y
@@ -178,7 +178,7 @@ tbl_anim_banner_tile_quads:		; was: tbl_EABD
     .byte $3B
 ; Animation state machine for intermission scene01
 handler_anim_scene01_dispatch:		; was: ofs_016_EAC9_02
-    LDY ram_shared_state_1
+    LDY ram_intermission_substate
     LDA tbl_anim_scene01_state_handlers,Y
     STA ram_indirect_jmp
     LDA tbl_anim_scene01_state_handlers + $01,Y
@@ -214,7 +214,7 @@ bra_anim_scene01_store_second_rip_tile:		; was: bra_EAF3
 
 ; Animation state machine for intermission scene02
 handler_anim_scene02_dispatch:		; was: ofs_016_EAF9_04
-    LDY ram_shared_state_1
+    LDY ram_intermission_substate
     LDA tbl_anim_scene02_state_handlers,Y
     STA ram_indirect_jmp
     LDA tbl_anim_scene02_state_handlers + $01,Y

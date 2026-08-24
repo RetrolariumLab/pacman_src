@@ -11,6 +11,7 @@ make roundtrip-formats    # six binary format decode/encode checks
 make validate-symbols     # live debugger-symbol lookup and execution hook
 make trace-runtime        # slower focused emulator evidence
 make trace-scoring        # slower scoring-event capture
+make trace-evidence       # focused evidence for resolved registry entries
 make reconstruction-audit # complete Source Reconstruction 1.0 release gate
 make reconstruction-audit-2 # strict seven-revision and regional runtime gate
 make verify-hack          # exact manifest-declared default variant difference
@@ -67,6 +68,15 @@ gate pass. Run it on the exact commit intended for the stable tag.
 revision profiles and the USA Namco/Europe FCEUX title/OAM smoke tests. Unlike
 the convenient standalone matrix commands, the release gate treats every
 missing reference ROM as a failure.
+
+## Reconstruction evidence
+
+`make trace-evidence` runs the full natural longplay plus a controlled pause
+probe and then validates the results against static ROM facts. The gate covers
+the actor-state array member at `$00C0`, shared-state ownership by script,
+personal-release latch consumers, all 16 sound request slots, attract sprite
+strip selection, and the pre-reset copyright block. Traces remain ignored under
+`tmp/reconstruction_evidence/`; `make validate-evidence` rechecks an existing set.
 
 ## Optional variant gates
 

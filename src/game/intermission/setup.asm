@@ -2,9 +2,9 @@
 
 ; Script 0E: intermission pre-setup (clear playfield, palette, actor seed state)
 ; Intermission field legend:
-; ram_shared_state_0: even-valued scene-table offset (00/02/04)
-; ram_shared_state_1: scene-local substate index
-; ram_shared_state_2: per-substate countdown in some scenes
+; ram_intermission_scene: even-valued scene-table offset (00/02/04)
+; ram_intermission_substate: scene-local substate index
+; ram_intermission_countdown: per-substate countdown in some scenes
 ; ram_sfx_intermission_flag_a/ram_sfx_intermission_flag_b: one-shot flags used by intermission setup/runtime
 ; Actor sprite-set and attribute arrays seed the initial cutscene composition.
 ; Inputs: selected intermission scene, current player/game mode, PPU in gameplay state.
@@ -38,7 +38,7 @@ bra_wait_vblank_set_flag:		; was: bra_E65C_infinite_loop
     LDA #> $00FF
     STA ram_obj_pos_X_lo + $04
     LDA #$00    ; every intermission scene begins at its first substate
-    STA ram_shared_state_1
+    STA ram_intermission_substate
 .ifndef PACMAN_REVISION_RAM_PALETTES
     SetPpuAddress $3F10
 .endif
@@ -128,7 +128,7 @@ bra_clear_attribute_block:		; was: bra_E711_loop
     INX
     CPX #$40
     BNE bra_clear_attribute_block
-    LDA ram_shared_state_0
+    LDA ram_intermission_scene
     CMP #con_intermission_scene_ripped_suit
     BEQ bra_draw_center_marker_if_mode2
     RTS

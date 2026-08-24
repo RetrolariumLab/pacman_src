@@ -6,11 +6,11 @@
 ; These routines drive enemy behavior, power-up windows, fruit visibility, and scoring.
 ; ---------------------------------------------------------------------------
 ; Runtime field legend used heavily below:
-; ram_shared_state_1: frightened bitmask by ghost slot
-; ram_shared_state_2/ram_shared_state_3: frightened timer hi/lo
+; ram_frightened_ghost_mask: frightened bitmask by ghost slot
+; ram_frightened_seconds/ram_frightened_frame_counter: frightened countdown
 ; ram_scatter_chase_timer: active scatter/chase timer countdown
 ; ram_scatter_chase_phase/ram_scatter_chase_second_divider: phase index + per-second divider
-; ram_release_wave_timer: provisional post-threshold mode/reversal gate (RAM-003)
+; ram_personal_release_latch: persistent post-threshold phase/reversal gate
 ; ram_global_release_target: global dot-release target cursor
 ; ram_personal_release_stage: personal-release stage index
 ; ram_release_timer_seconds/ram_release_timer_ticks: release counters (seconds/subseconds)
@@ -25,17 +25,17 @@
 ; - decrements the fruit/popup timer and removes its sprite when it expires
 ; Clobbers: A, X, Y and zp_work0..zp_work4.
 sub_update_round_timers_and_frightened:		; was: sub_D0EF
-    LDA ram_shared_state_2
+    LDA ram_frightened_seconds
     BMI bra_release_and_fruit_tick
-    INC ram_shared_state_3
+    INC ram_frightened_frame_counter
     LDA #$3C
-    CMP ram_shared_state_3
+    CMP ram_frightened_frame_counter
     BNE bra_check_frightened_end_window
     LDA #$00
-    STA ram_shared_state_3
-    DEC ram_shared_state_2
+    STA ram_frightened_frame_counter
+    DEC ram_frightened_seconds
     BPL bra_check_frightened_end_window
-    STA ram_shared_state_1
+    STA ram_frightened_ghost_mask
     LDX #$00
 ; Apply palette phase bits to ghost sprite attributes
 bra_apply_frightened_palette_phase:		; was: bra_D107_loop
@@ -50,12 +50,12 @@ bra_apply_frightened_palette_phase:		; was: bra_D107_loop
     BNE bra_apply_frightened_palette_phase
 ; Handle final frightened blinking window
 bra_check_frightened_end_window:		; was: bra_D117
-    LDA ram_shared_state_2
+    LDA ram_frightened_seconds
     CMP #$02
     BCS bra_release_and_fruit_tick
 .ifdef PACMAN_REVISION_RAM_PALETTES
     LDX #$11
-    LDA ram_shared_state_3
+    LDA ram_frightened_frame_counter
     AND #$08
     BNE bra_apply_tengen_frightened_palette
     LDX #$20
@@ -65,7 +65,7 @@ bra_apply_tengen_frightened_palette:
     STA ram_sprite_palette_update
 .else
     LDX #$00
-    LDA ram_shared_state_3
+    LDA ram_frightened_frame_counter
     AND #$08
     BNE bra_prepare_ppu_append_index
     LDX #$05
@@ -98,7 +98,7 @@ bra_copy_frightened_palette_cmd:		; was: bra_D135_loop
 .endif
 ; Continue with release/fruit timers after frightened handling
 bra_release_and_fruit_tick:		; was: bra_D141
-    LDA ram_shared_state_1
+    LDA ram_frightened_ghost_mask
     BNE bra_check_global_release_target
     LDA ram_scatter_chase_timer
     CMP #$FF
@@ -114,15 +114,15 @@ bra_release_and_fruit_tick:		; was: bra_D141
     INC ram_scatter_chase_phase
     LDA ram_scatter_chase_phase
     AND #$01
-    BEQ bra_use_personal_release_timer
+    BEQ bra_use_personal_release_latch
     JSR sub_try_reverse_ghost_directions
     LDA #$0F
-    BNE bra_store_next_release_timer    ; jmp
-; Use the provisional post-threshold mode mask when phase bit is even
-bra_use_personal_release_timer:		; was: bra_D16A
-    LDA ram_release_wave_timer
-; Store selected release timer value into active countdown
-bra_store_next_release_timer:		; was: bra_D16C
+    BNE bra_store_next_mode_mask    ; jmp
+; Use the persistent post-threshold mode mask when the phase bit is even.
+bra_use_personal_release_latch:		; was: bra_D16A
+    LDA ram_personal_release_latch
+; Store the selected chase/scatter mask, then load the phase countdown.
+bra_store_next_mode_mask:		; was: bra_D16C
     STA ram_shared_state_0
     LDX ram_scatter_chase_phase
 ; 0098-009A
@@ -179,7 +179,7 @@ bra_check_personal_release_targets:		; was: bra_D1B2
     BNE bra_update_fruit_visibility_timer
     INC ram_personal_release_stage
     LDA #$01
-    STA ram_release_wave_timer
+    STA ram_personal_release_latch
     TXA
     ASL
     TAX
@@ -251,7 +251,7 @@ tbl_frightened_palette_cmd:		; was: tbl_D205
 ;
 ; Inputs:
 ; - Pac-Man and candidate world positions
-; - ghost states and ram_shared_state_1 frightened mask
+; - ghost states and ram_frightened_ghost_mask
 ; - fruit availability state and ram_stage_param_index
 ; Outputs: none.
 ; Side effects:
@@ -327,7 +327,7 @@ bra_dispatch_collision_type:		; was: bra_D26A
     CPX #$08
     BEQ bra_handle_fruit_collision
     LDA zp_work2
-    AND ram_shared_state_1
+    AND ram_frightened_ghost_mask
     BEQ bra_trigger_player_death
 ; Prepare the frightened-ghost award selected by ram_kill_cnt.
 bra_award_frightened_ghost:

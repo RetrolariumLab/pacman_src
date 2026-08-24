@@ -81,4 +81,4 @@ bra_advance_actor_pointer:		; was: bra_EA00
 
 ; Dispatch intermission tile animation script by scene id
 ; Animation dispatch is scene-aligned with tbl_intermission_scene_handlers
-; and usually keyed by the same ram_shared_state_1 substate.
+; and usually keyed by the same ram_intermission_substate.

@@ -12,11 +12,11 @@ handler_script10_intermission_runtime:		; was: ofs_003_E74B_10
     JSR sub_run_intermission_scene_dispatch
     JMP loc_gameplay_mainloop_wait_nmi
 ; Dispatch selected intermission scene handler by even scene-table offset.
-; Inputs: ram_shared_state_0 and scene-local actor/substate data.
+; Inputs: ram_intermission_scene and scene-local actor/substate data.
 ; Outputs/side effects: handler-dependent; scene handlers alone advance substates.
 ; Clobbers: A, Y and ram_indirect_jmp.
 sub_run_intermission_scene_dispatch:		; was: sub_E75A
-    LDY ram_shared_state_0
+    LDY ram_intermission_scene
     LDA tbl_intermission_scene_handlers,Y
     STA ram_indirect_jmp
     LDA tbl_intermission_scene_handlers + $01,Y
@@ -34,9 +34,9 @@ tbl_intermission_scene_handlers:		; was: tbl_E769
     .word handler_scene02_chase_return_opening ; con_intermission_scene_return
 
 ; Intermission scene 00 (first cutscene) state machine
-; Uses ram_shared_state_1 as substate selector into tbl_scene00_state_handlers.
+; Uses ram_intermission_substate as selector into tbl_scene00_state_handlers.
 handler_scene00_chase_opening:		; was: ofs_012_E76F_00
-    LDY ram_shared_state_1
+    LDY ram_intermission_substate
     LDA tbl_scene00_state_handlers,Y
     STA ram_indirect_jmp
     LDA tbl_scene00_state_handlers + $01,Y
@@ -58,8 +58,8 @@ handler_scene00_wait_enemy4_left_entry:		; was: ofs_013_E786_00
     RTS
 ; Advance to scene00 chase phase and seed actor movement
 bra_scene00_start_chase_actor:		; was: bra_E78E
-    INC ram_shared_state_1
-    INC ram_shared_state_1
+    INC ram_intermission_substate
+    INC ram_intermission_substate
     LDA #$0C
     STA ram_actor_sprite_set
     LDA #$20
@@ -81,8 +81,8 @@ handler_scene00_wait_pacman_wrap_left:		; was: ofs_013_E7AF_02
     RTS
 ; Spawn Pac-Man runner and set motion
 bra_scene00_spawn_pacman_runner:		; was: bra_E7B5
-    INC ram_shared_state_1
-    INC ram_shared_state_1
+    INC ram_intermission_substate
+    INC ram_intermission_substate
     LDA #$40
     STA ram_script_delay
     LDA #$1E
@@ -110,8 +110,8 @@ handler_scene00_wait_pacman_midpoint:		; was: ofs_013_E7DA_04
     RTS
 ; Spawn ghost pack and initialize formation tiles
 bra_scene00_spawn_ghost_pack:		; was: bra_E7EA
-    INC ram_shared_state_1
-    INC ram_shared_state_1
+    INC ram_intermission_substate
+    INC ram_intermission_substate
     LDA #> $01C0
     STA ram_obj_pos_X_hi + $04
     STA ram_obj_pos_X_hi + $08
@@ -163,7 +163,7 @@ bra_scene00_finish_to_script00:		; was: bra_E84C
 
 ; Intermission scene 01 (second cutscene) state machine
 handler_scene01_chase_rip_opening:		; was: ofs_012_E853_02
-    LDY ram_shared_state_1
+    LDY ram_intermission_substate
     LDA tbl_scene01_state_handlers,Y
     STA ram_indirect_jmp
     LDA tbl_scene01_state_handlers + $01,Y
@@ -187,8 +187,8 @@ handler_scene01_wait_enemy4_left_entry:		; was: ofs_014_E868_00
     RTS
 ; Advance scene01 and seed chase actor movement
 bra_scene01_start_chase_actor:		; was: bra_E870
-    INC ram_shared_state_1
-    INC ram_shared_state_1
+    INC ram_intermission_substate
+    INC ram_intermission_substate
     LDA #$0C
     STA ram_actor_sprite_set
     LDA #$20
@@ -234,8 +234,8 @@ bra_scene01_advance_to_blink_phase:		; was: bra_E8C0
     LDA #$00
     STA ram_obj_pos_X_hi
     STA ram_obj_pos_X_lo
-    INC ram_shared_state_1
-    INC ram_shared_state_1
+    INC ram_intermission_substate
+    INC ram_intermission_substate
     RTS
 
 ; Blink ripped-suit tiles, then end scene01
@@ -248,11 +248,11 @@ handler_scene01_blink_rip_tiles_then_finish:		; was: ofs_014_E8CB_04
     LDA #$45
     STA ram_actor_sprite_set + $02
     LDA #$40
-    STA ram_shared_state_2
+    STA ram_intermission_countdown
     RTS
 ; Wait blink timer before toggling tile
 bra_scene01_wait_blink_timer:		; was: bra_E8E1
-    DEC ram_shared_state_2
+    DEC ram_intermission_countdown
     BEQ bra_scene01_toggle_or_finish
     RTS
 ; Toggle ripped-suit tile state or finish scene
@@ -266,12 +266,12 @@ bra_scene01_set_blink_tile_alt:		; was: bra_E8F0
     LDA #$47
     STA ram_actor_sprite_set
     LDA #$40
-    STA ram_shared_state_2
+    STA ram_intermission_countdown
     RTS
 
 ; Intermission scene 02 (third cutscene) state machine
 handler_scene02_chase_return_opening:		; was: ofs_012_E8FA_04
-    LDY ram_shared_state_1
+    LDY ram_intermission_substate
     LDA tbl_scene02_state_handlers,Y
     STA ram_indirect_jmp
     LDA tbl_scene02_state_handlers + $01,Y
@@ -297,8 +297,8 @@ handler_scene02_wait_enemy4_left_entry:		; was: ofs_015_E911_00
     RTS
 ; Advance scene02 and seed chase actor movement
 bra_scene02_start_chase_actor:		; was: bra_E919
-    INC ram_shared_state_1
-    INC ram_shared_state_1
+    INC ram_intermission_substate
+    INC ram_intermission_substate
     LDA #$4C
     STA ram_actor_sprite_set
     LDA #$20
@@ -320,8 +320,8 @@ handler_scene02_wait_pacman_wrap_left:		; was: ofs_015_E93A_02
     RTS
 ; Spawn Pac-Man return runner and set motion
 bra_scene02_spawn_pacman_return_runner:		; was: bra_E940
-    INC ram_shared_state_1
-    INC ram_shared_state_1
+    INC ram_intermission_substate
+    INC ram_intermission_substate
     LDA #$28
     STA ram_script_delay
     LDA #$4A
@@ -349,8 +349,8 @@ handler_scene02_wait_return_midpoint:		; was: ofs_015_E965_04
     RTS
 ; Spawn trailing chaser actor for scene02
 bra_scene02_spawn_chaser_actor:		; was: bra_E975
-    INC ram_shared_state_1
-    INC ram_shared_state_1
+    INC ram_intermission_substate
+    INC ram_intermission_substate
     LDA #$4C
     STA ram_actor_sprite_set + $01
     LDA #$21

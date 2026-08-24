@@ -471,7 +471,7 @@ tbl_sfx_stream_table_ptr:		; was: tbl_F08C
 tbl_sfx_stream_ptr_table:		; was: tbl_F08E
 ; bytes from data chunks are read via 0x003070
 ; Slot semantics are mapped from writers into ram_sfx slots 0600..060F.
-; Entries 08..0E remain provisional until fully validated by trace/audio capture.
+; Milestone-23 tracing confirms same-index activation for all 16 request slots.
     .word off_sfx_slot00_player_ready_chA
     .word off_sfx_slot01_player_ready_chB
     .word off_sfx_slot02_extra_life

@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "purpose": "Reproduce the evidence behind resolved reconstruction findings",
+  "rom_sha1": "adb4d7d7d28c89ca177aad231e0fdad992c0fbfb",
+  "movie": "movies/pacman_j_longplay.fm2",
+  "movie_sha1": "f6a343fd9f50f4bc8773af48a79eda313c946961",
+  "scenarios": [
+    {
+      "id": "natural-longplay",
+      "method": "natural play",
+      "max_frames": 120000
+    },
+    {
+      "id": "pause-probe",
+      "method": "controlled Start-edge injection",
+      "max_frames": 23000,
+      "patches": ["$004D"]
+    }
+  ]
+}

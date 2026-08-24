@@ -38,7 +38,7 @@ integer step budget. Each high-byte substep applies tunnel wrap (`$0A` -> `$BF`,
 
 Direction selection runs only at eight-pixel alignment. Returning eyes target
 the house door. Other active ghosts choose frightened, scatter, or chase logic
-from their slot bit in `ram_shared_state_1` and `ram_shared_state_0`.
+from their slot bit in `ram_frightened_ghost_mask` and `ram_shared_state_0`.
 
 ## Speed Priority
 
@@ -98,10 +98,11 @@ in `ram_shared_state_0` is selected. One phase parity also calls
 `sub_try_reverse_ghost_directions`; that helper reverses eligible active ghosts
 using their cached tiles and slot masks.
 
-The provisionally named `ram_release_wave_timer` is cleared at round init and
-set to one at a personal pellet threshold. Later it supplies an even-phase mode
-mask and gates ordinary phase reversals. Its gameplay intent is still tracked as
-`RAM-003` in `unknowns.md`; the static accesses do not justify calling it a timer.
+`ram_personal_release_latch` is cleared at round init and set to one at a
+personal pellet threshold. It remains set until the next round setup, supplies
+the even-phase mode mask, and gates ordinary phase reversals. Frightened-mode
+reversals remain eligible because their full mask takes precedence. The focused
+trace establishes this lifetime and both consumers under resolved `RAM-003`.
 
 ## House Release Paths
 
@@ -129,4 +130,5 @@ must not be treated as the release-state array itself.
 - Preserve candidate filtering, reverse exclusion, ranking LUT, and fallback order.
 - Keep house coordinates, release scan order, counters, and threshold equality
   comparisons byte-exact.
-- Leave `RAM-003` open until a runtime trace separates all lifetimes.
+- Revalidate `RAM-003` with `make trace-evidence` after changing release or
+  mode-transition logic.

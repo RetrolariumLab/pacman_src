@@ -131,7 +131,7 @@ handler_state02_anim_default:		; was: ofs_011_D98C_02
 ; State04 anim handler
 handler_state04_anim_default:		; was: ofs_011_D98C_04
     LDA zp_work1
-    AND ram_shared_state_1
+    AND ram_frightened_ghost_mask
     BEQ bra_build_anim_frame_from_direction
     LDA #$1E
     STA zp_work2
@@ -176,7 +176,7 @@ bra_copy_obj_to_sprite_pos:		; was: bra_D9AD_loop
 ; Resolve sprite overlap ordering loop
 loc_overlap_resolution_loop:		; was: loc_D9C5_loop
     LDA zp_work3
-    AND ram_shared_state_1
+    AND ram_frightened_ghost_mask
     BNE bra_next_overlap_candidate
     LDY #$00
     LDA ram_spr_pos_X_hi

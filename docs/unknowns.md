@@ -2,9 +2,10 @@
 
 ## Purpose
 
-This is the canonical backlog for behavior not yet established for the target
+This is the permanent evidence record for resolved reconstruction questions
+and the canonical backlog for any future uncertainty in the target
 `Pac-Man (J) (V1.0) [!]` ROM. Source comments link here by stable ID. A
-plausible interpretation is not enough to rename a symbol or remove an entry.
+plausible interpretation is not enough to rename a symbol or resolve an entry.
 
 Statuses are `open`, `testing`, `resolved`, `unused`, and `confirmed bug`.
 Confidence describes a hypothesis, not mechanically observed facts. Source
@@ -13,88 +14,96 @@ annotations use `!(OBS)`, `!(ASSUME)`, `!(WHY?)`, `!(UNKNOWN)`, `!(BUG?)`, and
 
 ## Open Registry
 
-### RAM-001 — `ram_unknown_round_state`
+No entries remain open after the focused milestone-23 static and runtime audit.
+New uncertainty must receive a stable ID and a bounded experiment before it is
+added here.
 
-- **Subsystem/address:** round setup; RAM `$00C0`
-- **Status/confidence:** open; low
-- **Established:** round initialization stores `Y = $04` after normalizing the
-  four power-pellet slots. No other active symbolic reference is known.
-- **Hypothesis:** state for absent/unreachable code, or a value consumed through
-  an array or indirect access.
-- **Evidence:** `src/game/round/setup.asm` after
-  `bra_normalize_power_pellet_tiles`; `src/memory/ram.inc`.
-- **Smallest experiment:** watch reads/writes of `$00C0` through setup, play,
-  death, stage clear, and intermission; inspect computed RAM accesses covering it.
+Reproduce the evidence with:
 
-### RAM-002 — multiplexed `ram_shared_state_0..3`
+```text
+make trace-evidence
+make validate-evidence
+```
 
-- **Subsystem/address:** title, gameplay, and intermissions; RAM `$0087..$008A`
-- **Status/confidence:** open; high for known contexts, incomplete overall
-- **Established:** ownership changes with `ram_script`. In round runtime, byte 1
-  is the frightened-ghost mask and bytes 2/3 its timer. In intermissions, byte
-  0 is scene ID, byte 1 substate, and byte 2 a local countdown.
-- **Hypothesis:** contextual aliases are appropriate, but no single global
-  semantic name is correct.
-- **Evidence:** `docs/ram_fields.md`, `docs/intermission_flow.md`,
-  `src/game/round/runtime.asm`, and `src/game/intermission/setup.asm`.
-- **Smallest experiment:** build a per-script access table and trace the four
-  bytes at script transitions; alias only unambiguous lifetimes.
-
-### RAM-003 — release-wave field semantics
-
-- **Subsystem/address:** ghost-house release; `ram_release_wave_timer`
-- **Status/confidence:** open; medium
-- **Established:** round init clears the field. Reaching a personal pellet
-  threshold stores `1`; no other active write is known. An even scatter/chase
-  phase copies it to `ram_shared_state_0`, while reversal logic skips ordinary
-  phase reversals when it is nonzero (the all-frightened path still reverses).
-- **Hypothesis:** it is a persistent post-threshold mode/reversal gate, not a
-  timer, but the gameplay intent and exact slot-zero relationship need a trace.
-- **Evidence:** `docs/ram_fields.md`, `src/game/round/runtime.asm`, and
-  `src/game/scoring.asm`.
-- **Experiment:** trace writes/reads with ghost slot, release state, phase,
-  `ram_shared_state_0`, and frame across the first personal threshold and later
-  scatter/chase transitions.
-### SND-001 — SFX request-slot semantics
-
-- **Subsystem/address:** sound request page; RAM `$0600..$060F`
-- **Status/confidence:** open; medium
-- **Established:** the request byte's slot index selects the stream-table entry;
-  any nonzero value keeps that slot active until its stop opcode clears it.
-  Channel records occupy `$0625..$06A4` at stride eight, and their state bytes
-  arbitrate four physical register quads. `$0601` and `$0605` are second layers
-  of ready/pellet sounds. Names for `$0608..$060E` remain caller-based.
-- **Hypothesis:** some slots are multi-channel companions or internal layers,
-  not independent effects.
-- **Evidence:** `src/memory/ram.inc`, `tbl_sfx_stream_ptr_table`,
-  `src/audio/streams.asm`, and `docs/sound_engine.md`.
-- **Smallest experiment:** trace every slot write with frame, script, caller PC,
-  selected stream, and claimed APU channel.
-
-
-### DATA-003 — attract sprite strip and `$05F7`
-
-- **Subsystem/status/confidence:** attract rendering; open; low
-- **Established:** an optional packet tail copies a selected 16-byte strip; a
-  legacy warning mentions an unexplained read involving RAM `$05F7`.
-- **Hypothesis:** adjacent-state dependency, overrun, or a stale warning.
-- **Evidence:** `src/game/title/attract_intro.asm`.
-- **Experiment:** log substate, indexes, destination, and reads near `$05F7`.
-
-
-### DATA-004 — copyright bytes before reset
-
-- **Subsystem/status/confidence:** boot/data header; open; low
-- **Established:** three strings occupy ROM before `vec_reset_entry`.
-- **Hypothesis:** referenced display data or an unreferenced identification block.
-- **Evidence:** `src/system/boot_and_frame.asm`.
-- **Experiment:** inspect pointer-derived reads and use a ROM read breakpoint.
+The first command rebuilds the byte-identical ROM, captures a complete natural
+longplay and a controlled pause probe in FCEUX, and invokes the validator. The
+second command revalidates the ignored CSV files without starting the emulator.
 
 ## Resolved Entries
 
 Move entries here only after static analysis, runtime evidence, or a controlled
 experiment supports the conclusion. Preserve ID, result, evidence, and the
 change that closed it.
+
+### RAM-001 — fruit collision-state array member
+
+- **Subsystem/status:** actor collisions; resolved
+- **Result:** `$00C0` is the fifth element reached by the interleaved actor-state
+  scan `ram_ghost_state + X` with `X = 0,2,4,6,8`. The final index represents
+  the fruit candidate, so round setup stores active state `$04` there.
+- **Evidence:** the 120000-frame reconstruction evidence trace observes the write at `$CFEC`
+  with `Y = 04` and the indexed read at `$D224` with `X = 08`.
+- **Resolution:** rename the field to `ram_fruit_collision_state`.
+
+### RAM-002 — multiplexed shared-state ownership
+
+- **Subsystem/status:** script-local RAM; resolved
+- **Result:** `$0087..$008A` deliberately change ownership with `ram_script`.
+  Gameplay uses a frightened mask and seconds/frame countdown; intermissions
+  use scene, substate, and countdown aliases. Title, READY, death, stage-clear,
+  game-over, and attract handlers retain their documented local ownership.
+- **Evidence:** PC/script-aware read/write capture covers scripts `$00`, `$02`,
+  `$04`, `$06`, `$08`, `$0A`, `$0C`, `$0E`, and `$10`; static owners are listed
+  in `docs/script_states.md` and `docs/intermission_flow.md`.
+- **Resolution:** retain neutral storage names and add contextual aliases for
+  the unambiguous gameplay and intermission lifetimes.
+
+### RAM-003 — personal-release phase latch
+
+- **Subsystem/status:** ghost release and mode transitions; resolved
+- **Result:** `ram_personal_release_latch` is cleared by round setup, set to one
+  when either personal pellet threshold is reached, and remains set until the
+  next setup. Even scatter/chase phases copy it into the ghost targeting mask;
+  ordinary reversal passes skip active ghosts while it is set. Frightened-mode
+  reversals remain eligible because the full frightened mask takes precedence.
+- **Evidence:** the trace observes `$D1C4` writes of one, `$D16C` reads of both
+  zero and one at phase boundaries, and reversal entries under both latch states.
+- **Resolution:** replace the incorrect timer name with
+  `ram_personal_release_latch` and document both consumers.
+
+### SND-001 — SFX request-slot semantics
+
+- **Subsystem/status:** sound request page; resolved
+- **Result:** each byte `$0600..$060F` activates the same-index entry in the
+  16-stream pointer table. Values are stream-specific channel-state requests,
+  not uniform booleans; paired ready/pellet slots and internal house/release/
+  intermission markers are therefore correctly represented as separate slots.
+- **Evidence:** natural longplay plus controlled pause/resume activates all 16
+  slot indexes at `bra_channel_has_active_stream`, including slot `$0F`.
+- **Resolution:** retain the caller- and role-based names in `src/memory/ram.inc`
+  and the matching stream labels in `src/audio/streams.asm`.
+
+### DATA-003 — attract packet file offset and sprite strips
+
+- **Subsystem/status:** attract rendering; resolved
+- **Result:** legacy `$05F7` is an iNES file offset, not RAM. Removing the
+  16-byte header maps it to CPU `$C5E7`, the first attract packet referenced by
+  `tbl_attract_ppu_packet_ptrs`. A zero byte after selected packet terminators
+  intentionally requests one of four 16-byte OAM strips.
+- **Evidence:** the pointer at CPU `$C5D3` is `$C5E7`; runtime capture observes
+  strip selections `$02`, `$06`, `$0A`, and `$0E` entering the `$C688` table.
+- **Resolution:** replace the misleading warning with the file-offset mapping.
+
+### DATA-004 — unreferenced ROM copyright notice
+
+- **Subsystem/status:** boot metadata; resolved
+- **Result:** `$C000..$C032` is a 51-byte ASCII copyright/rights notice. The
+  reset vector enters at `$C033`, immediately after it; on-screen copyright
+  text comes from separate PPU packet data.
+- **Evidence:** exact ROM bytes, reset vector `$C033`, revision-specific notice
+  alternatives, and the absence of a symbolic consumer in the shared source.
+- **Resolution:** label the block `tbl_rom_copyright_notice` and retain it as
+  unreferenced identification metadata required for byte identity.
 
 ### CODE-003 — row-stride operand invariant
 

@@ -28,5 +28,5 @@ Quick navigation map for the modules included by `src/main.asm`.
 - `ram_shared_state_2`, `ram_shared_state_3`: frightened timer pair, reused as local cutscene timers.
 - `ram_ghost_state`, `ram_ghost_direction`: interleaved ghost state/direction pairs.
 - `ram_scatter_chase_timer`, `ram_scatter_chase_phase`, `ram_scatter_chase_second_divider`: scatter/chase countdown system.
-- `ram_release_wave_timer`, `ram_global_release_target`, `ram_personal_release_stage`, `ram_release_timer_seconds`, `ram_release_timer_ticks`: release target/counter pipeline.
+- `ram_personal_release_latch`, `ram_global_release_target`, `ram_personal_release_stage`, `ram_release_timer_seconds`, `ram_release_timer_ticks`: release target/counter pipeline.
 - `ram_fruit_timer_hi`, `ram_fruit_timer_lo`: fruit visibility timer.

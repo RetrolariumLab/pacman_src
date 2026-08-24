@@ -87,7 +87,7 @@ transition path in `src/game/round/runtime.asm`.
 ## Ghost capture chain
 
 Collision handling requires the colliding ghost's bit in
-`ram_shared_state_1`; otherwise the collision starts Pac-Man's death sequence.
+`ram_frightened_ghost_mask`; otherwise the collision starts Pac-Man's death sequence.
 For an edible ghost, `ram_kill_cnt` indexes parallel popup and score tables:
 
 | Capture index | Pending digits at indexes 2:1 | Displayed points |

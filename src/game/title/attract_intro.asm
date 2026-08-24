@@ -503,7 +503,7 @@ off_attract_text_points_table:		; was: _off000_C666_12
     .byte $00, $23, $4C, $23, $24, $25, $26, $27, $28, $29, $2A, $2B
     .byte $FF   ; end token
 .endif
-; !(UNKNOWN) Explain the legacy $05F7 read warning. See DATA-003.
+; Legacy file offset $05F7 maps to CPU $C5E7, the first packet above.
 
 ; Sprite strip data used by optional attract packet payload
 tbl_attract_sprite_strip_data:		; was: tbl_C688_spr_data

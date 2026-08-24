@@ -296,7 +296,8 @@ bra_next_power_pellet_slot:		; was: bra_CFE5
     INY
     CPY #$04
     BNE bra_normalize_power_pellet_tiles
-    STY ram_unknown_round_state
+; Mark the fruit candidate as active for the shared actor-collision scan.
+    STY ram_fruit_collision_state
     LDA #$FF
     STA ram_shared_state_2
     LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH

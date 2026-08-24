@@ -20,9 +20,9 @@
   ],
   "ghosts": [
     {"symbol": "ram_ghost_state", "size": 8, "format": "hex", "description": "Interleaved state/direction slots"},
-    {"symbol": "ram_shared_state_1", "size": 1, "format": "hex", "description": "Gameplay frightened mask"},
+    {"symbol": "ram_frightened_ghost_mask", "size": 1, "format": "hex", "description": "Gameplay frightened mask"},
     {"symbol": "ram_scatter_chase_phase", "size": 1, "format": "unsigned", "description": "Scatter/chase phase index"},
-    {"symbol": "ram_release_wave_timer", "size": 1, "format": "hex", "description": "Provisional RAM-003 mode/reversal gate"},
+    {"symbol": "ram_personal_release_latch", "size": 1, "format": "hex", "description": "Persistent personal-release phase/reversal latch"},
     {"symbol": "ram_global_release_target", "size": 1, "format": "unsigned", "description": "Global pellet release target"}
   ],
   "ppu_and_oam": [

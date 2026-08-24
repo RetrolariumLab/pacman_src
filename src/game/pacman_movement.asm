@@ -64,7 +64,7 @@ bra_select_speed_profile_entry:		; was: bra_D341
 ; frightened state, then dispatch fractional movement in ram_direction_2.
 loc_select_speed_profile:		; was: loc_D341
     LDX #$04
-    LDA ram_shared_state_1
+    LDA ram_frightened_ghost_mask
     BNE bra_choose_speed_from_tile
     LDX #$0A
 ; Choose speed class based on current tile type

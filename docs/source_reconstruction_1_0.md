@@ -19,9 +19,10 @@ and changed safely.
 | A subsystem can be changed in isolation | `docs/source_layout.md`, subsystem index in `docs/index.md`, bounded semantic modules, and format-specific JSON codecs |
 | The default build remains preservation-safe | `make verify` checks reference PRG and ROM SHA-1 values; generated JSON and trace artifacts remain ignored |
 
-The open entries in `docs/unknowns.md` are not release blockers. Their neutral
-names and bounded hypotheses are preferable to unsupported certainty. Any
-future resolution must preserve the entry's evidence history.
+At the 1.0 milestone, open entries in `docs/unknowns.md` were not release
+blockers: neutral names and bounded hypotheses were preferable to unsupported
+certainty. Milestone 23 subsequently resolved that backlog while preserving
+each entry's evidence history.
 
 ## Reproducing the release audit
 

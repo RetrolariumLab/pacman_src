@@ -21,7 +21,8 @@
 ; F428..FFFF  Unused tail, maze pointer, and vectors
 ; ---------------------------------------------------------------------------
 
-; !(WHY?) Data preceding reset entry; determine whether it is referenced. See DATA-004.
+; Unreferenced copyright identification block preceding the reset entry.
+tbl_rom_copyright_notice:
     .byte "COPY RIGHT 1984 "
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .byte "1993 NAMCO LTD. "

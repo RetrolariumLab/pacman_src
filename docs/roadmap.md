@@ -148,7 +148,7 @@ entry should contain:
 
 Initial candidates include:
 
-- `ram_unknown_round_state`;
+- `ram_fruit_collision_state` (resolved from the indexed actor-state scan);
 - context-specific meanings of `ram_shared_state_0..3`;
 - provisional sound request slots and stream opcodes;
 - legacy `bzk garbage`, `bzk optimize`, and `bzk warning` annotations;
@@ -279,8 +279,8 @@ Completed subsystem references are `script_states.md`,
 `stage_params_and_data_tail.md`. Their corresponding source entry points carry
 local input/output/side-effect/clobber contracts. The pass also corrected the
 sound channel-record base, stage-profile field mapping, intermission staged-X
-bounds, and the evidence recorded for `RAM-003`; unresolved intent remains in
-`unknowns.md` rather than being promoted from inference.
+bounds, and the initial evidence for `RAM-003`. The focused milestone-23 audit
+later resolved the remaining registry entries without promoting inference.
 
 ### 6. Debugger Symbols and Source-Level Navigation — Complete
 
@@ -650,6 +650,22 @@ An exploratory GoodNES derivative survey is recorded in
 [goodnes_variant_notes.md](./goodnes_variant_notes.md). It found no additional
 clean official profile; overdumps and hacks remain research inputs rather than
 revision targets.
+
+### 23. Close the Remaining Unknown Registry — Complete
+
+Resolve the six remaining evidence records without guessing from caller names
+or legacy address comments. Combine static ROM/source facts with a focused
+FCEUX trace that records PC, script context, indexed RAM access, sound-slot
+activation, phase/reversal state, and attract sprite-strip selection.
+
+`make trace-evidence` now captures a 120000-frame natural longplay plus a
+controlled pause probe and validates eight runtime/static invariants. The audit
+identifies `$00C0` as the fruit member of the actor collision-state array,
+documents contextual ownership of `$0087..$008A`, establishes the persistent
+personal-release latch, observes all 16 sound request slots, maps legacy file
+offset `$05F7` to attract packet `$C5E7`, and classifies `$C000..$C032` as the
+unreferenced copyright identification block. All six records retain their IDs
+and evidence under the resolved section of `docs/unknowns.md`.
 
 ## Verification Gates
 

@@ -22,9 +22,10 @@ byte-identical official revision profiles, and strict regional runtime gates. Se
 release contract. The release tags are `source-reconstruction-1.0` and
 `source-reconstruction-2.0`.
 
-The annotated source covers every major subsystem, unresolved interpretations
-remain explicit in the unknowns registry, and the complete validation matrix
-is available through `make reconstruction-audit-2`. See
+The annotated source covers every major subsystem, milestone 23 has resolved
+every registered unknown, and the complete validation matrix is available
+through `make reconstruction-audit-2`. Future uncertainty remains governed by
+the evidence rules in the unknowns registry. See
 [`docs/source_reconstruction_1_0.md`](docs/source_reconstruction_1_0.md) for the
 original preservation contract and evidence summary.
 
@@ -182,6 +183,8 @@ make trace-scoring              # Capture semantic scoring events
 make validate-scoring-trace     # Revalidate an existing scoring trace
 make trace-runtime              # Capture and validate focused gameplay traces
 make validate-runtime-traces    # Revalidate existing gameplay traces
+make trace-evidence             # Recapture resolved research evidence
+make validate-evidence          # Revalidate existing evidence
 make run                        # Build and run the ROM in FCEUX
 make split                      # Extract CHR, maze, and audio from the original ROM
 make build-dev                  # Check tools and clone/build FCEUX if needed
@@ -216,10 +219,9 @@ checkout or the original ROM.
 
 ## Project Boundaries
 
-- The unknowns registry is an active research record, not a release blocker.
-  Neutral RAM and branch names remain only where current evidence does not
-  justify a narrower interpretation; observations and proposed experiments are
-  tracked in [`docs/unknowns.md`](docs/unknowns.md) instead of being guessed.
+- The unknowns registry preserves resolved research evidence and remains the
+  canonical place for any future open findings. Neutral names are required
+  whenever evidence is incomplete instead of guessing a semantic role.
 - `make verify` permanently represents the byte-identical Japan V1.0 baseline.
   Behavior-changing work is already supported through the isolated fixed-size
   workflow in [`docs/rom_hack_variants.md`](docs/rom_hack_variants.md) and the

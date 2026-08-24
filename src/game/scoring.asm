@@ -192,13 +192,13 @@ sub_start_frightened_mode:		; was: sub_DFC6
     LDA ram_frightened_duration
     BNE bra_store_frightened_timer
     LDA #$1E
-    STA ram_shared_state_3
+    STA ram_frightened_frame_counter
     LDA #$00
 ; Store frightened timer/state value
 bra_store_frightened_timer:		; was: bra_DFD0
-    STA ram_shared_state_2
+    STA ram_frightened_seconds
     LDA #$0F
-    STA ram_shared_state_1
+    STA ram_frightened_ghost_mask
     LDX #$03
 ; Set ghost palettes to frightened color set
 bra_set_ghost_palette_frightened:		; was: bra_DFD8_loop
@@ -245,7 +245,7 @@ bra_append_frightened_palette_cmd:		; was: bra_DFF3_loop
 ; Reverse eligible active ghosts for a frightened/scatter-chase transition.
 ;
 ; Inputs:
-; - ram_shared_state_1 and the RAM-003 post-threshold gate select reversal eligibility
+; - the frightened mask and personal-release latch select reversal eligibility
 ; - ghost state/direction, position fractions, and sampled neighbor tiles
 ; Outputs: none.
 ; Side effects: writes ram_ghost_direction for state-$04 ghosts whose movement
@@ -256,9 +256,9 @@ sub_try_reverse_ghost_directions:		; was: sub_E003
     LoadPointer zp_work0, (ram_obj_ppu_tile + $05)
     LoadPointer zp_work2, (ram_obj_pos_X_hi + $04)
     LDA #$0F
-    CMP ram_shared_state_1
+    CMP ram_frightened_ghost_mask
     BEQ bra_process_reversal_entry
-    LDA ram_release_wave_timer
+    LDA ram_personal_release_latch
     BNE bra_next_ghost_for_reversal
 ; Entry label for reversal processing of active ghost slots
 bra_process_reversal_entry:		; was: bra_E01F

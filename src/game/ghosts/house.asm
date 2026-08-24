@@ -32,7 +32,7 @@ bra_apply_tunnel_speed:		; was: bra_D7A6
 ; Select scatter/chase speed profile
 bra_select_scatter_or_chase_speed:		; was: bra_D7AF
     LDA zp_work4
-    AND ram_shared_state_1
+    AND ram_frightened_ghost_mask
     BNE bra_apply_frightened_speed
     TXA
     BNE bra_apply_normal_speed_slots12
@@ -267,7 +267,7 @@ bra_next_slot_for_state06_scan:		; was: bra_D8D7
     INX ; con_ghost_slot_stride
     CPX #con_ghost_slot_span
     BNE bra_scan_state06_presence
-    LDA ram_shared_state_1
+    LDA ram_frightened_ghost_mask
     BEQ bra_set_release_marker_by_pellets
     STA ram_sfx_ghost_house_release_marker
     RTS

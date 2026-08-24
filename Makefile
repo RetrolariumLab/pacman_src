@@ -142,12 +142,15 @@ SCORING_TRACE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_scoring_trace.lua
 RUNTIME_SCENARIOS ?= $(PROJECT_DIR)scenarios/runtime_trace.json
 RUNTIME_TRACE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_runtime_trace.lua
 RUNTIME_TRACE_DIR ?= $(PROJECT_DIR)tmp/runtime_traces
+RECONSTRUCTION_EVIDENCE_SCENARIOS ?= $(PROJECT_DIR)scenarios/reconstruction_evidence.json
+RECONSTRUCTION_EVIDENCE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_reconstruction_evidence.lua
+RECONSTRUCTION_EVIDENCE_DIR ?= $(PROJECT_DIR)tmp/reconstruction_evidence
 DATA_FORMAT_CONFIG ?= $(PROJECT_DIR)config/data_formats.json
 DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats reconstruction-audit reconstruction-audit-2 run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces chunk help _require-assets _manifest _batch
+.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats reconstruction-audit reconstruction-audit-2 run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces trace-evidence validate-evidence chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -574,6 +577,22 @@ validate-runtime-traces:
 		--scenarios "$(RUNTIME_SCENARIOS)" \
 		--trace-dir "$(RUNTIME_TRACE_DIR)"
 
+trace-evidence: build-dev verify symbols
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_reconstruction_evidence.py" \
+		--fceux "$(FCEUX_EXE)" \
+		--rom "$(NATIVE_ROM)" \
+		--movie "$(LONGPLAY_MOVIE_FILE)" \
+		--lua "$(RECONSTRUCTION_EVIDENCE_LUA)" \
+		--scenarios "$(RECONSTRUCTION_EVIDENCE_SCENARIOS)" \
+		--output-dir "$(RECONSTRUCTION_EVIDENCE_DIR)"
+	$(MAKE) validate-evidence
+
+validate-evidence:
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_reconstruction_evidence.py" \
+		--scenarios "$(RECONSTRUCTION_EVIDENCE_SCENARIOS)" \
+		--trace-dir "$(RECONSTRUCTION_EVIDENCE_DIR)" \
+		--rom "$(NATIVE_ROM)"
+
 roundtrip-formats: verify
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/roundtrip_data_formats.py" \
 		--rom "$(NATIVE_ROM)" \
@@ -610,54 +629,56 @@ chunk: build
 
 help:
 	@echo Pac-Man NES Source Reconstruction targets:
-	@echo   make build                 Build the native ca65 ROM
-	@echo   make verify                Build and verify byte-identity
-	@echo   make build-revision REVISION=japan_v11  Build an official ROM revision
-	@echo   make verify-revision REVISION=japan_v11  Verify an official ROM revision
-	@echo   make verify-revision REVISION=usa_tengen_unlicensed REVISION_REFERENCE_DIR=path/  Verify Tengen
-	@echo   make verify-revision REVISION=usa_tengen REVISION_REFERENCE_DIR=path/  Verify licensed Tengen
-	@echo   make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR=path/  Verify Japan Rev B
-	@echo   make verify-revision REVISION=usa_namco REVISION_REFERENCE_DIR=path/  Verify Namco USA
-	@echo   make verify-revision REVISION=europe REVISION_REFERENCE_DIR=path/  Verify Europe
-	@echo   make verify-revisions       Verify every locally available official revision
-	@echo   make smoke-regional-revisions  Boot USA Namco and Europe in FCEUX and check OAM
-	@echo   make build-hack            Build the isolated default ROM-hack variant
-	@echo   make verify-hack           Require only the documented default hack diff
-	@echo   make validate-hack         Prove the default hack starts on stage 5 in FCEUX
-	@echo   make run-hack              Build and run the default hack in FCEUX
-	@echo   make init-expanded-assets  Create all six editable local JSON assets once
-	@echo   make build-expanded        Build the JSON-backed NROM-256 variant
-	@echo   make verify-expanded       Verify all expanded assets and fixed-bank operands
-	@echo   make validate-expanded     Prove expanded assets are consumed in FCEUX
-	@echo   make run-expanded          Build and run the expanded variant in FCEUX
-	@echo   make graphics-studio       Open the local CHR and metasprite editor
-	@echo   make screen-studio         Open the local screen, text, and HUD editor
-	@echo   make sound-studio          Open the local sound editor and piano roll
-	@echo   make maze-studio           Open the local CHR-backed maze editor
-	@echo   make describe-sound        Show musical notes for SOUND_SLOT, default 4
-	@echo   make preview-sound         Render SOUND_SLOT to tmp/sound_preview.wav
-	@echo   make import-midi MIDI_FILE=x.mid  Import mono MIDI to an ignored JSON copy
-	@echo   make symbols               Build Mesen debug/map and FCEUX label artifacts
-	@echo   make test-debug-symbols    Run focused symbol conversion unit tests
-	@echo   make test-runtime-traces   Run focused runtime validator unit tests
-	@echo   make test                  Run all fast Python workflow unit tests
-	@echo   make validate-symbols      Prove FCEUX symbol lookup and semantic breakpoint
-	@echo   make lint                  Run fast source and documentation checks
-	@echo   make run                   Build and run the ROM in FCEUX
-	@echo   make clean                 Remove build/analysis output; preserve assets
-	@echo   make split                 Extract CHR, maze, and audio assets from the original ROM
-	@echo   make build-dev             Check tools and clone/build FCEUX if needed
-	@echo   make reference             Capture the longplay reference set
-	@echo   make analyze COUNT=32      Run the reverse-engineering analysis
-	@echo   make trace-scoring         Capture compact scoring events during longplay
-	@echo   make validate-scoring-trace Validate expected scoring event sequences
-	@echo   make trace-runtime          Capture and validate focused runtime scenarios
-	@echo   make validate-runtime-traces Validate existing focused runtime traces
-	@echo   make roundtrip-formats      Decode and byte-round-trip documented data formats
-	@echo   make reconstruction-audit   Run the complete Source Reconstruction 1.0 gate
-	@echo   make reconstruction-audit-2 Run the strict Source Reconstruction 2.0 gate
-	@echo   make chunk START=260 LINES=60  Prepare a rename/analysis chunk
-	@echo   make help                  Show these public targets
+	@echo Build and revisions:
+	@echo   make build                         Build the native ca65 ROM
+	@echo   make verify                        Verify the Japan V1.0 ROM byte for byte
+	@echo   make build-revision REVISION=name  Build one official revision
+	@echo   make verify-revision REVISION=name Verify one official revision
+	@echo   make verify-revisions              Verify every locally available revision
+	@echo   make smoke-regional-revisions      Boot regional revisions and check OAM
+	@echo   Revision names: japan_v10, japan_v11, japan_revb, usa_tengen_unlicensed,
+	@echo                   usa_tengen, usa_namco, europe
+	@echo Optional variants:
+	@echo   make build-hack                    Build the isolated fixed-size hack
+	@echo   make verify-hack                   Verify the documented hack diff
+	@echo   make validate-hack                 Validate the hack in FCEUX
+	@echo   make run-hack                      Build and run the hack
+	@echo   make init-expanded-assets          Create six editable local JSON assets
+	@echo   make build-expanded                Build the JSON-backed NROM-256 variant
+	@echo   make verify-expanded               Verify its assets and fixed-bank operands
+	@echo   make validate-expanded             Validate asset consumption in FCEUX
+	@echo   make run-expanded                  Build and run the expanded variant
+	@echo Authoring tools:
+	@echo   make sound-studio                  Open the sound editor and piano roll
+	@echo   make maze-studio                   Open the CHR-backed maze editor
+	@echo   make graphics-studio               Open the CHR and metasprite editor
+	@echo   make screen-studio                 Open the screen, text, and HUD editor
+	@echo   make describe-sound                Show notes for SOUND_SLOT, default 4
+	@echo   make preview-sound                 Render SOUND_SLOT to a WAV file
+	@echo   make import-midi MIDI_FILE=x.mid   Import monophonic MIDI to local JSON
+	@echo Validation and evidence:
+	@echo   make lint                          Check source and documentation
+	@echo   make test                          Run all fast Python unit tests
+	@echo   make symbols                       Build debugger symbols and FCEUX labels
+	@echo   make validate-symbols              Validate symbols live in FCEUX
+	@echo   make trace-scoring                 Capture scoring evidence
+	@echo   make validate-scoring-trace        Revalidate scoring evidence
+	@echo   make trace-runtime                 Capture focused runtime evidence
+	@echo   make validate-runtime-traces       Revalidate runtime evidence
+	@echo   make trace-evidence                Recapture resolved research evidence
+	@echo   make validate-evidence             Revalidate existing research evidence
+	@echo   make roundtrip-formats             Round-trip documented binary formats
+	@echo   make reconstruction-audit          Run the Source Reconstruction 1.0 gate
+	@echo   make reconstruction-audit-2        Run the Source Reconstruction 2.0 gate
+	@echo Workflow:
+	@echo   make run                           Build and run the ROM in FCEUX
+	@echo   make build-dev                     Prepare the FCEUX development tools
+	@echo   make split                         Extract original ROM assets
+	@echo   make reference                     Capture the longplay reference set
+	@echo   make analyze COUNT=32              Run reverse-engineering analysis
+	@echo   make chunk START=260 LINES=60      Prepare an analysis chunk
+	@echo   make clean                         Remove generated output, keep assets
+	@echo   make help                          Show these public targets
 
 # Extract local ROM payloads before tools inspect or assemble the source.
 .PHONY: _rom_assets

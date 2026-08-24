@@ -5,7 +5,7 @@
 - [source_reconstruction_2_0.md](./source_reconstruction_2_0.md): release scope and strict audit for authoring plus official revisions.
 - [multi_revision_builds.md](./multi_revision_builds.md): verified official ROM profiles and the shared-source revision workflow.
 - [goodnes_variant_notes.md](./goodnes_variant_notes.md): reproducible classification of overdumps, hacks, and structural derivative evidence.
-- [unknowns.md](./unknowns.md): canonical reverse-engineering backlog and evidence experiments.
+- [unknowns.md](./unknowns.md): resolved reverse-engineering record and canonical home for future findings.
 - [source_layout.md](./source_layout.md): address-ordered module map and file-sizing rules.
 - [macros.md](./macros.md): allowed ca65 abstractions and byte-identity rules.
 - [naming.md](./naming.md): semantic symbol names and control-flow prefixes.
@@ -47,5 +47,6 @@ After each edit batch:
   build, official revisions, runtime evidence, and authoring pipelines.
 - Sound, maze, graphics, and screen editors are available as local Python tools;
   their JSON assets feed the isolated expanded NROM-256 build.
-- The unknown registry remains the active evidence backlog. A unified Qt editor
-  is retained as a low-priority packaging improvement, not a release blocker.
+- The milestone-23 audit resolved every registered unknown; the registry retains
+  their evidence histories and accepts future findings. A unified Qt editor is
+  retained as a low-priority packaging improvement, not a release blocker.
