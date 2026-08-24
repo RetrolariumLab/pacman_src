@@ -106,7 +106,7 @@ byte-identical to the reference ROM.
 pacman_src/
 |-- assets/
 |   |-- manifest.json              # Tracked extraction ranges and checksums
-|   `-- generated/                # Ignored CHR, maze, and audio payloads
+|   `-- generated/                 # Ignored CHR, maze, and audio payloads
 |-- bin/                           # ca65 / ld65
 |-- build/                         # Generated ROM and linker artifacts
 |-- config/                        # Emulator/reference configuration
@@ -122,7 +122,7 @@ pacman_src/
 |   |-- graphics_studio.py         # CHR, actor, and palette editor
 |   |-- screen_studio.py           # Screen, text, HUD, and intermission editor
 |   |-- clean_artifacts.py         # Generated-artifact cleanup
-|   `-- split_assets.py           # Validated ROM asset extractor
+|   `-- split_assets.py            # Validated ROM asset extractor
 |-- src/
 |   |-- main.asm                   # Address-ordered ca65 entrypoint
 |   |-- main_hack.asm              # Isolated behavior-changing entrypoint
@@ -137,7 +137,7 @@ pacman_src/
 |   |-- data/
 |   `-- memory/
 |-- Makefile
-`-- Pac-Man (J) (V1.0) [!].nes   # Original ROM (not distributed)
+`-- Pac-Man (J) (V1.0) [!].nes     # Original ROM (not distributed)
 ```
 
 `assets/generated/`, `build/`, `reference/`, `diffs/`, `reports/`, and the
@@ -148,51 +148,51 @@ tracked. The source tools under `scripts/workflow/` are tracked. See
 ## Make Targets
 
 ```bash
-make                            # Same as `make build`
-make build                      # Build the native ca65 ROM
-make verify                     # Build and require byte-identity
-make build-revision REVISION=europe # Build one official revision
-make verify-revision REVISION=europe # Verify one official revision
-make verify-revisions           # Verify every available official revision
-make smoke-regional-revisions   # Boot USA Namco and Europe in FCEUX
-make build-hack                 # Build the isolated default ROM-hack variant
-make verify-hack                # Require only its documented byte difference
-make validate-hack              # Prove its stage-5 behavior in FCEUX
-make run-hack                   # Build and run the default hack
-make init-expanded-assets       # Initialize all editable local JSON once
-make build-expanded             # Build the JSON-backed NROM-256 variant
-make verify-expanded            # Verify assets, layout, and fixed-bank operands
-make validate-expanded          # Prove expanded assets are consumed in FCEUX
-make run-expanded               # Build and run the NROM-256 variant
-make sound-studio               # Open the local slot editor and piano roll
-make maze-studio                # Open the local 27x22 CHR-backed maze editor
-make graphics-studio            # Open the local CHR and metasprite editor
-make screen-studio              # Open the title, text, HUD, and intermission editor
-make describe-sound SOUND_SLOT=4 # Inspect decoded musical notes
-make preview-sound SOUND_SLOT=4  # Render an ignored WAV preview
-make import-midi MIDI_FILE=x.mid # Import monophonic MIDI to ignored JSON
-make symbols                    # Generate Mesen/FCEUX debugger artifacts
-make test-debug-symbols         # Test symbol parsing and conversion
-make validate-symbols           # Prove live symbol lookup and named breakpoint
-make lint                       # Check source, naming, docs, and Python syntax
-make test                       # Run all focused Python workflow tests
-make roundtrip-formats          # Decode/encode six binary format families
-make reconstruction-audit       # Run the complete Source Reconstruction 1.0 gate
-make reconstruction-audit-2     # Run the strict Source Reconstruction 2.0 gate
-make trace-scoring              # Capture semantic scoring events
-make validate-scoring-trace     # Revalidate an existing scoring trace
-make trace-runtime              # Capture and validate focused gameplay traces
-make validate-runtime-traces    # Revalidate existing gameplay traces
-make trace-evidence             # Recapture resolved research evidence
-make validate-evidence          # Revalidate existing evidence
-make run                        # Build and run the ROM in FCEUX
-make split                      # Extract CHR, maze, and audio from the original ROM
-make build-dev                  # Check tools and clone/build FCEUX if needed
-make reference                  # Capture the reference set from the original ROM
-make analyze COUNT=32           # Run RTS reverse-engineering analysis
-make chunk START=260 LINES=60   # Prepare a rename/analysis chunk
-make clean                      # Remove local build and analysis artifacts
-make help                       # Show the public targets
+make                                    # Same as `make build`
+make build                              # Build the native ca65 ROM
+make verify                             # Build and require byte-identity
+make build-revision REVISION=europe     # Build one official revision
+make verify-revision REVISION=europe    # Verify one official revision
+make verify-revisions                   # Verify every available official revision
+make smoke-regional-revisions           # Boot USA Namco and Europe in FCEUX
+make build-hack                         # Build the isolated default ROM-hack variant
+make verify-hack                        # Require only its documented byte difference
+make validate-hack                      # Prove its stage-5 behavior in FCEUX
+make run-hack                           # Build and run the default hack
+make init-expanded-assets               # Initialize all editable local JSON once
+make build-expanded                     # Build the JSON-backed NROM-256 variant
+make verify-expanded                    # Verify assets, layout, and fixed-bank operands
+make validate-expanded                  # Prove expanded assets are consumed in FCEUX
+make run-expanded                       # Build and run the NROM-256 variant
+make sound-studio                       # Open the local slot editor and piano roll
+make maze-studio                        # Open the local 27x22 CHR-backed maze editor
+make graphics-studio                    # Open the local CHR and metasprite editor
+make screen-studio                      # Open the title, text, HUD, and intermission editor
+make describe-sound SOUND_SLOT=4        # Inspect decoded musical notes
+make preview-sound SOUND_SLOT=4         # Render an ignored WAV preview
+make import-midi MIDI_FILE=x.mid        # Import monophonic MIDI to ignored JSON
+make symbols                            # Generate Mesen/FCEUX debugger artifacts
+make test-debug-symbols                 # Test symbol parsing and conversion
+make validate-symbols                   # Prove live symbol lookup and named breakpoint
+make lint                               # Check source, naming, docs, and Python syntax
+make test                               # Run all focused Python workflow tests
+make roundtrip-formats                  # Decode/encode six binary format families
+make reconstruction-audit               # Run the complete Source Reconstruction 1.0 gate
+make reconstruction-audit-2             # Run the strict Source Reconstruction 2.0 gate
+make trace-scoring                      # Capture semantic scoring events
+make validate-scoring-trace             # Revalidate an existing scoring trace
+make trace-runtime                      # Capture and validate focused gameplay traces
+make validate-runtime-traces            # Revalidate existing gameplay traces
+make trace-evidence                     # Recapture resolved research evidence
+make validate-evidence                  # Revalidate existing evidence
+make run                                # Build and run the ROM in FCEUX
+make split                              # Extract CHR, maze, and audio from the original ROM
+make build-dev                          # Check tools and clone/build FCEUX if needed
+make reference                          # Capture the reference set from the original ROM
+make analyze COUNT=32                   # Run RTS reverse-engineering analysis
+make chunk START=260 LINES=60           # Prepare a rename/analysis chunk
+make clean                              # Remove local build and analysis artifacts
+make help                               # Show the public targets
 ```
 
 `make reference` is intentionally explicit because a full reference capture is

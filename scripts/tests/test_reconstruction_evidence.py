@@ -1,18 +1,24 @@
 from __future__ import annotations
 
+import csv
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "workflow"))
 
-from validate_reconstruction_evidence import validate_runtime  # noqa: E402
+from validate_reconstruction_evidence import (  # noqa: E402
+    load_trace,
+    validate_runtime,
+    validate_trace_provenance,
+)
 
 
 def row(event: str, address: str = "0000", **values: str) -> dict[str, str]:
     result = {
-        "event": event, "address": address, "pc": "0000", "script": "00",
+        "frame": "0", "event": event, "address": address, "pc": "0000", "script": "00",
         "value": "00", "a": "00", "x": "00", "y": "00", "detail": "",
     }
     result.update(values)
@@ -43,7 +49,60 @@ def complete_rows() -> list[dict[str, str]]:
     return rows
 
 
+def complete_traces() -> tuple[list[dict[str, object]], dict[str, list[dict[str, str]]]]:
+    scenarios: list[dict[str, object]] = [
+        {"id": "natural-longplay", "max_frames": 120000},
+        {"id": "pause-probe", "max_frames": 23000, "patches": ["$004D"]},
+    ]
+    natural = [
+        row("trace_start", detail="natural-longplay"),
+        row("trace_end", detail="natural-longplay", frame="120000"),
+    ]
+    pause = [
+        row("trace_start", detail="pause-probe"),
+        row("controlled_patch", "004D", frame="22000", script="04", detail="pause_press"),
+        row("sound_slot_active", "060F", frame="22001", script="04", detail="slot_0F"),
+        row("controlled_patch", "004D", frame="22036", script="04", detail="resume_press"),
+        row("trace_end", detail="pause-probe", frame="23000"),
+    ]
+    return scenarios, {"natural-longplay": natural, "pause-probe": pause}
+
+
 class ReconstructionEvidenceTests(unittest.TestCase):
+    def test_complete_trace_provenance_is_accepted(self) -> None:
+        scenarios, traces = complete_traces()
+        validate_trace_provenance(scenarios, traces)
+
+    def test_trace_file_must_identify_its_scenario(self) -> None:
+        fields = ["frame", "event", "address", "pc", "script", "value", "a", "x", "y", "detail"]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "pause-probe.csv"
+            with path.open("w", encoding="utf-8", newline="") as stream:
+                writer = csv.DictWriter(stream, fieldnames=fields)
+                writer.writeheader()
+                writer.writerows([
+                    row("trace_start", detail="natural-longplay"),
+                    row("trace_end", detail="natural-longplay", frame="23000"),
+                ])
+            with self.assertRaisesRegex(ValueError, "scenario mismatch"):
+                load_trace(path, "pause-probe", 23000)
+
+    def test_pause_probe_requires_complete_control_sequence(self) -> None:
+        scenarios, traces = complete_traces()
+        traces["pause-probe"] = [
+            item for item in traces["pause-probe"] if item["detail"] != "resume_press"
+        ]
+        with self.assertRaisesRegex(ValueError, "pause press and resume press"):
+            validate_trace_provenance(scenarios, traces)
+
+    def test_undeclared_control_patch_is_rejected(self) -> None:
+        scenarios, traces = complete_traces()
+        traces["natural-longplay"].insert(
+            1, row("controlled_patch", "004D", frame="100", detail="unexpected")
+        )
+        with self.assertRaisesRegex(ValueError, "do not match its manifest"):
+            validate_trace_provenance(scenarios, traces)
+
     def test_complete_evidence_passes_every_runtime_check(self) -> None:
         self.assertTrue(all(validate_runtime(complete_rows()).values()))
 

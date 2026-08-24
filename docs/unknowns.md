@@ -28,6 +28,8 @@ make validate-evidence
 The first command rebuilds the byte-identical ROM, captures a complete natural
 longplay and a controlled pause probe in FCEUX, and invokes the validator. The
 second command revalidates the ignored CSV files without starting the emulator.
+Both paths require manifest-matched scenario identities, exact frame bounds,
+declared patch addresses, and the complete pause/slot-0F/resume sequence.
 
 ## Resolved Entries
 

@@ -601,7 +601,7 @@ roundtrip-formats: verify
 		--config "$(DATA_FORMAT_CONFIG)" \
 		--output-dir "$(DATA_FORMAT_OUTPUT_DIR)"
 
-# Release-candidate gate. Recursive calls keep emulator capture and validation
+# Stable reconstruction gate. Recursive calls keep emulator capture and validation
 # ordered even when the parent make is invoked with parallel jobs.
 reconstruction-audit:
 	$(MAKE) lint

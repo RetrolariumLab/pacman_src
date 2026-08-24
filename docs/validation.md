@@ -75,8 +75,11 @@ missing reference ROM as a failure.
 probe and then validates the results against static ROM facts. The gate covers
 the actor-state array member at `$00C0`, shared-state ownership by script,
 personal-release latch consumers, all 16 sound request slots, attract sprite
-strip selection, and the pre-reset copyright block. Traces remain ignored under
-`tmp/reconstruction_evidence/`; `make validate-evidence` rechecks an existing set.
+strip selection, and the pre-reset copyright block. It also binds each CSV to
+its declared scenario and exact frame range, rejects undeclared memory patches,
+and requires sound slot 0F to activate between the controlled pause and resume.
+Traces remain ignored under `tmp/reconstruction_evidence/`;
+`make validate-evidence` rechecks an existing set.
 
 ## Optional variant gates
 
