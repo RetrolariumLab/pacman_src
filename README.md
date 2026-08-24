@@ -198,15 +198,17 @@ checkout or the original ROM.
   cloned and built by `make build-dev`
 - MSBuild / Visual Studio 2022 (to build `fceux_automation` on Windows)
 
-## Known Gaps
+## Project Boundaries
 
-- Some neutral RAM and branch names remain where evidence does not yet justify
-  a more specific interpretation. They are intentionally retained and tracked
-  in [`docs/unknowns.md`](docs/unknowns.md), rather than guessed for the 1.0
-  release.
-- Optional behavior-changing ROM variants must not replace the default
-  byte-identical preservation build. The isolated workflow is documented in
-  [`docs/rom_hack_variants.md`](docs/rom_hack_variants.md).
+- The unknowns registry is an active research record, not a release blocker.
+  Neutral RAM and branch names remain only where current evidence does not
+  justify a narrower interpretation; observations and proposed experiments are
+  tracked in [`docs/unknowns.md`](docs/unknowns.md) instead of being guessed.
+- `make verify` permanently represents the byte-identical Japan V1.0 baseline.
+  Behavior-changing work is already supported through the isolated fixed-size
+  workflow in [`docs/rom_hack_variants.md`](docs/rom_hack_variants.md) and the
+  NROM-256 JSON asset pipeline in
+  [`docs/expanded_rom_assets.md`](docs/expanded_rom_assets.md).
 
 ## Credits
 

@@ -1,6 +1,6 @@
 # Optional ROM-Hack Variants
 
-Optional variants are isolated from the Source Reconstruction 1.0 build. The
+Optional variants are isolated from the default byte-identical build. The
 default `make build` continues to assemble `src/main.asm`; `make verify` must
 remain byte-identical to the reference ROM. A hack is selected only through the
 explicit `src/main_hack.asm` entrypoint and writes all artifacts below

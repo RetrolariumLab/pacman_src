@@ -1,7 +1,8 @@
 # Expanded ROM and JSON Assets
 
 The expanded variant is an optional NROM-256 build with 32 KiB of PRG. It does
-not replace Source Reconstruction 1.0 or the fixed-size demonstration hack.
+not replace the default byte-identical build or the fixed-size demonstration
+hack.
 
 ```text
 $8000..$819F  original stage-1 maze RLE
