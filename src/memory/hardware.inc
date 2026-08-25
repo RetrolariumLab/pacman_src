@@ -1,5 +1,5 @@
-; NES CPU-visible hardware registers used by the source reconstruction.
-; Read/write aliases are kept where the same address has different hardware roles.
+; NES CPU-visible hardware registers used by the source reconstruction
+; Read/write aliases are kept where the same address has different hardware roles
 
 PPUCTRL             = $2000
 PPUMASK             = $2001

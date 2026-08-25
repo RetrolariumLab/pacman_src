@@ -21,7 +21,7 @@
 ; F428..FFFF  Unused tail, maze pointer, and vectors
 ; ---------------------------------------------------------------------------
 
-; Unreferenced copyright identification block preceding the reset entry.
+; Unreferenced copyright identification block preceding the reset entry
 tbl_rom_copyright_notice:
     .byte "COPY RIGHT 1984 "
 .ifdef PACMAN_REVISION_LATE_NAMCO
@@ -31,7 +31,7 @@ tbl_rom_copyright_notice:
 .endif
     .byte "ALL RIGHTS RESERVED"
 ; Hardware reset entry: disables IRQ/PPU, clears RAM, validates warm-boot signature
-vec_reset_entry:		; was: vec_C033_RESET
+vec_reset_entry:  ; was: vec_C033_RESET
 .if PACMAN_REVISION = REVISION_USA_NAMCO
     LDX #$00
     STX PPUCTRL
@@ -62,7 +62,7 @@ bra_wait_namco_reset_vblank:
     STA PPUCTRL
     STA PPUMASK
 ; Wait for first VBlank after reset before touching PPU state
-bra_wait_vblank_ready:		; was: bra_C03D_loop
+bra_wait_vblank_ready:  ; was: bra_C03D_loop
     LDA PPUSTATUS
     BPL bra_wait_vblank_ready
 loc_reset_after_initial_vblank:
@@ -73,7 +73,7 @@ loc_reset_after_initial_vblank:
     LDA #$00
     TAY
 ; Clear boot-critical RAM region (0000-003D)
-bra_clear_boot_workspace:		; was: bra_C048_loop
+bra_clear_boot_workspace:  ; was: bra_C048_loop
     STA zp_work0,Y
     INY
     CPY #$3E
@@ -86,15 +86,15 @@ bra_clear_boot_workspace:		; was: bra_C048_loop
 .endif
     LDY #$87
 ; Bulk-clear general RAM area (0087-07FF)
-bra_clear_runtime_ram:		; was: bra_C054_loop
-    STA (zp_work0),Y    ; 0087-07FF
+bra_clear_runtime_ram:  ; was: bra_C054_loop
+    STA (zp_work0),Y  ; 0087-07FF
     INY
     BNE bra_clear_runtime_ram
     INC zp_work1
     CPX zp_work1
     BNE bra_clear_runtime_ram
 .if PACMAN_REVISION = REVISION_EUROPE
-; PAL Namco initializes the OAM shadow page to an off-screen Y coordinate.
+; PAL Namco initializes the OAM shadow page to an off-screen Y coordinate
     LDA #> ram_oam
     STA zp_work1
     LDA #< ram_oam
@@ -118,28 +118,28 @@ bra_hide_europe_oam_entries:
     TAY
 ; 0052-0060
 ; Compare warm-boot signature at 0052-0060
-bra_check_warm_boot_signature:		; was: bra_C077_loop
+bra_check_warm_boot_signature:  ; was: bra_C077_loop
     LDA tbl_warm_boot_signature,Y
     CMP ram_reset_check,Y
     BNE bra_cold_boot_path
     INY
     CPY #$0F
     BNE bra_check_warm_boot_signature
-    BEQ bra_boot_finalize_common    ; jmp
+    BEQ bra_boot_finalize_common  ; jmp
 ; Cold-boot path when signature mismatch detected
-bra_cold_boot_path:		; was: bra_C086
+bra_cold_boot_path:  ; was: bra_C086
 ; clear 0000-00FF
     LDA #$00
     TAY
 ; Cold-boot: clear full zero page
-bra_clear_zero_page:		; was: bra_C089_loop
+bra_clear_zero_page:  ; was: bra_C089_loop
     STA zp_work0,Y
     INY
     BNE bra_clear_zero_page
 ; set 0052-0060
     LDY #$00
 ; Write warm-boot signature bytes to 0052-0060
-bra_write_warm_boot_signature:		; was: bra_C091_loop
+bra_write_warm_boot_signature:  ; was: bra_C091_loop
     LDA tbl_warm_boot_signature,Y
     STA ram_reset_check,Y
     INY
@@ -149,7 +149,7 @@ bra_write_warm_boot_signature:		; was: bra_C091_loop
     LDA #$01
     STA ram_score_hi + $03
 ; Common boot finalization shared by cold/warm paths
-bra_boot_finalize_common:		; was: bra_C0A0
+bra_boot_finalize_common:  ; was: bra_C0A0
     LDY #con_title_script_scroll_in
     STY ram_script
     LDA #> ram_oam
@@ -160,7 +160,7 @@ bra_boot_finalize_common:		; was: bra_C0A0
     CMP ram_current_player
     BNE bra_init_apu_and_continue
 ; When resuming P2, swap P1/P2 persistent state blocks
-bra_swap_player_state_blocks:		; was: bra_C0B2_loop
+bra_swap_player_state_blocks:  ; was: bra_C0B2_loop
     LDA ram_data_p2,Y
     STA zp_work0
     LDA ram_data_p1,Y
@@ -171,7 +171,7 @@ bra_swap_player_state_blocks:		; was: bra_C0B2_loop
     CPY #$10
     BNE bra_swap_player_state_blocks
 ; Initialize APU + jump into main frame bootstrap
-bra_init_apu_and_continue:		; was: bra_C0C7
+bra_init_apu_and_continue:  ; was: bra_C0C7
     LDA #APU_STATUS_ENABLE_ALL
     STA APU_STATUS
     LDA #APU_FRAME_COUNTER_IRQ_INHIBIT + APU_FRAME_COUNTER_5_STEP
@@ -188,12 +188,12 @@ bra_init_apu_and_continue:		; was: bra_C0C7
     JMP loc_main_frame_bootstrap
 
 ; Warm-boot signature literal (contains author string + AA55)
-tbl_warm_boot_signature:		; was: tbl_C0EB_reset_hash
+tbl_warm_boot_signature:  ; was: tbl_C0EB_reset_hash
 ; developers often use bytes 55 and AA for reset checks
     .byte "HIROKI AOYAGI"
     .byte $AA, $55
 ; NMI handler: OAM DMA, buffered PPU writes, input latch/read
-vec_nmi_handler:		; was: vec_C0FA_NMI
+vec_nmi_handler:  ; was: vec_C0FA_NMI
     PHA
     TXA
     PHA
@@ -201,7 +201,7 @@ vec_nmi_handler:		; was: vec_C0FA_NMI
     PHA
     LDA #PPUMASK_SHOW_LEFT_EDGE + PPUMASK_RENDERING_ENABLE
     STA PPUMASK
-    LDA #$00    ; < ram_oam
+    LDA #$00  ; < ram_oam
     STA OAMADDR
     STA ram_nmi_wait
     LDA ram_oam_dma_page
@@ -228,7 +228,7 @@ vec_nmi_handler:		; was: vec_C0FA_NMI
     STA JOYPAD1
     LDX #$08
 ; Shift in 8 controller bits for both gamepads
-bra_shift_in_controller_bits:		; was: bra_C138_loop
+bra_shift_in_controller_bits:  ; was: bra_C138_loop
     LDA JOYPAD1
 .ifdef PACMAN_REVISION_TENGEN
     AND #JOYPAD_SERIAL_BIT
@@ -254,14 +254,14 @@ bra_shift_in_controller_bits:		; was: bra_C138_loop
     BEQ bra_store_active_player_input
     LDX ram_btn_2p
 ; Store selected active-player input into shared button byte
-bra_store_active_player_input:		; was: bra_C157
+bra_store_active_player_input:  ; was: bra_C157
     STX ram_btn_total
     INC ram_frame_cnt
     LDA ram_flag_demo
     BNE bra_pop_regs_and_rti
     JSR sub_update_sound_engine
 ; Shared NMI exit tail that restores regs and returns
-bra_pop_regs_and_rti:		; was: bra_C162
+bra_pop_regs_and_rti:  ; was: bra_C162
     PLA
     TAY
     PLA
@@ -271,8 +271,8 @@ vec_irq_handler:
     RTI
 
 .ifdef PACMAN_REVISION_RAM_PALETTES
-; Later regional revisions can queue complete background and sprite palettes in RAM.
-; A universal-color marker of $0F makes the corresponding 16-byte half live.
+; Later regional revisions can queue complete background and sprite palettes in RAM
+; A universal-color marker of $0F makes the corresponding 16-byte half live
 sub_upload_regional_palette_updates:
     LDA ram_bg_palette_update
     CMP #$0F
@@ -318,11 +318,11 @@ bra_reset_regional_palette_updates:
 .endif
 
 ; Main frame bootstrap: waits NMI, reinitializes title/game script context
-loc_main_frame_bootstrap:		; was: loc_C168
+loc_main_frame_bootstrap:  ; was: loc_C168
     LDA #$01
     STA ram_nmi_wait
 ; Wait until NMI clears wait flag
-bra_wait_nmi_before_main_bootstrap:		; was: bra_C16C_infinite_loop
+bra_wait_nmi_before_main_bootstrap:  ; was: bra_C16C_infinite_loop
     LDA ram_nmi_wait
     BNE bra_wait_nmi_before_main_bootstrap
     LDA #PPUCTRL_SPRITE_PATTERN_HIGH
@@ -336,8 +336,8 @@ bra_wait_nmi_before_main_bootstrap:		; was: bra_C16C_infinite_loop
     LDA #$EF
 .endif
 ; Clear OAM shadow RAM
-bra_clear_oam_buffer:		; was: bra_C180_loop
-    STA ram_oam,X   ; 0700-07FF
+bra_clear_oam_buffer:  ; was: bra_C180_loop
+    STA ram_oam,X  ; 0700-07FF
     INX
     BNE bra_clear_oam_buffer
 .if PACMAN_REVISION = REVISION_EUROPE
@@ -360,12 +360,12 @@ bra_copy_tengen_initial_palettes:
     SetPpuAddress $3F00
     LDY #$00
 ; Upload 16-byte title background palette
-bra_upload_background_palette:		; was: bra_C1A3_loop
-.ifdef PACMAN_EXPANDED_PALETTES
-    LDA tbl_expanded_title_background_palette,Y
-.else
-    LDA tbl_title_background_palette,Y
-.endif
+bra_upload_background_palette:  ; was: bra_C1A3_loop
+    .ifdef PACMAN_EXPANDED_PALETTES
+        LDA tbl_expanded_title_background_palette,Y
+    .else
+        LDA tbl_title_background_palette,Y
+    .endif
     STA PPUDATA
     INY
     CPY #$10
@@ -394,21 +394,21 @@ bra_upload_background_palette:		; was: bra_C1A3_loop
     LDA ram_script
     BNE bra_select_primary_nametable
 ; if con_title_script_scroll_in
-    LDA #$8A    ; nmt 2800
-    BNE bra_commit_ppuctrl_base    ; jmp
+    LDA #$8A  ; nmt 2800
+    BNE bra_commit_ppuctrl_base  ; jmp
 ; Select nametable 2000 path when script != 00
-bra_select_primary_nametable:		; was: bra_C1D7
-    LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH    ; nmt 2000
+bra_select_primary_nametable:  ; was: bra_C1D7
+    LDA #PPUCTRL_NMI_ENABLE + PPUCTRL_SPRITE_PATTERN_HIGH  ; nmt 2000
 ; Commit selected PPUCTRL base and mirror
-bra_commit_ppuctrl_base:		; was: bra_C1D9
+bra_commit_ppuctrl_base:  ; was: bra_C1D9
     STA PPUCTRL
     STA ram_ppuctrl_base
 ; Per-frame script dispatcher keyed by ram_script
-loc_script_dispatch_loop:		; was: loc_C1DE
+loc_script_dispatch_loop:  ; was: loc_C1DE
     LDA #$01
     STA ram_nmi_wait
 ; Wait for NMI flag clear in main script dispatcher loop
-bra_wait_nmi_in_script_dispatch:		; was: bra_C1E2_infinite_loop
+bra_wait_nmi_in_script_dispatch:  ; was: bra_C1E2_infinite_loop
     LDA ram_nmi_wait
     BNE bra_wait_nmi_in_script_dispatch
     LDY ram_script

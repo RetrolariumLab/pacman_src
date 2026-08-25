@@ -1,6 +1,6 @@
-; Official ROM revision profiles.
+; Official ROM revision profiles
 ; Keep the source reconstruction on Japan V1.0 unless an entrypoint explicitly
-; selects another profile before including main.asm.
+; selects another profile before including main.asm
 
 REVISION_JAPAN_V10 = 0
 REVISION_JAPAN_V11 = 1

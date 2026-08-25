@@ -174,7 +174,8 @@ make import-midi MIDI_FILE=x.mid        # Import monophonic MIDI to ignored JSON
 make symbols                            # Generate Mesen/FCEUX debugger artifacts
 make test-debug-symbols                 # Test symbol parsing and conversion
 make validate-symbols                   # Prove live symbol lookup and named breakpoint
-make lint                               # Check source, naming, docs, and Python syntax
+make format                             # Normalize ca65 assembly source style
+make lint                               # Check assembly, naming, docs, and Python syntax
 make test                               # Run all focused Python workflow tests
 make roundtrip-formats                  # Decode/encode six binary format families
 make reconstruction-audit               # Run the complete Source Reconstruction 1.0 gate

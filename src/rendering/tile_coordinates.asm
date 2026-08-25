@@ -1,25 +1,25 @@
 ; Tile probes, playfield, HUD, and renderer helpers
 
-; Build current+neighbor tile probe addresses for Pac-Man and all ghosts.
-;
-; Inputs: five actor XY records and current player/game mode.
-; Outputs: cached current/up/left/down/right PPU addresses in ram_obj_ppu_position.
-; Side effects: uses shared PPU-address work fields and row delta.
-; Clobbers: A, X, Y, zp_work2..zp_work5.
-sub_build_object_neighbor_ppu_positions:		; was: sub_E154_calculate_ppu_positions
+; Build current+neighbor tile probe addresses for Pac-Man and all ghosts
+
+; Inputs: five actor XY records and current player/game mode
+; Outputs: cached current/up/left/down/right PPU addresses in ram_obj_ppu_position
+; Side effects: uses shared PPU-address work fields and row delta
+; Clobbers: A, X, Y, zp_work2..zp_work5
+sub_build_object_neighbor_ppu_positions:  ; was: sub_E154_calculate_ppu_positions
     LDA ram_obj_pos_X_hi
     STA zp_work2
     LDA ram_obj_pos_Y_hi
     STA zp_work3
     JSR sub_convert_world_pos_to_ppu_addr
-    LDA zp_work3    ; ppu_pos_hi
+    LDA zp_work3  ; ppu_pos_hi
     STA ram_obj_ppu_pos_hi_now
-    LDA zp_work2    ; ppu_pos_lo
+    LDA zp_work2  ; ppu_pos_lo
     STA ram_obj_ppu_pos_lo_now
     LDX #$00
     LDY #$00
 ; Build per-object PPU positions for up/left/down/right neighbors
-bra_build_neighbor_ppu_positions:		; was: bra_E16D_loop
+bra_build_neighbor_ppu_positions:  ; was: bra_E16D_loop
     LDA ram_obj_pos_X_hi,X
     STA zp_work2
     LDA ram_obj_pos_Y_hi,X
@@ -29,9 +29,9 @@ bra_build_neighbor_ppu_positions:		; was: bra_E16D_loop
     STA ram_ppu_row_delta_lo
     LDA #> $0020
     STA ram_ppu_row_delta_hi
-    LDA zp_work2    ; ppu_pos_lo
+    LDA zp_work2  ; ppu_pos_lo
     STA ram_ppu_work_addr_lo
-    LDA zp_work3    ; ppu_pos_hi
+    LDA zp_work3  ; ppu_pos_hi
     STA ram_ppu_work_addr_hi
     JSR sub_subtract_nametable_row_stride
     LDA ram_ppu_work_addr_hi
@@ -41,11 +41,11 @@ bra_build_neighbor_ppu_positions:		; was: bra_E16D_loop
     INY
 ; 0203-0223, interval 08
     STA ram_obj_ppu_pos_lo_up - $01,Y
-    LDA zp_work3    ; ppu_pos_hi
+    LDA zp_work3  ; ppu_pos_hi
     INY
 ; 0204-0224, interval 08
     STA ram_obj_ppu_pos_hi_left - $02,Y
-    LDA zp_work2    ; ppu_pos_lo
+    LDA zp_work2  ; ppu_pos_lo
     SEC
     SBC #$01
     INY
@@ -55,9 +55,9 @@ bra_build_neighbor_ppu_positions:		; was: bra_E16D_loop
     STA ram_ppu_row_delta_lo
     LDA #> $0020
     STA ram_ppu_row_delta_hi
-    LDA zp_work2    ; ppu_pos_lo
+    LDA zp_work2  ; ppu_pos_lo
     STA ram_ppu_work_addr_lo
-    LDA zp_work3    ; ppu_pos_hi
+    LDA zp_work3  ; ppu_pos_hi
     STA ram_ppu_work_addr_hi
     JSR sub_add_nametable_row_stride
     LDA ram_ppu_work_addr_hi
@@ -68,11 +68,11 @@ bra_build_neighbor_ppu_positions:		; was: bra_E16D_loop
     INY
 ; 0207-0227, interval 08
     STA ram_obj_ppu_pos_lo_down - $05,Y
-    LDA zp_work3    ; ppu_pos_hi
+    LDA zp_work3  ; ppu_pos_hi
     INY
 ; 0208-0228, interval 08
     STA ram_obj_ppu_pos_hi_right - $06,Y
-    LDA zp_work2    ; ppu_pos_lo
+    LDA zp_work2  ; ppu_pos_lo
     CLC
     ADC #$01
     INY
@@ -87,14 +87,14 @@ bra_build_neighbor_ppu_positions:		; was: bra_E16D_loop
     BNE bra_build_neighbor_ppu_positions
     RTS
 
-; Convert one world XY position to its containing nametable tile address.
-; Inputs: zp_work2=X high, zp_work3=Y high, current player/game mode.
-; Outputs: zp_work2=PPU low, zp_work3=PPU high; player two adds $0800.
-; Clobbers: A, zp_work4, zp_work5.
-sub_convert_world_pos_to_ppu_addr:		; was: sub_E1DD_convert_position_to_ppu
+; Convert one world XY position to its containing nametable tile address
+; Inputs: zp_work2=X high, zp_work3=Y high, current player/game mode
+; Outputs: zp_work2=PPU low, zp_work3=PPU high; player two adds $0800
+; Clobbers: A, zp_work4, zp_work5
+sub_convert_world_pos_to_ppu_addr:  ; was: sub_E1DD_convert_position_to_ppu
     LDA #$00
     STA zp_work5
-    LDA zp_work3    ; pos_Y_hi
+    LDA zp_work3  ; pos_Y_hi
     SEC
     SBC #$04
     AND #$F8
@@ -108,7 +108,7 @@ sub_convert_world_pos_to_ppu_addr:		; was: sub_E1DD_convert_position_to_ppu
     LDA #$00
     ADC zp_work5
     STA zp_work5
-    LDA zp_work2    ; pos_X_hi
+    LDA zp_work2  ; pos_X_hi
     SEC
     SBC #$04
     LSR
@@ -116,36 +116,36 @@ sub_convert_world_pos_to_ppu_addr:		; was: sub_E1DD_convert_position_to_ppu
     LSR
     CLC
     ADC zp_work4
-    STA zp_work2    ; ppu_pos_lo
+    STA zp_work2  ; ppu_pos_lo
     LDA zp_work5
     CLC
     ADC #$20
-    STA zp_work3    ; ppu_pos_hi
+    STA zp_work3  ; ppu_pos_hi
     LDA ram_current_player
     AND ram_game_mode
     BNE bra_apply_player2_nametable_offset
     RTS
 ; Apply +$0800 nametable offset for player 2
-bra_apply_player2_nametable_offset:		; was: bra_E214
+bra_apply_player2_nametable_offset:  ; was: bra_E214
 ; add 0800 to ppu for 2nd player
-    LDA zp_work3    ; ppu_pos_hi
+    LDA zp_work3  ; ppu_pos_hi
     CLC
     ADC #$08
-    STA zp_work3    ; ppu_pos_hi
+    STA zp_work3  ; ppu_pos_hi
     RTS
 
-; Read tiles from all cached object-neighbor PPU addresses.
-; Inputs: ram_obj_ppu_position contains 21 big-endian PPU addresses.
-; Outputs: ram_obj_ppu_tile contains 21 sampled tile IDs.
+; Read tiles from all cached object-neighbor PPU addresses
+; Inputs: ram_obj_ppu_position contains 21 big-endian PPU addresses
+; Outputs: ram_obj_ppu_tile contains 21 sampled tile IDs
 ; Side effects: resets the PPU address latch and performs a dummy PPUDATA read for
-; every sample; callers must restore scroll/control state after this routine.
-; Clobbers: A, X, Y.
-sub_sample_tiles_at_obj_ppu_positions:		; was: sub_E21C_analyze_obj_ppu_pos
+; every sample; callers must restore scroll/control state after this routine
+; Clobbers: A, X, Y
+sub_sample_tiles_at_obj_ppu_positions:  ; was: sub_E21C_analyze_obj_ppu_pos
     LDX #$00
     LDY #$00
     LDA PPUSTATUS
 ; Sample next neighbor tile from PPU
-bra_sample_next_obj_neighbor_tile:		; was: bra_E223_loop
+bra_sample_next_obj_neighbor_tile:  ; was: bra_E223_loop
     LDA ram_obj_ppu_position,X  ; 0200-0228, even
     STA PPUADDR
     INX
@@ -160,11 +160,11 @@ bra_sample_next_obj_neighbor_tile:		; was: bra_E223_loop
     BNE bra_sample_next_obj_neighbor_tile
     RTS
 
-; Add the caller-supplied row delta to ram_ppu_work_addr.
-; Inputs/outputs: ram_ppu_work_addr; input delta in ram_ppu_row_delta.
-; Clobbers: A; X and Y are preserved.
-sub_add_nametable_row_stride:		; was: sub_E240_add_0020
-; !(OBS) All callers set row delta to $0020. See resolved CODE-003.
+; Add the caller-supplied row delta to ram_ppu_work_addr
+; Inputs/outputs: ram_ppu_work_addr; input delta in ram_ppu_row_delta
+; Clobbers: A; X and Y are preserved
+sub_add_nametable_row_stride:  ; was: sub_E240_add_0020
+; !(OBS) All callers set row delta to $0020. See resolved CODE-003
     CLC
     LDA ram_ppu_work_addr_lo
     ADC ram_ppu_row_delta_lo
@@ -174,11 +174,11 @@ sub_add_nametable_row_stride:		; was: sub_E240_add_0020
     STA ram_ppu_work_addr_hi
     RTS
 
-; Subtract the caller-supplied row delta from ram_ppu_work_addr.
-; Inputs/outputs: ram_ppu_work_addr; input delta in ram_ppu_row_delta.
-; Clobbers: A; X and Y are preserved.
-sub_subtract_nametable_row_stride:		; was: sub_E24E_sbc_0020
-; !(OBS) All callers set row delta to $0020. See resolved CODE-003.
+; Subtract the caller-supplied row delta from ram_ppu_work_addr
+; Inputs/outputs: ram_ppu_work_addr; input delta in ram_ppu_row_delta
+; Clobbers: A; X and Y are preserved
+sub_subtract_nametable_row_stride:  ; was: sub_E24E_sbc_0020
+; !(OBS) All callers set row delta to $0020. See resolved CODE-003
     SEC
     LDA ram_ppu_work_addr_lo
     SBC ram_ppu_row_delta_lo

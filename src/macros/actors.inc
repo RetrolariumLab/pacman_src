@@ -1,12 +1,12 @@
-; Compose the tile and attribute bytes for one actor OAM entry.
-;
+; Compose the tile and attribute bytes for one actor OAM entry
+
 ; Inputs:
-;   Y - actor slot
-;   zp_work2 - destination OAM pointer
-;   zp_work5 - quad offset
-;
+; Y - actor slot
+; zp_work2 - destination OAM pointer
+; zp_work5 - quad offset
+
 ; Clobbers:
-;   A, Y, zp_work6
+; A, Y, zp_work6
 .macro ComposeActorOamEntry tile_table, attribute_table
     LDA ram_actor_sprite_set,Y
     ASL

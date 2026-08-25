@@ -1,6 +1,6 @@
-; RAM symbols used by the Pac-Man (J) V1.0 native source.
+; RAM symbols used by the Pac-Man (J) V1.0 native source
 ; Names originate from the credited base disassembly; values are verified
-; by the byte-identical ca65 build against the V1.0 reference ROM.
+; by the byte-identical ca65 build against the V1.0 reference ROM
 ; Base: https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man
 
 ; $0000 page
@@ -11,7 +11,7 @@ zp_work3                                 = $0003
 zp_work4                                 = $0004
 zp_work5                                 = $0005
 ; Contextual aliases used by score-HUD drawing. These bytes remain shared
-; scratch storage outside that subsystem.
+; scratch storage outside that subsystem
 ram_score_hud_ppu_addr_hi                = zp_work0
 ram_score_hud_ppu_addr_lo                = zp_work1
 ram_score_hud_value_ptr                  = zp_work2

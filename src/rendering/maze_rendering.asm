@@ -1,59 +1,59 @@
 ; Maze decompression, nametable upload, and background clearing
 
-; Decode the generated maze stream directly into the active player's nametable.
-; Inputs: current player/game mode and tbl_maze_rle_stream_ptr.
-; Outputs: 27 rows x 22 tiles plus three eight-tile bottom-banner rows.
-; Side effects: direct PPU writes; token high bits encode run length minus one.
-; Clobbers: A, X, Y and zp_work0..zp_work5.
-sub_decompress_and_upload_maze_layout:		; was: sub_E25C
-    LDA #$20    ; 2040
+; Decode the generated maze stream directly into the active player's nametable
+; Inputs: current player/game mode and tbl_maze_rle_stream_ptr
+; Outputs: 27 rows x 22 tiles plus three eight-tile bottom-banner rows
+; Side effects: direct PPU writes; token high bits encode run length minus one
+; Clobbers: A, X, Y and zp_work0..zp_work5
+sub_decompress_and_upload_maze_layout:  ; was: sub_E25C
+    LDA #$20  ; 2040
     STA zp_work2
     LDA #$40
     STA zp_work3
     LDA ram_game_mode
     AND ram_current_player
     BEQ bra_select_maze_target_nametable
-    LDA #$28    ; 2840
+    LDA #$28  ; 2840
     STA zp_work2
 ; Select base nametable for maze upload by active player
-bra_select_maze_target_nametable:		; was: bra_E26E
+bra_select_maze_target_nametable:  ; was: bra_E26E
 .ifdef PACMAN_EXPANDED_MULTI_MAZE
     JSR sub_select_expanded_maze
     .repeat 7
         NOP
     .endrepeat
 .else
-.ifdef PACMAN_REVISION_LATE_NAMCO
-    LDA tbl_namco_maze_rle_stream_ptr + $01
-    STA zp_work1
-    LDA tbl_namco_maze_rle_stream_ptr
-.else
-    LDA tbl_maze_rle_stream_ptr + $01
-    STA zp_work1
-    LDA tbl_maze_rle_stream_ptr
-.endif
+    .ifdef PACMAN_REVISION_LATE_NAMCO
+        LDA tbl_namco_maze_rle_stream_ptr + $01
+        STA zp_work1
+        LDA tbl_namco_maze_rle_stream_ptr
+    .else
+        LDA tbl_maze_rle_stream_ptr + $01
+        STA zp_work1
+        LDA tbl_maze_rle_stream_ptr
+    .endif
     STA zp_work0
 .endif
     LDX #$1B
     LDY #$00
 ; Upload next compressed maze row
-bra_upload_next_maze_row:		; was: bra_E27C_loop
+bra_upload_next_maze_row:  ; was: bra_E27C_loop
     SetPpuAddressFrom zp_work2
     LDA #$16
     STA zp_work4
 ; Decode next RLE token from maze stream
-bra_decode_next_maze_rle_token:		; was: bra_E28D_loop
+bra_decode_next_maze_rle_token:  ; was: bra_E28D_loop
     LDA #$00
     STA zp_work5
-    LDA (zp_work0),Y    ; data from 0x002C88
+    LDA (zp_work0),Y  ; data from 0x002C88
     ASL
     ROL zp_work5
     ASL
     ROL zp_work5
-    LDA (zp_work0),Y    ; data from 0x002C88
+    LDA (zp_work0),Y  ; data from 0x002C88
     AND #$3F
 ; Write decoded RLE run to PPU
-bra_write_maze_rle_run:		; was: bra_E29D_loop
+bra_write_maze_rle_run:  ; was: bra_E29D_loop
     STA PPUDATA
     DEC zp_work4
     DEC zp_work5
@@ -62,7 +62,7 @@ bra_write_maze_rle_run:		; was: bra_E29D_loop
     BNE bra_continue_maze_row_decode
     INC zp_work1
 ; Continue decoding current maze row
-bra_continue_maze_row_decode:		; was: bra_E2AB
+bra_continue_maze_row_decode:  ; was: bra_E2AB
     LDA zp_work4
     BNE bra_decode_next_maze_rle_token
     LDA zp_work3
@@ -75,24 +75,24 @@ bra_continue_maze_row_decode:		; was: bra_E2AB
     DEX
     BNE bra_upload_next_maze_row
     LDY #$02
-    LDA #$21    ; 21D6
+    LDA #$21  ; 21D6
     STA zp_work0
     LDA #$D6
     STA zp_work1
     LDA ram_game_mode
     AND ram_current_player
     BEQ bra_select_bottom_banner_nametable
-    LDA #$29    ; 29D6
+    LDA #$29  ; 29D6
     STA zp_work0
 ; Select bottom banner nametable by active player
-bra_select_bottom_banner_nametable:		; was: bra_E2D3
+bra_select_bottom_banner_nametable:  ; was: bra_E2D3
 ; Fill bottom banner rows with pattern tiles
-bra_fill_bottom_banner_rows:		; was: bra_E2D3_loop
+bra_fill_bottom_banner_rows:  ; was: bra_E2D3_loop
     LDX #$07
     SetPpuAddressFrom zp_work0
     LDA tbl_bottom_banner_fill_tiles,Y
 ; Write one bottom banner row
-bra_write_bottom_banner_row:		; was: bra_E2E5_loop
+bra_write_bottom_banner_row:  ; was: bra_E2E5_loop
     STA PPUDATA
     DEX
     BPL bra_write_bottom_banner_row
@@ -108,19 +108,19 @@ bra_write_bottom_banner_row:		; was: bra_E2E5_loop
     RTS
 
 ; Fill tiles used for bottom banner rows
-tbl_bottom_banner_fill_tiles:		; was: tbl_E2FC
+tbl_bottom_banner_fill_tiles:  ; was: tbl_E2FC
 ; fill ppu with this byte
-    .byte con_tile_maze_blank   ; 00
-    .byte $04                   ; 01, scene-specific fill tile
-    .byte con_tile_maze_blank   ; 02
+    .byte con_tile_maze_blank  ; 00
+    .byte $04  ; 01, scene-specific fill tile
+    .byte con_tile_maze_blank  ; 02
 
 ; Clear both nametables and attribute blocks with blank tile
-sub_clear_bg_nametables_and_attrs:		; was: sub_E2FF
+sub_clear_bg_nametables_and_attrs:  ; was: sub_E2FF
     SetPpuAddress $2000
     LDA #$01
     STA zp_work2
 ; One nametable tile-fill pass in clear routine
-loc_clear_nametable_fill_pass:		; was: loc_E310
+loc_clear_nametable_fill_pass:  ; was: loc_E310
     LDA #$01
     STA zp_work3
     LDA #$03
@@ -143,15 +143,15 @@ bra_fill_nametable_tiles:
     LDA #$40
     STA zp_work1
     LDA #$00
-    BEQ bra_fill_nametable_tiles    ; jmp
+    BEQ bra_fill_nametable_tiles  ; jmp
 ; Select next nametable/phase in clear routine
-bra_select_next_nametable_phase:		; was: bra_E335
+bra_select_next_nametable_phase:  ; was: bra_E335
     DEC zp_work2
     BNE bra_clear_attribute_blocks_phase
     SetPpuAddress $2800
     JMP loc_clear_nametable_fill_pass
 ; Clear attribute blocks after nametable fill
-bra_clear_attribute_blocks_phase:		; was: bra_E349
+bra_clear_attribute_blocks_phase:  ; was: bra_E349
     LDA #$01
     STA zp_work0
     SetPpuAddress $23C0
@@ -167,8 +167,8 @@ bra_clear_attribute_table_bytes:
     BNE bra_select_second_attr_block
     RTS
 ; Switch to second attribute block during clear
-bra_select_second_attr_block:		; was: bra_E36A
+bra_select_second_attr_block:  ; was: bra_E36A
     SetPpuAddress $2BC0
-    BNE bra_clear_attribute_tables   ; jmp
+    BNE bra_clear_attribute_tables  ; jmp
 
 ; Draw score/hiscore HUD rows for live gameplay layout

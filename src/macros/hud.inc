@@ -1,4 +1,4 @@
-; Prepare the scratch state shared by the score HUD entry points.
+; Prepare the scratch state shared by the score HUD entry points
 .macro PrepareScoreHud ppu_address, row_stride
     LDA #> ppu_address
     STA ram_score_hud_ppu_addr_hi

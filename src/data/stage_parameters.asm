@@ -1,18 +1,18 @@
 ; Editable stage parameters and runtime tuning tables
 
 ; Stage-driven index stream selecting parameter groups (step size 6 in round-init)
-tbl_stage_param_index_stream:		; was: tbl_EB42
+tbl_stage_param_index_stream:  ; was: tbl_EB42
 ; Read as a 6-byte stage profile:
 ; [0]=shared level-block/timing-window id, [1]=frightened duration,
 ; [2]=dot-threshold pair id, [3]=release-target block id,
-; [4]=fruit/bonus stage group, [5]=release interval seconds.
+; [4]=fruit/bonus stage group, [5]=release interval seconds
 ; 00
-    .byte $00   ; 0x000EC7 0x000EE5
-    .byte $07   ; 0x000F05
-    .byte $00   ; 0x000F0E
-    .byte $00   ; 0x000F4A
-    .byte $00   ; 0x000F92
-    .byte $04   ; 0x000F9B
+    .byte $00  ; 0x000EC7 0x000EE5
+    .byte $07  ; 0x000F05
+    .byte $00  ; 0x000F0E
+    .byte $00  ; 0x000F4A
+    .byte $00  ; 0x000F92
+    .byte $04  ; 0x000F9B
 ; 06
     .byte $01
     .byte $06
@@ -168,49 +168,49 @@ tbl_stage_param_index_stream:		; was: tbl_EB42
     .byte $07
     .byte $03
 ; Level parameter blocks copied to runtime RAM 009F..00B4 (22 bytes each)
-tbl_level_param_blocks_22bytes:		; was: tbl_EBCC
-;                                             009F 00A0 00A1 00A2 00A3 00A4 00A5 00A6 00A7 00A8 00A9 00AA 00AB 00AC 00AD 00AE 00AF 00B0 00B1 00B2 00B3 00B4
+tbl_level_param_blocks_22bytes:  ; was: tbl_EBCC
+; 009F 00A0 00A1 00A2 00A3 00A4 00A5 00A6 00A7 00A8 00A9 00AA 00AB 00AC 00AD 00AE 00AF 00B0 00B1 00B2 00B3 00B4
 .if PACMAN_REVISION = REVISION_EUROPE
-; PAL timing equivalents of the five NTSC movement profiles below.
-    .byte $FA, $00, $E6, $00, $C0, $00, $D3, $00, $C0, $00, $9A, $00, $C0, $00, $D3, $00, $AD, $00, $60, $00, $60, $00   ; 00
-    .byte $FA, $00, $E6, $00, $C0, $00, $D3, $00, $C0, $00, $9A, $00, $D3, $00, $E6, $00, $C0, $00, $60, $00, $60, $00   ; 01
-    .byte $20, $01, $0D, $01, $E6, $00, $0D, $01, $FA, $00, $D3, $00, $0D, $01, $20, $01, $FA, $00, $86, $00, $86, $00   ; 02
-    .byte $33, $01, $20, $01, $FA, $00, $33, $01, $20, $01, $FA, $00, $33, $01, $46, $01, $20, $01, $9A, $00, $9A, $00   ; 03
-    .byte $33, $01, $20, $01, $FA, $00, $33, $01, $20, $01, $FA, $00, $5A, $01, $6D, $01, $46, $01, $9A, $00, $9A, $00   ; 04
+; PAL timing equivalents of the five NTSC movement profiles below
+    .byte $FA, $00, $E6, $00, $C0, $00, $D3, $00, $C0, $00, $9A, $00, $C0, $00, $D3, $00, $AD, $00, $60, $00, $60, $00  ; 00
+    .byte $FA, $00, $E6, $00, $C0, $00, $D3, $00, $C0, $00, $9A, $00, $D3, $00, $E6, $00, $C0, $00, $60, $00, $60, $00  ; 01
+    .byte $20, $01, $0D, $01, $E6, $00, $0D, $01, $FA, $00, $D3, $00, $0D, $01, $20, $01, $FA, $00, $86, $00, $86, $00  ; 02
+    .byte $33, $01, $20, $01, $FA, $00, $33, $01, $20, $01, $FA, $00, $33, $01, $46, $01, $20, $01, $9A, $00, $9A, $00  ; 03
+    .byte $33, $01, $20, $01, $FA, $00, $33, $01, $20, $01, $FA, $00, $5A, $01, $6D, $01, $46, $01, $9A, $00, $9A, $00  ; 04
 .else
-    .byte $D0, $00, $C0, $00, $A0, $00, $B0, $00, $A0, $00, $80, $00, $A0, $00, $B0, $00, $90, $00, $50, $00, $50, $00   ; 00
-    .byte $D0, $00, $C0, $00, $A0, $00, $B0, $00, $A0, $00, $80, $00, $B0, $00, $C0, $00, $A0, $00, $50, $00, $50, $00   ; 01
-    .byte $F0, $00, $E0, $00, $C0, $00, $E0, $00, $D0, $00, $B0, $00, $E0, $00, $F0, $00, $D0, $00, $70, $00, $70, $00   ; 02
-    .byte $00, $01, $F0, $00, $D0, $00, $00, $01, $F0, $00, $D0, $00, $00, $01, $10, $01, $F0, $00, $80, $00, $80, $00   ; 03
-    .byte $00, $01, $F0, $00, $D0, $00, $00, $01, $F0, $00, $D0, $00, $20, $01, $30, $01, $10, $01, $80, $00, $80, $00   ; 04
+    .byte $D0, $00, $C0, $00, $A0, $00, $B0, $00, $A0, $00, $80, $00, $A0, $00, $B0, $00, $90, $00, $50, $00, $50, $00  ; 00
+    .byte $D0, $00, $C0, $00, $A0, $00, $B0, $00, $A0, $00, $80, $00, $B0, $00, $C0, $00, $A0, $00, $50, $00, $50, $00  ; 01
+    .byte $F0, $00, $E0, $00, $C0, $00, $E0, $00, $D0, $00, $B0, $00, $E0, $00, $F0, $00, $D0, $00, $70, $00, $70, $00  ; 02
+    .byte $00, $01, $F0, $00, $D0, $00, $00, $01, $F0, $00, $D0, $00, $00, $01, $10, $01, $F0, $00, $80, $00, $80, $00  ; 03
+    .byte $00, $01, $F0, $00, $D0, $00, $00, $01, $F0, $00, $D0, $00, $20, $01, $30, $01, $10, $01, $80, $00, $80, $00  ; 04
 .endif
 
-; Per-level speed/timer control windows copied to RAM 0097..009E.
+; Per-level speed/timer control windows copied to RAM 0097..009E
 ; Profile id 4 reads the eight bytes immediately following these four rows,
-; so adjacency with tbl_dot_counter_threshold_pairs is a runtime contract.
-tbl_speed_timer_blocks_8bytes:		; was: tbl_EC3A
-    .byte $07, $14, $07, $14, $05, $14, $05, $FF   ; 00
-    .byte $07, $14, $07, $14, $05, $FF, $00, $00   ; 01
-    .byte $05, $14, $05, $14, $05, $FF, $00, $00   ; 02
-    .byte $05, $14, $05, $14, $05, $FF, $00, $00   ; 03
+; so adjacency with tbl_dot_counter_threshold_pairs is a runtime contract
+tbl_speed_timer_blocks_8bytes:  ; was: tbl_EC3A
+    .byte $07, $14, $07, $14, $05, $14, $05, $FF  ; 00
+    .byte $07, $14, $07, $14, $05, $FF, $00, $00  ; 01
+    .byte $05, $14, $05, $14, $05, $FF, $00, $00  ; 02
+    .byte $05, $14, $05, $14, $05, $FF, $00, $00  ; 03
 
 ; Dot-counter threshold pairs loaded into RAM 008D/008E
-tbl_dot_counter_threshold_pairs:		; was: tbl_EC5A
-    .byte $14, $0A   ; 00
-    .byte $1E, $0F   ; 01
-    .byte $28, $14   ; 02
-    .byte $32, $19   ; 03
-    .byte $3C, $1E   ; 04
-    .byte $50, $28   ; 05
-    .byte $64, $32   ; 06
+tbl_dot_counter_threshold_pairs:  ; was: tbl_EC5A
+    .byte $14, $0A  ; 00
+    .byte $1E, $0F  ; 01
+    .byte $28, $14  ; 02
+    .byte $32, $19  ; 03
+    .byte $3C, $1E  ; 04
+    .byte $50, $28  ; 05
+    .byte $64, $32  ; 06
 
 ; Default ghost release target quads copied to RAM 008F..0092
-tbl_ghost_release_target_quads:		; was: tbl_EC68
-    .byte $02, $1E, $5A, $00   ; 00
-    .byte $03, $32, $00, $00   ; 01
-    .byte $04, $00, $00, $00   ; 02
+tbl_ghost_release_target_quads:  ; was: tbl_EC68
+    .byte $02, $1E, $5A, $00  ; 00
+    .byte $03, $32, $00, $00  ; 01
+    .byte $04, $00, $00, $00  ; 02
 
 ; Special-case release target quad used when partial pellet progress is preserved
-tbl_release_target_special_case_quad:		; was: tbl_EC74
-; Used by partial-progress path in round init (when pellet count is carried into release logic).
+tbl_release_target_special_case_quad:  ; was: tbl_EC74
+; Used by partial-progress path in round init (when pellet count is carried into release logic)
     .byte $01, $07, $11, $20

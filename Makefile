@@ -150,7 +150,7 @@ DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols lint roundtrip-formats reconstruction-audit reconstruction-audit-2 run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces trace-evidence validate-evidence chunk help _require-assets _manifest _batch
+.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols format lint roundtrip-formats reconstruction-audit reconstruction-audit-2 run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces trace-evidence validate-evidence chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -401,7 +401,12 @@ validate-symbols: build-dev symbols
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_debug_runtime.py" \
 		--result "$(DEBUG_RUNTIME_RESULT)"
 
+format:
+	$(PYTHON) "$(PROJECT_DIR)scripts/asm_style.py" --fix "$(PROJECT_DIR)src"
+	$(MAKE) lint
+
 lint:
+	$(PYTHON) "$(PROJECT_DIR)scripts/asm_style.py" "$(PROJECT_DIR)src"
 	$(PYTHON) "$(PROJECT_DIR)scripts/lint_source.py"
 
 run: build build-dev
@@ -657,7 +662,8 @@ help:
 	@echo   make preview-sound                 Render SOUND_SLOT to a WAV file
 	@echo   make import-midi MIDI_FILE=x.mid   Import monophonic MIDI to local JSON
 	@echo Validation and evidence:
-	@echo   make lint                          Check source and documentation
+	@echo   make format                        Normalize ca65 assembly style
+	@echo   make lint                          Check assembly, source, and documentation
 	@echo   make test                          Run all fast Python unit tests
 	@echo   make symbols                       Build debugger symbols and FCEUX labels
 	@echo   make validate-symbols              Validate symbols live in FCEUX

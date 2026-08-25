@@ -1,4 +1,4 @@
-; Build-variant aliases for stage tuning data consumers.
+; Build-variant aliases for stage tuning data consumers
 
 .ifdef PACMAN_EXPANDED_STAGE
     .define off_active_stage_profiles                  tbl_expanded_stage_parameters

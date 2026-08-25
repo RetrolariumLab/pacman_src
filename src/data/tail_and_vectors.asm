@@ -1,11 +1,11 @@
-; Fixed bank tail: $FF padding through $FFF7, maze pointer, and hardware vectors.
+; Fixed bank tail: $FF padding through $FFF7, maze pointer, and hardware vectors
 
 unused_bank_padding:
 .if PACMAN_REVISION = REVISION_USA_TENGEN_LICENSED
     .res $FF00 - *, $FF
 
 ; Licensed Tengen cartridge reset trampoline. Its extra two-vblank gate hands
-; control back to the shared reset routine after that routine's initial wait.
+; control back to the shared reset routine after that routine's initial wait
 vec_tengen_licensed_reset_entry:
     SEI
     CLD
@@ -27,8 +27,8 @@ tbl_namco_maze_rle_stream_ptr:
 .endif
     .res $FFF8 - *, $FF
 
-; Pointer to the generated compressed maze stream.
-; Fixed at $FFF8; the VECTORS segment starts at $FFFA.
+; Pointer to the generated compressed maze stream
+; Fixed at $FFF8; the VECTORS segment starts at $FFFA
 tbl_maze_rle_stream_ptr:
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .word vec_nmi_handler
@@ -43,7 +43,7 @@ tbl_maze_rle_stream_ptr:
 .segment "VECTORS"
 
 ; NES vector table at fixed tail addresses:
-; FFFA: NMI, FFFC: RESET, FFFE: IRQ/BRK.
+; FFFA: NMI, FFFC: RESET, FFFE: IRQ/BRK
     .word vec_nmi_handler
 .if PACMAN_REVISION = REVISION_USA_TENGEN_LICENSED
     .word vec_tengen_licensed_reset_entry

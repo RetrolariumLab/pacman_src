@@ -4,7 +4,8 @@ The source reconstruction uses separate validation layers so fast structural
 checks do not silently grow into emulator runs.
 
 ```text
-make lint                 # tracked text, source, naming, docs, Python syntax
+make format               # normalize ca65 assembly source style, then lint
+make lint                 # assembly style, tracked text, naming, docs, Python syntax
 make test                 # all focused Python workflow unit tests
 make verify               # authoritative byte-identical ROM gate
 make roundtrip-formats    # six binary format decode/encode checks
@@ -22,8 +23,14 @@ make validate-expanded    # expanded-asset consumption in live FCEUX
 
 ## Fast lint
 
-`make lint` checks every tracked or unignored source file and reports all
-violations in one run. It enforces:
+`make format` normalizes every `.asm` and `.inc` file under `src/`, then runs
+the complete fast lint. The formatter standardizes indentation, mnemonic and
+directive case, comment spacing, blank lines, and LF endings; it does not edit
+operands, symbols, or non-assembly files.
+
+`make lint` first checks that assembly source already has the canonical style,
+then checks every tracked or unignored source file and reports all violations
+in one run. Together these layers enforce:
 
 - UTF-8 text, no trailing whitespace, and exactly one final newline;
 - no repeated blank-line runs in assembly source;

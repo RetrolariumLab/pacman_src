@@ -1,4 +1,4 @@
-; Optional NROM-256 entrypoint with JSON-generated data in a new PRG bank.
+; Optional NROM-256 entrypoint with JSON-generated data in a new PRG bank
 
 .setcpu "6502"
 
@@ -14,9 +14,9 @@ tbl_expanded_stage_parameters:
 tbl_expanded_stage2_maze_rle_stream:
     .incbin "build/expanded/assets/maze.rle"
 
-; Select the original maze for stage 1 and the editable maze for stage 2+.
+; Select the original maze for stage 1 and the editable maze for stage 2+
 ; This helper lives entirely in the added bank; the fixed-bank call site keeps
-; its original width so no preservation addresses move.
+; its original width so no preservation addresses move
 sub_select_expanded_maze:
     LDA a:ram_stage_p1
     CMP #$01

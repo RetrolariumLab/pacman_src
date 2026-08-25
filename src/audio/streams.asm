@@ -1,8 +1,8 @@
-; Original SFX and music command streams.
-;
+; Original SFX and music command streams
+
 ; These opaque sequencer assets are generated from the reference ROM by
 ; `make split`. Labels remain in source so the editable pointer table in
-; engine.asm can refer to individual streams.
+; engine.asm can refer to individual streams
 
 off_sfx_slot02_extra_life:
     .incbin "assets/generated/audio/slot02_extra_life.bin"
