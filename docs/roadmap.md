@@ -129,8 +129,9 @@ tag uncertain claims instead of filling the template speculatively.
 - Collapse repeated blank lines and require exactly one final newline in every
   tracked text file.
 
-The naming rules are documented in `docs/naming.md`. Future renames must retain
-the same evidence standard and pass `make verify`.
+The naming rules are documented in `docs/naming.md`. Direct import-to-current
+provenance is recorded in `docs/provenance/label_renames.json`. Future renames
+must update that map, retain the same evidence standard, and pass `make verify`.
 
 ### 2. Unknowns Registry and Evidence Cleanup — Complete
 

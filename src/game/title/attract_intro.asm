@@ -1,6 +1,6 @@
 ; Attract-mode introduction, text packets, palettes, and setup
 
-handler_script04_attract_intro:  ; was: ofs_000_C458_04
+handler_script04_attract_intro:
     LDA ram_btn_1p
     AND #con_btns_SS
     BEQ bra_run_attract_substate
@@ -8,7 +8,7 @@ handler_script04_attract_intro:  ; was: ofs_000_C458_04
     STA ram_script
     JMP loc_main_frame_bootstrap
 ; Execute current attract substate handler
-bra_run_attract_substate:  ; was: bra_C465
+bra_run_attract_substate:
     LDY ram_shared_state_0
     LDA tbl_attract_substate_handlers,Y
     STA ram_indirect_jmp
@@ -17,26 +17,26 @@ bra_run_attract_substate:  ; was: bra_C465
     JMP (ram_indirect_jmp)
 
 ; Attract-mode substate handler table
-tbl_attract_substate_handlers:  ; was: tbl_C474
+tbl_attract_substate_handlers:
     .word handler_attract_substate_init
     .word handler_attract_substate_wait_30f
     .word handler_attract_substate_wait_30f_alias_04
     .word handler_attract_substate_wait_30f_alias_06
     .word handler_attract_substate_wait_30f_alias_08
-    .word handler_attract_substate_wait_30f_alias_0A
-    .word handler_attract_substate_wait_30f_alias_0C
-    .word handler_attract_substate_wait_30f_alias_0E
+    .word handler_attract_substate_wait_30f_alias_0a
+    .word handler_attract_substate_wait_30f_alias_0c
+    .word handler_attract_substate_wait_30f_alias_0e
     .word handler_attract_substate_wait_30f_alias_10
     .word handler_attract_substate_wait_30f_alias_12
     .word handler_attract_substate_wait_80f
     .word handler_attract_chase_scene
 
 ; Attract substate init: setup nametable/palette and seed sequence
-handler_attract_substate_init:  ; was: ofs_001_C48C_00
+handler_attract_substate_init:
     LDA #$01
     STA ram_nmi_wait
 ; Wait for NMI completion before attract setup writes
-bra_wait_nmi_before_attract_setup:  ; was: bra_C490_infinite_loop
+bra_wait_nmi_before_attract_setup:
     LDA ram_nmi_wait
     BNE bra_wait_nmi_before_attract_setup
     LDA #PPUCTRL_SPRITE_PATTERN_HIGH
@@ -56,23 +56,23 @@ bra_wait_nmi_before_attract_setup:  ; was: bra_C490_infinite_loop
     JMP loc_script_dispatch_loop
 
 ; Attract substate wait loop (0x30 frames step)
-handler_attract_substate_wait_30f:  ; was: ofs_001_C4B9_02
+handler_attract_substate_wait_30f:
 ; Alias entry for 30-frame attract wait handler (substate 04)
-handler_attract_substate_wait_30f_alias_04:  ; was: ofs_001_C4B9_04
+handler_attract_substate_wait_30f_alias_04:
 ; Alias entry for 30-frame attract wait handler (substate 06)
-handler_attract_substate_wait_30f_alias_06:  ; was: ofs_001_C4B9_06
+handler_attract_substate_wait_30f_alias_06:
 ; Alias entry for 30-frame attract wait handler (substate 08)
-handler_attract_substate_wait_30f_alias_08:  ; was: ofs_001_C4B9_08
+handler_attract_substate_wait_30f_alias_08:
 ; Alias entry for 30-frame attract wait handler (substate 0A)
-handler_attract_substate_wait_30f_alias_0A:  ; was: ofs_001_C4B9_0A
+handler_attract_substate_wait_30f_alias_0a:
 ; Alias entry for 30-frame attract wait handler (substate 0C)
-handler_attract_substate_wait_30f_alias_0C:  ; was: ofs_001_C4B9_0C
+handler_attract_substate_wait_30f_alias_0c:
 ; Alias entry for 30-frame attract wait handler (substate 0E)
-handler_attract_substate_wait_30f_alias_0E:  ; was: ofs_001_C4B9_0E
+handler_attract_substate_wait_30f_alias_0e:
 ; Alias entry for 30-frame attract wait handler (substate 10)
-handler_attract_substate_wait_30f_alias_10:  ; was: ofs_001_C4B9_10
+handler_attract_substate_wait_30f_alias_10:
 ; Alias entry for 30-frame attract wait handler (substate 12)
-handler_attract_substate_wait_30f_alias_12:  ; was: ofs_001_C4B9_12
+handler_attract_substate_wait_30f_alias_12:
     INC ram_shared_state_1
     LDA ram_shared_state_1
     CMP #$30
@@ -83,18 +83,18 @@ handler_attract_substate_wait_30f_alias_12:  ; was: ofs_001_C4B9_12
     INC ram_shared_state_0
     INC ram_shared_state_0
 ; Return to script dispatcher after attract wait tick
-bra_dispatch_next_attract_frame:  ; was: bra_C4CC
+bra_dispatch_next_attract_frame:
     JMP loc_script_dispatch_loop
 
 ; Attract tail wait before handoff
-handler_attract_substate_wait_80f:  ; was: ofs_001_C4CF_14
+handler_attract_substate_wait_80f:
     INC ram_shared_state_1
     LDA ram_shared_state_1
     CMP #$80
     BEQ bra_advance_substate_after_wait
     JMP loc_script_dispatch_loop
 ; Advance attract substate after tail wait expires
-bra_advance_substate_after_wait:  ; was: bra_C4DA
+bra_advance_substate_after_wait:
     INC ram_shared_state_0
     INC ram_shared_state_0
     LDA #$00
@@ -107,7 +107,7 @@ bra_advance_substate_after_wait:  ; was: bra_C4DA
     JMP loc_enter_gameplay_session
 
 ; Build next attract/demo PPU update packet (and optional sprite strip)
-sub_build_attract_ppu_packet:  ; was: sub_C4EC
+sub_build_attract_ppu_packet:
     LDY ram_shared_state_0
 .ifdef PACMAN_EXPANDED_SCREENS
     LDA tbl_expanded_attract_text_ptr_table,Y
@@ -123,7 +123,7 @@ sub_build_attract_ppu_packet:  ; was: sub_C4EC
     STA zp_work1
     LDY #$00
 ; Copy attract PPU packet bytes into main PPU buffer
-bra_copy_ppu_packet_to_buffer:  ; was: bra_C4FA_loop
+bra_copy_ppu_packet_to_buffer:
     LDA (zp_work0),Y  ; data from 0x0005E3
     STA ram_ppu_buffer_main,Y
     INY
@@ -133,7 +133,7 @@ bra_copy_ppu_packet_to_buffer:  ; was: bra_C4FA_loop
     BEQ bra_copy_optional_sprite_strip
     RTS
 ; Copy optional sprite strip payload after packet terminator
-bra_copy_optional_sprite_strip:  ; was: bra_C509
+bra_copy_optional_sprite_strip:
     LDA ram_shared_state_0
     SEC
     SBC #$02
@@ -142,7 +142,7 @@ bra_copy_optional_sprite_strip:  ; was: bra_C509
     TAY
     LDX #$10
 ; Copy 16-byte sprite strip into OAM shadow
-bra_copy_attract_sprite_strip:  ; was: bra_C513_loop
+bra_copy_attract_sprite_strip:
 ; potential 0760-079F range, interval 10h
     LDA tbl_attract_sprite_strip_data,Y
     STA ram_oam + $60,Y
@@ -152,7 +152,7 @@ bra_copy_attract_sprite_strip:  ; was: bra_C513_loop
     RTS
 
 ; Draw attract-mode playfield frame tiles
-sub_draw_attract_playfield_frame:  ; was: sub_C51E
+sub_draw_attract_playfield_frame:
     LDA #> $20C0
     STA PPUADDR
     LDA #< $20C0
@@ -160,7 +160,7 @@ sub_draw_attract_playfield_frame:  ; was: sub_C51E
     LDA #$17
     STA zp_work0
 ; Draw next row of attract playfield frame
-bra_draw_next_frame_row:  ; was: bra_C52C_loop
+bra_draw_next_frame_row:
     LDA #$1C
     STA zp_work1
     LDA #con_tile_maze_blank
@@ -168,7 +168,7 @@ bra_draw_next_frame_row:  ; was: bra_C52C_loop
     STA PPUDATA
     LDA #con_tile_space
 ; Fill inner row tiles between frame borders
-bra_fill_frame_inner_row:  ; was: bra_C53A_loop
+bra_fill_frame_inner_row:
     STA PPUDATA
     DEC zp_work1
     BNE bra_fill_frame_inner_row
@@ -180,7 +180,7 @@ bra_fill_frame_inner_row:  ; was: bra_C53A_loop
     RTS
 
 ; Setup attract-mode attributes and palette
-sub_setup_attract_palette_and_attrs:  ; was: sub_C54E
+sub_setup_attract_palette_and_attrs:
 .ifdef PACMAN_REVISION_RAM_PALETTES
     LDA #> $23C8
     STA PPUADDR
@@ -243,7 +243,7 @@ bra_upload_regional_attract_palette32:
     LDY #$20
     LDA #$00
 ; Clear initial attract attribute block bytes
-bra_clear_primary_attribute_table:  ; was: bra_C55C_loop
+bra_clear_primary_attribute_table:
     STA PPUDATA
     DEY
     BNE bra_clear_primary_attribute_table
@@ -255,10 +255,10 @@ bra_clear_primary_attribute_table:  ; was: bra_C55C_loop
     STA zp_work0
     LDA #$55
 ; Fill attract checker/stripe attribute rows
-bra_fill_checker_attr_rows:  ; was: bra_C572_loop
+bra_fill_checker_attr_rows:
     LDY #$08
 ; Write 8 repeated attribute bytes
-bra_write_eight_attr_bytes:  ; was: bra_C574_loop
+bra_write_eight_attr_bytes:
     STA PPUDATA
     DEY
     BNE bra_write_eight_attr_bytes
@@ -272,7 +272,7 @@ bra_write_eight_attr_bytes:  ; was: bra_C574_loop
     STA PPUADDR
     LDY #$00
 ; Upload 32-byte attract palette block
-bra_upload_attract_palette32:  ; was: bra_C58D_loop
+bra_upload_attract_palette32:
     .ifdef PACMAN_EXPANDED_PALETTES
         LDA tbl_expanded_attract_bg_spr_palette,Y
     .else
@@ -296,7 +296,7 @@ bra_upload_attract_palette32:  ; was: bra_C58D_loop
 .endif
 
 ; Attract scene BG+SPR palette block (32 bytes)
-tbl_attract_bg_spr_palette:  ; was: tbl_C5B3_palette
+tbl_attract_bg_spr_palette:
 ; bg
     .incbin "assets/generated/palettes/attract-namco.bin", $0, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/attract-namco.bin", $4, $4  ; rom-asset .byte
@@ -312,14 +312,14 @@ tbl_attract_bg_spr_palette:  ; was: tbl_C5B3_palette
     .incbin "assets/generated/palettes/attract-namco.bin", $18, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/attract-namco.bin", $1C, $4  ; rom-asset .byte
 ; Pointer table to attract text/packet scripts by substate
-tbl_attract_ppu_packet_ptrs:  ; was: tbl_C5D3
+tbl_attract_ppu_packet_ptrs:
     .word off_attract_text_header_character_nickname
     .word off_attract_text_alias_oikake
     .word off_attract_text_name_akabei
     .word off_attract_text_alias_machibuse
     .word off_attract_text_name_pinky
-    .word off_attract_text_alias_tiles_0A
-    .word off_attract_text_name_tiles_0C
+    .word off_attract_text_alias_tiles_0a
+    .word off_attract_text_name_tiles_0c
     .word off_attract_text_alias_otoboke
     .word off_attract_text_name_guzuta
     .word off_attract_text_points_table
@@ -331,7 +331,7 @@ tbl_attract_ppu_packet_ptrs:  ; was: tbl_C5D3
 ; so it will be pairs of FF + 00 and FF + FF
 ; currently only FF + 00 pairs exist
 ; Attract packet: header CHARACTER/NICKNAME
-off_attract_text_header_character_nickname:  ; was: _off000_C5E7_00
+off_attract_text_header_character_nickname:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_TENGEN
     .dbyt $20EB
@@ -348,7 +348,7 @@ off_attract_text_header_character_nickname:  ; was: _off000_C5E7_00
 .endif
 
 ; Attract packet: alias text OIKAKE
-off_attract_text_alias_oikake:  ; was: _off000_C5FF_02
+off_attract_text_alias_oikake:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2148
@@ -365,7 +365,7 @@ off_attract_text_alias_oikake:  ; was: _off000_C5FF_02
 .endif
 
 ; Attract packet: name AKABEI
-off_attract_text_name_akabei:  ; was: _off000_C60E_04
+off_attract_text_name_akabei:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2153
@@ -380,7 +380,7 @@ off_attract_text_name_akabei:  ; was: _off000_C60E_04
 .endif
 
 ; Attract packet: alias text MACHIBUSE
-off_attract_text_alias_machibuse:  ; was: _off000_C619_06
+off_attract_text_alias_machibuse:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $21A8
@@ -397,7 +397,7 @@ off_attract_text_alias_machibuse:  ; was: _off000_C619_06
 .endif
 
 ; Attract packet: name PINKY
-off_attract_text_name_pinky:  ; was: _off000_C628_08
+off_attract_text_name_pinky:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $21B3
@@ -412,7 +412,7 @@ off_attract_text_name_pinky:  ; was: _off000_C628_08
 .endif
 
 ; Attract packet: alias text tile sequence (set 0A)
-off_attract_text_alias_tiles_0A:  ; was: _off000_C632_0A
+off_attract_text_alias_tiles_0a:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2208
@@ -429,7 +429,7 @@ off_attract_text_alias_tiles_0A:  ; was: _off000_C632_0A
 .endif
 
 ; Attract packet: name tile sequence (set 0C)
-off_attract_text_name_tiles_0C:  ; was: _off000_C641_0C
+off_attract_text_name_tiles_0c:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2213
@@ -444,7 +444,7 @@ off_attract_text_name_tiles_0C:  ; was: _off000_C641_0C
 .endif
 
 ; Attract packet: alias text OTOBOKE
-off_attract_text_alias_otoboke:  ; was: _off000_C64C_0E
+off_attract_text_alias_otoboke:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2268
@@ -461,7 +461,7 @@ off_attract_text_alias_otoboke:  ; was: _off000_C64C_0E
 .endif
 
 ; Attract packet: name GUZUTA
-off_attract_text_name_guzuta:  ; was: _off000_C65B_10
+off_attract_text_name_guzuta:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2273
@@ -476,7 +476,7 @@ off_attract_text_name_guzuta:  ; was: _off000_C65B_10
 .endif
 
 ; Attract packet: points table entries
-off_attract_text_points_table:  ; was: _off000_C666_12
+off_attract_text_points_table:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $22AD
@@ -506,7 +506,7 @@ off_attract_text_points_table:  ; was: _off000_C666_12
 ; Legacy file offset $05F7 maps to CPU $C5E7, the first packet above
 
 ; Sprite strip data used by optional attract packet payload
-tbl_attract_sprite_strip_data:  ; was: tbl_C688_spr_data
+tbl_attract_sprite_strip_data:
 ; reading 4 lines bytes each time, start line depends on 0x000519
 .ifdef PACMAN_REVISION_TENGEN
     .byte $48, $1C, $40, $46

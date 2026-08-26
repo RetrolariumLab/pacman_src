@@ -91,7 +91,7 @@ memory.registerexecute(symbol("handler_script04_pause_handler"), function()
 end)
 
 local intermission_patched = false
-memory.registerexecute(symbol("handler_script0C_stage_clear"), function()
+memory.registerexecute(symbol("handler_script_0c_stage_clear"), function()
     if intermission_patched or emu.framecount() < 20000 then return end
     if scenario == "intermission-scene-1" then
         patch(STAGE_P1, 0x04, "select_scene_1")

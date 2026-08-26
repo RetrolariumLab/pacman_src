@@ -46,6 +46,22 @@ class AssemblyStyleTests(unittest.TestCase):
             self.assertTrue({"tab", "label-line", "inline-comment-gap", "comment-period"} <= codes)
             self.assertEqual(read_source_text(path, encoding="utf-8"), original)
 
+    def test_label_comment_moves_to_preceding_line(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "sample.asm"
+            path.write_text(
+                "sub_example:  ; Explain the entry\n    RTS\n",
+                encoding="utf-8",
+            )
+
+            self.assertIn("label-line", {issue.code for issue in lint_file(path)})
+            self.assertTrue(format_file(path))
+            self.assertEqual(
+                read_source_text(path, encoding="utf-8"),
+                "; Explain the entry\nsub_example:\n    RTS\n",
+            )
+            self.assertEqual(lint_file(path), [])
+
 
 if __name__ == "__main__":
     unittest.main()

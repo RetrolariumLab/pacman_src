@@ -11,12 +11,12 @@
 ; Outputs: cleared playfield, seeded actors/palette, substate 00, script 10 selected
 ; Side effects: waits for vblank, temporarily disables rendering, writes PPU directly
 ; Clobbers: A, X, Y and zp_work0..zp_work3
-handler_script0E_intermission_setup:  ; was: ofs_003_E655_0E
+handler_script_0e_intermission_setup:
     LDA #PPUCTRL_SPRITE_PATTERN_HIGH
     STA ram_ppuctrl_base
     STA PPUCTRL
 ; Wait for vblank before enabling intro setup flags
-bra_wait_vblank_set_flag:  ; was: bra_E65C_infinite_loop
+bra_wait_vblank_set_flag:
     LDA PPUSTATUS
     BPL bra_wait_vblank_set_flag
     LDA #$01
@@ -44,7 +44,7 @@ bra_wait_vblank_set_flag:  ; was: bra_E65C_infinite_loop
 .endif
     LDY #$00
 ; Upload sprite palette for intro/demo setup
-bra_upload_demo_sprite_palette:  ; was: bra_E6A0_loop
+bra_upload_demo_sprite_palette:
 .ifdef PACMAN_EXPANDED_PALETTES
     LDA tbl_expanded_intro_sprite_palette,Y
 .else
@@ -74,14 +74,14 @@ bra_upload_demo_sprite_palette:  ; was: bra_E6A0_loop
 ; Outputs: selected nametable playfield/attribute region rewritten
 ; Side effects: direct PPU writes; caller must own rendering/vblank timing
 ; Clobbers: A, X and zp_work0..zp_work3; Y is preserved
-sub_clear_playfield_and_walls:  ; was: sub_E6C4
+sub_clear_playfield_and_walls:
     LDX #$20  ; 2000
     LDA ram_game_mode
     AND ram_current_player
     BEQ bra_select_playfield_nametable
     LDX #$28  ; 2800
 ; Select active playfield nametable for current player
-bra_select_playfield_nametable:  ; was: bra_E6CE
+bra_select_playfield_nametable:
     LDA PPUSTATUS
     STX PPUADDR
     LDA #$00
@@ -89,7 +89,7 @@ bra_select_playfield_nametable:  ; was: bra_E6CE
     LDA #$1C
     STA zp_work0
 ; Fill one playfield row pattern block
-bra_fill_playfield_row_pattern:  ; was: bra_E6DD_loop
+bra_fill_playfield_row_pattern:
     LDA #$02
     STA zp_work1
     LDA #$1C
@@ -98,7 +98,7 @@ bra_fill_playfield_row_pattern:  ; was: bra_E6DD_loop
     STA zp_work3
     LDA #$2D
 ; Write pattern byte sequence for playfield row
-bra_write_playfield_pattern_byte:  ; was: bra_E6EB_loop
+bra_write_playfield_pattern_byte:
     STA PPUDATA
     LDX zp_work1
     BEQ bra_switch_pattern_phase
@@ -107,7 +107,7 @@ bra_write_playfield_pattern_byte:  ; was: bra_E6EB_loop
     LDA #$20
     BNE bra_write_playfield_pattern_byte  ; jmp
 ; Switch between wall/background pattern phases
-bra_switch_pattern_phase:  ; was: bra_E6FA
+bra_switch_pattern_phase:
     LDX zp_work2
     BEQ bra_advance_pattern_repeat_counter
     DEC zp_work2
@@ -115,7 +115,7 @@ bra_switch_pattern_phase:  ; was: bra_E6FA
     LDA #$2D
     BNE bra_write_playfield_pattern_byte  ; jmp
 ; Advance pattern repeat counter
-bra_advance_pattern_repeat_counter:  ; was: bra_E706
+bra_advance_pattern_repeat_counter:
     DEC zp_work3
     BNE bra_write_playfield_pattern_byte
     DEC zp_work0
@@ -123,7 +123,7 @@ bra_advance_pattern_repeat_counter:  ; was: bra_E706
     LDA #$00
     TAX
 ; Clear attribute block bytes
-bra_clear_attribute_block:  ; was: bra_E711_loop
+bra_clear_attribute_block:
     STA PPUDATA
     INX
     CPX #$40
@@ -133,14 +133,14 @@ bra_clear_attribute_block:  ; was: bra_E711_loop
     BEQ bra_draw_center_marker_if_mode2
     RTS
 ; Draw center marker tile for mode 2
-bra_draw_center_marker_if_mode2:  ; was: bra_E720
+bra_draw_center_marker_if_mode2:
     LDX #$22  ; 2230
     LDA ram_game_mode
     AND ram_current_player
     BEQ bra_select_center_marker_nametable
     LDX #$2A  ; 2A30
 ; Select nametable for center marker
-bra_select_center_marker_nametable:  ; was: bra_E72A
+bra_select_center_marker_nametable:
     LDA PPUSTATUS
     STX PPUADDR
     LDA #$30
@@ -150,7 +150,7 @@ bra_select_center_marker_nametable:  ; was: bra_E72A
     RTS
 
 ; Sprite palette used by intro/demo setup
-tbl_intro_sprite_palette:  ; was: tbl_E73B_spr_palette
+tbl_intro_sprite_palette:
     .incbin "assets/generated/palettes/intermission-sprites.bin", $0, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/intermission-sprites.bin", $4, $4  ; rom-asset .byte
     .incbin "assets/generated/palettes/intermission-sprites.bin", $8, $4  ; rom-asset .byte

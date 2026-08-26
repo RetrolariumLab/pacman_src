@@ -4,7 +4,7 @@
 ; Outputs: request/channel/table/APU pointers initialized; APU channels enabled
 ; Side effects: writes APU status/frame counter and clears request/channel states
 ; Clobbers: A, X, Y
-sub_init_sound_engine:  ; was: sub_EE18
+sub_init_sound_engine:
     LoadPointer ram_sfx_request_ptr, ram_sfx
     LoadPointer ram_sound_channel_ptr, ram_sound_channel_state
     LDA tbl_sfx_stream_table_ptr
@@ -21,11 +21,11 @@ sub_init_sound_engine:  ; was: sub_EE18
 ; Inputs: initialized request/channel pointers
 ; Outputs: request page and channel-state bytes zeroed
 ; Clobbers: A, X, Y
-sub_clear_sound_engine_state:  ; was: sub_EE40
+sub_clear_sound_engine_state:
     LDY #$00
     LDA #$00
 ; Clear 16-byte SFX request/state area
-bra_loop_clear_sfx_request_slots:  ; was: bra_EE44_loop
+bra_loop_clear_sfx_request_slots:
     STA (ram_sfx_request_ptr),Y  ; 0600 0601 0602 0603 0604 0605 0606 0607 0608 0609 060A 060B 060C 060D 060E 060F
     INY
     CPY #con_sound_channel_count
@@ -33,7 +33,7 @@ bra_loop_clear_sfx_request_slots:  ; was: bra_EE44_loop
     LDY #$00
     LDX #con_sound_channel_count
 ; Clear one command byte per 8-byte channel struct
-bra_loop_clear_channel_command_slots:  ; was: bra_EE4F_loop
+bra_loop_clear_channel_command_slots:
     LDA #$00
     STA (ram_sound_channel_ptr),Y  ; record +0 channel state
     TYA
@@ -63,7 +63,7 @@ sub_update_sound_engine:
     LDA #< ram_sound_channel_claims
     STA ram_sound_work_ptr
 ; Pre-pass over channels to detect command conflicts
-bra_loop_scan_channel_command_slots:  ; was: bra_EE6E_loop
+bra_loop_scan_channel_command_slots:
     LDY ram_sound_channel_offset
     LDA (ram_sound_channel_ptr),Y  ; record +0 channel state
     BEQ bra_advance_channel_prepass
@@ -76,7 +76,7 @@ bra_loop_scan_channel_command_slots:  ; was: bra_EE6E_loop
     STA (ram_sound_work_ptr),Y  ; 00F8 00F9 00FA
     JMP loc_advance_channel_prepass_entry
 ; Handle 01..04 channel request with deduplication
-bra_handle_low_priority_channel_request:  ; was: bra_EE83
+bra_handle_low_priority_channel_request:
     SEC
     SBC #$01
     TAY
@@ -96,7 +96,7 @@ bra_handle_low_priority_channel_request:  ; was: bra_EE83
     LDX #$00
     LDA #$04
 ; Write 4-byte APU register quad for selected channel
-bra_loop_write_apu_register_quad:  ; was: bra_EEA0_loop
+bra_loop_write_apu_register_quad:
     PHA
     INY
     LDA (ram_sound_channel_ptr),Y  ; record +1 through +4 APU register quad
@@ -107,9 +107,9 @@ bra_loop_write_apu_register_quad:  ; was: bra_EEA0_loop
     SBC #$01
     BNE bra_loop_write_apu_register_quad
 ; Advance to next channel slot in pre-pass
-bra_advance_channel_prepass:  ; was: bra_EEAE
+bra_advance_channel_prepass:
 ; Shared entry for channel pre-pass advancement
-loc_advance_channel_prepass_entry:  ; was: loc_EEAE
+loc_advance_channel_prepass_entry:
     LDA ram_sound_channel_offset
     CLC
     ADC #con_sound_channel_record_size
@@ -120,13 +120,13 @@ loc_advance_channel_prepass_entry:  ; was: loc_EEAE
     STY ram_sound_channel_index
     STY ram_sound_channel_offset
 ; Main per-channel sound stream update loop
-loc_sound_channel_main_loop:  ; was: loc_EEBF
+loc_sound_channel_main_loop:
     LDY ram_sound_channel_index
     LDA (ram_sfx_request_ptr),Y  ; 0600 0601 0602 0603 0604 0605 0606 0607 0608 0609 060A 060B 060C 060D 060E 060F
     BNE bra_channel_has_active_stream
     JMP loc_advance_to_next_sound_channel_entry
 ; Channel has pending stream; update countdown or decode
-bra_channel_has_active_stream:  ; was: bra_EEC8
+bra_channel_has_active_stream:
     LDY ram_sound_channel_offset
     LDA (ram_sound_channel_ptr),Y  ; channel state
     BNE bra_decrement_channel_duration
@@ -180,7 +180,7 @@ bra_channel_has_active_stream:  ; was: bra_EEC8
     STA (ram_sound_channel_ptr),Y  ; record +4 timer-high/control byte
     JMP loc_decode_sound_stream_byte
 ; Decrement active channel duration counter
-bra_decrement_channel_duration:  ; was: bra_EF1F
+bra_decrement_channel_duration:
     LDA ram_sound_channel_offset
     CLC
     ADC #$07
@@ -191,7 +191,7 @@ bra_decrement_channel_duration:  ; was: bra_EF1F
     STA (ram_sound_channel_ptr),Y  ; record +7 duration
     BNE bra_advance_to_next_sound_channel
 ; Decode next sound stream byte for active channel
-loc_decode_sound_stream_byte:  ; was: loc_EF2E
+loc_decode_sound_stream_byte:
 ; Stream byte classes:
 ; 00-BF -> note code (pitch nibble + shift nibble)
 ; C0-EF -> explicit duration byte follows
@@ -200,7 +200,7 @@ loc_decode_sound_stream_byte:  ; was: loc_EF2E
     CMP #con_sound_control_min
     BCS bra_dispatch_f0_ff_control_opcode
     CMP #con_sound_duration_min
-    BCS bra_C0_EF_fetch_channel_duration_byte_alias
+    BCS bra_opcodes_c0_ef_fetch_channel_duration_byte_alias
 ; 00-BF
     PHA
     AND #$F0
@@ -218,13 +218,13 @@ loc_decode_sound_stream_byte:  ; was: loc_EF2E
 ; 01-0F
     TAX
 ; Shift note period base by nibble amount
-bra_loop_shift_note_period:  ; was: bra_EF50_loop
+bra_loop_shift_note_period:
     LSR ram_sound_work_ptr
     ROR ram_sound_work_ptr + $01
     DEX
     BNE bra_loop_shift_note_period
 ; Apply computed note period into channel registers
-bra_00_apply_note_period_to_channel:  ; was: bra_EF57_00
+bra_00_apply_note_period_to_channel:
     LDA ram_sound_channel_offset
     CLC
     ADC #$04
@@ -244,9 +244,9 @@ bra_00_apply_note_period_to_channel:  ; was: bra_EF57_00
     SBC #$04
     STA (ram_sound_channel_ptr),Y  ; record +0 channel state
 ; Fetch next duration byte after note/control handling
-bra_fetch_channel_duration_byte:  ; was: bra_EF77
+bra_fetch_channel_duration_byte:
 ; Alias entry for C0-EF command path to duration fetch
-bra_C0_EF_fetch_channel_duration_byte_alias:  ; was: bra_EF77_C0_EF
+bra_opcodes_c0_ef_fetch_channel_duration_byte_alias:
     JSR sub_fetch_stream_byte_and_advance_ptr
     PHA
     LDA ram_sound_channel_offset
@@ -256,9 +256,9 @@ bra_C0_EF_fetch_channel_duration_byte_alias:  ; was: bra_EF77_C0_EF
     PLA
     STA (ram_sound_channel_ptr),Y  ; record +7 duration
 ; Advance to next sound channel slot
-bra_advance_to_next_sound_channel:  ; was: bra_EF84
+bra_advance_to_next_sound_channel:
 ; Shared entry to advance to next sound channel
-loc_advance_to_next_sound_channel_entry:  ; was: loc_EF84
+loc_advance_to_next_sound_channel_entry:
     LDA ram_sound_channel_offset
     CLC
     ADC #con_sound_channel_record_size
@@ -270,10 +270,10 @@ loc_advance_to_next_sound_channel_entry:  ; was: loc_EF84
     BCS bra_sound_update_done
     JMP loc_sound_channel_main_loop
 ; All channels processed for this frame
-bra_sound_update_done:  ; was: bra_EF98_RTS
+bra_sound_update_done:
     RTS
 ; Dispatch F0-FF control opcode via handler table
-bra_dispatch_f0_ff_control_opcode:  ; was: bra_EF99_F0_FF_control_byte
+bra_dispatch_f0_ff_control_opcode:
     AND #$0F
     ASL
     TAX
@@ -284,7 +284,7 @@ bra_dispatch_f0_ff_control_opcode:  ; was: bra_EF99_F0_FF_control_byte
     JMP (ram_sound_work_ptr)
 
 ; Handler table for F0-FF sound control opcodes
-tbl_sound_control_opcode_handlers:  ; was: tbl_EFAA
+tbl_sound_control_opcode_handlers:
 ; !(OBS) Only F0, F2, F3, and F5 occur as opcodes in all 16 decoded streams. See resolved SND-002
 ; F1, F4, and F6 handlers are dormant; F7-FF alias the F0 handler
     .word handler_00_turn_sound_off  ; con_sound_opcode_stop
@@ -297,32 +297,32 @@ tbl_sound_control_opcode_handlers:  ; was: tbl_EFAA
     .word handler_07_unused_alias_turn_sound_off  ; never used
     .word handler_08_unused_alias_turn_sound_off  ; never used
     .word handler_09_unused_alias_turn_sound_off  ; never used
-    .word handler_0A_unused_alias_turn_sound_off  ; never used
-    .word handler_0B_unused_alias_turn_sound_off  ; never used
-    .word handler_0C_unused_alias_turn_sound_off  ; never used
-    .word handler_0D_unused_alias_turn_sound_off  ; never used
-    .word handler_0E_unused_alias_turn_sound_off  ; never used
-    .word handler_0F_unused_alias_turn_sound_off  ; never used
+    .word handler_0a_unused_alias_turn_sound_off  ; never used
+    .word handler_0b_unused_alias_turn_sound_off  ; never used
+    .word handler_0c_unused_alias_turn_sound_off  ; never used
+    .word handler_0d_unused_alias_turn_sound_off  ; never used
+    .word handler_0e_unused_alias_turn_sound_off  ; never used
+    .word handler_0f_unused_alias_turn_sound_off  ; never used
 
 handler_00_turn_sound_off:
 ; Unused alias of F0 turn-off handler
-handler_07_unused_alias_turn_sound_off:  ; was: ofs_018_EFCA_07
+handler_07_unused_alias_turn_sound_off:
 ; Unused alias of F0 turn-off handler
-handler_08_unused_alias_turn_sound_off:  ; was: ofs_018_EFCA_08
+handler_08_unused_alias_turn_sound_off:
 ; Unused alias of F0 turn-off handler
-handler_09_unused_alias_turn_sound_off:  ; was: ofs_018_EFCA_09
+handler_09_unused_alias_turn_sound_off:
 ; Unused alias of F0 turn-off handler
-handler_0A_unused_alias_turn_sound_off:  ; was: ofs_018_EFCA_0A
+handler_0a_unused_alias_turn_sound_off:
 ; Unused alias of F0 turn-off handler
-handler_0B_unused_alias_turn_sound_off:  ; was: ofs_018_EFCA_0B
+handler_0b_unused_alias_turn_sound_off:
 ; Unused alias of F0 turn-off handler
-handler_0C_unused_alias_turn_sound_off:  ; was: ofs_018_EFCA_0C
+handler_0c_unused_alias_turn_sound_off:
 ; Unused alias of F0 turn-off handler
-handler_0D_unused_alias_turn_sound_off:  ; was: ofs_018_EFCA_0D
+handler_0d_unused_alias_turn_sound_off:
 ; Unused alias of F0 turn-off handler
-handler_0E_unused_alias_turn_sound_off:  ; was: ofs_018_EFCA_0E
+handler_0e_unused_alias_turn_sound_off:
 ; Unused alias of F0 turn-off handler
-handler_0F_unused_alias_turn_sound_off:  ; was: ofs_018_EFCA_0F
+handler_0f_unused_alias_turn_sound_off:
     LDY ram_sound_channel_index
     LDA #$00
     STA (ram_sfx_request_ptr),Y  ; 0600 0601 0602 0603 0604 0605 0606 0607 0608 0609 060A 060B 060C 060D 060E 060F
@@ -331,7 +331,7 @@ handler_0F_unused_alias_turn_sound_off:  ; was: ofs_018_EFCA_0F
     JMP loc_advance_to_next_sound_channel_entry
 
 ; Control F1: update channel register byte1 low 6 bits
-handler_ctrl01_set_channel_reg1_low6:  ; was: ofs_018_EFD7_01
+handler_ctrl01_set_channel_reg1_low6:
     JSR sub_fetch_stream_byte_and_advance_ptr
     PHA
     LDA ram_sound_channel_offset
@@ -347,7 +347,7 @@ handler_ctrl01_set_channel_reg1_low6:  ; was: ofs_018_EFD7_01
     JMP loc_decode_sound_stream_byte
 
 ; Control F2: update channel register byte1 bits 4-5
-handler_ctrl02_set_channel_reg1_mid2:  ; was: ofs_018_EFEF_02
+handler_ctrl02_set_channel_reg1_mid2:
     JSR sub_fetch_stream_byte_and_advance_ptr
     PHA
     LDA ram_sound_channel_offset
@@ -363,7 +363,7 @@ handler_ctrl02_set_channel_reg1_mid2:  ; was: ofs_018_EFEF_02
     JMP loc_decode_sound_stream_byte
 
 ; Control F3: update channel register byte1 low nibble
-handler_ctrl03_set_channel_reg1_low4:  ; was: ofs_018_F007_03
+handler_ctrl03_set_channel_reg1_low4:
     JSR sub_fetch_stream_byte_and_advance_ptr
     PHA
     LDA ram_sound_channel_offset
@@ -379,7 +379,7 @@ handler_ctrl03_set_channel_reg1_low4:  ; was: ofs_018_F007_03
     JMP loc_decode_sound_stream_byte
 
 ; Control F4: write raw value into channel register byte2
-handler_ctrl04_set_channel_reg2_raw:  ; was: ofs_018_F01F_04
+handler_ctrl04_set_channel_reg2_raw:
     JSR sub_fetch_stream_byte_and_advance_ptr
     PHA
     LDA ram_sound_channel_offset
@@ -391,7 +391,7 @@ handler_ctrl04_set_channel_reg2_raw:  ; was: ofs_018_F01F_04
     JMP loc_decode_sound_stream_byte
 
 ; Control F5: write raw value into channel register byte4
-handler_ctrl05_set_channel_reg4_raw:  ; was: ofs_018_F02F_05
+handler_ctrl05_set_channel_reg4_raw:
     JSR sub_fetch_stream_byte_and_advance_ptr
     PHA
     LDA ram_sound_channel_offset
@@ -403,7 +403,7 @@ handler_ctrl05_set_channel_reg4_raw:  ; was: ofs_018_F02F_05
     JMP loc_decode_sound_stream_byte
 
 ; Control F6: write raw value into channel register byte1
-handler_ctrl06_set_channel_reg1_raw:  ; was: ofs_018_F03F_06
+handler_ctrl06_set_channel_reg1_raw:
     JSR sub_fetch_stream_byte_and_advance_ptr
     PHA
     LDA ram_sound_channel_offset
@@ -418,7 +418,7 @@ handler_ctrl06_set_channel_reg1_raw:  ; was: ofs_018_F03F_06
 ; Inputs: ram_sound_channel_offset and initialized channel pointer
 ; Output: A=fetched byte; record cursor +5/+6 advanced with carry
 ; Clobbers: X, Y and ram_sound_work_ptr
-sub_fetch_stream_byte_and_advance_ptr:  ; was: sub_F04F_get_sound_data_and_increase_pointer
+sub_fetch_stream_byte_and_advance_ptr:
     LDA ram_sound_channel_offset
     CLC
     ADC #$05
@@ -445,7 +445,7 @@ sub_fetch_stream_byte_and_advance_ptr:  ; was: sub_F04F_get_sound_data_and_incre
     RTS
 
 ; Base 11-bit timer period pairs indexed by note high nibble
-tbl_note_period_base_pairs:  ; was: tbl_F074
+tbl_note_period_base_pairs:
     .byte $03, $F9  ; 00
     .byte $03, $C0  ; 10
     .byte $03, $8A  ; 20
@@ -460,7 +460,7 @@ tbl_note_period_base_pairs:  ; was: tbl_F074
     .byte $02, $1B  ; B0
 
 ; Pointer to active SFX stream pointer table
-tbl_sfx_stream_table_ptr:  ; was: tbl_F08C
+tbl_sfx_stream_table_ptr:
 .ifdef PACMAN_EXPANDED_SOUND
     .word tbl_expanded_sfx_stream_ptr_table
 .else
@@ -468,12 +468,12 @@ tbl_sfx_stream_table_ptr:  ; was: tbl_F08C
 .endif
 
 ; SFX stream pointer table (16 entries)
-tbl_sfx_stream_ptr_table:  ; was: tbl_F08E
+tbl_sfx_stream_ptr_table:
 ; bytes from data chunks are read via 0x003070
 ; Slot semantics are mapped from writers into ram_sfx slots 0600..060F
 ; Milestone-23 tracing confirms same-index activation for all 16 request slots
-    .word off_sfx_slot00_player_ready_chA
-    .word off_sfx_slot01_player_ready_chB
+    .word off_sfx_slot_00_player_ready_channel_a
+    .word off_sfx_slot_01_player_ready_channel_b
     .word off_sfx_slot02_extra_life
     .word off_sfx_slot03_death
     .word off_sfx_slot04_pellet_even
@@ -482,12 +482,12 @@ tbl_sfx_stream_ptr_table:  ; was: tbl_F08E
     .word off_sfx_slot07_eat_ghost
     .word off_sfx_slot08_ghost_house_state6_marker
     .word off_sfx_slot09_ghost_house_release_marker
-    .word off_sfx_slot0A_release_counter_hi
-    .word off_sfx_slot0B_release_counter_mid
-    .word off_sfx_slot0C_release_counter_lo
-    .word off_sfx_slot0D_intermission_flag_a
-    .word off_sfx_slot0E_intermission_flag_b
-    .word off_sfx_slot0F_pause_toggle
+    .word off_sfx_slot_0a_release_counter_hi
+    .word off_sfx_slot_0b_release_counter_mid
+    .word off_sfx_slot_0c_release_counter_lo
+    .word off_sfx_slot_0d_intermission_flag_a
+    .word off_sfx_slot_0e_intermission_flag_b
+    .word off_sfx_slot_0f_pause_toggle
 
 ; F0-FF control opcode constants (decoded by loc_decode_sound_stream_byte)
 con_sfx_off                             = $F0  ; control opcode F0: turn sound off

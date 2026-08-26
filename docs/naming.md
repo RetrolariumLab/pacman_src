@@ -20,6 +20,13 @@ prefix states how a code label is entered:
 The source currently enforces this distinction: every `sub_` symbol has a
 direct `JSR` caller, and every direct `JSR` target uses the `sub_` prefix.
 
+Every colon label must begin with one of the code or data prefixes documented
+on this page and use lowercase snake_case. Empty components, doubled
+underscores, leading or trailing underscores, uppercase letters, and unprefixed
+legacy names are rejected. This rule applies to labels only; uppercase hardware
+and assembly-time constants keep their declared convention. Every colon label
+must also be unique across the source tree.
+
 Non-trivial subroutines should have a short contract when the evidence is
 known:
 
@@ -62,13 +69,18 @@ not sufficient.
 2. Include subsystem context when a short name would collide, for example
    `bra_return_from_oam_builder`.
 3. Keep state numbers and opcode values only when they are part of the decoded
-   format, such as `handler_script0A_game_over`.
-4. Preserve original addresses in generated maps or `was:` provenance comments
-   when useful for comparison with the base disassembly.
+   format, such as `handler_script_0a_game_over`.
+4. Preserve original-to-current names in
+   `docs/provenance/label_renames.json`, and keep addresses in generated maps
+   rather than inline provenance comments.
 5. Every rename-only change must pass `make verify`; names must never affect the
    reproduced ROM.
 
-`make lint` rejects lowercase definitions outside this vocabulary, legacy
-`ofs_*` definitions, and address-derived identifiers. Uppercase hardware names
-remain valid because they follow the conventional register/bit-mask style in
-`src/memory/hardware.inc`.
+The vocabulary is mandatory for every active colon label. `make lint` rejects
+malformed or duplicate labels, lowercase definitions outside this vocabulary,
+legacy `ofs_*` definitions, and address-derived identifiers. Uppercase hardware
+names remain valid because they follow the conventional register/bit-mask style
+in `src/memory/hardware.inc`. Rename a symbol only when control flow, data flow,
+encoded structure, or runtime evidence supports the new role, then run both
+`make lint` and `make verify`. Every rename must update the existing provenance
+entry; every genuinely new label must add one `project_additions` record.

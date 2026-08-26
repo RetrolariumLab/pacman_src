@@ -38,8 +38,9 @@ in one run. Together these layers enforce:
 - approved evidence tags and valid unknown-registry references;
 - no legacy `bzk` or `ofs_*` definitions;
 - no address-derived active symbol names;
-- lowercase symbol prefixes from `docs/naming.md`;
-- direct `JSR`/`sub_` consistency and unique callable labels;
+- role-prefixed lowercase snake_case and globally unique colon labels;
+- complete machine-readable provenance for every active colon label;
+- direct `JSR`/`sub_` consistency;
 - symbolic NES hardware operands;
 - backticked semantic symbols and relative links in project-authored docs;
 - syntax parsing of every tracked Python file.

@@ -9,6 +9,9 @@
 - [source_layout.md](./source_layout.md): address-ordered module map and file-sizing rules.
 - [macros.md](./macros.md): allowed ca65 abstractions and byte-identity rules.
 - [naming.md](./naming.md): semantic symbol names and control-flow prefixes.
+- [assembly_style.md](./assembly_style.md): mechanically enforced ca65 layout, case, labels, and comments.
+- [provenance/README.md](./provenance/README.md): imported-label provenance policy and complete rename map.
+- [CONTRIBUTING.md](../CONTRIBUTING.md): local inputs, change workflow, and required validation gates.
 - [debugger_workflow.md](./debugger_workflow.md): Mesen/FCEUX symbols, source navigation, breakpoints, and RAM watches.
 - [runtime_trace_scenarios.md](./runtime_trace_scenarios.md): natural and controlled gameplay trace evidence.
 - [scoring_trace_scenarios.md](./scoring_trace_scenarios.md): scoring-event capture and semantic validation.

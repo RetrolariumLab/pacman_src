@@ -5,7 +5,7 @@ normal actor sprite/OAM tables, but treats the object-position X pair as a
 fixed-point horizontal velocity for five staged cutscene actors.
 
 ## Script States
-- `script 0E` (`handler_script0E_intermission_setup`): one-shot setup.
+- `script 0E` (`handler_script_0e_intermission_setup`): one-shot setup.
 - `script 10` (`handler_script10_intermission_runtime`): per-frame runtime loop.
 
 ## Setup (`script 0E`)

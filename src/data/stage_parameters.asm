@@ -1,7 +1,7 @@
 ; Editable stage parameters and runtime tuning tables
 
 ; Stage-driven index stream selecting parameter groups (step size 6 in round-init)
-tbl_stage_param_index_stream:  ; was: tbl_EB42
+tbl_stage_param_index_stream:
 ; Read as a 6-byte stage profile:
 ; [0]=shared level-block/timing-window id, [1]=frightened duration,
 ; [2]=dot-threshold pair id, [3]=release-target block id,
@@ -168,7 +168,7 @@ tbl_stage_param_index_stream:  ; was: tbl_EB42
     .byte $07
     .byte $03
 ; Level parameter blocks copied to runtime RAM 009F..00B4 (22 bytes each)
-tbl_level_param_blocks_22bytes:  ; was: tbl_EBCC
+tbl_level_param_blocks_22bytes:
 ; 009F 00A0 00A1 00A2 00A3 00A4 00A5 00A6 00A7 00A8 00A9 00AA 00AB 00AC 00AD 00AE 00AF 00B0 00B1 00B2 00B3 00B4
 .if PACMAN_REVISION = REVISION_EUROPE
 ; PAL timing equivalents of the five NTSC movement profiles below
@@ -188,14 +188,14 @@ tbl_level_param_blocks_22bytes:  ; was: tbl_EBCC
 ; Per-level speed/timer control windows copied to RAM 0097..009E
 ; Profile id 4 reads the eight bytes immediately following these four rows,
 ; so adjacency with tbl_dot_counter_threshold_pairs is a runtime contract
-tbl_speed_timer_blocks_8bytes:  ; was: tbl_EC3A
+tbl_speed_timer_blocks_8bytes:
     .byte $07, $14, $07, $14, $05, $14, $05, $FF  ; 00
     .byte $07, $14, $07, $14, $05, $FF, $00, $00  ; 01
     .byte $05, $14, $05, $14, $05, $FF, $00, $00  ; 02
     .byte $05, $14, $05, $14, $05, $FF, $00, $00  ; 03
 
 ; Dot-counter threshold pairs loaded into RAM 008D/008E
-tbl_dot_counter_threshold_pairs:  ; was: tbl_EC5A
+tbl_dot_counter_threshold_pairs:
     .byte $14, $0A  ; 00
     .byte $1E, $0F  ; 01
     .byte $28, $14  ; 02
@@ -205,12 +205,12 @@ tbl_dot_counter_threshold_pairs:  ; was: tbl_EC5A
     .byte $64, $32  ; 06
 
 ; Default ghost release target quads copied to RAM 008F..0092
-tbl_ghost_release_target_quads:  ; was: tbl_EC68
+tbl_ghost_release_target_quads:
     .byte $02, $1E, $5A, $00  ; 00
     .byte $03, $32, $00, $00  ; 01
     .byte $04, $00, $00, $00  ; 02
 
 ; Special-case release target quad used when partial pellet progress is preserved
-tbl_release_target_special_case_quad:  ; was: tbl_EC74
+tbl_release_target_special_case_quad:
 ; Used by partial-progress path in round init (when pellet count is carried into release logic)
     .byte $01, $07, $11, $20

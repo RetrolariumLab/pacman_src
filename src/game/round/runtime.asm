@@ -24,7 +24,7 @@
 ; - advances scatter/chase and ghost-release state, possibly reversing ghosts
 ; - decrements the fruit/popup timer and removes its sprite when it expires
 ; Clobbers: A, X, Y and zp_work0..zp_work4
-sub_update_round_timers_and_frightened:  ; was: sub_D0EF
+sub_update_round_timers_and_frightened:
     LDA ram_frightened_seconds
     BMI bra_release_and_fruit_tick
     INC ram_frightened_frame_counter
@@ -38,7 +38,7 @@ sub_update_round_timers_and_frightened:  ; was: sub_D0EF
     STA ram_frightened_ghost_mask
     LDX #$00
 ; Apply palette phase bits to ghost sprite attributes
-bra_apply_frightened_palette_phase:  ; was: bra_D107_loop
+bra_apply_frightened_palette_phase:
     LDA ram_spr_pal + $01,X
     AND #$FC
     STA zp_work0
@@ -49,7 +49,7 @@ bra_apply_frightened_palette_phase:  ; was: bra_D107_loop
     CPX #$04
     BNE bra_apply_frightened_palette_phase
 ; Handle final frightened blinking window
-bra_check_frightened_end_window:  ; was: bra_D117
+bra_check_frightened_end_window:
     LDA ram_frightened_seconds
     CMP #$02
     BCS bra_release_and_fruit_tick
@@ -70,10 +70,10 @@ bra_apply_tengen_frightened_palette:
     BNE bra_prepare_ppu_append_index
     LDX #$05
 ; Prepare insertion point in PPU command buffer
-bra_prepare_ppu_append_index:  ; was: bra_D127
+bra_prepare_ppu_append_index:
     LDY #$FF
 ; Scan PPU command buffer until end token
-bra_find_ppu_terminator:  ; was: bra_D129_loop
+bra_find_ppu_terminator:
     INY
     LDA ram_ppu_buffer_main,Y
     CMP #con_ppu_buffer_end
@@ -82,9 +82,9 @@ bra_find_ppu_terminator:  ; was: bra_D129_loop
     BNE bra_append_frightened_cmd_if_empty
     INX
 ; Adjust source offset when appending frightened palette command
-bra_append_frightened_cmd_if_empty:  ; was: bra_D135
+bra_append_frightened_cmd_if_empty:
 ; Copy frightened palette command sequence into PPU buffer
-bra_copy_frightened_palette_cmd:  ; was: bra_D135_loop
+bra_copy_frightened_palette_cmd:
     .ifdef PACMAN_EXPANDED_PALETTES
         LDA tbl_expanded_frightened_palette_cmd,X
     .else
@@ -97,7 +97,7 @@ bra_copy_frightened_palette_cmd:  ; was: bra_D135_loop
     BNE bra_copy_frightened_palette_cmd
 .endif
 ; Continue with release/fruit timers after frightened handling
-bra_release_and_fruit_tick:  ; was: bra_D141
+bra_release_and_fruit_tick:
     LDA ram_frightened_ghost_mask
     BNE bra_check_global_release_target
     LDA ram_scatter_chase_timer
@@ -119,17 +119,17 @@ bra_release_and_fruit_tick:  ; was: bra_D141
     LDA #$0F
     BNE bra_store_next_mode_mask  ; jmp
 ; Use the persistent post-threshold mode mask when the phase bit is even
-bra_use_personal_release_latch:  ; was: bra_D16A
+bra_use_personal_release_latch:
     LDA ram_personal_release_latch
 ; Store the selected chase/scatter mask, then load the phase countdown
-bra_store_next_mode_mask:  ; was: bra_D16C
+bra_store_next_mode_mask:
     STA ram_shared_state_0
     LDX ram_scatter_chase_phase
 ; 0098-009A
     LDA ram_scatter_chase_durations,X
     STA ram_scatter_chase_timer
 ; Check global dot target for forced ghost release
-bra_check_global_release_target:  ; was: bra_D174
+bra_check_global_release_target:
     LDA ram_global_release_target
     BEQ bra_release_counter_update_entry
     CLC
@@ -140,7 +140,7 @@ bra_check_global_release_target:  ; was: bra_D174
     LDA ram_global_release_target
     LDX #$00
 ; Find current release target slot and advance to next
-bra_find_matching_release_target:  ; was: bra_D186_loop
+bra_find_matching_release_target:
     CMP ram_ghost_release_targets,X
     BNE bra_next_release_target_candidate
     INX
@@ -148,14 +148,14 @@ bra_find_matching_release_target:  ; was: bra_D186_loop
     STA ram_global_release_target
     JMP loc_update_release_counters
 ; Advance to next release target candidate
-bra_next_release_target_candidate:  ; was: bra_D192
+bra_next_release_target_candidate:
     INX
     CPX #$04
     BNE bra_find_matching_release_target
 ; Branch entry into shared release-counter update routine
-bra_release_counter_update_entry:  ; was: bra_D197
+bra_release_counter_update_entry:
 ; Update per-frame and per-wave release counters
-loc_update_release_counters:  ; was: loc_D197
+loc_update_release_counters:
     INC ram_release_timer_ticks
     LDA #$60
     CMP ram_release_timer_ticks
@@ -170,7 +170,7 @@ loc_update_release_counters:  ; was: loc_D197
     STA ram_release_timer_seconds
     JSR sub_queue_next_ghost_release
 ; Check per-ghost dot counters for personal release
-bra_check_personal_release_targets:  ; was: bra_D1B2
+bra_check_personal_release_targets:
     LDX ram_personal_release_stage
     CPX #$02
     BEQ bra_update_fruit_visibility_timer
@@ -188,7 +188,7 @@ bra_check_personal_release_targets:  ; was: bra_D1B2
     LDA ram_ghost0_normal_speed_pixels,X
     STA ram_ghost0_current_speed_pixels
 ; Tick fruit visibility timer and clear fruit when expired
-bra_update_fruit_visibility_timer:  ; was: bra_D1CF
+bra_update_fruit_visibility_timer:
     ORA ram_fruit_timer_hi
     ORA ram_fruit_timer_lo
     BEQ bra_return_from_round_timer_update
@@ -201,29 +201,29 @@ bra_update_fruit_visibility_timer:  ; was: bra_D1CF
     STA ram_fruit_timer_lo
     RTS
 ; Hide the fruit/popup sprite and clear the eaten latch
-bra_hide_fruit_sprite:  ; was: bra_D1E4
+bra_hide_fruit_sprite:
     STA ram_obj_pos_X_hi + $14
     STA ram_obj_pos_Y_hi + $14
     STA ram_fruit_eaten_latch
 ; Return from round timer update
-bra_return_from_round_timer_update:  ; was: bra_D1EA_RTS
+bra_return_from_round_timer_update:
     RTS
 
 ; Reserve the next available house ghost for release
 ; Inputs: interleaved ghost state array for slots one through three
 ; Outputs: first in-house slot becomes con_ghost_state_exiting_house, if any
 ; Clobbers: A, X
-sub_queue_next_ghost_release:  ; was: sub_D1EB
+sub_queue_next_ghost_release:
     LDX #$00
 ; Scan release slot pairs for an empty entry
-bra_find_free_release_slot:  ; was: bra_D1ED_loop
+bra_find_free_release_slot:
     LDA ram_ghost_state + $02,X
     BNE bra_advance_release_slot
     LDA #con_ghost_state_exiting_house
     STA ram_ghost_state + $02,X
     RTS
 ; Advance to next release slot pair
-bra_advance_release_slot:  ; was: bra_D1F6
+bra_advance_release_slot:
     INX
     INX
     CPX #$06
@@ -234,7 +234,7 @@ bra_advance_release_slot:  ; was: bra_D1F6
     .byte $24, $25, $26, $27, $28, $29, $2A, $2B
 ; PPU command fragments for frightened palette writes
 .ifndef PACMAN_REVISION_RAM_PALETTES
-tbl_frightened_palette_cmd:  ; was: tbl_D205
+tbl_frightened_palette_cmd:
 ; 00
     .byte $00
     .dbyt $3F15
@@ -261,18 +261,18 @@ tbl_frightened_palette_cmd:  ; was: tbl_D205
 ; - available fruit: prepares its stage-indexed transaction, popup timer, and SFX,
 ; then tail-jumps to the score commit
 ; Clobbers: A, X, Y and zp_work0..zp_work3
-sub_check_actor_collisions:  ; was: sub_D20F
+sub_check_actor_collisions:
     LDA ram_pellet_cnt_p1
     BNE bra_init_collision_scan
     RTS
 ; Initialize collision scan pointers and masks
-bra_init_collision_scan:  ; was: bra_D214
+bra_init_collision_scan:
     LoadPointer zp_work0, (ram_obj_pos_X_hi + $04)
     LDA #$01
     STA zp_work2
     LDX #$00
 ; Iterate ghost/fruit collision candidate slots
-bra_scan_collision_candidates:  ; was: bra_D222_loop
+bra_scan_collision_candidates:
     LDA ram_ghost_state,X
     CMP #con_ghost_state_active
     BNE bra_advance_collision_candidate
@@ -285,10 +285,10 @@ bra_scan_collision_candidates:  ; was: bra_D222_loop
     SBC ram_obj_pos_X_hi
     BCS bra_check_dx_window
 ; Compute alternate X distance branch
-bra_abs_dx_subtract_alt:  ; was: bra_D237
+bra_abs_dx_subtract_alt:
     SBC (zp_work0),Y  ; 001E 0022 0026 002A 002E
 ; Reject candidate when X distance is too large
-bra_check_dx_window:  ; was: bra_D239
+bra_check_dx_window:
     CMP #$0A
     BCS bra_advance_collision_candidate
     STA zp_work3
@@ -301,17 +301,17 @@ bra_check_dx_window:  ; was: bra_D239
     SBC ram_obj_pos_Y_hi
     BCS bra_check_dy_window
 ; Compute alternate Y distance branch
-bra_abs_dy_subtract_alt:  ; was: bra_D24E
+bra_abs_dy_subtract_alt:
     SBC (zp_work0),Y  ; 0020 0024 0028 002C 0030
 ; Reject candidate when Y distance is too large
-bra_check_dy_window:  ; was: bra_D250
+bra_check_dy_window:
     CMP #$0A
     BCS bra_advance_collision_candidate
     ADC zp_work3
     CMP #$05
     BCC bra_dispatch_collision_type
 ; Advance to next collision candidate
-bra_advance_collision_candidate:  ; was: bra_D25A
+bra_advance_collision_candidate:
     INX
     INX
     LDA zp_work0
@@ -323,7 +323,7 @@ bra_advance_collision_candidate:  ; was: bra_D25A
     BNE bra_scan_collision_candidates
     RTS
 ; Dispatch a confirmed overlap to ghost-eat, player-death, or fruit-eat handling
-bra_dispatch_collision_type:  ; was: bra_D26A
+bra_dispatch_collision_type:
     CPX #$08
     BEQ bra_handle_fruit_collision
     LDA zp_work2
@@ -353,7 +353,7 @@ bra_award_frightened_ghost:
     STA ram_script
     JMP loc_add_points_and_update_score_buffers
 ; Collision with dangerous ghost: enter death script
-bra_trigger_player_death:  ; was: bra_D2A2
+bra_trigger_player_death:
     LDA #con_game_script_death
     STA ram_script
     LDA #$12
@@ -364,12 +364,12 @@ bra_trigger_player_death:  ; was: bra_D2A2
     STA ram_shared_state_0
     RTS
 ; Accept a fruit collision only while the availability/popup latch is clear
-bra_handle_fruit_collision:  ; was: bra_D2B3
+bra_handle_fruit_collision:
     LDA ram_fruit_eaten_latch
     BEQ bra_spawn_fruit_and_score
     RTS
 ; Replace the fruit with its score popup and prepare the stage-indexed award
-bra_spawn_fruit_and_score:  ; was: bra_D2B8
+bra_spawn_fruit_and_score:
     STA ram_fruit_timer_hi
     LDA #$80
     STA ram_fruit_timer_lo
@@ -385,14 +385,14 @@ bra_spawn_fruit_and_score:  ; was: bra_D2B8
     JMP loc_add_points_and_update_score_buffers
 
 ; Tile IDs for ghost-eaten score popups
-tbl_ghost_score_popup_tiles:  ; was: tbl_D2D7
+tbl_ghost_score_popup_tiles:
     .byte $2D  ; 00
     .byte $2F  ; 01
     .byte $32  ; 02
     .byte $34  ; 03
 
 ; Tile IDs for fruit score popups by stage
-tbl_fruit_score_popup_tiles:  ; was: tbl_D2DB
+tbl_fruit_score_popup_tiles:
     .byte $2C  ; 00
     .byte $2E  ; 01
     .byte $30  ; 02
@@ -403,21 +403,21 @@ tbl_fruit_score_popup_tiles:  ; was: tbl_D2DB
     .byte $37  ; 07
 
 ; High-byte score values for ghost-eat chain
-tbl_ghost_score_popup_hi:  ; was: tbl_D2E3
+tbl_ghost_score_popup_hi:
     .byte $00  ; 00
     .byte $00  ; 01
     .byte $00  ; 02
     .byte $01  ; 03
 
 ; Low-byte score values for ghost-eat chain
-tbl_ghost_score_popup_lo:  ; was: tbl_D2E7
+tbl_ghost_score_popup_lo:
     .byte $02  ; 00
     .byte $04  ; 01
     .byte $08  ; 02
     .byte $06  ; 03
 
 ; High-byte fruit score values by stage
-tbl_fruit_score_hi:  ; was: tbl_D2EB
+tbl_fruit_score_hi:
     .byte $01  ; 00
     .byte $03  ; 01
     .byte $05  ; 02
@@ -428,7 +428,7 @@ tbl_fruit_score_hi:  ; was: tbl_D2EB
     .byte $00  ; 07
 
 ; Low-byte fruit score values by stage
-tbl_fruit_score_lo:  ; was: tbl_D2F3
+tbl_fruit_score_lo:
     .byte $00  ; 00
     .byte $00  ; 01
     .byte $00  ; 02

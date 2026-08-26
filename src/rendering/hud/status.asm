@@ -1,12 +1,12 @@
 ; HUD text blocks, lives, fruit history, and icon helpers
 
-sub_upload_hud_text_blocks:  ; was: sub_E47C
+sub_upload_hud_text_blocks:
     LDX #$01
 ; Process next HUD block page
-bra_next_hud_block_page:  ; was: bra_E47E_loop
+bra_next_hud_block_page:
     LDY #$00
 ; Stream one HUD block packet to PPU
-bra_stream_hud_block_packet:  ; was: bra_E480_loop
+bra_stream_hud_block_packet:
 .ifdef PACMAN_EXPANDED_SCREENS
     LDA tbl_expanded_hud_blocks,Y
 .else
@@ -16,7 +16,7 @@ bra_stream_hud_block_packet:  ; was: bra_E480_loop
     BNE bra_write_hud_block_addr_hi
     ADC #$07
 ; Write HUD block PPU high address
-bra_write_hud_block_addr_hi:  ; was: bra_E489
+bra_write_hud_block_addr_hi:
     STA PPUADDR
     INY
 .ifdef PACMAN_EXPANDED_SCREENS
@@ -33,7 +33,7 @@ bra_write_hud_block_addr_hi:  ; was: bra_E489
 .endif
     STA zp_work0
 ; Write HUD block payload bytes
-bra_write_hud_block_payload:  ; was: bra_E499_loop
+bra_write_hud_block_payload:
     INY
 .ifdef PACMAN_EXPANDED_SCREENS
     LDA tbl_expanded_hud_blocks,Y
@@ -50,7 +50,7 @@ bra_write_hud_block_payload:  ; was: bra_E499_loop
     BNE bra_continue_hud_block_stream
     RTS
 ; Continue HUD block stream
-bra_continue_hud_block_stream:  ; was: bra_E4AE
+bra_continue_hud_block_stream:
     CPY #$17
     BNE bra_stream_hud_block_packet
     DEX
@@ -58,7 +58,7 @@ bra_continue_hud_block_stream:  ; was: bra_E4AE
     RTS
 
 ; Packed HUD block packets for PPU upload
-tbl_hud_block_packets:  ; was: tbl_E4B6
+tbl_hud_block_packets:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
     .dbyt $2076
     .byte $08  ; counter
@@ -72,19 +72,19 @@ tbl_hud_block_packets:  ; was: tbl_E4B6
     .byte $03  ; counter
     .byte $B1, $B3, $B2
 ; Draw remaining lives icons in maze HUD
-sub_draw_lives_icons:  ; was: sub_E4CD
+sub_draw_lives_icons:
     LDA ram_lives_p1
     BNE bra_prepare_lives_draw
     RTS
 ; Prepare clamped lives count for icon draw
-bra_prepare_lives_draw:  ; was: bra_E4D2
+bra_prepare_lives_draw:
     CLC
     ADC #$01
     CMP #$07
     BCC bra_init_life_icon_write_state
     LDA #$07
 ; Initialize life-icon write state
-bra_init_life_icon_write_state:  ; was: bra_E4DB
+bra_init_life_icon_write_state:
     STA zp_work2
     LDA #$04
     STA zp_work3
@@ -100,12 +100,12 @@ bra_init_life_icon_write_state:  ; was: bra_E4DB
     ADC #$08
     STA zp_work0
 ; Advance to next life icon slot
-bra_next_life_icon_slot:  ; was: bra_E4F6
+bra_next_life_icon_slot:
     DEC zp_work2
     BNE bra_next_life_icon_row
     RTS
 ; Advance to next life icon row
-bra_next_life_icon_row:  ; was: bra_E4FB
+bra_next_life_icon_row:
     DEC zp_work3
     BNE bra_write_life_icon_quad
     LDA zp_work1
@@ -113,7 +113,7 @@ bra_next_life_icon_row:  ; was: bra_E4FB
     ADC #$3A
     STA zp_work1
 ; Write one life icon quad to PPU
-bra_write_life_icon_quad:  ; was: bra_E506
+bra_write_life_icon_quad:
     LDY #$3C
     JSR sub_write_icon_quad_to_ppu
     LDA zp_work1
@@ -123,7 +123,7 @@ bra_write_life_icon_quad:  ; was: bra_E506
     BNE bra_next_life_icon_slot  ; jmp
 
 ; Write 2x2 icon quad at current PPU position
-sub_write_icon_quad_to_ppu:  ; was: sub_E514
+sub_write_icon_quad_to_ppu:
     LDA zp_work0
     STA PPUADDR
     LDA zp_work1
@@ -144,7 +144,7 @@ sub_write_icon_quad_to_ppu:  ; was: sub_E514
     RTS
 
 ; Draw stage fruit history icons and related mask data
-sub_draw_stage_fruit_history:  ; was: sub_E53B
+sub_draw_stage_fruit_history:
     LDA #$00
     STA zp_work3
     STA zp_work13
@@ -165,16 +165,16 @@ sub_draw_stage_fruit_history:  ; was: sub_E53B
     BCC bra_clamp_stage_history_index
     LDA #$0C
 ; Clamp stage history index to table range
-bra_clamp_stage_history_index:  ; was: bra_E560
+bra_clamp_stage_history_index:
     TAX
     LDA #$07
     STA zp_work2
     BNE bra_init_fruit_history_ppu_base  ; jmp
 ; Use base index for early stages
-bra_stage_history_base_index_zero:  ; was: bra_E567
+bra_stage_history_base_index_zero:
     LDX #$00
 ; Initialize fruit history PPU base address
-bra_init_fruit_history_ppu_base:  ; was: bra_E569
+bra_init_fruit_history_ppu_base:
     LDA #$22
     STA zp_work0
     LDA #$56
@@ -187,11 +187,11 @@ bra_init_fruit_history_ppu_base:  ; was: bra_E569
     ADC #$08
     STA zp_work0
 ; Apply nametable offset for player 2 fruit history
-bra_apply_player2_fruit_history_offset:  ; was: bra_E57E
+bra_apply_player2_fruit_history_offset:
     LDA #$05
     STA zp_work4
 ; Loop over fruit history icon slots
-bra_draw_next_fruit_history_icon:  ; was: bra_E582_loop
+bra_draw_next_fruit_history_icon:
     DEC zp_work4
     BNE bra_select_fruit_icon_tile
     LDA zp_work1
@@ -199,7 +199,7 @@ bra_draw_next_fruit_history_icon:  ; was: bra_E582_loop
     ADC #$38
     STA zp_work1
 ; Select fruit icon tile ID from stage LUT
-bra_select_fruit_icon_tile:  ; was: bra_E58D
+bra_select_fruit_icon_tile:
     LDA tbl_stage_to_fruit_icon_index,X
     STA zp_work5
     ASL
@@ -215,14 +215,14 @@ bra_select_fruit_icon_tile:  ; was: bra_E58D
     LDY zp_work5
     LDA tbl_history_mask_seed_bits,Y
 ; Build bitmask for fruit history rows
-bra_build_history_mask_bits:  ; was: bra_E5AB_loop
+bra_build_history_mask_bits:
     DEC zp_work7
     BMI bra_accumulate_history_mask
     ASL
     ASL
     BCC bra_build_history_mask_bits
 ; Accumulate built mask into history buffer
-bra_accumulate_history_mask:  ; was: bra_E5B3
+bra_accumulate_history_mask:
     LDY zp_work6
     ORA ram_history_mask_buffer,Y
     STA ram_history_mask_buffer,Y
@@ -241,18 +241,18 @@ bra_accumulate_history_mask:  ; was: bra_E5B3
     BEQ bra_init_history_mask_upload
     LDX #$2B  ; 2BE5
 ; Initialize PPU upload for fruit history mask
-bra_init_history_mask_upload:  ; was: bra_E5D5
+bra_init_history_mask_upload:
     STX PPUADDR
     STX zp_work0
     LDA #$E5
     STA PPUADDR
     LDX #$00
 ; Process next history mask row
-bra_next_history_mask_row:  ; was: bra_E5E1_loop
+bra_next_history_mask_row:
     LDA #$03
     STA zp_work1
 ; Upload history mask bytes to PPU
-bra_upload_history_mask_bytes:  ; was: bra_E5E5_loop
+bra_upload_history_mask_bytes:
     LDA ram_history_mask_buffer,X
     STA PPUDATA
     INX
@@ -267,7 +267,7 @@ bra_upload_history_mask_bytes:  ; was: bra_E5E5_loop
     STA PPUADDR
     BNE bra_next_history_mask_row  ; jmp
 ; Upload stage fruit color into palette slot
-bra_upload_fruit_palette_color:  ; was: bra_E5FF
+bra_upload_fruit_palette_color:
 .ifndef PACMAN_REVISION_RAM_PALETTES
     LDA #> $3F1D
     STA PPUADDR
@@ -279,7 +279,7 @@ bra_upload_fruit_palette_color:  ; was: bra_E5FF
     BCC bra_clamp_fruit_color_index
     LDA #$0F
 ; Clamp fruit color index by stage
-bra_clamp_fruit_color_index:  ; was: bra_E611
+bra_clamp_fruit_color_index:
     TAY
 .ifdef PACMAN_EXPANDED_PALETTES
     LDA tbl_expanded_stage_fruit_palette_color,Y
@@ -296,7 +296,7 @@ bra_clamp_fruit_color_index:  ; was: bra_E611
     RTS
 
 ; Map stage to fruit icon index
-tbl_stage_to_fruit_icon_index:  ; was: tbl_E619
+tbl_stage_to_fruit_icon_index:
     .byte $00  ; 00
     .byte $01  ; 01
     .byte $02  ; 02
@@ -319,7 +319,7 @@ tbl_stage_to_fruit_icon_index:  ; was: tbl_E619
     .byte $07  ; 13
 
 ; Offsets and counts for fruit history mask composition
-tbl_history_mask_offsets:  ; was: tbl_E62D
+tbl_history_mask_offsets:
     .byte $00, $03  ; 00
     .byte $01, $02  ; 02
     .byte $01, $03  ; 04
@@ -330,7 +330,7 @@ tbl_history_mask_offsets:  ; was: tbl_E62D
     .byte $05, $00  ; 0E
 
 ; Seed bits for fruit history mask builder
-tbl_history_mask_seed_bits:  ; was: tbl_E63D
+tbl_history_mask_seed_bits:
     .byte $02  ; 00
     .byte $02  ; 01
     .byte $02  ; 02
@@ -341,7 +341,7 @@ tbl_history_mask_seed_bits:  ; was: tbl_E63D
     .byte $03  ; 07
 
 ; Fruit palette color by stage
-tbl_stage_fruit_palette_color:  ; was: tbl_E645_fruit_color
+tbl_stage_fruit_palette_color:
     .byte $16  ; 00
     .byte $16  ; 01
     .byte $26  ; 02

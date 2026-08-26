@@ -32,7 +32,7 @@ TEXT_SUFFIXES = {
     ".py",
     ".txt",
 }
-TEXT_FILENAMES = {".gitattributes", ".gitignore", "Makefile"}
+TEXT_FILENAMES = {".editorconfig", ".gitattributes", ".gitignore", "Makefile"}
 APPROVED_SYMBOL_PREFIXES = {
     "bra",
     "con",
@@ -46,8 +46,12 @@ APPROVED_SYMBOL_PREFIXES = {
     "vec",
     "zp",
 }
+LABEL_PREFIXES = {"bra", "handler", "loc", "off", "sub", "tbl", "unused", "vec"}
 
 DEFINITION_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)\s*(?::|=)")
+STRICT_LABEL_RE = re.compile(
+    rf"^(?:{'|'.join(sorted(LABEL_PREFIXES))})_[a-z0-9]+(?:_[a-z0-9]+)*$"
+)
 ADDRESS_NAME_RE = re.compile(
     r"(?:^|_)(?:[0-9A-Fa-f]{4,6})(?=_|$)"
 )
@@ -61,6 +65,9 @@ RAW_HARDWARE_OPERAND_RE = re.compile(
 )
 JSR_RE = re.compile(r"^\s*JSR\s+([A-Za-z_][A-Za-z0-9_]*)\b")
 SUB_LABEL_RE = re.compile(r"^(sub_[A-Za-z0-9_]+):")
+PHYSICAL_LABEL_RE = re.compile(
+    r"^\s*[A-Za-z_@.?][A-Za-z0-9_@.?]*:(.*)$"
+)
 DOC_SYMBOL_RE = re.compile(
     r"`((?:bra|con|handler|loc|off|ram|sub|tbl|unused|vec|zp)_[A-Za-z0-9_]+)`"
 )
@@ -167,6 +174,7 @@ def check_asm_file(
     path: Path,
     text: str,
     result: LintResult,
+    all_labels: dict[str, tuple[Path, int]],
     sub_labels: dict[str, tuple[Path, int]],
     jsr_targets: dict[str, list[tuple[Path, int]]],
 ) -> None:
@@ -179,6 +187,22 @@ def check_asm_file(
                 f"ASM module has {line_count} lines; limit is {ASM_LINE_LIMIT}",
             )
 
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        physical_label = PHYSICAL_LABEL_RE.match(line)
+        if physical_label is not None and physical_label.group(1):
+            result.error(
+                path,
+                "label line must end immediately after ':'",
+                line_number,
+            )
+        if re.search(r";\s*was:", line, re.IGNORECASE):
+            result.error(
+                path,
+                "inline label provenance is forbidden; update "
+                "docs/provenance/label_renames.json",
+                line_number,
+            )
+
     for line_number, code in source_lines(text):
         if not code:
             continue
@@ -186,6 +210,27 @@ def check_asm_file(
         definition = DEFINITION_RE.match(code)
         if definition is not None:
             symbol = definition.group(1)
+            if code.endswith(":"):
+                previous = all_labels.get(symbol)
+                if previous is not None:
+                    previous_path, previous_line = previous
+                    result.error(
+                        path,
+                        f"duplicate label {symbol}; first at "
+                        f"{previous_path.as_posix()}:{previous_line}",
+                        line_number,
+                    )
+                else:
+                    all_labels[symbol] = (path, line_number)
+
+                if STRICT_LABEL_RE.fullmatch(symbol) is None:
+                    result.error(
+                        path,
+                        "label must use a role prefix and lowercase "
+                        f"snake_case: {symbol}",
+                        line_number,
+                    )
+
             if symbol.startswith("ofs_"):
                 result.error(path, f"legacy ofs_ definition: {symbol}", line_number)
             if symbol[0].islower() and symbol.split("_", 1)[0] not in APPROVED_SYMBOL_PREFIXES:
@@ -205,16 +250,7 @@ def check_asm_file(
         sub_label = SUB_LABEL_RE.match(code)
         if sub_label is not None:
             name = sub_label.group(1)
-            if name in sub_labels:
-                previous_path, previous_line = sub_labels[name]
-                result.error(
-                    path,
-                    f"duplicate subroutine label {name}; first at "
-                    f"{previous_path.as_posix()}:{previous_line}",
-                    line_number,
-                )
-            else:
-                sub_labels[name] = (path, line_number)
+            sub_labels[name] = (path, line_number)
 
         jsr = JSR_RE.match(code)
         if jsr is not None:
@@ -324,7 +360,7 @@ def check_documentation_references(
     documentation = {
         path: text
         for path, text in text_by_path.items()
-        if path == Path("README.md")
+        if path in {Path("README.md"), Path("CONTRIBUTING.md")}
         or (path.parts[:1] == ("docs",) and path.parts[:2] != ("docs", "nesdev"))
     }
     for path, text in documentation.items():
@@ -392,12 +428,13 @@ def main() -> int:
     definitions = source_definitions(text_by_path)
     check_documentation_references(project_root, text_by_path, definitions, result)
 
+    all_labels: dict[str, tuple[Path, int]] = {}
     sub_labels: dict[str, tuple[Path, int]] = {}
     jsr_targets: dict[str, list[tuple[Path, int]]] = {}
     for path, text in text_by_path.items():
         if path.suffix.lower() not in {".asm", ".inc"}:
             continue
-        check_asm_file(path, text, result, sub_labels, jsr_targets)
+        check_asm_file(path, text, result, all_labels, sub_labels, jsr_targets)
         check_evidence(path, text, known_registry_ids, result)
 
     check_subroutine_calls(sub_labels, jsr_targets, result)
@@ -412,6 +449,7 @@ def main() -> int:
         f"[OK] Lint passed: {result.checked_text_files} text files, "
         f"{result.checked_asm_modules} ASM modules, "
         f"{len(known_registry_ids)} registry IDs, "
+        f"{len(all_labels)} labels, "
         f"{len(sub_labels)} subroutines, "
         f"{result.checked_doc_symbols} documentation symbol references, "
         f"{result.checked_python_files} Python files."

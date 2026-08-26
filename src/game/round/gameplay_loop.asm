@@ -9,12 +9,12 @@
 ; Inputs: ram_flag_demo and persistent game/high-score state
 ; Side effects: resets script/player/pause state, clears display state, and
 ; enables the NMI-driven gameplay loop. Does not return
-loc_enter_gameplay_session:  ; was: loc_C98A
+loc_enter_gameplay_session:
     LDA #PPUCTRL_SPRITE_PATTERN_HIGH
     STA PPUCTRL
     STA ram_ppuctrl_base
 ; Wait for vblank set before disabling rendering during gameplay init
-bra_wait_vblank_set:  ; was: bra_C991_infinite_loop
+bra_wait_vblank_set:
     LDA PPUSTATUS
     BPL bra_wait_vblank_set
     LDA #con_game_script_round_init
@@ -32,11 +32,11 @@ bra_wait_vblank_set:  ; was: bra_C991_infinite_loop
     STA ram_lives_p1
     BNE bra_reset_stage_counters  ; jmp
 ; Initialize player state for non-demo session
-bra_init_non_demo_player_state:  ; was: bra_C9B6
+bra_init_non_demo_player_state:
     LDA #$00
     TAY
 ; Clear per-player runtime block RAM
-bra_clear_player_runtime_block:  ; was: bra_C9B9_loop
+bra_clear_player_runtime_block:
 ; 0067-0086
     STA ram_data_p1,Y
     INY
@@ -48,7 +48,7 @@ bra_clear_player_runtime_block:  ; was: bra_C9B9_loop
     STA ram_sfx_plr_ready
     STA ram_sfx_plr_ready + $01
 ; Reset stage/high-score related counters before loop
-bra_reset_stage_counters:  ; was: bra_C9CD
+bra_reset_stage_counters:
 .ifdef PACMAN_HACK_START_STAGE
     .assert PACMAN_HACK_START_STAGE >= 1, error, "hack start stage must be at least 1"
     .assert PACMAN_HACK_START_STAGE <= 255, error, "hack start stage must fit one byte"
@@ -63,13 +63,13 @@ bra_reset_stage_counters:  ; was: bra_C9CD
     STA ram_ppuctrl_base
     STA PPUCTRL
 ; Main gameplay loop entry with NMI wait
-loc_gameplay_mainloop_wait_nmi:  ; was: loc_C9DD
+loc_gameplay_mainloop_wait_nmi:
 ; Gameplay loop per-frame tick
-bra_loop_gameplay_tick:  ; was: bra_C9DD_loop
+bra_loop_gameplay_tick:
     LDA #$01
     STA ram_nmi_wait
 ; Busy-wait until NMI handler clears flag
-bra_wait_nmi_in_gameplay_loop:  ; was: bra_C9E1_infinite_loop
+bra_wait_nmi_in_gameplay_loop:
     LDA ram_nmi_wait
     BNE bra_wait_nmi_in_gameplay_loop
     LDA ram_flag_demo
@@ -81,7 +81,7 @@ bra_wait_nmi_in_gameplay_loop:  ; was: bra_C9E1_infinite_loop
     STA ram_script
     JMP loc_main_frame_bootstrap
 ; Handle script delay countdown before dispatch
-bra_handle_script_delay:  ; was: bra_C9F6
+bra_handle_script_delay:
     LDA ram_script_delay
     BEQ bra_dispatch_current_script
     DEC ram_script_delay
@@ -89,7 +89,7 @@ bra_handle_script_delay:  ; was: bra_C9F6
 ; Dispatch current gameplay script handler
 ; Input: ram_script is an even byte offset into tbl_gameplay_script_handlers
 ; Clobbers: A, Y, and ram_indirect_jmp. Tail-jumps to the selected handler
-bra_dispatch_current_script:  ; was: bra_C9FE
+bra_dispatch_current_script:
 ; ram_script stores even-valued state IDs indexing tbl_gameplay_script_handlers
     LDY ram_script
     LDA tbl_gameplay_script_handlers,Y
@@ -99,27 +99,27 @@ bra_dispatch_current_script:  ; was: bra_C9FE
     JMP (ram_indirect_jmp)
 
 ; Main gameplay script handler table
-tbl_gameplay_script_handlers:  ; was: tbl_CA0D
+tbl_gameplay_script_handlers:
     .word handler_script00_round_init  ; con_game_script_round_init
     .word handler_script02_round_ready  ; con_game_script_round_ready
     .word handler_script04_pause_handler  ; con_game_script_pause
     .word handler_script06_post_eat_pause  ; con_game_script_post_eat_pause
     .word handler_script08_death_sequence  ; con_game_script_death
-    .word handler_script0A_game_over  ; con_game_script_game_over
-    .word handler_script0C_stage_clear  ; con_game_script_stage_clear
-    .word handler_script0E_intermission_setup  ; con_game_script_intermission_setup
+    .word handler_script_0a_game_over  ; con_game_script_game_over
+    .word handler_script_0c_stage_clear  ; con_game_script_stage_clear
+    .word handler_script_0e_intermission_setup  ; con_game_script_intermission_setup
     .word handler_script10_intermission_runtime  ; con_game_script_intermission_runtime
 
 ; Script 04: pause input gate and normal gameplay frame driver
 ; Input: controller edge state, pause state, and live round state
 ; Side effects: may toggle pause/SFX/PPU text; when unpaused, runs the ordered
 ; gameplay update chain. Returns only through the NMI wait loop
-handler_script04_pause_handler:  ; was: ofs_003_CA1F_04
+handler_script04_pause_handler:
     LDA ram_sfx_pause_toggle
     BEQ bra_check_pause_start_edge
     JMP loc_gameplay_mainloop_wait_nmi
 ; Check Start button edge for pause toggle
-bra_check_pause_start_edge:  ; was: bra_CA27
+bra_check_pause_start_edge:
     LDA ram_btn_1p
     AND #con_btn_Start
     CMP ram_pause_start_latch
@@ -134,7 +134,7 @@ bra_check_pause_start_edge:  ; was: bra_CA27
     BEQ bra_store_pause_ppu_addr
     LDX #$2A  ; 2A37
 ; Store selected nametable address for PAUSE text packet
-bra_store_pause_ppu_addr:  ; was: bra_CA41
+bra_store_pause_ppu_addr:
     STX ram_ppu_buffer_main
     LDA #$37
     STA ram_ppu_buffer_main + $01
@@ -146,9 +146,9 @@ bra_store_pause_ppu_addr:  ; was: bra_CA41
     LDX #$00
     STA ram_sfx_pause_toggle
 ; Select PAUSE text or blanks based on pause state
-bra_select_pause_text_variant:  ; was: bra_CA58
+bra_select_pause_text_variant:
 ; Copy pause/on-off tile sequence into PPU packet
-bra_copy_pause_tiles:  ; was: bra_CA58_loop
+bra_copy_pause_tiles:
 .ifdef PACMAN_EXPANDED_SCREENS
     LDA tbl_expanded_pause_tiles,X
 .else
@@ -161,13 +161,13 @@ bra_copy_pause_tiles:  ; was: bra_CA58_loop
     BNE bra_copy_pause_tiles
     JMP loc_gameplay_mainloop_wait_nmi
 ; No new Start edge path for normal frame processing
-bra_run_frame_when_no_new_start:  ; was: bra_CA67
+bra_run_frame_when_no_new_start:
     LDA ram_flag_pause
     AND #$01
     BEQ bra_run_unpaused_gameplay_step
     JMP loc_gameplay_mainloop_wait_nmi
 ; Run gameplay update chain when not paused
-bra_run_unpaused_gameplay_step:  ; was: bra_CA70
+bra_run_unpaused_gameplay_step:
 .if PACMAN_REVISION = REVISION_EUROPE
 ; PAL Namco hides every shadow-OAM entry before rebuilding active sprites
     LDA #> ram_oam
@@ -194,7 +194,7 @@ bra_hide_europe_oam_before_gameplay:
     JMP loc_gameplay_mainloop_wait_nmi
 
 ; Tile sequences for PAUSE on/off text
-tbl_pause_text_tiles:  ; was: tbl_CA91
+tbl_pause_text_tiles:
     .byte $50, $41, $55, $53, $45, $FF  ; 00
     .byte $2D, $2D, $2D, $2D, $2D, $FF  ; 06
 

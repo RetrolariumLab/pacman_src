@@ -19,9 +19,9 @@ and separate `con_title_script_*` constants.
 | `con_game_script_pause` (`04`) | `handler_script04_pause_handler` | Main active gameplay frame loop and pause gate. |
 | `con_game_script_post_eat_pause` (`06`) | `handler_script06_post_eat_pause` | Short freeze after an eaten-ghost score popup. |
 | `con_game_script_death` (`08`) | `handler_script08_death_sequence` | Death animation and life/player handoff. |
-| `con_game_script_game_over` (`0A`) | `handler_script0A_game_over` | GAME OVER composition, timeout, and exit. |
-| `con_game_script_stage_clear` (`0C`) | `handler_script0C_stage_clear` | Stage-clear flash and intermission gate. |
-| `con_game_script_intermission_setup` (`0E`) | `handler_script0E_intermission_setup` | One-shot intermission setup. |
+| `con_game_script_game_over` (`0A`) | `handler_script_0a_game_over` | GAME OVER composition, timeout, and exit. |
+| `con_game_script_stage_clear` (`0C`) | `handler_script_0c_stage_clear` | Stage-clear flash and intermission gate. |
+| `con_game_script_intermission_setup` (`0E`) | `handler_script_0e_intermission_setup` | One-shot intermission setup. |
 | `con_game_script_intermission_runtime` (`10`) | `handler_script10_intermission_runtime` | Per-frame intermission scene runtime. |
 
 ## Observed Transitions

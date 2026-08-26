@@ -28,7 +28,7 @@ Working glossary for the most important RAM fields used by `src/main.asm`.
 | `ram_personal_release_stage` | Personal release stage index | `D1B2..D1C2` | Medium | Selects personal dot thresholds. |
 | `ram_release_timer_seconds` / `ram_release_timer_ticks` | Global release timer | `loc_update_release_counters` | High | Periodic trigger path for house release. |
 | `ram_fruit_timer_hi` / `ram_fruit_timer_lo` | Fruit visibility timer | `bra_update_fruit_visibility_timer`, `bra_spawn_fruit_and_score` | High | Timer expiry hides fruit actor and clears active flag. |
-| `ram_sfx_intermission_flag_a` / `ram_sfx_intermission_flag_b` | Intermission sound-event request slots | `handler_script0E_intermission_setup`, scene02 midpoint | High | Slots 0D/0E in the sound request table. |
+| `ram_sfx_intermission_flag_a` / `ram_sfx_intermission_flag_b` | Intermission sound-event request slots | `handler_script_0e_intermission_setup`, scene02 midpoint | High | Slots 0D/0E in the sound request table. |
 
 ## Evidence Notes
 - See resolved RAM-002 in `docs/unknowns.md` for traced ownership of the

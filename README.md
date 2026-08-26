@@ -57,6 +57,8 @@ behind generic syntax aliases. See [`docs/macros.md`](docs/macros.md).
 Symbols are named by program role rather than ROM address. The `sub_`,
 `handler_`, `loc_`, and `bra_` prefixes distinguish callable subroutines from
 dispatch handlers and internal control flow; see [`docs/naming.md`](docs/naming.md).
+The complete import-to-current label history is maintained separately in
+[`docs/provenance/label_renames.json`](docs/provenance/label_renames.json).
 
 `make symbols` generates native ld65 source mappings for Mesen, FCEUX ROM/RAM
 labels, breakpoint groups, and a standard watch list. See
@@ -73,6 +75,12 @@ alter the assembled bytes, so any diff means the edit was wrong.
 The repository previously also contained a C reimplementation. It was removed —
 see [`docs/postmortem.md`](docs/postmortem.md) for what was tried and why it did
 not work.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for local-input policy, assembly naming
+and formatting rules, evidence expectations, and the validation gates required
+for source, data, or revision changes.
 
 ## Quick Start
 
@@ -104,6 +112,8 @@ byte-identical to the reference ROM.
 
 ```text
 pacman_src/
+|-- .editorconfig                  # Cross-editor text and ASM indentation rules
+|-- CONTRIBUTING.md                # Change policy and validation workflow
 |-- assets/
 |   |-- manifest.json              # Tracked extraction ranges and checksums
 |   `-- generated/                 # Ignored CHR, maze, and audio payloads

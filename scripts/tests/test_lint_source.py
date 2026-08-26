@@ -26,10 +26,128 @@ class LintSourceTests(unittest.TestCase):
             result,
             {},
             {},
+            {},
         )
         messages = "\n".join(result.errors)
         self.assertIn("legacy ofs_ definition", messages)
         self.assertIn("unsupported prefix", messages)
+
+    def test_rejects_legacy_label_case(self) -> None:
+        result = LintResult()
+        check_asm_file(
+            Path("src/test.asm"),
+            "LegacyLabel:\n    RTS\n",
+            result,
+            {},
+            {},
+            {},
+        )
+        self.assertTrue(
+            any(
+                "label must use a role prefix and lowercase snake_case: LegacyLabel"
+                in error
+                for error in result.errors
+            )
+        )
+
+    def test_rejects_malformed_snake_case_label(self) -> None:
+        result = LintResult()
+        check_asm_file(
+            Path("src/test.asm"),
+            "loc_update__player:\n    RTS\n",
+            result,
+            {},
+            {},
+            {},
+        )
+        self.assertTrue(
+            any(
+                "label must use a role prefix and lowercase snake_case: "
+                "loc_update__player" in error
+                for error in result.errors
+            )
+        )
+
+    def test_allows_uppercase_constant_outside_colon_labels(self) -> None:
+        result = LintResult()
+        check_asm_file(
+            Path("src/test.inc"),
+            "HARDWARE_MASK = $01\n",
+            result,
+            {},
+            {},
+            {},
+        )
+        self.assertEqual(result.errors, [])
+
+    def test_rejects_duplicate_labels_across_modules(self) -> None:
+        result = LintResult()
+        all_labels: dict[str, tuple[Path, int]] = {}
+        check_asm_file(
+            Path("src/first.asm"),
+            "bra_shared_entry:\n",
+            result,
+            all_labels,
+            {},
+            {},
+        )
+        check_asm_file(
+            Path("src/second.asm"),
+            "bra_shared_entry:\n",
+            result,
+            all_labels,
+            {},
+            {},
+        )
+        self.assertTrue(
+            any(
+                "duplicate label bra_shared_entry; first at src/first.asm:1" in error
+                for error in result.errors
+            )
+        )
+
+    def test_rejects_inline_label_provenance(self) -> None:
+        result = LintResult()
+        check_asm_file(
+            Path("src/test.asm"),
+            "sub_example:  ; was: sub_C000\n    RTS\n",
+            result,
+            {},
+            {},
+            {},
+        )
+        self.assertTrue(
+            any("inline label provenance is forbidden" in error for error in result.errors)
+        )
+
+    def test_rejects_any_content_after_label_colon(self) -> None:
+        for suffix in (" ", "  ; explanation", " LDA #$01"):
+            with self.subTest(suffix=suffix):
+                result = LintResult()
+                check_asm_file(
+                    Path("src/test.asm"),
+                    f"sub_example:{suffix}\n    RTS\n",
+                    result,
+                    {},
+                    {},
+                    {},
+                )
+                self.assertTrue(
+                    any(
+                        "label line must end immediately after ':'" in error
+                        for error in result.errors
+                    )
+                )
+
+    def test_rejects_trailing_whitespace_in_text_files(self) -> None:
+        for path in (Path("README.md"), Path("data.json"), Path("Makefile")):
+            with self.subTest(path=path):
+                result = LintResult()
+                check_text_format(path, "first line \nsecond line\t\n", result)
+                self.assertEqual(
+                    sum("trailing whitespace" in error for error in result.errors),
+                    2,
+                )
 
     def test_rejects_repeated_assembly_blank_lines(self) -> None:
         result = LintResult()
@@ -63,6 +181,18 @@ class LintSourceTests(unittest.TestCase):
             result,
         )
         self.assertEqual(result.errors, [])
+
+    def test_contributing_links_are_checked_as_project_documentation(self) -> None:
+        result = LintResult()
+        check_documentation_references(
+            Path.cwd(),
+            {Path("CONTRIBUTING.md"): "[missing](docs/missing.md)\n"},
+            set(),
+            result,
+        )
+        self.assertTrue(
+            any("broken local documentation link" in error for error in result.errors)
+        )
 
     def test_python_syntax_errors_are_reported_without_execution(self) -> None:
         result = LintResult()
