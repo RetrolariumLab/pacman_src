@@ -13,6 +13,7 @@ make validate-symbols     # live debugger-symbol lookup and execution hook
 make trace-runtime        # slower focused emulator evidence
 make trace-scoring        # slower scoring-event capture
 make trace-evidence       # focused evidence for resolved registry entries
+make test-relocation      # progressively shifted ROM and emulator gates
 make reconstruction-audit # complete Source Reconstruction 1.0 release gate
 make reconstruction-audit-2 # strict seven-revision and regional runtime gate
 make verify-hack          # exact manifest-declared default variant difference
@@ -63,6 +64,12 @@ small synthetic inputs and do not start FCEUX.
 reference PRG and ROM hashes exactly. Debugger and trace targets are separate
 because they build or start external tooling and take longer. A green lint or
 unit-test run never substitutes for byte identity or behavioral evidence.
+
+`make test-relocation` complements byte identity with a deliberately mutated
+layout. It inserts 29 non-executed `$EA` bytes between address-ordered modules,
+checks every resulting symbol offset and fixed-tail pointer, then runs debugger,
+runtime, scoring, and reconstruction-evidence workflows against the same ROM.
+See `relocation_testing.md` for the anchor policy and limitations.
 
 ## Reconstruction release gates
 

@@ -16,6 +16,14 @@ from validate_reconstruction_evidence import (  # noqa: E402
 )
 
 
+ORIGINAL_LABELS = {
+    "sub_check_actor_collisions": 0xD20F,
+    "bra_normalize_power_pellet_tiles": 0xCFD9,
+    "bra_use_personal_release_latch": 0xD16A,
+    "bra_check_personal_release_targets": 0xD1B2,
+}
+
+
 def row(event: str, address: str = "0000", **values: str) -> dict[str, str]:
     result = {
         "frame": "0", "event": event, "address": address, "pc": "0000", "script": "00",
@@ -104,21 +112,35 @@ class ReconstructionEvidenceTests(unittest.TestCase):
             validate_trace_provenance(scenarios, traces)
 
     def test_complete_evidence_passes_every_runtime_check(self) -> None:
-        self.assertTrue(all(validate_runtime(complete_rows()).values()))
+        self.assertTrue(all(validate_runtime(complete_rows(), ORIGINAL_LABELS).values()))
 
     def test_missing_sound_slot_is_rejected(self) -> None:
         rows = [
             item for item in complete_rows()
             if not (item["event"] == "sound_slot_active" and item["address"] == "060F")
         ]
-        self.assertFalse(validate_runtime(rows)["SND-001 all request slots active"])
+        self.assertFalse(
+            validate_runtime(rows, ORIGINAL_LABELS)["SND-001 all request slots active"]
+        )
 
     def test_release_latch_requires_both_consumer_states(self) -> None:
         rows = [
             item for item in complete_rows()
             if not (item["event"] == "reversal_entry" and item["value"] == "01")
         ]
-        self.assertFalse(validate_runtime(rows)["RAM-003 persistent latch and consumers"])
+        self.assertFalse(
+            validate_runtime(rows, ORIGINAL_LABELS)[
+                "RAM-003 persistent latch and consumers"
+            ]
+        )
+
+    def test_runtime_checks_follow_relocated_label_anchors(self) -> None:
+        relocated = {name: address + 9 for name, address in ORIGINAL_LABELS.items()}
+        shifted_rows = [dict(item) for item in complete_rows()]
+        for item in shifted_rows:
+            if item["pc"] in {"D224", "CFEC", "D16C", "D1C4"}:
+                item["pc"] = f"{int(item['pc'], 16) + 9:04X}"
+        self.assertTrue(all(validate_runtime(shifted_rows, relocated).values()))
 
 
 if __name__ == "__main__":

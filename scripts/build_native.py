@@ -57,6 +57,7 @@ def assemble_prg(
     output_rom_path: Path,
     expected_prg_size: int = PRG_SIZE,
     defines: list[str] | None = None,
+    include_dirs: list[Path] | None = None,
 ) -> bytes:
     object_path.parent.mkdir(parents=True, exist_ok=True)
     prg_path.parent.mkdir(parents=True, exist_ok=True)
@@ -69,16 +70,10 @@ def assemble_prg(
     ca65_arguments = [str(source), "-g"]
     for define in defines or []:
         ca65_arguments.extend(["-D", define])
-    ca65_arguments.extend(
-        [
-            "-I",
-            str(source.parent),
-            "-I",
-            str(project_root),
-            "-o",
-            str(object_path),
-        ]
-    )
+    search_paths = [source.parent, *(include_dirs or []), project_root]
+    for search_path in dict.fromkeys(path.resolve() for path in search_paths):
+        ca65_arguments.extend(["-I", str(search_path)])
+    ca65_arguments.extend(["-o", str(object_path)])
     run_tool(ca65, ca65_arguments, project_root)
     run_tool(
         ld65,
@@ -165,6 +160,12 @@ def main() -> int:
         metavar="NAME=VALUE",
         help="Pass a compile-time symbol to ca65; may be repeated",
     )
+    parser.add_argument(
+        "--include-dir",
+        action="append",
+        default=[],
+        help="Add a ca65 include directory; may be repeated",
+    )
     parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
 
@@ -205,6 +206,7 @@ def main() -> int:
         debug_path,
         output_rom,
         defines=args.define,
+        include_dirs=[rooted(project_root, value) for value in args.include_dir],
     )
     candidate = header + prg + chr_data
     output_rom.parent.mkdir(parents=True, exist_ok=True)

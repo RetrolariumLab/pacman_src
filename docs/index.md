@@ -16,6 +16,7 @@
 - [runtime_trace_scenarios.md](./runtime_trace_scenarios.md): natural and controlled gameplay trace evidence.
 - [scoring_trace_scenarios.md](./scoring_trace_scenarios.md): scoring-event capture and semantic validation.
 - [validation.md](./validation.md): fast lint, unit, binary, debugger, and emulator validation layers.
+- [relocation_testing.md](./relocation_testing.md): progressively shifted ROM build and semantic FCEUX gate.
 - [data_formats.md](./data_formats.md): six decoded binary formats and byte-identical round-trip workflow.
 - [source_reconstruction_1_0.md](./source_reconstruction_1_0.md): stable release contract, evidence matrix, and tagging procedure.
 - [rom_hack_variants.md](./rom_hack_variants.md): isolated optional builds, declared ROM differences, and runtime validation.

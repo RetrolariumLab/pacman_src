@@ -7,11 +7,22 @@ import argparse
 import csv
 import hashlib
 import json
+import re
 from pathlib import Path
 
 
 REQUIRED_COLUMNS = {
     "frame", "event", "address", "pc", "script", "value", "a", "x", "y", "detail",
+}
+VICE_LABEL_RE = re.compile(
+    r"^al ([0-9A-Fa-f]{6}) \.([A-Za-z_][A-Za-z0-9_]*)$"
+)
+
+EVIDENCE_PC_ANCHORS = {
+    "fruit_collision_read": ("sub_check_actor_collisions", 0x15),
+    "fruit_collision_write": ("bra_normalize_power_pellet_tiles", 0x13),
+    "release_latch_read": ("bra_use_personal_release_latch", 0x02),
+    "release_latch_write": ("bra_check_personal_release_targets", 0x12),
 }
 
 
@@ -110,20 +121,65 @@ def sha1(path: Path) -> str:
     return digest.hexdigest()
 
 
-def validate_static(rom: Path) -> dict[str, bool]:
+def load_labels(path: Path) -> dict[str, int]:
+    labels: dict[str, int] = {}
+    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        match = VICE_LABEL_RE.fullmatch(line)
+        if match:
+            labels[match.group(2)] = int(match.group(1), 16)
+        elif line.strip():
+            raise ValueError(f"Unsupported label line {path}:{line_number}: {line}")
+    return labels
+
+
+def label_address(labels: dict[str, int], name: str, offset: int = 0) -> int:
+    try:
+        return labels[name] + offset
+    except KeyError as error:
+        raise ValueError(f"Required evidence label is missing: {name}") from error
+
+
+def label_pc(labels: dict[str, int], anchor: str) -> str:
+    name, offset = EVIDENCE_PC_ANCHORS[anchor]
+    return f"{label_address(labels, name, offset):04X}"
+
+
+def prg_offset(address: int) -> int:
+    if not 0xC000 <= address <= 0xFFFF:
+        raise ValueError(f"Expected a fixed-bank CPU address, got ${address:06X}")
+    return address - 0xC000
+
+
+def read_word(data: bytes, offset: int) -> int:
+    return data[offset] | data[offset + 1] << 8
+
+
+def validate_static(rom: Path, labels: dict[str, int]) -> dict[str, bool]:
     payload = rom.read_bytes()
     if len(payload) != 16 + 0x4000 + 0x2000:
         raise ValueError(f"Expected NROM-128 image, got {len(payload)} bytes")
     prg = payload[16:16 + 0x4000]
     notice = b"COPY RIGHT 1984 1980 NAMCO LTD. ALL RIGHTS RESERVED"
+    pointer_offset = prg_offset(label_address(labels, "tbl_attract_ppu_packet_ptrs"))
+    notice_address = label_address(labels, "tbl_rom_copyright_notice")
+    notice_offset = prg_offset(notice_address)
+    reset_address = label_address(labels, "vec_reset_entry")
     return {
-        "DATA-003 file-offset mapping": prg[0x05D3:0x05D5] == b"\xE7\xC5",
-        "DATA-004 copyright payload": prg[:0x33] == notice,
-        "DATA-004 reset vector bypasses notice": prg[-4:-2] == b"\x33\xC0",
+        "DATA-003 file-offset mapping": read_word(prg, pointer_offset)
+        == label_address(labels, "off_attract_text_header_character_nickname"),
+        "DATA-004 copyright payload": prg[
+            notice_offset:notice_offset + len(notice)
+        ] == notice,
+        "DATA-004 reset vector bypasses notice": (
+            read_word(prg, 0x3FFC) == reset_address
+            and reset_address == notice_address + len(notice)
+        ),
     }
 
 
-def validate_runtime(rows: list[dict[str, str]]) -> dict[str, bool]:
+def validate_runtime(
+    rows: list[dict[str, str]], labels: dict[str, int],
+) -> dict[str, bool]:
     scripts = {
         row["script"] for row in rows
         if row["detail"] == "RAM-002" and row["event"] in {"read", "write"}
@@ -132,18 +188,29 @@ def validate_runtime(rows: list[dict[str, str]]) -> dict[str, bool]:
         int(row["address"], 16) - 0x0600
         for row in rows if row["event"] == "sound_slot_active"
     }
-    gate_reads = matching(rows, event="read", address="00D2", pc="D16C")
+    gate_reads = matching(
+        rows, event="read", address="00D2", pc=label_pc(labels, "release_latch_read")
+    )
     reversals = matching(rows, event="reversal_entry", address="00D2")
     return {
         "RAM-001 fruit collision array member": bool(
-            matching(rows, event="read", address="00C0", pc="D224")
-            and matching(rows, event="write", address="00C0", pc="CFEC", y="04")
+            matching(
+                rows, event="read", address="00C0",
+                pc=label_pc(labels, "fruit_collision_read"),
+            )
+            and matching(
+                rows, event="write", address="00C0",
+                pc=label_pc(labels, "fruit_collision_write"), y="04",
+            )
         ),
         "RAM-002 script ownership coverage": {
             "00", "02", "04", "06", "08", "0A", "0C", "0E", "10"
         } <= scripts,
         "RAM-003 persistent latch and consumers": bool(
-            matching(rows, event="write", address="00D2", pc="D1C4", a="01")
+            matching(
+                rows, event="write", address="00D2",
+                pc=label_pc(labels, "release_latch_write"), a="01",
+            )
             and {row["value"] for row in gate_reads} >= {"00", "01"}
             and {row["value"] for row in reversals} >= {"00", "01"}
         ),
@@ -159,6 +226,7 @@ def main() -> int:
     parser.add_argument("--scenarios", required=True, type=Path)
     parser.add_argument("--trace-dir", required=True, type=Path)
     parser.add_argument("--rom", required=True, type=Path)
+    parser.add_argument("--labels", required=True, type=Path)
     args = parser.parse_args()
 
     document = json.loads(args.scenarios.read_text(encoding="utf-8"))
@@ -179,13 +247,18 @@ def main() -> int:
                 scenario["max_frames"],
             )
         validate_trace_provenance(scenarios, traces)
+        labels = load_labels(args.labels)
     except (OSError, TypeError, ValueError) as error:
         print(f"[FAIL] Invalid reconstruction evidence: {error}")
         return 1
     print(f"[OK] Trace provenance: {len(traces)} scenarios with declared controls.")
     rows = [row for scenario_rows in traces.values() for row in scenario_rows]
 
-    checks = validate_static(args.rom) | validate_runtime(rows)
+    try:
+        checks = validate_static(args.rom, labels) | validate_runtime(rows, labels)
+    except (OSError, ValueError) as error:
+        print(f"[FAIL] Invalid reconstruction evidence anchors: {error}")
+        return 1
     for name, passed in checks.items():
         print(f"[{'OK' if passed else 'ERROR'}] {name}")
     failures = [name for name, passed in checks.items() if not passed]

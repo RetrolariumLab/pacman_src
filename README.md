@@ -196,6 +196,7 @@ make trace-runtime                      # Capture and validate focused gameplay 
 make validate-runtime-traces            # Revalidate existing gameplay traces
 make trace-evidence                     # Recapture resolved research evidence
 make validate-evidence                  # Revalidate existing evidence
+make test-relocation                    # Shift modules and run FCEUX regression gates
 make run                                # Build and run the ROM in FCEUX
 make split                              # Extract CHR, maze, and audio from the original ROM
 make build-dev                          # Check tools and clone/build FCEUX if needed

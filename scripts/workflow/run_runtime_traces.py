@@ -27,6 +27,7 @@ def main() -> int:
     parser.add_argument("--lua", required=True, type=Path)
     parser.add_argument("--scenarios", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
+    parser.add_argument("--probe-addresses", type=Path)
     parser.add_argument("--scenario", action="append", dest="selected")
     args = parser.parse_args()
 
@@ -64,6 +65,14 @@ def main() -> int:
             PACMAN_RUNTIME_SCENARIO=scenario_id,
             PACMAN_RUNTIME_MAX_FRAMES=str(scenario["max_frames"]),
         )
+        if "heartbeat_interval" in scenario:
+            environment["PACMAN_RUNTIME_HEARTBEAT_INTERVAL"] = str(
+                scenario["heartbeat_interval"]
+            )
+        if args.probe_addresses is not None:
+            environment["PACMAN_RUNTIME_PROBE_ADDRESSES"] = str(
+                args.probe_addresses.resolve()
+            ).replace("\\", "/")
         command = [
             str(args.fceux.resolve()), "-playmovie", str(args.movie.resolve()),
             "-lua", str(args.lua.resolve()),

@@ -22,6 +22,9 @@ local CHANNEL_INDEX = 0x00FC
 local CHANNEL_OFFSET = 0x00FD
 local PAUSE_SFX = 0x060F
 local CHANNELS = 0x0625
+local FRAME_COUNTER = 0x004B
+local heartbeat_interval = tonumber(os.getenv("PACMAN_RUNTIME_HEARTBEAT_INTERVAL") or "0")
+local probe_addresses_path = os.getenv("PACMAN_RUNTIME_PROBE_ADDRESSES")
 
 local function symbol(name)
     local address = debugger.getsymboloffset(name)
@@ -54,6 +57,18 @@ end
 
 output:write("frame,event,detail,script,player,lives_p1,lives_p2,stage,scene,substate,ghost_states,phase,pause\n")
 emit("trace_start", scenario)
+
+if probe_addresses_path ~= nil and probe_addresses_path ~= "" then
+    local function register_probe(address)
+        memory.registerexecute(address, function()
+            emit("relocation_probe_executed", string.format("%04X", address))
+        end)
+    end
+    for line in io.lines(probe_addresses_path) do
+        local address = assert(tonumber(line, 16), "invalid relocation probe address")
+        register_probe(address)
+    end
+end
 
 memory.registerexecute(symbol("sub_queue_next_ghost_release"), function()
     emit("release_requested", "sub_queue_next_ghost_release")
@@ -112,6 +127,10 @@ local previous = {
 
 while emu.framecount() < max_frames do
     emu.frameadvance()
+
+    if heartbeat_interval > 0 and emu.framecount() % heartbeat_interval == 0 then
+        emit("heartbeat", string.format("frame_counter=%02X", byte(FRAME_COUNTER)))
+    end
 
     if scenario == "death-player-switch" and not death_patched
         and emu.framecount() >= 22000 and byte(SCRIPT) == 0x04 then

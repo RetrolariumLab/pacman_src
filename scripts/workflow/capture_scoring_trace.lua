@@ -15,6 +15,12 @@ local STAGE_INDEX = 0x0093
 local KILL_COUNT = 0x00D9
 local PENDING = 0x00DC
 
+local function symbol(name)
+    local address = debugger.getsymboloffset(name)
+    assert(address ~= nil and address >= 0, "missing debugger symbol: " .. name)
+    return address
+end
+
 local function bytes(base, count)
     local values = {}
     for index = 0, count - 1 do
@@ -41,12 +47,12 @@ end
 output:write("frame,event,pending_bcd,score_bcd,hiscore_bcd,lives,extra_life_latch,pellets,frightened_mask,kill_count,fruit_eaten_latch,stage_index\n")
 output:flush()
 
-memory.registerexecute(0xDEF7, function() emit("power_pellet") end)
-memory.registerexecute(0xDF1E, function() emit("pellet") end)
-memory.registerexecute(0xD26A, function() emit("actor_collision") end)
-memory.registerexecute(0xD274, function() emit("ghost_award") end)
-memory.registerexecute(0xD2B8, function() emit("fruit_award") end)
-memory.registerexecute(0xE060, function() emit("score_commit") end)
+memory.registerexecute(symbol("bra_handle_power_pellet_eaten"), function() emit("power_pellet") end)
+memory.registerexecute(symbol("bra_handle_any_pellet_eaten"), function() emit("pellet") end)
+memory.registerexecute(symbol("bra_dispatch_collision_type"), function() emit("actor_collision") end)
+memory.registerexecute(symbol("bra_award_frightened_ghost"), function() emit("ghost_award") end)
+memory.registerexecute(symbol("bra_spawn_fruit_and_score"), function() emit("fruit_award") end)
+memory.registerexecute(symbol("loc_add_points_and_update_score_buffers"), function() emit("score_commit") end)
 
 local previous_score = bytes(SCORE, 6)
 local previous_hiscore = bytes(HISCORE, 6)
