@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import posixpath
 import re
 from collections import defaultdict
 from pathlib import Path
@@ -12,6 +13,10 @@ from pathlib import Path
 
 RECORD_FIELD_RE = re.compile(r'(?:^|,)([a-z]+)=("(?:[^"]|"")*"|[^,]*)')
 VICE_LABEL_RE = re.compile(r"^al ([0-9A-Fa-f]{6}) \.([A-Za-z_][A-Za-z0-9_]*)$")
+
+
+def normalize_source_name(value: str) -> str:
+    return posixpath.normpath(value.replace("\\", "/"))
 
 
 def parse_record(line: str) -> tuple[str, dict[str, str]]:
@@ -203,7 +208,7 @@ def validate_debug_artifacts(
         if definition_id not in lines:
             raise ValueError(f"Definition line missing for symbol: {symbol}")
         file_id, source_line = lines[definition_id]
-        source_name = files.get(file_id, "").replace("\\", "/")
+        source_name = normalize_source_name(files.get(file_id, ""))
         if not source_name.endswith(expected_suffix):
             raise ValueError(
                 f"Unexpected source mapping for {symbol}: {source_name}:{source_line}"

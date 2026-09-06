@@ -139,7 +139,7 @@ def rooted(project_root: Path, value: str) -> Path:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", default="src/main.asm")
-    parser.add_argument("--config", default="src/nrom128_prg_only.cfg")
+    parser.add_argument("--config", default="config/linker/nrom128_prg_only.cfg")
     parser.add_argument("--original-rom", default="Pac-Man (J) (V1.0) [!].nes")
     parser.add_argument("--chr", default="assets/generated/chr/pacman.chr")
     parser.add_argument(

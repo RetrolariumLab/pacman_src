@@ -13,7 +13,7 @@ ROM images and extracted proprietary assets remain ignored local inputs.
 | Capability | Evidence |
 | --- | --- |
 | Source Reconstruction 1.0 remains intact | `make reconstruction-audit`; `make verify` still selects Japan V1.0 |
-| Content editing is reversible and isolated | Sound, maze, graphics, and screen studios; validated JSON codecs; `src/main_expanded.asm` |
+| Content editing is reversible and isolated | Sound, maze, graphics, and screen studios; validated JSON codecs; `src/expanded/nrom256.asm` |
 | Expanded assets do not contaminate the original | NROM-256 build/verification/runtime targets and fixed-bank guards |
 | Official revisions share one semantic source | Seven profiles in `config/revisions.json` and `docs/multi_revision_builds.md` |
 | Every official profile is byte-identical | strict `make verify-revisions` layer in `make reconstruction-audit-2` |

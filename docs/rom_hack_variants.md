@@ -3,12 +3,12 @@
 Optional variants are isolated from the default byte-identical build. The
 default `make build` continues to assemble `src/main.asm`; `make verify` must
 remain byte-identical to the reference ROM. A hack is selected only through the
-explicit `src/main_hack.asm` entrypoint and writes all artifacts below
+explicit `src/variants/stage5.asm` entrypoint and writes all artifacts below
 `build/hack/`.
 
 ## Default demonstration variant
 
-The first variant starts a new game on stage 5. `src/main_hack.asm` defines
+The first variant starts a new game on stage 5. `src/variants/stage5.asm` defines
 `PACMAN_HACK_START_STAGE = 5`; the guarded source operand stores stage 4 before
 the original round-init increment. This changes no code size or addresses.
 

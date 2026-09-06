@@ -2,7 +2,8 @@
 
 This repository treats the original game code, layout, data, and timing as a
 source-reconstruction baseline. Read `docs/source_reconstruction_2_0.md` before
-changing emitted bytes.
+changing emitted bytes and `docs/source_reconstruction_2_1.md` before changing
+repository layout, build metadata, or public validation targets.
 
 ## Local Inputs
 
@@ -88,3 +89,14 @@ make reconstruction-audit-2
 These gates combine lint, unit tests, byte identity, data round trips, debugger
 checks, and runtime evidence. Optional ROM hacks must retain separate entrypoints
 and outputs; silently changing the default profile is not an acceptable shortcut.
+
+Before the Source Reconstruction 2.1 tag, run the aggregate layout, variant,
+revision, runtime, and relocation gate:
+
+```bash
+make source-2-1-check
+```
+
+This requires direct runtime smoke coverage for all seven revision profiles and
+the pinned tool identities in `config/toolchain.json`. After creating the
+annotated tag on the tested commit, run `make source-2-1-post-tag-audit`.
