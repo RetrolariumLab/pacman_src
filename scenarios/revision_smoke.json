@@ -2,12 +2,44 @@
   "format": 1,
   "profiles": [
     {
+      "id": "japan_v10",
+      "scenario": "title_menu_boot",
+      "max_frames": 900,
+      "title_oam_fill": 0
+    },
+    {
+      "id": "japan_v11",
+      "scenario": "title_menu_boot",
+      "max_frames": 900,
+      "title_oam_fill": 0
+    },
+    {
+      "id": "japan_revb",
+      "scenario": "title_menu_boot",
+      "max_frames": 900,
+      "title_oam_fill": 0
+    },
+    {
+      "id": "usa_tengen_unlicensed",
+      "scenario": "title_menu_boot",
+      "max_frames": 900,
+      "title_oam_fill": 0
+    },
+    {
+      "id": "usa_tengen",
+      "scenario": "title_menu_boot",
+      "max_frames": 900,
+      "title_oam_fill": 0
+    },
+    {
       "id": "usa_namco",
+      "scenario": "title_menu_boot",
       "max_frames": 900,
       "title_oam_fill": 0
     },
     {
       "id": "europe",
+      "scenario": "title_menu_boot",
       "max_frames": 900,
       "title_oam_fill": 239
     }

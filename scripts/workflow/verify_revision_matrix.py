@@ -3,52 +3,27 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import subprocess
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
 
-@dataclass(frozen=True)
-class Revision:
-    profile_id: str
-    rom: str
-    sha1: str
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-
-def load_manifest(path: Path) -> tuple[str, list[Revision]]:
-    document = json.loads(path.read_text(encoding="utf-8"))
-    if document.get("format") != 1:
-        raise ValueError("unsupported revision manifest format")
-    default_profile = document.get("default_profile")
-    rows = document.get("profiles")
-    if not isinstance(default_profile, str) or not isinstance(rows, list) or not rows:
-        raise ValueError("manifest needs default_profile and a non-empty profiles list")
-
-    revisions: list[Revision] = []
-    seen: set[str] = set()
-    for row in rows:
-        try:
-            revision = Revision(row["id"], row["rom"], row["sha1"].lower())
-        except (KeyError, TypeError, AttributeError) as exc:
-            raise ValueError("each profile needs string id, rom, and sha1 fields") from exc
-        if not all(isinstance(value, str) and value for value in (revision.profile_id, revision.rom, revision.sha1)):
-            raise ValueError("each profile needs non-empty string id, rom, and sha1 fields")
-        if revision.profile_id in seen:
-            raise ValueError(f"duplicate revision profile: {revision.profile_id}")
-        if len(revision.sha1) != 40 or any(char not in "0123456789abcdef" for char in revision.sha1):
-            raise ValueError(f"invalid SHA1 for {revision.profile_id}")
-        seen.add(revision.profile_id)
-        revisions.append(revision)
-    if default_profile not in seen:
-        raise ValueError(f"default profile is not declared: {default_profile}")
-    return default_profile, revisions
+from revision_profiles import Revision, load_manifest  # noqa: E402
 
 
 def file_sha1(path: Path) -> str:
     digest = hashlib.sha1()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
     with path.open("rb") as stream:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
@@ -70,6 +45,10 @@ def verify_matrix(
         actual_sha1 = file_sha1(rom_path)
         if actual_sha1 != revision.sha1:
             results.append((revision.profile_id, "FAIL", f"SHA1 {actual_sha1}, expected {revision.sha1}"))
+            continue
+        actual_sha256 = file_sha256(rom_path)
+        if actual_sha256 != revision.sha256:
+            results.append((revision.profile_id, "FAIL", f"SHA256 {actual_sha256}, expected {revision.sha256}"))
             continue
         command = [
             make_command, "verify-revision", f"REVISION={revision.profile_id}",
@@ -100,7 +79,7 @@ def main() -> int:
         if unknown:
             raise ValueError(f"unknown profiles: {', '.join(sorted(unknown))}")
         results = verify_matrix(revisions, args.reference_dir, args.project_dir, args.make, selected)
-    except (OSError, ValueError, json.JSONDecodeError) as exc:
+    except (OSError, ValueError) as exc:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 2
 

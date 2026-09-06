@@ -22,7 +22,7 @@ make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR="path/to/roms"
 make verify-revision REVISION=usa_namco REVISION_REFERENCE_DIR="path/to/roms"
 make verify-revision REVISION=europe REVISION_REFERENCE_DIR="path/to/roms"
 make verify-revisions REVISION_REFERENCE_DIR="path/to/roms"
-make smoke-regional-revisions REVISION_REFERENCE_DIR="path/to/roms"
+make smoke-revisions REVISION_REFERENCE_DIR="path/to/roms"
 ```
 
 Every revision assembles the single `src/main.asm` entrypoint. The build passes
@@ -31,18 +31,25 @@ Revision differences must be represented as semantic source alternatives:
 text, constants, RAM layout, code, tables, or vectors. Raw binary patches are
 not accepted.
 
-`src/memory/revisions.inc` owns the profile constants and derives the broader
+`src/revisions/profile_ids.inc` owns the profile constants and derives the broader
 Tengen, RAM-palette, and late-Namco feature flags used by shared conditional
 source. `src/data/active_tables.inc` is separate from revision selection: it
 switches stage-data aliases between reference and expanded-ROM tables without
 emitting bytes of its own.
 
-The complete matrix uses `config/revisions.json` as its canonical list of
-profiles, filenames, and full-ROM SHA-1 values. A missing local ROM is reported
-as `MISSING`; a wrong hash or non-identical build is `FAIL`. The regional smoke
-command additionally boots USA Namco and Europe in FCEUX, reaches the title
-menu through generated semantic labels, confirms NMI activity, and verifies
-the full shadow-OAM initialization pattern (`$00` for USA and `$EF` for PAL).
+The complete matrix and single-profile build runner use `config/revisions.json`
+as their canonical list of profiles, ca65 IDs, CHR sources, filenames, runtime
+scenario IDs, and full-ROM SHA-1/SHA-256 values. A missing local ROM is reported
+as `MISSING`; a wrong hash or non-identical build is `FAIL`. The revision smoke
+command directly builds and boots all seven profiles in FCEUX, reaches the title
+menu through generated semantic labels, confirms NMI activity, and verifies the
+full shadow-OAM initialization pattern (`$00` for the NTSC profiles and `$EF`
+for PAL).
+
+The Lua runner only captures menu, NMI, and observed OAM facts. The Python
+validator in `scripts/workflow/run_revision_smokes.py` independently compares
+that capture with `scenarios/revision_smoke.json`; changing capture code alone
+cannot redefine a passing scenario.
 
 ## Verified Local Reference Matrix
 

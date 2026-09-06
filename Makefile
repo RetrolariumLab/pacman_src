@@ -3,7 +3,7 @@ PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 ORIGINAL_ROM ?= $(PROJECT_DIR)Pac-Man (J) (V1.0) [!].nes
 NATIVE_SOURCE ?= $(PROJECT_DIR)src/main.asm
-NATIVE_CFG ?= $(PROJECT_DIR)src/nrom128_prg_only.cfg
+NATIVE_CFG ?= $(PROJECT_DIR)config/linker/nrom128_prg_only.cfg
 BUILD_DIR ?= $(PROJECT_DIR)build
 NATIVE_OBJ ?= $(BUILD_DIR)/pacman.o
 NATIVE_PRG ?= $(BUILD_DIR)/pacman.prg
@@ -11,7 +11,7 @@ NATIVE_ROM ?= $(BUILD_DIR)/pacman.nes
 NATIVE_LABELS ?= $(BUILD_DIR)/pacman.lbl
 NATIVE_MAP ?= $(BUILD_DIR)/pacman.map
 NATIVE_DEBUG ?= $(BUILD_DIR)/pacman.dbg
-HACK_SOURCE ?= $(PROJECT_DIR)src/main_hack.asm
+HACK_SOURCE ?= $(PROJECT_DIR)src/variants/stage5.asm
 HACK_OBJ ?= $(BUILD_DIR)/hack/pacman.o
 HACK_PRG ?= $(BUILD_DIR)/hack/pacman.prg
 HACK_ROM ?= $(BUILD_DIR)/hack/pacman.nes
@@ -23,8 +23,8 @@ HACK_CHR ?= $(GENERATED_CHR)
 HACK_MANIFEST ?= $(PROJECT_DIR)config/hack_variants.json
 HACK_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_hack_variant.lua
 HACK_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/hack_variant_runtime.txt
-EXPANDED_SOURCE ?= $(PROJECT_DIR)src/main_expanded.asm
-EXPANDED_CFG ?= $(PROJECT_DIR)src/nrom256_expanded.cfg
+EXPANDED_SOURCE ?= $(PROJECT_DIR)src/expanded/nrom256.asm
+EXPANDED_CFG ?= $(PROJECT_DIR)config/linker/nrom256_expanded.cfg
 EXPANDED_DIR ?= $(BUILD_DIR)/expanded
 EXPANDED_OBJ ?= $(EXPANDED_DIR)/pacman.o
 EXPANDED_PRG ?= $(EXPANDED_DIR)/pacman.prg
@@ -64,54 +64,21 @@ ASSET_MANIFEST ?= $(PROJECT_DIR)assets/manifest.json
 GENERATED_ASSET_DIR ?= $(PROJECT_DIR)assets/generated
 GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
 EDITED_CHR ?= $(PROJECT_DIR)hacks/local/pacman.chr
-REVISION ?= japan_v10
+REVISION_MANIFEST ?= $(PROJECT_DIR)config/revisions.json
+REVISION ?= $(shell $(PYTHON) "$(PROJECT_DIR)scripts/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --print-default)
 REVISION_BUILD_DIR ?= $(BUILD_DIR)/revisions/$(REVISION)
 REVISION_REFERENCE_DIR ?= $(PROJECT_DIR)
-REVISION_MANIFEST ?= $(PROJECT_DIR)config/revisions.json
+SOURCE_2_1_MANIFEST ?= $(PROJECT_DIR)config/source_reconstruction_2_1.json
+TOOLCHAIN_MANIFEST ?= $(PROJECT_DIR)config/toolchain.json
 REVISION_DEBUG_SUMMARY ?= $(REVISION_BUILD_DIR)/debug_symbols.json
 REVISION_SMOKE_SCENARIOS ?= $(PROJECT_DIR)scenarios/revision_smoke.json
 REVISION_SMOKE_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_revision_smoke.lua
 REVISION_SMOKE_DIR ?= $(PROJECT_DIR)tmp/revision_smokes
 REVISION_REQUIRE_ALL ?=
-REVISION_CHR_OPTION := --chr "$(GENERATED_CHR)"
-
-ifeq ($(REVISION),japan_v10)
 REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
-REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)/Pac-Man (J) (V1.0) [!].nes
-REVISION_CA65_DEFINE := PACMAN_REVISION=0
-else ifeq ($(REVISION),japan_v11)
-REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
-REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)/Pac-Man (J) (V1.1) [!].nes
-REVISION_CA65_DEFINE := PACMAN_REVISION=1
-else ifeq ($(REVISION),usa_tengen_unlicensed)
-REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
-REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)/Pac-Man (Unl) (Tengen) [!].nes
-REVISION_CA65_DEFINE := PACMAN_REVISION=2
-else ifeq ($(REVISION),usa_tengen)
-REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
-REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)/Pac-Man (U) (Tengen) [!].nes
-REVISION_CA65_DEFINE := PACMAN_REVISION=3
-else ifeq ($(REVISION),japan_revb)
-REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
-REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)/Pac-Man (Japan) (En) (Rev B).nes
-REVISION_CA65_DEFINE := PACMAN_REVISION=4
-else ifeq ($(REVISION),usa_namco)
-REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
-REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)/Pac-Man (U) (Namco) [!].nes
-REVISION_CA65_DEFINE := PACMAN_REVISION=5
-REVISION_CHR_OPTION := --chr-from-reference
-else ifeq ($(REVISION),europe)
-REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
-REVISION_REFERENCE_ROM := $(REVISION_REFERENCE_DIR)/Pac-Man (E) [!].nes
-REVISION_CA65_DEFINE := PACMAN_REVISION=6
-REVISION_CHR_OPTION := --chr-from-reference
-else
-$(error Unsupported REVISION '$(REVISION)'; expected japan_v10, japan_v11, usa_tengen_unlicensed, usa_tengen, japan_revb, usa_namco, or europe)
-endif
 
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
 FCEUX_DIR ?= ../fceux_automation
-FCEUX_REPO ?= https://github.com/oranguthang/fceux_automation.git
 FCEUX_CONFIG ?= Release
 FCEUX_PLATFORM ?= x64
 FCEUX_TOOLSET ?= v143
@@ -171,7 +138,7 @@ RELOCATION_HEARTBEAT_INTERVAL ?= 5000
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols test-relocation format lint roundtrip-formats reconstruction-audit reconstruction-audit-2 run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces trace-evidence validate-evidence chunk help _require-assets _manifest _batch
+.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-revisions smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols test-relocation format lint roundtrip-formats reconstruction-audit reconstruction-audit-2 source-2-1-audit source-2-1-release-audit source-2-1-post-tag-audit source-2-1-check run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces trace-evidence validate-evidence chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -201,32 +168,26 @@ verify: _require-assets
 		--verify
 
 build-revision: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build_revision.py" \
+		--manifest "$(REVISION_MANIFEST)" \
+		--profile "$(REVISION)" \
+		--reference-dir "$(REVISION_REFERENCE_DIR)" \
+		--project-dir "$(PROJECT_DIR)" \
 		--source "$(REVISION_SOURCE)" \
-		--define "$(REVISION_CA65_DEFINE)" \
 		--config "$(NATIVE_CFG)" \
-		--original-rom "$(REVISION_REFERENCE_ROM)" \
-		$(REVISION_CHR_OPTION) \
-		--object "$(REVISION_BUILD_DIR)/pacman.o" \
-		--prg "$(REVISION_BUILD_DIR)/pacman.prg" \
-		--labels "$(REVISION_BUILD_DIR)/pacman.lbl" \
-		--map "$(REVISION_BUILD_DIR)/pacman.map" \
-		--debug-info "$(REVISION_BUILD_DIR)/pacman.dbg" \
-		--output-rom "$(REVISION_BUILD_DIR)/pacman.nes"
+		--generated-chr "$(GENERATED_CHR)" \
+		--build-dir "$(REVISION_BUILD_DIR)"
 
 verify-revision: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build_revision.py" \
+		--manifest "$(REVISION_MANIFEST)" \
+		--profile "$(REVISION)" \
+		--reference-dir "$(REVISION_REFERENCE_DIR)" \
+		--project-dir "$(PROJECT_DIR)" \
 		--source "$(REVISION_SOURCE)" \
-		--define "$(REVISION_CA65_DEFINE)" \
 		--config "$(NATIVE_CFG)" \
-		--original-rom "$(REVISION_REFERENCE_ROM)" \
-		$(REVISION_CHR_OPTION) \
-		--object "$(REVISION_BUILD_DIR)/pacman.o" \
-		--prg "$(REVISION_BUILD_DIR)/pacman.prg" \
-		--labels "$(REVISION_BUILD_DIR)/pacman.lbl" \
-		--map "$(REVISION_BUILD_DIR)/pacman.map" \
-		--debug-info "$(REVISION_BUILD_DIR)/pacman.dbg" \
-		--output-rom "$(REVISION_BUILD_DIR)/pacman.nes" \
+		--generated-chr "$(GENERATED_CHR)" \
+		--build-dir "$(REVISION_BUILD_DIR)" \
 		--verify
 
 verify-revisions:
@@ -247,7 +208,7 @@ symbols-revision: build-revision
 		--watches "$(DEBUG_WATCHES)" \
 		--summary "$(REVISION_DEBUG_SUMMARY)"
 
-smoke-regional-revisions: build-dev
+smoke-revisions: build-dev
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_revision_smokes.py" \
 		--manifest "$(REVISION_MANIFEST)" \
 		--scenarios "$(REVISION_SMOKE_SCENARIOS)" \
@@ -257,6 +218,9 @@ smoke-regional-revisions: build-dev
 		--lua "$(REVISION_SMOKE_LUA)" \
 		--output-dir "$(REVISION_SMOKE_DIR)" \
 		--make "$(MAKE)" $(REVISION_REQUIRE_ALL)
+
+# Compatibility alias retained for existing documentation and automation.
+smoke-regional-revisions: smoke-revisions
 
 build-hack: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -403,13 +367,13 @@ symbols: build
 		--summary "$(DEBUG_SUMMARY)"
 
 test-debug-symbols:
-	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)scripts/tests" -p "test_debug_symbols.py" -v
+	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)tests" -p "test_debug_symbols.py" -v
 
 test-runtime-traces:
-	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)scripts/tests" -p "test_runtime_traces.py" -v
+	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)tests" -p "test_runtime_traces.py" -v
 
 test:
-	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)scripts/tests" -p "test_*.py" -v
+	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)tests" -p "test_*.py" -v
 
 validate-symbols: build-dev symbols
 	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp'); p.mkdir(parents=True, exist_ok=True); r=pathlib.Path(r'$(DEBUG_RUNTIME_RESULT)'); r.unlink() if r.exists() else None"
@@ -506,7 +470,7 @@ _require-assets:
 build-dev:
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_dev.py" \
 		--fceux-dir "$(FCEUX_DIR)" \
-		--repo "$(FCEUX_REPO)" \
+		--manifest "$(TOOLCHAIN_MANIFEST)" \
 		--configuration "$(FCEUX_CONFIG)" \
 		--platform "$(FCEUX_PLATFORM)" \
 		--toolset "$(FCEUX_TOOLSET)" \
@@ -743,7 +707,32 @@ reconstruction-audit:
 
 reconstruction-audit-2: reconstruction-audit
 	$(MAKE) verify-revisions REVISION_REQUIRE_ALL=--require-all
-	$(MAKE) smoke-regional-revisions REVISION_REQUIRE_ALL=--require-all
+	$(MAKE) smoke-revisions REVISION_REQUIRE_ALL=--require-all
+
+source-2-1-audit:
+	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_1_audit.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--manifest "$(SOURCE_2_1_MANIFEST)"
+
+source-2-1-release-audit:
+	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_1_audit.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--manifest "$(SOURCE_2_1_MANIFEST)" \
+		--require-ready
+
+source-2-1-post-tag-audit:
+	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_1_audit.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--manifest "$(SOURCE_2_1_MANIFEST)" \
+		--require-ready \
+		--verify-tag
+
+source-2-1-check:
+	$(MAKE) reconstruction-audit-2
+	$(MAKE) validate-hack
+	$(MAKE) validate-expanded
+	$(MAKE) test-relocation
+	$(MAKE) source-2-1-release-audit
 
 chunk: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/extract_rename_chunk.py" \
@@ -764,7 +753,7 @@ help:
 	@echo   make build-revision REVISION=name  Build one official revision
 	@echo   make verify-revision REVISION=name Verify one official revision
 	@echo   make verify-revisions              Verify every locally available revision
-	@echo   make smoke-regional-revisions      Boot regional revisions and check OAM
+	@echo   make smoke-revisions               Boot all revision profiles and check OAM
 	@echo   Revision names: japan_v10, japan_v11, japan_revb, usa_tengen_unlicensed,
 	@echo                   usa_tengen, usa_namco, europe
 	@echo Optional variants:
@@ -801,6 +790,9 @@ help:
 	@echo   make roundtrip-formats             Round-trip documented binary formats
 	@echo   make reconstruction-audit          Run the Source Reconstruction 1.0 gate
 	@echo   make reconstruction-audit-2        Run the Source Reconstruction 2.0 gate
+	@echo   make source-2-1-audit              Check the Source 2.1 repository contract
+	@echo   make source-2-1-check              Run the tag-ready Source 2.1 gate
+	@echo   make source-2-1-post-tag-audit     Verify the clean, annotated Source 2.1 tag
 	@echo Workflow:
 	@echo   make run                           Build and run the ROM in FCEUX
 	@echo   make build-dev                     Prepare the FCEUX development tools

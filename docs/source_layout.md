@@ -15,7 +15,12 @@ order exactly; moving an include changes the ROM layout and must fail
 
 The current largest native source module is below 600 lines.
 
-## Address-Ordered Modules
+## Japan V1.0 Address Map
+
+The ranges below describe the canonical Japan V1.0 profile. Other official
+profiles preserve the same semantic module order but can place boundaries at
+different CPU addresses, so ranges are intentionally not duplicated in
+`src/main.asm`.
 
 | Range | Module | Responsibility |
 |---|---|---|
@@ -57,9 +62,10 @@ single ca65 translation unit.
 Reusable inline operations live under `src/macros/` and emit bytes at their
 call sites; they do not own ROM ranges. See [macros.md](./macros.md).
 
-Shared address and constant definitions live under `src/memory/`:
+Shared address and constant definitions live under `src/memory/`, while
+revision selection lives under `src/revisions/`:
 
-- `revisions.inc` defines the seven official profiles and derives the
+- `profile_ids.inc` defines the seven official profiles and derives the
   `PACMAN_REVISION_TENGEN`, `PACMAN_REVISION_RAM_PALETTES`, and
   `PACMAN_REVISION_LATE_NAMCO` feature flags from `PACMAN_REVISION`;
 - `hardware.inc` names CPU-visible NES registers and proven register bit masks;

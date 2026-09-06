@@ -16,6 +16,9 @@ make trace-evidence       # focused evidence for resolved registry entries
 make test-relocation      # progressively shifted ROM and emulator gates
 make reconstruction-audit # complete Source Reconstruction 1.0 release gate
 make reconstruction-audit-2 # strict seven-revision and regional runtime gate
+make source-2-1-audit     # fast repository-layout and release-manifest contract
+make source-2-1-check     # complete tag-ready Source Reconstruction 2.1 gate
+make source-2-1-post-tag-audit # verify annotated tag identity against HEAD
 make verify-hack          # exact manifest-declared default variant difference
 make validate-hack        # default variant behavior in live FCEUX
 make verify-expanded      # all NROM-256 assets and fixed-bank operands
@@ -53,7 +56,7 @@ files remain in scope.
 
 ## Unit tests
 
-`make test` discovers every `scripts/tests/test_*.py` module. Narrow targets
+`make test` discovers every `tests/test_*.py` module. Narrow targets
 such as `make test-debug-symbols` and `make test-runtime-traces` remain useful
 during development, but the aggregate target is the pre-commit gate. Tests use
 small synthetic inputs and do not start FCEUX.
@@ -79,10 +82,18 @@ captures with their semantic validators. It intentionally regenerates ignored
 evidence under `tmp/`; a stale local trace therefore cannot make the release
 gate pass. Run it on the exact commit intended for the stable tag.
 
-`make reconstruction-audit-2` adds strict verification of all seven official
-revision profiles and the USA Namco/Europe FCEUX title/OAM smoke tests. Unlike
-the convenient standalone matrix commands, the release gate treats every
-missing reference ROM as a failure.
+`make reconstruction-audit-2` adds strict verification and a direct FCEUX
+title/OAM smoke for every official revision profile. Unlike the convenient
+standalone matrix commands, the release gate treats every missing reference ROM
+as a failure. `make build-dev` first verifies the pinned ca65, ld65, FCEUX source
+commit, and FCEUX binary identities from `config/toolchain.json`.
+The revision Lua hook records raw menu/NMI/OAM facts, while the Python runner
+owns the manifest comparison and PASS/FAIL decision.
+
+`make source-2-1-check` adds both isolated variant runtimes, symbolic relocation,
+and the clean-worktree release contract. After creating the annotated tag on
+that exact commit, `make source-2-1-post-tag-audit` confirms its object type and
+that it resolves to `HEAD`.
 
 ## Reconstruction evidence
 

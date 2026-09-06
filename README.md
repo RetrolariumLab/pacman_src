@@ -15,16 +15,18 @@ catch behavioural regressions frame by frame.
 
 ## Status
 
-Source Reconstruction 2.0 is the current tagged release. It retains the 1.0
-preservation contract and adds the completed content-authoring pipeline, seven
-byte-identical official revision profiles, and strict regional runtime gates. See
-[`docs/source_reconstruction_2_0.md`](docs/source_reconstruction_2_0.md) for the
-release contract. The release tags are `source-reconstruction-1.0` and
+Source Reconstruction 2.1 is the current release contract. It retains the 1.0
+preservation contract and the 2.0 authoring, seven-revision, and regional-runtime
+scope while adding stricter evidence, symbolic relocation, and a normalized
+repository interface. See
+[`docs/source_reconstruction_2_1.md`](docs/source_reconstruction_2_1.md) for the
+release contract. Its tag name is `source-reconstruction-2.1`; the preserved
+predecessor tags are `source-reconstruction-1.0` and
 `source-reconstruction-2.0`.
 
 The annotated source covers every major subsystem, milestone 23 has resolved
 every registered unknown, and the complete validation matrix is available
-through `make reconstruction-audit-2`. Future uncertainty remains governed by
+through `make source-2-1-check`. Future uncertainty remains governed by
 the evidence rules in the unknowns registry. See
 [`docs/source_reconstruction_1_0.md`](docs/source_reconstruction_1_0.md) for the
 original preservation contract and evidence summary.
@@ -38,9 +40,8 @@ convenience milestone; it is not required to use or maintain the current tools.
 
 Seven official cartridge profiles rebuild byte-identically from the shared
 source. `make verify-revisions` checks every locally available reference, while
-`make smoke-regional-revisions` boots the USA Namco and European profiles in
-FCEUX and validates their regional title/OAM behavior. ROM images remain local
-and ignored.
+`make smoke-revisions` directly boots every profile in FCEUX and validates its
+title/OAM behavior. ROM images remain local and ignored.
 
 The source is split into address-ordered subsystem modules containing real 6502
 instructions and ca65 data directives. Further reverse engineering can deepen
@@ -119,7 +120,8 @@ pacman_src/
 |   `-- generated/                 # Ignored CHR, maze, and audio payloads
 |-- bin/                           # ca65 / ld65
 |-- build/                         # Generated ROM and linker artifacts
-|-- config/                        # Emulator/reference configuration
+|-- config/                        # Emulator/reference/linker configuration
+|   `-- linker/                    # ld65 layouts
 |-- docs/                          # Architecture and RE notes
 |-- movies/                        # FM2 inputs for automated capture
 |-- scenarios/                     # Runtime, scoring, and revision smoke cases
@@ -135,17 +137,17 @@ pacman_src/
 |   `-- split_assets.py            # Validated ROM asset extractor
 |-- src/
 |   |-- main.asm                   # Address-ordered ca65 entrypoint
-|   |-- main_hack.asm              # Isolated behavior-changing entrypoint
-|   |-- main_expanded.asm          # JSON-backed NROM-256 entrypoint
-|   |-- nrom128_prg_only.cfg       # Reference linker layout
-|   |-- nrom256_expanded.cfg       # Expanded linker layout
+|   |-- expanded/nrom256.asm       # JSON-backed NROM-256 entrypoint
+|   |-- variants/stage5.asm        # Isolated behavior-changing entrypoint
 |   |-- macros/                    # Byte-preserving ca65 abstractions
 |   |-- system/
 |   |-- game/
 |   |-- rendering/
 |   |-- audio/
 |   |-- data/
-|   `-- memory/
+|   |-- memory/
+|   `-- revisions/
+|-- tests/                         # Python unit and contract tests
 |-- Makefile
 `-- Pac-Man (J) (V1.0) [!].nes     # Original ROM (not distributed)
 ```
@@ -164,7 +166,7 @@ make verify                             # Build and require byte-identity
 make build-revision REVISION=europe     # Build one official revision
 make verify-revision REVISION=europe    # Verify one official revision
 make verify-revisions                   # Verify every available official revision
-make smoke-regional-revisions           # Boot USA Namco and Europe in FCEUX
+make smoke-revisions                    # Build and boot every official revision in FCEUX
 make build-hack                         # Build the isolated default ROM-hack variant
 make verify-hack                        # Require only its documented byte difference
 make validate-hack                      # Prove its stage-5 behavior in FCEUX
@@ -190,6 +192,9 @@ make test                               # Run all focused Python workflow tests
 make roundtrip-formats                  # Decode/encode six binary format families
 make reconstruction-audit               # Run the complete Source Reconstruction 1.0 gate
 make reconstruction-audit-2             # Run the strict Source Reconstruction 2.0 gate
+make source-2-1-audit                    # Check the Source 2.1 repository contract
+make source-2-1-check                    # Run the tag-ready Source 2.1 gate
+make source-2-1-post-tag-audit           # Verify the annotated Source 2.1 tag
 make trace-scoring                      # Capture semantic scoring events
 make validate-scoring-trace             # Revalidate an existing scoring trace
 make trace-runtime                      # Capture and validate focused gameplay traces
@@ -223,10 +228,10 @@ checkout or the original ROM.
 ## Tooling Requirements
 
 - Python 3
-- `ca65` / `ld65` (bundled in `bin/`)
+- `ca65` / `ld65` (bundled in `bin/` and pinned by `config/toolchain.json`)
 - [`fceux_automation`](https://github.com/oranguthang/fceux_automation) — a
   fork of FCEUX with headless capture, reference comparison and state dumping,
-  cloned and built by `make build-dev`
+  cloned and built at the pinned source commit by `make build-dev`
 - MSBuild / Visual Studio 2022 (to build `fceux_automation` on Windows)
 
 ## Project Boundaries
@@ -247,6 +252,7 @@ checkout or the original ROM.
 
 ## License
 
-Reverse-engineering / preservation work for educational purposes. No original
-ROM data is distributed with this repository. Original game rights belong to
-Namco and Nintendo.
+No original ROM data is distributed with this repository. The repository does
+not currently grant an open-source license for project-authored files; see
+[`docs/licensing.md`](docs/licensing.md) for the distribution boundary and
+third-party provenance. Original game rights remain with their respective owners.
