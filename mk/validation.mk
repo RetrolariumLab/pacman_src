@@ -29,6 +29,18 @@ test-runtime-traces:
 test:
 	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)tests" -p "test_*.py" -v
 
+help-check:
+	$(PYTHON) "$(PROJECT_DIR)scripts/make_help.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--manifest "$(PROJECT_DIR)config/make_help.json" \
+		--check
+
+scaffold-check:
+	$(PYTHON) "$(PROJECT_DIR)scripts/scaffold_check.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--python "$(PYTHON)" \
+		--make "$(MAKE)"
+
 validate-symbols: build-dev symbols
 	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(DEBUG_RUNTIME_RESULT)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
 	set "PACMAN_DEBUG_SYMBOL_RESULT=$(DEBUG_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \

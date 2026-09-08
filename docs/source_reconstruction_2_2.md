@@ -48,8 +48,7 @@ The remaining compatible work is organized as vertical, testable slices:
 
 1. separate reusable functional gates from pre-tag and post-tag repository
    state checks, and require a clean build for the release path;
-2. add a ROM-less scaffold gate, generated/tested command help, and workstation
-   UI interaction smokes for the supported Studios;
+2. add workstation UI interaction smokes for the supported Studios;
 3. validate history, delta, paths, profile coverage, artifacts, and tag state in
    the Source 2.2 release audit.
 

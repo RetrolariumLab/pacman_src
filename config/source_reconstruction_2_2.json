@@ -18,6 +18,7 @@
     "unified_output_layout",
     "responsibility_make_layout",
     "machine_readable_tooling_ownership",
+    "romless_scaffold_and_generated_help",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -71,6 +72,12 @@
       "kind": "tooling",
       "summary": "Publish a stable tool dispatcher and give every Python or Lua tool exactly one machine-readable responsibility owner, with explicit test ownership for public commands.",
       "evidence": ["config/tooling_layout.json", "scripts/run.py", "tests/test_tooling_layout.py", "scripts/source_2_2_audit.py", "docs/tooling_layout.md"]
+    },
+    {
+      "id": "romless_scaffold_and_generated_help",
+      "kind": "tooling",
+      "summary": "Generate command help from an exact public-target registry and exercise public Make orchestration in a disposable checkout containing no private ROM, extracted assets, workspace, or saved build state.",
+      "evidence": ["config/make_help.json", "scripts/make_help.py", "scripts/scaffold_check.py", "tests/test_make_help.py", "tests/test_scaffold_check.py"]
     }
   ],
   "requirements": {
@@ -126,6 +133,10 @@
       "status": "satisfied",
       "evidence": {"targets": ["tool-list", "source-2-2-audit"], "files": ["config/tooling_layout.json", "scripts/run.py", "tests/test_tooling_layout.py"], "scenarios": [], "artifacts": []}
     },
+    "public_interface_smoke": {
+      "status": "satisfied",
+      "evidence": {"targets": ["help", "help-check", "scaffold-check", "source-2-2-audit"], "files": ["config/make_help.json", "scripts/make_help.py", "scripts/scaffold_check.py", "tests/test_make_help.py", "tests/test_scaffold_check.py"], "scenarios": ["romless_disposable_checkout"], "artifacts": []}
+    },
     "release_integrity": {
       "status": "planned",
       "evidence": {"targets": ["source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"], "scenarios": [], "artifacts": []}
@@ -135,6 +146,7 @@
     "canonical_source": "src/main.asm",
     "source_layout_registry": "config/reconstruction/source_layout.json",
     "tooling_layout_registry": "config/tooling_layout.json",
+    "make_help_manifest": "config/make_help.json",
     "src_root_asm": ["main.asm"],
     "variant_entrypoints": ["src/expanded/nrom256.asm", "src/variants/stage5.asm"],
     "revision_ids": "src/revisions/profile_ids.inc",
@@ -145,11 +157,13 @@
       "tests/test_build_dev.py",
       "tests/test_build_revision.py",
       "tests/test_clean_artifacts.py",
+      "tests/test_make_help.py",
       "tests/test_relocation.py",
       "tests/test_revision_matrix.py",
       "tests/test_revision_smokes.py",
       "tests/test_source_2_1_audit.py",
       "tests/test_source_2_2_audit.py",
+      "tests/test_scaffold_check.py",
       "tests/test_tooling_layout.py"
     ]
   },
@@ -242,6 +256,7 @@
     "mk/runtime.mk",
     "mk/validation.mk",
     "config/reconstruction/source_layout.json",
+    "config/make_help.json",
     "config/tooling_layout.json",
     "docs/index.md",
     "docs/adr/0001-expanded-nrom256.md",
@@ -255,8 +270,10 @@
     "docs/multi_revision_builds.md",
     "scripts/build_dev.py",
     "scripts/build_revision.py",
+    "scripts/make_help.py",
     "scripts/revision_profiles.py",
     "scripts/run.py",
+    "scripts/scaffold_check.py",
     "scripts/source_2_1_audit.py",
     "scripts/source_2_2_audit.py"
   ],
@@ -267,6 +284,7 @@
     "source-2-1-audit", "source-2-1-release-audit",
     "source-2-1-post-tag-audit", "source-2-1-check",
     "source-2-2-audit", "source-2-2-release-audit",
-    "source-2-2-post-tag-audit", "source-2-2-check", "tool-list"
+    "source-2-2-post-tag-audit", "source-2-2-check", "tool-list",
+    "help-check", "scaffold-check"
   ]
 }

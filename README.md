@@ -166,6 +166,9 @@ public commands, and test owners are pinned by `config/tooling_layout.json`; see
 
 ## Make Targets
 
+`make help` is generated from the checked public-target registry. Use
+`make scaffold-check` for the ROM-less disposable-checkout smoke.
+
 ```bash
 make                                    # Same as `make build`
 make build                              # Build the native ca65 ROM
