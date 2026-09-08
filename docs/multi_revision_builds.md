@@ -39,12 +39,15 @@ emitting bytes of its own.
 
 The complete matrix and single-profile build runner use `config/revisions.json`
 as their canonical list of profiles, ca65 IDs, CHR sources, filenames, runtime
-scenario IDs, and full-ROM SHA-1/SHA-256 values. A missing local ROM is reported
-as `MISSING`; a wrong hash or non-identical build is `FAIL`. The revision smoke
-command directly builds and boots all seven profiles in FCEUX, reaches the title
-menu through generated semantic labels, confirms NMI activity, and verifies the
-full shadow-OAM initialization pattern (`$00` for the NTSC profiles and `$EF`
-for PAL).
+scenario IDs, and full-ROM SHA-1/SHA-256 values. Its versioned profile-contract
+catalogue defines the private and shared inputs, NROM-128 container layout,
+default output path and identity, and supported capabilities once; each profile
+references those contracts and only owns its variable facts. A missing local
+ROM is reported as `MISSING`; a wrong hash or non-identical build is `FAIL`. The
+revision smoke command directly builds and boots all seven profiles in FCEUX,
+reaches the title menu through generated semantic labels, confirms NMI activity,
+and verifies the full shadow-OAM initialization pattern (`$00` for the NTSC
+profiles and `$EF` for PAL).
 
 The Lua runner only captures menu, NMI, and observed OAM facts. The Python
 validator in `scripts/workflow/run_revision_smokes.py` independently compares

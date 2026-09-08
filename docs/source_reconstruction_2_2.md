@@ -13,12 +13,13 @@ commit on the `source-reconstruction-2.2` branch.
 ## Current status
 
 The release status is `development`. The project manifest and canonical
-source-layout registry are present, and the accepted 2.1 guarantees have a
-reusable predecessor gate. The repository reorganization, profile schema,
-clean-build boundary, UI smoke coverage, and complete project release audit are
-not yet complete. No 2.2 tag should be created until every planned
-requirement is satisfied and the full pre-tag gate passes from a clean build on
-the supported Windows host.
+source-layout registry are present, every official revision publishes explicit
+input/layout/output/capability contracts, and the accepted 2.1 guarantees have
+a reusable predecessor gate. The repository reorganization, clean-build
+boundary, UI smoke coverage, and complete project release audit are not yet
+complete. No 2.2 tag should be created until every planned requirement is
+satisfied and the full pre-tag gate passes from a clean build on the supported
+Windows host.
 
 ## Accepted baseline
 
@@ -40,17 +41,15 @@ delta after Source 2.1.
 
 The remaining compatible work is organized as vertical, testable slices:
 
-1. make source ownership and profile input/layout/output/capability metadata
-   fully machine-readable;
-2. separate reusable functional gates from pre-tag and post-tag repository
+1. separate reusable functional gates from pre-tag and post-tag repository
    state checks, and require a clean build for the release path;
-3. group Make, Python tools, and tests by responsibility or record a precise
+2. group Make, Python tools, and tests by responsibility or record a precise
    deviation with an equivalent control;
-4. consolidate reproducible outputs under the build root and keep private
+3. consolidate reproducible outputs under the build root and keep private
    authoring documents in one ignored workspace;
-5. add a ROM-less scaffold gate, generated/tested command help, and workstation
+4. add a ROM-less scaffold gate, generated/tested command help, and workstation
    UI interaction smokes for the supported Studios;
-6. validate history, delta, paths, profile coverage, artifacts, and tag state in
+5. validate history, delta, paths, profile coverage, artifacts, and tag state in
    the Source 2.2 release audit.
 
 Cross-profile relocation, a sibling engine, and a new platform/container ABI

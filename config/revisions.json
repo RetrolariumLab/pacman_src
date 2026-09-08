@@ -1,6 +1,47 @@
 {
   "format": 2,
   "default_profile": "japan_v10",
+  "profile_contract_version": 1,
+  "profile_contracts": {
+    "inputs": {
+      "private_reference_rom": {
+        "kind": "ines-rom",
+        "tracked": false,
+        "required_profile_fields": ["rom", "sha1", "sha256"]
+      },
+      "canonical_shared_source": {
+        "entrypoint": "src/main.asm",
+        "linker_config": "config/linker/nrom128_prg_only.cfg",
+        "generated_chr": "assets/generated/chr/pacman.chr",
+        "revision_define": "PACMAN_REVISION"
+      }
+    },
+    "layouts": {
+      "nes_nrom128": {
+        "container": "ines-1.0",
+        "mapper": 0,
+        "mirroring": "horizontal",
+        "header_size": 16,
+        "prg": {"size": 16384, "cpu_start": "0xC000", "mirrored": true},
+        "chr": {"size": 8192, "ppu_start": "0x0000"}
+      }
+    },
+    "outputs": {
+      "byte_identical_revision_rom": {
+        "artifact_id_template": "pacman_{profile_id}",
+        "path_template": "build/revisions/{profile_id}/pacman.nes",
+        "size": 24592,
+        "identity": "byte-identical"
+      }
+    },
+    "capabilities": {
+      "build": {"status": "supported", "target": "build-revision"},
+      "byte_identity": {"status": "supported", "target": "verify-revision"},
+      "direct_runtime_smoke": {"status": "supported", "target": "smoke-revisions"},
+      "deep_runtime_evidence": {"status": "supported", "target": "reconstruction-audit-2"},
+      "canonical_relocation": {"status": "supported", "target": "test-relocation"}
+    }
+  },
   "profiles": [
     {
       "id": "japan_v10",
@@ -9,7 +50,11 @@
       "sha256": "c67e20d7144dac97ba9d4cef1ad90f13d6504e8492e60a6193c33695d68c4b22",
       "ca65_revision": 0,
       "chr_source": "generated",
-      "runtime_smoke": "title_menu_boot"
+      "runtime_smoke": "title_menu_boot",
+      "input_contracts": ["private_reference_rom", "canonical_shared_source"],
+      "layout_contract": "nes_nrom128",
+      "output_contract": "byte_identical_revision_rom",
+      "capabilities": ["build", "byte_identity", "direct_runtime_smoke", "deep_runtime_evidence", "canonical_relocation"]
     },
     {
       "id": "japan_v11",
@@ -18,7 +63,11 @@
       "sha256": "06ed4f706d87940728d623d289caa7fd0abd5c0d6466cb52d4c491ff3b8c0ed9",
       "ca65_revision": 1,
       "chr_source": "generated",
-      "runtime_smoke": "title_menu_boot"
+      "runtime_smoke": "title_menu_boot",
+      "input_contracts": ["private_reference_rom", "canonical_shared_source"],
+      "layout_contract": "nes_nrom128",
+      "output_contract": "byte_identical_revision_rom",
+      "capabilities": ["build", "byte_identity", "direct_runtime_smoke"]
     },
     {
       "id": "japan_revb",
@@ -27,7 +76,11 @@
       "sha256": "bae6f184d345a1351447a232d69103470fedcb82e161b2d2ae095d3283ae38ff",
       "ca65_revision": 4,
       "chr_source": "generated",
-      "runtime_smoke": "title_menu_boot"
+      "runtime_smoke": "title_menu_boot",
+      "input_contracts": ["private_reference_rom", "canonical_shared_source"],
+      "layout_contract": "nes_nrom128",
+      "output_contract": "byte_identical_revision_rom",
+      "capabilities": ["build", "byte_identity", "direct_runtime_smoke"]
     },
     {
       "id": "usa_tengen_unlicensed",
@@ -36,7 +89,11 @@
       "sha256": "1e59847da9369f6b116c95454d53e1508cdfeef6f00ea1a6968d725517ab852f",
       "ca65_revision": 2,
       "chr_source": "generated",
-      "runtime_smoke": "title_menu_boot"
+      "runtime_smoke": "title_menu_boot",
+      "input_contracts": ["private_reference_rom", "canonical_shared_source"],
+      "layout_contract": "nes_nrom128",
+      "output_contract": "byte_identical_revision_rom",
+      "capabilities": ["build", "byte_identity", "direct_runtime_smoke"]
     },
     {
       "id": "usa_tengen",
@@ -45,7 +102,11 @@
       "sha256": "d5e9c4e81ff7316d4d8b15f2198471606fdb728b8cd9da92b153bdc45124b565",
       "ca65_revision": 3,
       "chr_source": "generated",
-      "runtime_smoke": "title_menu_boot"
+      "runtime_smoke": "title_menu_boot",
+      "input_contracts": ["private_reference_rom", "canonical_shared_source"],
+      "layout_contract": "nes_nrom128",
+      "output_contract": "byte_identical_revision_rom",
+      "capabilities": ["build", "byte_identity", "direct_runtime_smoke"]
     },
     {
       "id": "usa_namco",
@@ -54,7 +115,11 @@
       "sha256": "254fb93e16d0db63b36ffa3ef1bc5a9e6cf9e9b1de347712d9936fe2ab7b690d",
       "ca65_revision": 5,
       "chr_source": "reference",
-      "runtime_smoke": "title_menu_boot"
+      "runtime_smoke": "title_menu_boot",
+      "input_contracts": ["private_reference_rom", "canonical_shared_source"],
+      "layout_contract": "nes_nrom128",
+      "output_contract": "byte_identical_revision_rom",
+      "capabilities": ["build", "byte_identity", "direct_runtime_smoke"]
     },
     {
       "id": "europe",
@@ -63,7 +128,11 @@
       "sha256": "754675c07b8648772e27ce805b4049d99308ac560b6f70e9b7b6e2581f8ad96f",
       "ca65_revision": 6,
       "chr_source": "reference",
-      "runtime_smoke": "title_menu_boot"
+      "runtime_smoke": "title_menu_boot",
+      "input_contracts": ["private_reference_rom", "canonical_shared_source"],
+      "layout_contract": "nes_nrom128",
+      "output_contract": "byte_identical_revision_rom",
+      "capabilities": ["build", "byte_identity", "direct_runtime_smoke"]
     }
   ]
 }

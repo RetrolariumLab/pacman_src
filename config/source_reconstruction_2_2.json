@@ -14,6 +14,7 @@
   "included_scope": [
     "self_contained_release_metadata",
     "machine_readable_source_layout",
+    "machine_readable_profile_contracts",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -42,6 +43,12 @@
       "kind": "tooling",
       "summary": "Give every canonical PRG range one machine-readable semantic owner and validate contiguous ownership against the source entrypoint.",
       "evidence": ["config/reconstruction/source_layout.json", "tests/test_source_2_2_audit.py"]
+    },
+    {
+      "id": "machine_readable_profile_contracts",
+      "kind": "tooling",
+      "summary": "Define inputs, platform layout, default outputs, and evidence-backed capabilities for every accepted official revision profile.",
+      "evidence": ["config/revisions.json", "scripts/revision_profiles.py", "tests/test_revision_matrix.py"]
     }
   ],
   "requirements": {
@@ -81,6 +88,10 @@
       "status": "satisfied",
       "evidence": {"targets": ["source-2-2-audit"], "files": ["config/reconstruction/source_layout.json", "src/main.asm"], "scenarios": [], "artifacts": []}
     },
+    "profile_contracts": {
+      "status": "satisfied",
+      "evidence": {"targets": ["verify-revisions", "smoke-revisions", "source-2-2-audit"], "files": ["config/revisions.json", "scripts/revision_profiles.py"], "scenarios": ["title_menu_boot"], "artifacts": ["pacman_japan_v10", "pacman_japan_v11", "pacman_japan_revb", "pacman_usa_tengen_unlicensed", "pacman_usa_tengen", "pacman_usa_namco", "pacman_europe"]}
+    },
     "release_integrity": {
       "status": "planned",
       "evidence": {"targets": ["source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"], "scenarios": [], "artifacts": []}
@@ -115,6 +126,7 @@
   "revision_contract": {
     "manifest": "config/revisions.json",
     "schema_format": 2,
+    "profile_contract_version": 1,
     "profile_ids": ["japan_v10", "japan_v11", "japan_revb", "usa_tengen_unlicensed", "usa_tengen", "usa_namco", "europe"],
     "ca65_revisions": [0, 1, 4, 2, 3, 5, 6]
   },

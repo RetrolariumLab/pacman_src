@@ -15,6 +15,24 @@ from verify_revision_matrix import Revision, load_manifest, verify_matrix  # noq
 
 
 class RevisionMatrixTests(unittest.TestCase):
+    def test_project_profiles_publish_complete_contracts(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        default_profile, revisions = load_manifest(root / "config/revisions.json")
+        self.assertEqual(default_profile, "japan_v10")
+        self.assertEqual(len(revisions), 7)
+        self.assertTrue(all(revision.input_contracts for revision in revisions))
+        self.assertTrue(
+            all(revision.layout_contract == "nes_nrom128" for revision in revisions)
+        )
+        self.assertTrue(all(revision.output_size == 24592 for revision in revisions))
+        self.assertEqual(
+            [revision.artifact_id for revision in revisions],
+            [f"pacman_{revision.profile_id}" for revision in revisions],
+        )
+        canonical = revisions[0]
+        self.assertIn("canonical_relocation", canonical.capabilities)
+        self.assertNotIn("canonical_relocation", revisions[1].capabilities)
+
     def test_matrix_distinguishes_pass_missing_and_hash_failure(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -62,6 +80,26 @@ class RevisionMatrixTests(unittest.TestCase):
                 "format": 2, "default_profile": "same", "profiles": [base],
             }))
             with self.assertRaisesRegex(ValueError, "chr_source"):
+                load_manifest(path)
+
+    def test_profile_contract_rejects_missing_capability(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        document = json.loads(
+            (root / "config/revisions.json").read_text(encoding="utf-8")
+        )
+        document["profiles"][0]["capabilities"].remove("byte_identity")
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory)
+            (project / "src").mkdir()
+            (project / "src/main.asm").write_text("; fixture\n", encoding="utf-8")
+            (project / "config/linker").mkdir(parents=True)
+            (project / "config/linker/nrom128_prg_only.cfg").write_text(
+                "# fixture\n", encoding="utf-8"
+            )
+            path = project / "config" / "revisions.json"
+            path.parent.mkdir(exist_ok=True)
+            path.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "required capabilities"):
                 load_manifest(path)
 
 

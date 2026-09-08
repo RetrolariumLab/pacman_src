@@ -66,7 +66,7 @@ GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
 EDITED_CHR ?= $(PROJECT_DIR)hacks/local/pacman.chr
 REVISION_MANIFEST ?= $(PROJECT_DIR)config/revisions.json
 REVISION ?= $(shell $(PYTHON) "$(PROJECT_DIR)scripts/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --print-default)
-REVISION_BUILD_DIR ?= $(BUILD_DIR)/revisions/$(REVISION)
+REVISION_BUILD_DIR ?= $(PROJECT_DIR)$(shell $(PYTHON) "$(PROJECT_DIR)scripts/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --profile "$(REVISION)" --print-output-dir)
 REVISION_REFERENCE_DIR ?= $(PROJECT_DIR)
 SOURCE_2_1_MANIFEST ?= $(PROJECT_DIR)config/source_reconstruction_2_1.json
 SOURCE_2_2_MANIFEST ?= $(PROJECT_DIR)config/source_reconstruction_2_2.json
@@ -76,8 +76,6 @@ REVISION_SMOKE_SCENARIOS ?= $(PROJECT_DIR)scenarios/revision_smoke.json
 REVISION_SMOKE_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_revision_smoke.lua
 REVISION_SMOKE_DIR ?= $(PROJECT_DIR)tmp/revision_smokes
 REVISION_REQUIRE_ALL ?=
-REVISION_SOURCE := $(PROJECT_DIR)src/main.asm
-
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
 FCEUX_DIR ?= ../fceux_automation
 FCEUX_CONFIG ?= Release
@@ -173,11 +171,7 @@ build-revision: _require-assets
 		--manifest "$(REVISION_MANIFEST)" \
 		--profile "$(REVISION)" \
 		--reference-dir "$(REVISION_REFERENCE_DIR)" \
-		--project-dir "$(PROJECT_DIR)" \
-		--source "$(REVISION_SOURCE)" \
-		--config "$(NATIVE_CFG)" \
-		--generated-chr "$(GENERATED_CHR)" \
-		--build-dir "$(REVISION_BUILD_DIR)"
+		--project-dir "$(PROJECT_DIR)"
 
 verify-revision: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_revision.py" \
@@ -185,10 +179,6 @@ verify-revision: _require-assets
 		--profile "$(REVISION)" \
 		--reference-dir "$(REVISION_REFERENCE_DIR)" \
 		--project-dir "$(PROJECT_DIR)" \
-		--source "$(REVISION_SOURCE)" \
-		--config "$(NATIVE_CFG)" \
-		--generated-chr "$(GENERATED_CHR)" \
-		--build-dir "$(REVISION_BUILD_DIR)" \
 		--verify
 
 verify-revisions:
