@@ -13,7 +13,7 @@ make validate-runtime-traces
 
 `make trace-runtime` rebuilds the byte-identical ROM, exports fresh debugger
 symbols, and runs the scenarios declared in `scenarios/runtime_trace.json`.
-Each scenario writes an ignored CSV under `tmp/runtime_traces/`; the target then
+Each scenario writes an ignored CSV under `build/runtime/traces/`; the target then
 validates semantic invariants automatically. The second command revalidates
 existing local traces without starting the emulator.
 

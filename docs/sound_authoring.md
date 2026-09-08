@@ -19,7 +19,7 @@ Python's bundled Tkinter and adds no package dependency.
 The editable JSON remains the source of truth. The GUI never saves, builds, or
 launches implicitly. Closing with unsaved changes prompts before discarding;
 building is refused until edits are saved. `Save As` supports experiments without
-overwriting `hacks/local/sound_streams.json`.
+overwriting `content/workspace/sound_streams.json`.
 
 ## Expanded-bank allocation
 
@@ -56,8 +56,9 @@ them faithfully.
 make import-midi MIDI_FILE=melody.mid SOUND_SLOT=4 MIDI_TRACK=0 MIDI_CHANNEL=0
 ```
 
-The default output is the ignored `hacks/local/sound_streams.midi.json`; the
-working `hacks/local/sound_streams.json` is never overwritten implicitly.
+The default output is the ignored `content/workspace/sound_streams.midi.json`;
+the working `content/workspace/sound_streams.json` is never overwritten
+implicitly.
 Review or rename the imported file before using it as the expanded build input.
 
 The GUI uses the same importer and presents the limitation before replacing a
@@ -70,7 +71,7 @@ polyphony, and rests cannot be preserved. Unsupported input remains an error.
 make preview-sound SOUND_SLOT=4
 ```
 
-This writes ignored `tmp/sound_preview.wav`. The renderer uses the NTSC 2A03
+This writes ignored `build/previews/sound_preview.wav`. The renderer uses the NTSC 2A03
 CPU frequency, the game's twelve base timer periods, frame durations, and the
 pulse duty/volume encoded in the stream prologue. It is deterministic and
 useful for note editing, but is not a cycle-accurate APU emulator: arbitration,

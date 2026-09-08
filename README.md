@@ -152,9 +152,10 @@ pacman_src/
 `-- Pac-Man (J) (V1.0) [!].nes     # Original ROM (not distributed)
 ```
 
-`assets/generated/`, `build/`, `reference/`, `diffs/`, `reports/`, and the
-root-level `workflow/` analysis output are generated artifacts and are not
-tracked. The source tools under `scripts/workflow/` are tracked. See
+`assets/generated/` and `build/` are generated artifacts and are not tracked.
+Private editor documents live under ignored `content/workspace/`; legacy local
+artifact directories remain ignored but are not touched by `make clean`. The
+source tools under `scripts/workflow/` are tracked. See
 [`docs/assets.md`](docs/assets.md) for the source-versus-asset policy.
 
 ## Make Targets

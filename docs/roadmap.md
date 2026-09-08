@@ -411,7 +411,7 @@ Completed with the six-format specification and JSON codec workflow in
 `docs/data_formats.md`. `make roundtrip-formats` decodes stage records, maze
 RLE, all sound streams, buffered PPU commands, actor sprite/OAM tables, and
 intermission scene/animation tables, reloads the human-readable output, and
-requires byte-identical encoding. Generated files remain under ignored `tmp/`
+requires byte-identical encoding. Generated files remain under ignored `build/`
 and are never consumed by the normal preservation build.
 
 ### 10. Source Reconstruction 1.0 — Complete
@@ -486,7 +486,7 @@ pipeline without shifting or deleting the preserved fixed-bank tables. Require
 every redirected operand and asset boundary to be mechanically reviewed, then
 prove a changed first-level parameter reaches runtime RAM.
 
-Completed with `hacks/local/stage_parameters.json`, placed after maze at
+Completed with `content/workspace/stage_parameters.json`, placed after maze at
 `$81A0`. Active-table aliases retain original addresses in preservation builds
 and redirect 15 expanded round-setup reads. `config/expanded_layout.json`
 requires the exact 32 changed operand/pointer bytes and contiguous asset sizes.
@@ -501,7 +501,7 @@ without changing preservation payloads or decoder behavior. Generate the
 active pointer table deterministically, reject size/order drift, and prove an
 audible stream is decoded from the added bank.
 
-Completed with `hacks/local/sound_streams.json`, a generated pointer table at
+Completed with `content/workspace/sound_streams.json`, a generated pointer table at
 `$848F`, and 890 stream bytes at `$84AF`. The fixed bank changes only the
 two-byte active-table pointer. The demonstration changes pellet slot 04's first
 note from `$01` to `$B1`; FCEUX observes its expanded pointer, note byte, and

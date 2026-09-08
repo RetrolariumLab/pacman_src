@@ -175,7 +175,9 @@ class MazeStudio(tk.Tk):
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--maze-json", type=Path, default=ROOT / "hacks/local/maze.json")
+    parser.add_argument(
+        "--maze-json", type=Path, default=ROOT / "content/workspace/maze.json"
+    )
     parser.add_argument("--original-rle", type=Path, default=ROOT / "assets/generated/maze/maze.rle")
     parser.add_argument("--chr", type=Path, default=ROOT / "assets/generated/chr/pacman.chr")
     args = parser.parse_args()

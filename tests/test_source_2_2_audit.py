@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 import tempfile
 import unittest
@@ -17,6 +18,7 @@ from source_2_2_audit import (  # noqa: E402
     make_targets,
     validate_delta_evidence,
     validate_layout,
+    validate_output_layout,
     validate_release_metadata,
     validate_source_layout,
 )
@@ -75,6 +77,15 @@ class Source22AuditTests(unittest.TestCase):
             ),
             [],
         )
+
+    def test_project_output_layout_is_confined(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        manifest = json.loads(
+            (root / "config/source_reconstruction_2_2.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(validate_output_layout(root, manifest["output_layout"]), [])
 
     def test_layout_rejects_extra_root_entrypoint(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -12,9 +12,10 @@ make validate-scoring-trace
 ```
 
 The first command builds the byte-identical ROM, plays the repository longplay
-in the instrumented FCEUX build, and writes `tmp/scoring_trace.csv`. The second
+in the instrumented FCEUX build, and writes
+`build/runtime/scoring/scoring_trace.csv`. The second
 checks the event sequence and its semantic RAM invariants. Both the trace and
-any patched save states remain local artifacts under the ignored `tmp/`
+any patched save states remain local artifacts under the ignored `build/`
 directory.
 
 Before capture, the workflow verifies that both Lua runtime DLLs exist beside

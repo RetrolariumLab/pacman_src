@@ -22,7 +22,7 @@ HACK_DEBUG_SUMMARY ?= $(BUILD_DIR)/hack/debug_symbols.json
 HACK_CHR ?= $(GENERATED_CHR)
 HACK_MANIFEST ?= $(PROJECT_DIR)config/hack_variants.json
 HACK_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_hack_variant.lua
-HACK_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/hack_variant_runtime.txt
+HACK_RUNTIME_RESULT ?= $(BUILD_DIR)/runtime/hack_variant.txt
 EXPANDED_SOURCE ?= $(PROJECT_DIR)src/expanded/nrom256.asm
 EXPANDED_CFG ?= $(PROJECT_DIR)config/linker/nrom256_expanded.cfg
 EXPANDED_DIR ?= $(BUILD_DIR)/expanded
@@ -33,37 +33,37 @@ EXPANDED_LABELS ?= $(EXPANDED_DIR)/pacman.lbl
 EXPANDED_MAP ?= $(EXPANDED_DIR)/pacman.map
 EXPANDED_DEBUG ?= $(EXPANDED_DIR)/pacman.dbg
 EXPANDED_DEBUG_SUMMARY ?= $(EXPANDED_DIR)/debug_symbols.json
-EXPANDED_MAZE_JSON ?= $(PROJECT_DIR)hacks/local/maze.json
+EXPANDED_MAZE_JSON ?= $(PROJECT_DIR)content/workspace/maze.json
 EXPANDED_MAZE_BIN ?= $(EXPANDED_DIR)/assets/maze.rle
-EXPANDED_STAGE_JSON ?= $(PROJECT_DIR)hacks/local/stage_parameters.json
+EXPANDED_STAGE_JSON ?= $(PROJECT_DIR)content/workspace/stage_parameters.json
 EXPANDED_STAGE_BIN ?= $(EXPANDED_DIR)/assets/stage_parameters.bin
-EXPANDED_SOUND_JSON ?= $(PROJECT_DIR)hacks/local/sound_streams.json
+EXPANDED_SOUND_JSON ?= $(PROJECT_DIR)content/workspace/sound_streams.json
 EXPANDED_SOUND_BIN ?= $(EXPANDED_DIR)/assets/sound_streams.bin
 EXPANDED_SOUND_POINTERS_BIN ?= $(EXPANDED_DIR)/assets/sound_pointers.bin
-EXPANDED_ACTOR_JSON ?= $(PROJECT_DIR)hacks/local/actor_sprites.json
+EXPANDED_ACTOR_JSON ?= $(PROJECT_DIR)content/workspace/actor_sprites.json
 EXPANDED_ACTOR_BIN ?= $(EXPANDED_DIR)/assets/actor_sprites.bin
-EXPANDED_PALETTE_JSON ?= $(PROJECT_DIR)hacks/local/palettes.json
+EXPANDED_PALETTE_JSON ?= $(PROJECT_DIR)content/workspace/palettes.json
 EXPANDED_PALETTE_BIN ?= $(EXPANDED_DIR)/assets/palettes.bin
-EXPANDED_SCREEN_JSON ?= $(PROJECT_DIR)hacks/local/screens.json
+EXPANDED_SCREEN_JSON ?= $(PROJECT_DIR)content/workspace/screens.json
 EXPANDED_SCREEN_BIN ?= $(EXPANDED_DIR)/assets/screens.bin
 SOUND_SLOT ?= 4
-SOUND_PREVIEW ?= $(PROJECT_DIR)tmp/sound_preview.wav
+SOUND_PREVIEW ?= $(BUILD_DIR)/previews/sound_preview.wav
 MIDI_FILE ?=
 MIDI_TRACK ?= 0
 MIDI_CHANNEL ?= 0
-MIDI_OUTPUT ?= $(PROJECT_DIR)hacks/local/sound_streams.midi.json
+MIDI_OUTPUT ?= $(PROJECT_DIR)content/workspace/sound_streams.midi.json
 EXPANDED_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_expanded_rom.lua
-EXPANDED_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/expanded_rom_runtime.txt
+EXPANDED_RUNTIME_RESULT ?= $(BUILD_DIR)/runtime/expanded_rom.txt
 DEBUG_SUMMARY ?= $(BUILD_DIR)/debug_symbols.json
 FCEUX_SYMBOL_DIR ?= $(BUILD_DIR)
 DEBUG_BREAKPOINTS ?= $(PROJECT_DIR)config/debugger_breakpoints.json
 DEBUG_WATCHES ?= $(PROJECT_DIR)config/debugger_watches.json
 DEBUG_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_debug_symbols.lua
-DEBUG_RUNTIME_RESULT ?= $(PROJECT_DIR)tmp/debug_symbols_runtime.txt
+DEBUG_RUNTIME_RESULT ?= $(BUILD_DIR)/runtime/debug_symbols.txt
 ASSET_MANIFEST ?= $(PROJECT_DIR)assets/manifest.json
 GENERATED_ASSET_DIR ?= $(PROJECT_DIR)assets/generated
 GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
-EDITED_CHR ?= $(PROJECT_DIR)hacks/local/pacman.chr
+EDITED_CHR ?= $(PROJECT_DIR)content/workspace/pacman.chr
 REVISION_MANIFEST ?= $(PROJECT_DIR)config/revisions.json
 REVISION ?= $(shell $(PYTHON) "$(PROJECT_DIR)scripts/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --print-default)
 REVISION_BUILD_DIR ?= $(PROJECT_DIR)$(shell $(PYTHON) "$(PROJECT_DIR)scripts/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --profile "$(REVISION)" --print-output-dir)
@@ -74,7 +74,7 @@ TOOLCHAIN_MANIFEST ?= $(PROJECT_DIR)config/toolchain.json
 REVISION_DEBUG_SUMMARY ?= $(REVISION_BUILD_DIR)/debug_symbols.json
 REVISION_SMOKE_SCENARIOS ?= $(PROJECT_DIR)scenarios/revision_smoke.json
 REVISION_SMOKE_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_revision_smoke.lua
-REVISION_SMOKE_DIR ?= $(PROJECT_DIR)tmp/revision_smokes
+REVISION_SMOKE_DIR ?= $(BUILD_DIR)/runtime/revision_smokes
 REVISION_REQUIRE_ALL ?=
 # Instrumented FCEUX checkout used by reference capture and RTS analysis.
 FCEUX_DIR ?= ../fceux_automation
@@ -84,9 +84,9 @@ FCEUX_TOOLSET ?= v143
 FCEUX_EXE ?= $(FCEUX_DIR)/vc/$(FCEUX_PLATFORM)/$(FCEUX_CONFIG)/fceux64.exe
 MSBUILD ?=
 
-REFERENCE_DIR ?= reference
-DIFFS_DIR ?= diffs
-WORKFLOW_DIR ?= workflow
+REFERENCE_DIR ?= $(BUILD_DIR)/analysis/reference
+DIFFS_DIR ?= $(BUILD_DIR)/analysis/diffs
+WORKFLOW_DIR ?= $(BUILD_DIR)/analysis/workflow
 LONGPLAY_MOVIE_FILE ?= movies/pacman_j_longplay.fm2
 MAX_FRAMES_LONGPLAY ?= 120000
 ANALYSIS_INTERVAL ?= 20
@@ -101,18 +101,18 @@ TILE_ASCII_MAP ?= $(PROJECT_DIR)config/tile_ascii_map.txt
 COUNT ?= 32
 START ?= 1
 LINES ?= 250
-SCORING_TRACE ?= $(PROJECT_DIR)tmp/scoring_trace.csv
+SCORING_TRACE ?= $(BUILD_DIR)/runtime/scoring/scoring_trace.csv
 SCORING_SCENARIOS ?= $(PROJECT_DIR)scenarios/scoring_trace.json
 SCORING_MAX_FRAMES ?= $(MAX_FRAMES_LONGPLAY)
 SCORING_TRACE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_scoring_trace.lua
 RUNTIME_SCENARIOS ?= $(PROJECT_DIR)scenarios/runtime_trace.json
 RUNTIME_TRACE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_runtime_trace.lua
-RUNTIME_TRACE_DIR ?= $(PROJECT_DIR)tmp/runtime_traces
+RUNTIME_TRACE_DIR ?= $(BUILD_DIR)/runtime/traces
 RECONSTRUCTION_EVIDENCE_SCENARIOS ?= $(PROJECT_DIR)scenarios/reconstruction_evidence.json
 RECONSTRUCTION_EVIDENCE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_reconstruction_evidence.lua
-RECONSTRUCTION_EVIDENCE_DIR ?= $(PROJECT_DIR)tmp/reconstruction_evidence
+RECONSTRUCTION_EVIDENCE_DIR ?= $(BUILD_DIR)/runtime/reconstruction_evidence
 DATA_FORMAT_CONFIG ?= $(PROJECT_DIR)config/data_formats.json
-DATA_FORMAT_OUTPUT_DIR ?= $(PROJECT_DIR)tmp/data_formats
+DATA_FORMAT_OUTPUT_DIR ?= $(BUILD_DIR)/roundtrip/data_formats
 RELOCATION_DIR ?= $(BUILD_DIR)/relocation
 RELOCATION_GENERATED_DIR ?= $(RELOCATION_DIR)/generated
 RELOCATION_SOURCE ?= $(RELOCATION_GENERATED_DIR)/main.asm
@@ -126,12 +126,12 @@ RELOCATION_MAP ?= $(RELOCATION_DIR)/pacman.map
 RELOCATION_DEBUG ?= $(RELOCATION_DIR)/pacman.dbg
 RELOCATION_DEBUG_SUMMARY ?= $(RELOCATION_DIR)/debug_symbols.json
 RELOCATION_DEBUG_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_relocation_symbols.lua
-RELOCATION_DEBUG_RESULT ?= $(PROJECT_DIR)tmp/relocation/debug_symbols_runtime.txt
+RELOCATION_DEBUG_RESULT ?= $(RELOCATION_DIR)/runtime/debug_symbols.txt
 RELOCATION_RUNTIME_SCENARIOS ?= $(RELOCATION_DIR)/runtime_trace.json
-RELOCATION_RUNTIME_DIR ?= $(PROJECT_DIR)tmp/relocation/runtime
-RELOCATION_SCORING_TRACE ?= $(PROJECT_DIR)tmp/relocation/scoring_trace.csv
+RELOCATION_RUNTIME_DIR ?= $(RELOCATION_DIR)/runtime/traces
+RELOCATION_SCORING_TRACE ?= $(RELOCATION_DIR)/runtime/scoring_trace.csv
 RELOCATION_EVIDENCE_SCENARIOS ?= $(RELOCATION_DIR)/reconstruction_evidence.json
-RELOCATION_EVIDENCE_DIR ?= $(PROJECT_DIR)tmp/relocation/evidence
+RELOCATION_EVIDENCE_DIR ?= $(RELOCATION_DIR)/runtime/evidence
 RELOCATION_MAX_FRAMES ?= 120000
 RELOCATION_HEARTBEAT_INTERVAL ?= 5000
 
@@ -245,7 +245,7 @@ symbols-hack: verify-hack
 		--summary "$(HACK_DEBUG_SUMMARY)"
 
 validate-hack: build-dev symbols-hack
-	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp'); p.mkdir(parents=True, exist_ok=True); r=pathlib.Path(r'$(HACK_RUNTIME_RESULT)'); r.unlink() if r.exists() else None"
+	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(HACK_RUNTIME_RESULT)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
 	set "PACMAN_HACK_RUNTIME_RESULT=$(HACK_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \
 		-playmovie "$(LONGPLAY_MOVIE_FILE)" \
 		-lua "$(subst /,\,$(HACK_RUNTIME_LUA))" \
@@ -331,7 +331,7 @@ symbols-expanded: verify-expanded
 		--summary "$(EXPANDED_DEBUG_SUMMARY)"
 
 validate-expanded: build-dev symbols-expanded
-	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp'); p.mkdir(parents=True, exist_ok=True); r=pathlib.Path(r'$(EXPANDED_RUNTIME_RESULT)'); r.unlink() if r.exists() else None"
+	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(EXPANDED_RUNTIME_RESULT)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
 	set "PACMAN_EXPANDED_RUNTIME_RESULT=$(EXPANDED_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \
 		-playmovie "$(LONGPLAY_MOVIE_FILE)" \
 		-lua "$(subst /,\,$(EXPANDED_RUNTIME_LUA))" \
@@ -367,7 +367,7 @@ test:
 	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)tests" -p "test_*.py" -v
 
 validate-symbols: build-dev symbols
-	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp'); p.mkdir(parents=True, exist_ok=True); r=pathlib.Path(r'$(DEBUG_RUNTIME_RESULT)'); r.unlink() if r.exists() else None"
+	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(DEBUG_RUNTIME_RESULT)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
 	set "PACMAN_DEBUG_SYMBOL_RESULT=$(DEBUG_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \
 		-lua "$(subst /,\,$(DEBUG_RUNTIME_LUA))" \
 		-max-frames "120" \
@@ -487,19 +487,19 @@ reference: build-dev
 _manifest: verify
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/build_procedure_manifest.py" \
 		--labels "$(NATIVE_LABELS)" \
-		--output "$(PROJECT_DIR)$(WORKFLOW_DIR)/procedure_manifest.csv"
+		--output "$(WORKFLOW_DIR)/procedure_manifest.csv"
 
 _batch: _manifest
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/prepare_rts_batch.py" \
-		--manifest "$(PROJECT_DIR)$(WORKFLOW_DIR)/procedure_manifest.csv" \
+		--manifest "$(WORKFLOW_DIR)/procedure_manifest.csv" \
 		--count "$(COUNT)" \
-		--output "$(PROJECT_DIR)$(WORKFLOW_DIR)/rts_batch.txt"
+		--output "$(WORKFLOW_DIR)/rts_batch.txt"
 
 analyze: build-dev _batch
 	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(REFERENCE_DIR)/longplay'); p.is_dir() or (_ for _ in ()).throw(SystemExit('[ERROR] Missing reference capture; run make reference first.'))"
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/analyze_subroutines.py" \
-		--manifest "$(PROJECT_DIR)$(WORKFLOW_DIR)/procedure_manifest.csv" \
-		--batch "$(PROJECT_DIR)$(WORKFLOW_DIR)/rts_batch.txt" \
+		--manifest "$(WORKFLOW_DIR)/procedure_manifest.csv" \
+		--batch "$(WORKFLOW_DIR)/rts_batch.txt" \
 		--original-rom "$(ORIGINAL_ROM)" \
 		--movie "$(LONGPLAY_MOVIE_FILE)" \
 		--fceux "$(FCEUX_EXE)" \
@@ -519,7 +519,7 @@ analyze: build-dev _batch
 	@echo Analysis complete: $(ANALYSIS_REPORT_CSV)
 
 trace-scoring: build-dev verify
-	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp'); p.mkdir(parents=True, exist_ok=True); t=pathlib.Path(r'$(SCORING_TRACE)'); t.unlink() if t.exists() else None"
+	@$(PYTHON) -c "import pathlib; t=pathlib.Path(r'$(SCORING_TRACE)'); t.parent.mkdir(parents=True, exist_ok=True); t.unlink() if t.exists() else None"
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/check_scoring_trace_setup.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--labels "$(NATIVE_LABELS)" \
@@ -609,7 +609,7 @@ test-relocation: lint test build-dev symbols
 		--breakpoints "$(DEBUG_BREAKPOINTS)" \
 		--watches "$(DEBUG_WATCHES)" \
 		--summary "$(RELOCATION_DEBUG_SUMMARY)"
-	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(PROJECT_DIR)tmp/relocation'); p.mkdir(parents=True, exist_ok=True); r=pathlib.Path(r'$(RELOCATION_DEBUG_RESULT)'); r.unlink() if r.exists() else None"
+	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(RELOCATION_DEBUG_RESULT)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
 	set "PACMAN_DEBUG_SYMBOL_RESULT=$(RELOCATION_DEBUG_RESULT)" && "$(FCEUX_EXE)" \
 		-lua "$(subst /,\,$(RELOCATION_DEBUG_LUA))" \
 		-max-frames "120" \
@@ -763,8 +763,8 @@ chunk: build
 		--labels "$(NATIVE_LABELS)" \
 		--start-line "$(START)" \
 		--line-count "$(LINES)" \
-		--output-csv "$(PROJECT_DIR)$(WORKFLOW_DIR)/rename_chunk.csv" \
-		--output-snippet "$(PROJECT_DIR)$(WORKFLOW_DIR)/chunk_$(START)_$(LINES).asm"
+		--output-csv "$(WORKFLOW_DIR)/rename_chunk.csv" \
+		--output-snippet "$(WORKFLOW_DIR)/chunk_$(START)_$(LINES).asm"
 	@echo Chunk snippet: $(WORKFLOW_DIR)/chunk_$(START)_$(LINES).asm
 	@echo Rename template: $(WORKFLOW_DIR)/rename_chunk.csv
 

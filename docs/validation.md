@@ -79,7 +79,7 @@ See `relocation_testing.md` for the anchor policy and limitations.
 `make reconstruction-audit` runs lint, all focused unit tests, byte identity and
 format round-trips, live debugger validation, then fresh runtime and scoring
 captures with their semantic validators. It intentionally regenerates ignored
-evidence under `tmp/`; a stale local trace therefore cannot make the release
+evidence under `build/runtime/`; a stale local trace therefore cannot make the release
 gate pass. Run it on the exact commit intended for the stable tag.
 
 `make reconstruction-audit-2` adds strict verification and a direct FCEUX
@@ -104,7 +104,7 @@ personal-release latch consumers, all 16 sound request slots, attract sprite
 strip selection, and the pre-reset copyright block. It also binds each CSV to
 its declared scenario and exact frame range, rejects undeclared memory patches,
 and requires sound slot 0F to activate between the controlled pause and resume.
-Traces remain ignored under `tmp/reconstruction_evidence/`;
+Traces remain ignored under `build/runtime/reconstruction_evidence/`;
 `make validate-evidence` rechecks an existing set.
 
 ## Optional variant gates

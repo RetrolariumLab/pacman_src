@@ -271,10 +271,18 @@ class SoundStudio(tk.Tk):
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--sound-json", type=Path, default=PROJECT_ROOT / "hacks/local/sound_streams.json")
+    parser.add_argument(
+        "--sound-json",
+        type=Path,
+        default=PROJECT_ROOT / "content/workspace/sound_streams.json",
+    )
     parser.add_argument("--asset-manifest", type=Path, default=PROJECT_ROOT / "assets/manifest.json")
     parser.add_argument("--asset-dir", type=Path, default=PROJECT_ROOT / "assets/generated")
-    parser.add_argument("--preview", type=Path, default=PROJECT_ROOT / "tmp/sound_studio_preview.wav")
+    parser.add_argument(
+        "--preview",
+        type=Path,
+        default=PROJECT_ROOT / "build/previews/sound_studio_preview.wav",
+    )
     args = parser.parse_args()
     if not args.sound_json.exists():
         parser.error(f"editable sound JSON is missing: run make init-expanded-assets ({args.sound_json})")
