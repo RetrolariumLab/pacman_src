@@ -43,7 +43,7 @@ include $(PROJECT_DIR)mk/validation.mk
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-revisions smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols test-relocation format lint roundtrip-formats reconstruction-audit reconstruction-audit-2 source-2-1-audit source-2-1-release-audit source-2-1-post-tag-audit source-2-1-baseline-check source-2-1-check source-2-2-audit source-2-2-release-audit source-2-2-post-tag-audit source-2-2-check run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces trace-evidence validate-evidence chunk help _require-assets _manifest _batch
+.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-revisions smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols test-relocation format lint roundtrip-formats reconstruction-audit reconstruction-audit-2 source-2-1-audit source-2-1-release-audit source-2-1-post-tag-audit source-2-1-baseline-check source-2-1-check source-2-2-audit source-2-2-release-audit source-2-2-post-tag-audit source-2-2-check run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces trace-evidence validate-evidence chunk tool-list help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -153,6 +153,9 @@ chunk: build
 	@echo Chunk snippet: $(WORKFLOW_DIR)/chunk_$(START)_$(LINES).asm
 	@echo Rename template: $(WORKFLOW_DIR)/rename_chunk.csv
 
+tool-list:
+	$(PYTHON) "$(PROJECT_DIR)scripts/run.py" list
+
 help:
 	@echo Pac-Man NES Source Reconstruction targets:
 	@echo Build and revisions:
@@ -212,5 +215,6 @@ help:
 	@echo   make reference                     Capture the longplay reference set
 	@echo   make analyze COUNT=32              Run reverse-engineering analysis
 	@echo   make chunk START=260 LINES=60      Prepare an analysis chunk
+	@echo   make tool-list                     List stable direct tool commands
 	@echo   make clean                         Remove generated output, keep assets
 	@echo   make help                          Show these public targets

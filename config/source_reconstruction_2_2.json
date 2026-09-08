@@ -17,6 +17,7 @@
     "machine_readable_profile_contracts",
     "unified_output_layout",
     "responsibility_make_layout",
+    "machine_readable_tooling_ownership",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -30,7 +31,8 @@
     {"id": "profile_aware_authoring", "status": "not_applicable", "reason": "Authoring remains scoped to the isolated expanded build, not every official profile."},
     {"id": "sibling_engine", "status": "not_applicable", "reason": "No sibling or later engine is claimed by this repository."},
     {"id": "additional_platform_abi", "status": "not_applicable", "reason": "All accepted profiles use the same NES NROM execution ABI."},
-    {"id": "script_package_layout", "status": "planned", "reason": "The coordinated scripts/tests package migration is part of the Source 2.2 development plan and is not complete yet."},
+    {"id": "script_package_layout", "status": "not_applicable", "reason": "A physical package migration would break established Make, documentation, and direct-script interfaces; Source 2.2 instead freezes those paths behind a stable launcher and complete ownership registry."},
+    {"id": "mirrored_test_package_layout", "status": "not_applicable", "reason": "Tests retain their established flat discovery layout while the tooling registry gives every responsibility group and every public command an explicit test owner."},
     {"id": "unified_qt_studio", "status": "planned", "reason": "Existing headless models and separate tools satisfy the accepted authoring scope."}
   ],
   "delta": [
@@ -63,6 +65,12 @@
       "kind": "tooling",
       "summary": "Reduce the root Makefile to the stable interface and group authoring, runtime, and validation orchestration into bounded responsibility fragments.",
       "evidence": ["Makefile", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "tests/test_source_2_2_audit.py"]
+    },
+    {
+      "id": "machine_readable_tooling_ownership",
+      "kind": "tooling",
+      "summary": "Publish a stable tool dispatcher and give every Python or Lua tool exactly one machine-readable responsibility owner, with explicit test ownership for public commands.",
+      "evidence": ["config/tooling_layout.json", "scripts/run.py", "tests/test_tooling_layout.py", "scripts/source_2_2_audit.py", "docs/tooling_layout.md"]
     }
   ],
   "requirements": {
@@ -114,6 +122,10 @@
       "status": "satisfied",
       "evidence": {"targets": ["help", "source-2-2-audit"], "files": ["Makefile", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk"], "scenarios": [], "artifacts": []}
     },
+    "tooling_layout_ownership": {
+      "status": "satisfied",
+      "evidence": {"targets": ["tool-list", "source-2-2-audit"], "files": ["config/tooling_layout.json", "scripts/run.py", "tests/test_tooling_layout.py"], "scenarios": [], "artifacts": []}
+    },
     "release_integrity": {
       "status": "planned",
       "evidence": {"targets": ["source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"], "scenarios": [], "artifacts": []}
@@ -122,6 +134,7 @@
   "layout": {
     "canonical_source": "src/main.asm",
     "source_layout_registry": "config/reconstruction/source_layout.json",
+    "tooling_layout_registry": "config/tooling_layout.json",
     "src_root_asm": ["main.asm"],
     "variant_entrypoints": ["src/expanded/nrom256.asm", "src/variants/stage5.asm"],
     "revision_ids": "src/revisions/profile_ids.inc",
@@ -136,7 +149,8 @@
       "tests/test_revision_matrix.py",
       "tests/test_revision_smokes.py",
       "tests/test_source_2_1_audit.py",
-      "tests/test_source_2_2_audit.py"
+      "tests/test_source_2_2_audit.py",
+      "tests/test_tooling_layout.py"
     ]
   },
   "output_layout": {
@@ -151,8 +165,14 @@
     {
       "rule_id": "scripts_package_layout",
       "actual_path": "scripts/*.py and scripts/workflow/",
-      "reason": "Existing public paths are referenced by Make, tests, and documentation.",
-      "equivalent_control": "Exact paths remain covered by Make targets, Python syntax lint, import tests, and the release audit; migration is deferred to a coordinated compatible release."
+      "reason": "Established direct-script paths are already public through Make, documentation, and downstream automation, so a minor-release move would create avoidable compatibility churn.",
+      "equivalent_control": "config/tooling_layout.json assigns every Python and Lua file exactly one responsibility, scripts/run.py provides a stable public dispatcher, and source-2-2-audit rejects unowned, stale, duplicate, or untested public entries."
+    },
+    {
+      "rule_id": "mirrored_tests_package_layout",
+      "actual_path": "tests/test_*.py",
+      "reason": "The established flat unittest discovery surface is stable and responsibility packages would require coordinated import-path churn without changing test behavior.",
+      "equivalent_control": "config/tooling_layout.json maps every responsibility group and public command to existing test owners, while tests/test_tooling_layout.py and source-2-2-audit verify all mappings and paths."
     }
   ],
   "revision_contract": {
@@ -222,6 +242,7 @@
     "mk/runtime.mk",
     "mk/validation.mk",
     "config/reconstruction/source_layout.json",
+    "config/tooling_layout.json",
     "docs/index.md",
     "docs/adr/0001-expanded-nrom256.md",
     "docs/licensing.md",
@@ -230,10 +251,12 @@
     "docs/source_reconstruction_2_1.md",
     "docs/source_reconstruction_2_2.md",
     "docs/source_layout.md",
+    "docs/tooling_layout.md",
     "docs/multi_revision_builds.md",
     "scripts/build_dev.py",
     "scripts/build_revision.py",
     "scripts/revision_profiles.py",
+    "scripts/run.py",
     "scripts/source_2_1_audit.py",
     "scripts/source_2_2_audit.py"
   ],
@@ -244,6 +267,6 @@
     "source-2-1-audit", "source-2-1-release-audit",
     "source-2-1-post-tag-audit", "source-2-1-check",
     "source-2-2-audit", "source-2-2-release-audit",
-    "source-2-2-post-tag-audit", "source-2-2-check"
+    "source-2-2-post-tag-audit", "source-2-2-check", "tool-list"
   ]
 }

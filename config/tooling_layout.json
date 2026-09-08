@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "stable_launcher": "scripts/run.py",
+  "scripts_root": "scripts",
+  "tests_root": "tests",
+  "responsibilities": [
+    {
+      "id": "build",
+      "paths": [
+        "scripts/build_dev.py",
+        "scripts/build_expanded.py",
+        "scripts/build_native.py",
+        "scripts/build_revision.py",
+        "scripts/check_assets.py",
+        "scripts/clean_artifacts.py",
+        "scripts/compare_roms.py",
+        "scripts/flatten_listing.py",
+        "scripts/listing_source.py",
+        "scripts/revision_profiles.py",
+        "scripts/split_assets.py"
+      ],
+      "test_owners": [
+        "tests/test_build_dev.py",
+        "tests/test_build_revision.py",
+        "tests/test_clean_artifacts.py",
+        "tests/test_revision_matrix.py"
+      ]
+    },
+    {
+      "id": "authoring",
+      "paths": [
+        "scripts/data_formats.py",
+        "scripts/graphics_studio.py",
+        "scripts/graphics_studio_model.py",
+        "scripts/maze_studio.py",
+        "scripts/maze_studio_model.py",
+        "scripts/midi_to_sound.py",
+        "scripts/palette_assets.py",
+        "scripts/prepare_expanded_assets.py",
+        "scripts/render_sound_preview.py",
+        "scripts/screen_assets.py",
+        "scripts/screen_studio.py",
+        "scripts/sound_authoring.py",
+        "scripts/sound_studio.py",
+        "scripts/sound_studio_model.py"
+      ],
+      "test_owners": [
+        "tests/test_data_formats.py",
+        "tests/test_graphics_studio.py",
+        "tests/test_maze_studio.py",
+        "tests/test_midi_to_sound.py",
+        "tests/test_screen_studio.py",
+        "tests/test_sound_authoring.py",
+        "tests/test_sound_preview.py",
+        "tests/test_sound_studio.py"
+      ]
+    },
+    {
+      "id": "validation",
+      "paths": [
+        "scripts/asm_style.py",
+        "scripts/debug_symbols.py",
+        "scripts/lint_source.py",
+        "scripts/source_2_1_audit.py",
+        "scripts/source_2_2_audit.py",
+        "scripts/verify_expanded.py",
+        "scripts/verify_hack.py"
+      ],
+      "test_owners": [
+        "tests/test_asm_style.py",
+        "tests/test_debug_symbols.py",
+        "tests/test_lint_source.py",
+        "tests/test_source_2_1_audit.py",
+        "tests/test_source_2_2_audit.py",
+        "tests/test_verify_expanded.py",
+        "tests/test_verify_hack.py"
+      ]
+    },
+    {
+      "id": "workflow",
+      "paths": [
+        "scripts/workflow/analyze_revision_alignment.py",
+        "scripts/workflow/analyze_rom_collection.py",
+        "scripts/workflow/analyze_subroutines.py",
+        "scripts/workflow/build_procedure_manifest.py",
+        "scripts/workflow/compare_progress_capture.py",
+        "scripts/workflow/extract_rename_chunk.py",
+        "scripts/workflow/generate_capture_report.py",
+        "scripts/workflow/prepare_rts_batch.py",
+        "scripts/workflow/roundtrip_data_formats.py",
+        "scripts/workflow/verify_revision_matrix.py"
+      ],
+      "test_owners": [
+        "tests/test_data_formats.py",
+        "tests/test_revision_alignment.py",
+        "tests/test_revision_matrix.py",
+        "tests/test_rom_collection.py"
+      ]
+    },
+    {
+      "id": "runtime",
+      "paths": [
+        "scripts/workflow/capture_reconstruction_evidence.lua",
+        "scripts/workflow/capture_runtime_trace.lua",
+        "scripts/workflow/capture_scoring_trace.lua",
+        "scripts/workflow/check_scoring_trace_setup.py",
+        "scripts/workflow/relocation_test.py",
+        "scripts/workflow/run_reconstruction_evidence.py",
+        "scripts/workflow/run_revision_smokes.py",
+        "scripts/workflow/run_runtime_traces.py",
+        "scripts/workflow/validate_debug_runtime.py",
+        "scripts/workflow/validate_debug_symbols.lua",
+        "scripts/workflow/validate_expanded_rom.lua",
+        "scripts/workflow/validate_expanded_runtime.py",
+        "scripts/workflow/validate_hack_runtime.py",
+        "scripts/workflow/validate_hack_variant.lua",
+        "scripts/workflow/validate_reconstruction_evidence.py",
+        "scripts/workflow/validate_relocation_symbols.lua",
+        "scripts/workflow/validate_revision_smoke.lua",
+        "scripts/workflow/validate_runtime_traces.py",
+        "scripts/workflow/validate_scoring_trace.py"
+      ],
+      "test_owners": [
+        "tests/test_reconstruction_evidence.py",
+        "tests/test_relocation.py",
+        "tests/test_revision_smokes.py",
+        "tests/test_runtime_traces.py",
+        "tests/test_scoring_trace_setup.py"
+      ]
+    },
+    {
+      "id": "launcher",
+      "paths": ["scripts/run.py"],
+      "test_owners": ["tests/test_tooling_layout.py"]
+    }
+  ],
+  "public_commands": [
+    {"name": "build-dev", "path": "scripts/build_dev.py", "test_owner": "tests/test_build_dev.py"},
+    {"name": "build-native", "path": "scripts/build_native.py", "test_owner": "tests/test_build_revision.py"},
+    {"name": "build-revision", "path": "scripts/build_revision.py", "test_owner": "tests/test_build_revision.py"},
+    {"name": "graphics-studio", "path": "scripts/graphics_studio.py", "test_owner": "tests/test_graphics_studio.py"},
+    {"name": "lint", "path": "scripts/lint_source.py", "test_owner": "tests/test_lint_source.py"},
+    {"name": "maze-studio", "path": "scripts/maze_studio.py", "test_owner": "tests/test_maze_studio.py"},
+    {"name": "screen-studio", "path": "scripts/screen_studio.py", "test_owner": "tests/test_screen_studio.py"},
+    {"name": "sound-studio", "path": "scripts/sound_studio.py", "test_owner": "tests/test_sound_studio.py"},
+    {"name": "source-2-1-audit", "path": "scripts/source_2_1_audit.py", "test_owner": "tests/test_source_2_1_audit.py"},
+    {"name": "source-2-2-audit", "path": "scripts/source_2_2_audit.py", "test_owner": "tests/test_source_2_2_audit.py"},
+    {"name": "verify-expanded", "path": "scripts/verify_expanded.py", "test_owner": "tests/test_verify_expanded.py"},
+    {"name": "verify-hack", "path": "scripts/verify_hack.py", "test_owner": "tests/test_verify_hack.py"},
+    {"name": "verify-revisions", "path": "scripts/workflow/verify_revision_matrix.py", "test_owner": "tests/test_revision_matrix.py"}
+  ]
+}
