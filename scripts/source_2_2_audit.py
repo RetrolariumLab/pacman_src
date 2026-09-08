@@ -24,6 +24,7 @@ EXPECTED_PREDECESSOR = {
 EXPECTED_SCOPE = (
     "self_contained_release_metadata",
     "machine_readable_source_layout",
+    "machine_readable_profile_contracts",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -42,6 +43,7 @@ EXPECTED_REQUIREMENTS = {
     "reproducible_toolchain",
     "public_release_metadata",
     "source_layout_ownership",
+    "profile_contracts",
     "release_integrity",
 }
 EXPECTED_LICENSE_CATEGORIES = {
@@ -293,6 +295,10 @@ def validate_revision_contract(
         return [f"invalid revision manifest: {error}"], []
     if not isinstance(document, dict) or document.get("format") != contract.get("schema_format"):
         errors.append("revision manifest format differs from Source 2.2 contract")
+    if not isinstance(document, dict) or document.get(
+        "profile_contract_version"
+    ) != contract.get("profile_contract_version"):
+        errors.append("profile contract version differs from Source 2.2 contract")
     if [revision.profile_id for revision in revisions] != contract.get("profile_ids"):
         errors.append("revision profile IDs or order differ from Source 2.2 contract")
     if [revision.ca65_revision for revision in revisions] != contract.get("ca65_revisions"):
@@ -347,12 +353,12 @@ def validate_artifacts(contract: object, revisions: list[Revision]) -> list[str]
         return ["artifacts must be a list"]
     expected = [
         {
-            "id": f"pacman_{revision.profile_id}",
+            "id": revision.artifact_id,
             "profile": revision.profile_id,
             "build_target": (
                 f"make verify-revision REVISION={revision.profile_id}"
             ),
-            "size": 24592,
+            "size": revision.output_size,
             "sha1": revision.sha1,
             "sha256": revision.sha256,
         }
@@ -368,8 +374,8 @@ def validate_profiles(contract: object, revisions: list[Revision]) -> list[str]:
         {
             "id": revision.profile_id,
             "status": "supported",
-            "artifact": f"pacman_{revision.profile_id}",
-            "identity": "byte-identical",
+            "artifact": revision.artifact_id,
+            "identity": revision.identity,
         }
         for revision in revisions
     ]
