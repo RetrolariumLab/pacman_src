@@ -146,7 +146,15 @@ source-2-2-post-tag-audit:
 		--require-ready \
 		--verify-tag
 
+source-2-2-functional-check:
+	$(MAKE) source-2-1-baseline-check
+	$(MAKE) format
+	$(MAKE) scaffold-check
+	$(MAKE) ui-smoke
+	$(MAKE) source-2-2-audit
+
 source-2-2-check:
 	$(MAKE) clean
-	$(MAKE) source-2-1-baseline-check
+	$(MAKE) source-2-2-functional-check
+	$(MAKE) clean
 	$(MAKE) source-2-2-release-audit
