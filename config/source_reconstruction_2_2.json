@@ -15,6 +15,7 @@
     "self_contained_release_metadata",
     "machine_readable_source_layout",
     "machine_readable_profile_contracts",
+    "unified_output_layout",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -49,6 +50,12 @@
       "kind": "tooling",
       "summary": "Define inputs, platform layout, default outputs, and evidence-backed capabilities for every accepted official revision profile.",
       "evidence": ["config/revisions.json", "scripts/revision_profiles.py", "tests/test_revision_matrix.py"]
+    },
+    {
+      "id": "unified_output_layout",
+      "kind": "tooling",
+      "summary": "Place every reproducible build, runtime, preview, round-trip, and analysis result under one removable build root while preserving private authoring documents.",
+      "evidence": ["Makefile", "scripts/clean_artifacts.py", "tests/test_clean_artifacts.py", ".gitignore"]
     }
   ],
   "requirements": {
@@ -92,6 +99,10 @@
       "status": "satisfied",
       "evidence": {"targets": ["verify-revisions", "smoke-revisions", "source-2-2-audit"], "files": ["config/revisions.json", "scripts/revision_profiles.py"], "scenarios": ["title_menu_boot"], "artifacts": ["pacman_japan_v10", "pacman_japan_v11", "pacman_japan_revb", "pacman_usa_tengen_unlicensed", "pacman_usa_tengen", "pacman_usa_namco", "pacman_europe"]}
     },
+    "output_boundaries": {
+      "status": "satisfied",
+      "evidence": {"targets": ["clean", "source-2-2-audit"], "files": ["scripts/clean_artifacts.py", "tests/test_clean_artifacts.py", ".gitignore"], "scenarios": [], "artifacts": []}
+    },
     "release_integrity": {
       "status": "planned",
       "evidence": {"targets": ["source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"], "scenarios": [], "artifacts": []}
@@ -108,12 +119,21 @@
     "required_test_modules": [
       "tests/test_build_dev.py",
       "tests/test_build_revision.py",
+      "tests/test_clean_artifacts.py",
       "tests/test_relocation.py",
       "tests/test_revision_matrix.py",
       "tests/test_revision_smokes.py",
       "tests/test_source_2_1_audit.py",
       "tests/test_source_2_2_audit.py"
     ]
+  },
+  "output_layout": {
+    "build_root": "build",
+    "authoring_workspace": "content/workspace",
+    "generated_assets": "assets/generated",
+    "clean_target": "clean",
+    "clean_script": "scripts/clean_artifacts.py",
+    "legacy_local_paths_preserved": ["tmp", "workflow", "reference", "diffs", "reports", "hacks/local"]
   },
   "layout_deviations": [
     {

@@ -25,6 +25,7 @@ EXPECTED_SCOPE = (
     "self_contained_release_metadata",
     "machine_readable_source_layout",
     "machine_readable_profile_contracts",
+    "unified_output_layout",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -44,6 +45,7 @@ EXPECTED_REQUIREMENTS = {
     "public_release_metadata",
     "source_layout_ownership",
     "profile_contracts",
+    "output_boundaries",
     "release_integrity",
 }
 EXPECTED_LICENSE_CATEGORIES = {
@@ -478,6 +480,51 @@ def validate_layout_deviations(contract: object) -> list[str]:
     return []
 
 
+EXPECTED_OUTPUT_LAYOUT = {
+    "build_root": "build",
+    "authoring_workspace": "content/workspace",
+    "generated_assets": "assets/generated",
+    "clean_target": "clean",
+    "clean_script": "scripts/clean_artifacts.py",
+    "legacy_local_paths_preserved": [
+        "tmp", "workflow", "reference", "diffs", "reports", "hacks/local",
+    ],
+}
+
+
+def validate_output_layout(project_root: Path, contract: object) -> list[str]:
+    if contract != EXPECTED_OUTPUT_LAYOUT:
+        return ["output layout differs from the Source 2.2 contract"]
+    errors: list[str] = []
+    ignore = (project_root / ".gitignore").read_text(encoding="utf-8").splitlines()
+    for ignored in ("/build/", "/assets/generated/", "/content/workspace/"):
+        if ignored not in ignore:
+            errors.append(f"generated/private path is not ignored: {ignored}")
+    makefile = (project_root / "Makefile").read_text(encoding="utf-8")
+    forbidden_make_paths = (
+        "$(PROJECT_DIR)tmp", "?= reference", "?= diffs", "?= workflow",
+        "$(PROJECT_DIR)hacks/local",
+    )
+    for value in forbidden_make_paths:
+        if value in makefile:
+            errors.append(
+                f"Makefile still emits outside the build/workspace roots: {value}"
+            )
+    try:
+        tracked = git_output(
+            project_root, "ls-files", "--", "tmp", "workflow", "reference",
+            "diffs", "reports", "content/workspace", "assets/generated",
+        )
+        if tracked:
+            errors.append("generated or private output paths contain tracked files")
+    except ValueError as error:
+        errors.append(str(error))
+    clean_script = project_root / EXPECTED_OUTPUT_LAYOUT["clean_script"]
+    if not clean_script.is_file():
+        errors.append("canonical clean script is missing")
+    return errors
+
+
 def validate_toolchain(project_root: Path, contract: object) -> list[str]:
     if not isinstance(contract, dict):
         return ["toolchain contract must be an object"]
@@ -654,6 +701,7 @@ def audit(
         require_ready,
     ))
     errors.extend(validate_layout_deviations(manifest.get("layout_deviations")))
+    errors.extend(validate_output_layout(project_root, manifest.get("output_layout")))
     errors.extend(validate_toolchain(project_root, manifest.get("toolchain")))
     errors.extend(validate_licensing_and_provenance(
         project_root, manifest.get("licensing"), manifest.get("provenance"),

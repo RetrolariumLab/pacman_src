@@ -10,7 +10,7 @@ make roundtrip-formats
 ```
 
 The target first requires `make verify`, decodes each format into
-`tmp/data_formats/*.json`, reloads that JSON, encodes it, and compares every
+`build/roundtrip/data_formats/*.json`, reloads that JSON, encodes it, and compares every
 byte with the original region. All output stays ignored. Neither `make build`
 nor `make verify` reads generated JSON or overwrites extracted assets.
 

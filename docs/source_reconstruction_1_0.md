@@ -44,7 +44,7 @@ The command performs, in order:
 6. fresh scoring capture and semantic validation of six scoring scenarios.
 
 Passing only an individual layer is insufficient for a stable release. Runtime
-captures are regenerated into ignored `tmp/` output by the aggregate target so
+captures are regenerated into ignored `build/runtime/` output by the aggregate target so
 previous local evidence cannot mask a regression.
 
 ## Stable tag procedure

@@ -7,7 +7,7 @@ make graphics-studio
 ```
 
 The editor loads the extracted 8 KiB CHR-ROM and saves changes to
-`hacks/local/pacman.chr`. That destination is ignored by Git. If it already
+`content/workspace/pacman.chr`. That destination is ignored by Git. If it already
 exists, the editor resumes it; deleting it returns the next session to the
 original extracted graphics.
 
@@ -16,7 +16,7 @@ The left pane exposes both 256-tile pattern tables. Background tiles are
 four 2bpp pixel values, and paint in the center pane. Choose Title, Attract,
 Gameplay, or Intermission BG/SPR contexts to preview and edit their real NES
 color indexes. The picker updates all previews immediately and saves the values
-to `hacks/local/palettes.json`; CHR itself still stores pixel values rather than
+to `content/workspace/palettes.json`; CHR itself still stores pixel values rather than
 colors.
 
 The dynamic controls edit both frightened colors and each of the 16 stage fruit
@@ -28,7 +28,7 @@ The actor editor starts from the PRG table at `$DB59`. It previews all 64
 standard and 13 alternate four-tile frames and reports each sprite's tile,
 palette, horizontal/vertical flip flags, priority bit, and signed OAM offset.
 For each quadrant, tile ID, palette selector, priority, and flip flags are
-editable and saved atomically to `hacks/local/actor_sprites.json`. The expanded
+editable and saved atomically to `content/workspace/actor_sprites.json`. The expanded
 asset pipeline validates and packs that document into the original fixed
 624-byte layout at `$A4AF`. The fixed-bank OAM builder reads the expanded copy
 through a reviewed operand manifest. Shared OAM offsets remain read-only because

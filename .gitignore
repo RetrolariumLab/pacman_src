@@ -12,6 +12,9 @@ tmp/
 *.nes
 *.chr
 
+# Private authoring documents
+/content/workspace/
+
 # Optional local analysis dump
 listing.asm
 

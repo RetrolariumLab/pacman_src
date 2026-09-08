@@ -36,14 +36,14 @@ Initialize the ignored local JSON files exactly once:
 make init-expanded-assets
 ```
 
-This decodes `assets/generated/maze/maze.rle` into `hacks/local/maze.json` for
+This decodes `assets/generated/maze/maze.rle` into `content/workspace/maze.json` for
 the stage-2-and-later layout and the reference `$EB42..$EC77` region into
-`hacks/local/stage_parameters.json`. It also decodes all 16 manifest-managed
-streams into `hacks/local/sound_streams.json` and the 624-byte actor mapping
-block into `hacks/local/actor_sprites.json`. All title, attract, gameplay,
+`content/workspace/stage_parameters.json`. It also decodes all 16 manifest-managed
+streams into `content/workspace/sound_streams.json` and the 624-byte actor mapping
+block into `content/workspace/actor_sprites.json`. All title, attract, gameplay,
 intermission, frightened, and per-stage fruit colors are decoded into
-`hacks/local/palettes.json`. Screen-oriented title, attract, HUD, pause, and intermission visual data are
-decoded into `hacks/local/screens.json`; executable intermission pointers are
+`content/workspace/palettes.json`. Screen-oriented title, attract, HUD, pause, and intermission visual data are
+decoded into `content/workspace/screens.json`; executable intermission pointers are
 retained only as read-only catalogue metadata. The demonstrations change
 first-level frightened duration from 7 to 14 and the first slot-04 pellet note
 from `$01` to `$B1`. Existing JSON files are left untouched, protecting local

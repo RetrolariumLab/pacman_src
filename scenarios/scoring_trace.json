@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "trace": "tmp/scoring_trace.csv",
+  "trace": "build/runtime/scoring/scoring_trace.csv",
   "scenarios": [
     {
       "id": "normal-pellet",

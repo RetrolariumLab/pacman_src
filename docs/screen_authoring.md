@@ -8,7 +8,7 @@ make init-expanded-assets
 make screen-studio
 ```
 
-The ignored `hacks/local/screens.json` document contains the 23 by 6 title
+The ignored `content/workspace/screens.json` document contains the 23 by 6 title
 logo tilemap, six title PPU packets, title attributes, menu and player-count
 glyphs, ten pointer-selected attract packets, HUD and pause blocks, and the
 visual tile tables used by intermissions. The intermission handler tables are
