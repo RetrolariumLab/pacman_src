@@ -57,6 +57,15 @@ def copy_scaffold(project_root: Path, destination: Path, paths: list[Path]) -> N
         shutil.copy2(source, target)
 
 
+def clone_repository_history(project_root: Path, destination: Path) -> None:
+    if destination.exists():
+        raise ValueError(f"scaffold destination already exists: {destination}")
+    run(
+        ["git", "clone", "--quiet", "--no-hardlinks", str(project_root), str(destination)],
+        destination.parent,
+    )
+
+
 def run(command: list[str], cwd: Path) -> None:
     print("[RUN] " + " ".join(command), flush=True)
     completed = subprocess.run(command, cwd=cwd, check=False)
@@ -83,10 +92,9 @@ def check_scaffold(project_root: Path, python: str, make: str) -> None:
     paths = repository_files(project_root)
     with tempfile.TemporaryDirectory(prefix="pacman-scaffold-") as directory:
         root = Path(directory) / "repository"
-        root.mkdir()
+        clone_repository_history(project_root, root)
         copy_scaffold(project_root, root, paths)
         validate_no_private_inputs(root)
-        run(["git", "init", "-q"], root)
         run(["git", "-c", "core.autocrlf=false", "add", "-A"], root)
         run([make, "help-check"], root)
         run([make, "tool-list"], root)

@@ -41,8 +41,8 @@
     {
       "id": "self_contained_release_metadata",
       "kind": "documentation",
-      "summary": "Keep the public release manifest self-contained and limited to project-owned release facts.",
-      "evidence": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]
+      "summary": "Keep release metadata limited to public project facts and enforce English-only tracked project text.",
+      "evidence": ["config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/nesdev/docs.md", "docs/nesdev/apu.md", "docs/nesdev/hardware.md", "docs/nesdev/mappers.md", "docs/nesdev/misc.md", "docs/source_reconstruction_2_2.md", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]
     },
     {
       "id": "machine_readable_source_layout",
@@ -54,39 +54,59 @@
       "id": "machine_readable_profile_contracts",
       "kind": "tooling",
       "summary": "Define inputs, platform layout, default outputs, and evidence-backed capabilities for every accepted official revision profile.",
-      "evidence": ["config/revisions.json", "scripts/revision_profiles.py", "tests/test_revision_matrix.py"]
+      "evidence": ["Makefile", "config/revisions.json", "docs/multi_revision_builds.md", "scripts/build_revision.py", "scripts/revision_profiles.py", "scripts/source_2_2_audit.py", "tests/test_build_revision.py", "tests/test_revision_matrix.py"]
     },
     {
       "id": "unified_output_layout",
       "kind": "tooling",
       "summary": "Place every reproducible build, runtime, preview, round-trip, and analysis result under one removable build root while preserving private authoring documents.",
-      "evidence": ["Makefile", "scripts/clean_artifacts.py", "tests/test_clean_artifacts.py", ".gitignore"]
+      "evidence": [".gitignore", "Makefile", "README.md", "docs/data_formats.md", "docs/expanded_rom_assets.md", "docs/graphics_authoring.md", "docs/roadmap.md", "docs/runtime_trace_scenarios.md", "docs/scoring_trace_scenarios.md", "docs/screen_authoring.md", "docs/sound_authoring.md", "docs/sound_engine.md", "docs/source_reconstruction_1_0.md", "docs/validation.md", "scenarios/scoring_trace.json", "scripts/clean_artifacts.py", "scripts/maze_studio.py", "scripts/sound_studio.py", "scripts/source_2_2_audit.py", "tests/test_clean_artifacts.py", "tests/test_source_2_2_audit.py"]
     },
     {
       "id": "responsibility_make_layout",
       "kind": "tooling",
       "summary": "Reduce the root Makefile to the stable interface and group authoring, runtime, and validation orchestration into bounded responsibility fragments.",
-      "evidence": ["Makefile", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "tests/test_source_2_2_audit.py"]
+      "evidence": ["Makefile", "README.md", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "scripts/lint_source.py", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]
     },
     {
       "id": "machine_readable_tooling_ownership",
       "kind": "tooling",
       "summary": "Publish a stable tool dispatcher and give every Python or Lua tool exactly one machine-readable responsibility owner, with explicit test ownership for public commands.",
-      "evidence": ["config/tooling_layout.json", "scripts/run.py", "tests/test_tooling_layout.py", "scripts/source_2_2_audit.py", "docs/tooling_layout.md"]
+      "evidence": ["Makefile", "README.md", "config/tooling_layout.json", "docs/index.md", "docs/tooling_layout.md", "scripts/run.py", "scripts/source_2_2_audit.py", "tests/test_tooling_layout.py"]
     },
     {
       "id": "romless_scaffold_and_generated_help",
       "kind": "tooling",
       "summary": "Generate command help from an exact public-target registry and exercise public Make orchestration in a disposable checkout containing no private ROM, extracted assets, workspace, or saved build state.",
-      "evidence": ["config/make_help.json", "scripts/make_help.py", "scripts/scaffold_check.py", "tests/test_make_help.py", "tests/test_scaffold_check.py"]
+      "evidence": ["Makefile", "README.md", "config/make_help.json", "config/tooling_layout.json", "docs/tooling_layout.md", "mk/validation.mk", "scripts/make_help.py", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "tests/test_make_help.py", "tests/test_scaffold_check.py"]
     },
     {
       "id": "workstation_ui_interaction_smokes",
       "kind": "tooling",
       "summary": "Create real Tk windows for all four supported Studios and exercise edit, save, build dispatch, dirty-close handling, sound preview, and available undo actions against isolated build copies.",
-      "evidence": ["config/authoring/ui_smokes.json", "scripts/ui_smoke.py", "tests/test_ui_smoke.py", "docs/ui_smoke.md"]
+      "evidence": ["Makefile", "README.md", "config/authoring/ui_smokes.json", "config/make_help.json", "config/tooling_layout.json", "docs/index.md", "docs/tooling_layout.md", "docs/ui_smoke.md", "mk/validation.mk", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "scripts/ui_smoke.py", "tests/test_tooling_layout.py", "tests/test_ui_smoke.py"]
+    },
+    {
+      "id": "release_integrity",
+      "kind": "tooling",
+      "summary": "Validate the complete non-empty commit range and its delta mapping, preserve Git history in the ROM-less scaffold, and sequence the accepted predecessor, current delta, clean build boundaries, and pre/post-tag repository audits.",
+      "evidence": ["Makefile", "README.md", "config/make_help.json", "docs/source_reconstruction_2_2.md", "mk/validation.mk", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "tests/test_scaffold_check.py", "tests/test_source_2_2_audit.py"]
     }
   ],
+  "history": {
+    "range_start": "959bee80064aaa692e456cf710b527cc31bfba81",
+    "commit_count": 8,
+    "commits": [
+      {"subject": "Establish the Source Reconstruction 2.2 project contract", "delta_ids": ["self_contained_release_metadata", "machine_readable_source_layout"], "paths": ["Makefile", "config/reconstruction/source_layout.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/nesdev/apu.md", "docs/nesdev/hardware.md", "docs/nesdev/mappers.md", "docs/nesdev/misc.md", "docs/source_reconstruction_2_2.md", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]},
+      {"subject": "Define machine-readable revision contracts", "delta_ids": ["machine_readable_profile_contracts"], "paths": ["Makefile", "config/revisions.json", "config/source_reconstruction_2_2.json", "docs/multi_revision_builds.md", "docs/source_reconstruction_2_2.md", "scripts/build_revision.py", "scripts/revision_profiles.py", "scripts/source_2_2_audit.py", "tests/test_build_revision.py", "tests/test_revision_matrix.py"]},
+      {"subject": "Confine generated and authoring outputs", "delta_ids": ["unified_output_layout"], "paths": [".gitignore", "Makefile", "README.md", "config/source_reconstruction_2_2.json", "docs/data_formats.md", "docs/expanded_rom_assets.md", "docs/graphics_authoring.md", "docs/roadmap.md", "docs/runtime_trace_scenarios.md", "docs/scoring_trace_scenarios.md", "docs/screen_authoring.md", "docs/sound_authoring.md", "docs/sound_engine.md", "docs/source_reconstruction_1_0.md", "docs/source_reconstruction_2_2.md", "docs/validation.md", "scenarios/scoring_trace.json", "scripts/clean_artifacts.py", "scripts/maze_studio.py", "scripts/sound_studio.py", "scripts/source_2_2_audit.py", "tests/test_clean_artifacts.py", "tests/test_source_2_2_audit.py"]},
+      {"subject": "Split Make orchestration by responsibility", "delta_ids": ["responsibility_make_layout"], "paths": ["Makefile", "README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "scripts/lint_source.py", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]},
+      {"subject": "Define tooling ownership and stable dispatch", "delta_ids": ["machine_readable_tooling_ownership"], "paths": ["Makefile", "README.md", "config/source_reconstruction_2_2.json", "config/tooling_layout.json", "docs/index.md", "docs/source_reconstruction_2_2.md", "docs/tooling_layout.md", "scripts/run.py", "scripts/source_2_2_audit.py", "tests/test_tooling_layout.py"]},
+      {"subject": "Add ROM-less scaffold and generated help", "delta_ids": ["romless_scaffold_and_generated_help"], "paths": ["Makefile", "README.md", "config/make_help.json", "config/source_reconstruction_2_2.json", "config/tooling_layout.json", "docs/source_reconstruction_2_2.md", "docs/tooling_layout.md", "mk/validation.mk", "scripts/make_help.py", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "tests/test_make_help.py", "tests/test_scaffold_check.py"]},
+      {"subject": "Exercise authoring workflows through real windows", "delta_ids": ["workstation_ui_interaction_smokes"], "paths": ["Makefile", "README.md", "config/authoring/ui_smokes.json", "config/make_help.json", "config/source_reconstruction_2_2.json", "config/tooling_layout.json", "docs/index.md", "docs/source_reconstruction_2_2.md", "docs/tooling_layout.md", "docs/ui_smoke.md", "mk/validation.mk", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "scripts/ui_smoke.py", "tests/test_tooling_layout.py", "tests/test_ui_smoke.py"]},
+      {"subject": "Enforce release history and clean gate sequencing", "delta_ids": ["release_integrity"], "paths": ["Makefile", "README.md", "config/make_help.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/source_reconstruction_2_2.md", "mk/validation.mk", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "tests/test_scaffold_check.py", "tests/test_source_2_2_audit.py"]}
+    ]
+  },
   "requirements": {
     "canonical_identity": {
       "status": "satisfied",
@@ -118,7 +138,7 @@
     },
     "public_release_metadata": {
       "status": "satisfied",
-      "evidence": {"targets": ["source-2-2-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"], "scenarios": [], "artifacts": []}
+      "evidence": {"targets": ["source-2-2-audit"], "files": ["config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py"], "scenarios": [], "artifacts": []}
     },
     "source_layout_ownership": {
       "status": "satisfied",
@@ -150,7 +170,7 @@
     },
     "release_integrity": {
       "status": "planned",
-      "evidence": {"targets": ["source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"], "scenarios": [], "artifacts": []}
+      "evidence": {"targets": ["source-2-2-functional-check", "source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "scripts/source_2_2_audit.py", "tests/test_source_2_2_audit.py"], "scenarios": [], "artifacts": []}
     }
   },
   "layout": {
@@ -300,7 +320,8 @@
     "source-2-1-audit", "source-2-1-release-audit",
     "source-2-1-post-tag-audit", "source-2-1-check",
     "source-2-2-audit", "source-2-2-release-audit",
-    "source-2-2-post-tag-audit", "source-2-2-check", "tool-list",
+    "source-2-2-post-tag-audit", "source-2-2-functional-check",
+    "source-2-2-check", "tool-list",
     "help-check", "scaffold-check", "ui-smoke-check", "ui-smoke"
   ]
 }

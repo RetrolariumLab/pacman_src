@@ -6,7 +6,7 @@ import json
 import re
 import subprocess
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from build_dev import load_toolchain_manifest
 from make_help import load_help, validate_help
@@ -19,6 +19,17 @@ from workflow.run_revision_smokes import validate_scenarios
 EXPECTED_RELEASE_LINE = "2.x"
 EXPECTED_RELEASE = {"name": "Source Reconstruction 2.2", "version": "2.2"}
 EXPECTED_TAG = "source-reconstruction-2.2"
+EXPECTED_RELEASE_SUBJECT = "Complete Source Reconstruction 2.2"
+CODEX_TRAILER = "Co-Authored-By: Codex <noreply@openai.com>"
+PUBLIC_TEXT_SUFFIXES = {
+    ".asm", ".cfg", ".inc", ".json", ".lua", ".md", ".mk", ".py", ".txt",
+    ".yaml", ".yml",
+}
+PUBLIC_TEXT_NAMES = {".gitignore", "Makefile"}
+NON_ENGLISH_SCRIPT = re.compile(
+    r"[\u0370-\u052f\u0590-\u08ff\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]"
+)
+CYRILLIC_SCRIPT = re.compile(r"[\u0400-\u052f]")
 EXPECTED_PREDECESSOR = {
     "tag": "source-reconstruction-2.1",
     "commit": "959bee80064aaa692e456cf710b527cc31bfba81",
@@ -107,6 +118,176 @@ def remote_tag_exists(project_root: Path, remote: str, tag: str) -> bool:
     return bool(completed.stdout.strip())
 
 
+def validate_history(
+    project_root: Path,
+    predecessor: object,
+    history: object,
+    delta: object,
+) -> list[str]:
+    """Validate the complete substantive Git range and its release-delta map."""
+    errors: list[str] = []
+    if not isinstance(predecessor, dict):
+        return ["release predecessor must be an object"]
+    predecessor_commit = predecessor.get("commit")
+    predecessor_tag = predecessor.get("tag")
+    predecessor_manifest = predecessor.get("manifest")
+    if not all(isinstance(value, str) and value for value in (
+        predecessor_commit, predecessor_tag, predecessor_manifest,
+    )):
+        return ["release predecessor identity is incomplete"]
+    if not isinstance(history, dict) or set(history) != {
+        "range_start", "commit_count", "commits",
+    }:
+        return ["release history contract has an invalid shape"]
+    if history.get("range_start") != predecessor_commit:
+        errors.append("release history range does not start at the predecessor commit")
+    mappings = history.get("commits")
+    count = history.get("commit_count")
+    if (
+        not isinstance(count, int) or count < 1
+        or not isinstance(mappings, list) or len(mappings) != count
+    ):
+        errors.append("release history count or mappings are invalid")
+        return errors
+    if not isinstance(delta, list):
+        return errors + ["release delta must be a list for history validation"]
+    delta_by_id = {
+        row.get("id"): row for row in delta
+        if isinstance(row, dict) and isinstance(row.get("id"), str)
+    }
+    expected_subjects: list[str] = []
+    mapped_delta_ids: set[str] = set()
+    for mapping in mappings:
+        if not isinstance(mapping, dict) or set(mapping) != {"subject", "delta_ids", "paths"}:
+            errors.append("release history mapping has an invalid shape")
+            continue
+        subject = mapping.get("subject")
+        delta_ids = mapping.get("delta_ids")
+        paths = mapping.get("paths")
+        if (
+            not isinstance(subject, str) or not subject
+            or not isinstance(delta_ids, list) or not delta_ids
+            or not isinstance(paths, list) or not paths
+            or any(not isinstance(path, str) or not path for path in paths)
+            or any(
+                not isinstance(delta_id, str) or delta_id not in delta_by_id
+                for delta_id in delta_ids
+            )
+        ):
+            errors.append("release history mapping references an invalid subject or delta ID")
+            continue
+        expected_subjects.append(subject)
+        mapped_delta_ids.update(delta_ids)
+    if len(expected_subjects) != len(mappings):
+        return errors
+    if mapped_delta_ids != set(delta_by_id):
+        errors.append("release history mappings do not cover every delta entry")
+
+    try:
+        if git_output(project_root, "cat-file", "-t", predecessor_tag) != "tag":
+            errors.append("predecessor tag must remain annotated")
+        if git_output(project_root, "rev-list", "-n", "1", predecessor_tag) != predecessor_commit:
+            errors.append("predecessor tag no longer resolves to the declared commit")
+        hashes_text = git_output(
+            project_root, "rev-list", "--reverse", f"{predecessor_commit}..HEAD",
+        )
+        hashes = hashes_text.splitlines() if hashes_text else []
+    except ValueError as error:
+        return errors + [str(error)]
+    if len(hashes) != count:
+        errors.append(
+            f"release history contains {len(hashes)} commits after predecessor, expected {count}"
+        )
+        return errors
+
+    actual_subjects: list[str] = []
+    for commit, mapping in zip(hashes, mappings):
+        try:
+            subject = git_output(project_root, "show", "-s", "--format=%s", commit)
+            body = git_output(project_root, "show", "-s", "--format=%b", commit)
+            tree = git_output(project_root, "show", "-s", "--format=%T", commit)
+            parents = git_output(project_root, "show", "-s", "--format=%P", commit).split()
+            parent_trees = [
+                git_output(project_root, "show", "-s", "--format=%T", parent)
+                for parent in parents
+            ]
+            changed_text = git_output(
+                project_root, "diff-tree", "--no-commit-id", "--name-only", "-r", commit,
+            )
+        except ValueError as error:
+            errors.append(str(error))
+            continue
+        actual_subjects.append(subject)
+        if parent_trees and all(tree == parent_tree for parent_tree in parent_trees):
+            errors.append(f"empty commit is forbidden in the release range: {commit}")
+        if len(parents) == 1:
+            if (
+                not subject.isascii() or not body.isascii()
+                or subject.endswith(".")
+                or subject.casefold() in {"fix", "update", "changes", "wip"}
+            ):
+                errors.append(f"commit title/body policy failed: {commit}")
+            if body.count(CODEX_TRAILER) != 1 or not body.rstrip().endswith(CODEX_TRAILER):
+                errors.append(f"commit lacks the exact final Codex trailer: {commit}")
+            body_without_trailer = body.rsplit(CODEX_TRAILER, 1)[0].rstrip()
+            paragraphs = [
+                paragraph for paragraph in re.split(r"\r?\n\s*\r?\n", body_without_trailer)
+                if paragraph
+            ]
+            if len(paragraphs) not in {2, 3}:
+                errors.append(f"commit body must contain two or three paragraphs: {commit}")
+        changed_paths = set(changed_text.splitlines()) if changed_text else set()
+        declared_paths = set(mapping["paths"])
+        if changed_paths != declared_paths or len(mapping["paths"]) != len(declared_paths):
+            missing = sorted(changed_paths - declared_paths)
+            stale = sorted(declared_paths - changed_paths)
+            errors.append(
+                f"commit {commit} paths differ from its delta mapping"
+                f" (missing: {', '.join(missing) or '-'}; stale: {', '.join(stale) or '-'})"
+            )
+    if actual_subjects != expected_subjects:
+        errors.append("release history subjects or order differ from the manifest mapping")
+    return errors
+
+
+def validate_public_text_language(project_root: Path) -> list[str]:
+    """Enforce English project text and reject Cyrillic without exceptions."""
+    try:
+        tracked = git_output(project_root, "ls-files", "-z").split("\0")
+    except ValueError as error:
+        return [str(error)]
+    errors: list[str] = []
+    for value in tracked:
+        if not value:
+            continue
+        relative = PurePosixPath(value)
+        if relative.name not in PUBLIC_TEXT_NAMES and relative.suffix not in PUBLIC_TEXT_SUFFIXES:
+            continue
+        path = project_root.joinpath(*relative.parts)
+        if not path.is_file():
+            continue
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except (OSError, UnicodeDecodeError) as error:
+            errors.append(f"cannot read tracked public text {value}: {error}")
+            continue
+        imported_reference = relative.parts[:2] == ("docs", "nesdev")
+        imported_source_is_explained = (
+            imported_reference and "Source: https://www.nesdev.org/wiki/" in "\n".join(lines)
+        )
+        hits = [
+            str(index) for index, line in enumerate(lines, 1)
+            if NON_ENGLISH_SCRIPT.search(line)
+            and (CYRILLIC_SCRIPT.search(line) or not imported_source_is_explained)
+        ]
+        if hits:
+            errors.append(
+                f"tracked public text contains non-English script: {value}"
+                f" (lines {', '.join(hits[:8])})"
+            )
+    return errors
+
+
 def validate_release_metadata(manifest: dict[str, object]) -> list[str]:
     errors: list[str] = []
     if manifest.get("release_line") != EXPECTED_RELEASE_LINE:
@@ -125,14 +306,22 @@ def validate_release_metadata(manifest: dict[str, object]) -> list[str]:
     if not isinstance(delta, list) or not delta:
         errors.append("release delta must contain evidence-backed entries")
     else:
+        delta_ids: list[str] = []
         for row in delta:
             if not isinstance(row, dict) or not all(
                 row.get(key) for key in ("id", "kind", "summary", "evidence")
             ):
                 errors.append("release delta contains an incomplete entry")
                 break
+            delta_ids.append(row["id"])
             if row["kind"] not in {"evidence", "source", "tooling", "documentation"}:
                 errors.append(f"invalid release delta kind: {row['kind']}")
+            if not isinstance(row["evidence"], list) or any(
+                not isinstance(value, str) or not value for value in row["evidence"]
+            ):
+                errors.append(f"invalid release delta evidence: {row['id']}")
+        if len(delta_ids) != len(set(delta_ids)):
+            errors.append("release delta IDs must be unique")
     excluded = manifest.get("excluded_scope")
     if not isinstance(excluded, list) or not excluded:
         errors.append("excluded scope must be explicit")
@@ -831,7 +1020,7 @@ def validate_repository_state(
             errors.append("tag-ready audit requires a clean worktree")
         subject = git_output(project_root, "show", "-s", "--format=%s", "HEAD")
         body = git_output(project_root, "show", "-s", "--format=%b", "HEAD")
-        if subject != "Complete Source Reconstruction 2.2":
+        if subject != EXPECTED_RELEASE_SUBJECT:
             errors.append("release commit title differs from the contract")
         paragraphs = [
             paragraph for paragraph in re.split(r"\r?\n\s*\r?\n", body)
@@ -839,7 +1028,7 @@ def validate_repository_state(
         ]
         if len(paragraphs) not in {2, 3}:
             errors.append("release commit body must contain two or three paragraphs")
-        if "Co-Authored-By: Codex <noreply@openai.com>" not in body:
+        if body.count(CODEX_TRAILER) != 1 or not body.rstrip().endswith(CODEX_TRAILER):
             errors.append("release commit lacks the required Codex attribution")
         if not all(term in body for term in ("source-2-2-check", "excluded", "manifest")):
             errors.append("release commit body lacks delta, gate, or scope evidence")
@@ -868,11 +1057,16 @@ def audit(
     if not isinstance(manifest, dict) or manifest.get("schema_version") != 2:
         return ["unsupported Source 2.2 manifest schema"]
     errors = validate_release_metadata(manifest)
+    errors.extend(validate_public_text_language(project_root))
     if require_ready and manifest.get("status") != "tag-ready":
         errors.append("Source 2.2 manifest is not tag-ready")
     elif manifest.get("status") not in {"development", "tag-ready"}:
         errors.append("unsupported Source 2.2 release status")
     errors.extend(validate_delta_evidence(project_root, manifest.get("delta")))
+    errors.extend(validate_history(
+        project_root, manifest.get("predecessor"), manifest.get("history"),
+        manifest.get("delta"),
+    ))
     errors.extend(validate_paths(project_root, manifest.get("required_files"), "required_files"))
     try:
         targets = repository_make_targets(project_root)

@@ -86,6 +86,7 @@
         {"target": "source-2-2-audit", "usage": "source-2-2-audit", "summary": "Audit the developing Source 2.2 repository contract."},
         {"target": "source-2-2-release-audit", "usage": "source-2-2-release-audit", "summary": "Audit Source 2.2 pre-tag repository state."},
         {"target": "source-2-2-post-tag-audit", "usage": "source-2-2-post-tag-audit", "summary": "Verify the annotated Source 2.2 tag."},
+        {"target": "source-2-2-functional-check", "usage": "source-2-2-functional-check", "summary": "Run the accepted Source 2.1 baseline and complete Source 2.2 functional delta."},
         {"target": "source-2-2-check", "usage": "source-2-2-check", "summary": "Run the complete clean Source 2.2 pre-tag gate."}
       ]
     },
