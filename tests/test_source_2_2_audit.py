@@ -16,6 +16,7 @@ from source_2_2_audit import (  # noqa: E402
     EXPECTED_SCOPE,
     EXPECTED_TAG,
     make_targets,
+    repository_make_targets,
     validate_delta_evidence,
     validate_layout,
     validate_output_layout,
@@ -68,6 +69,12 @@ class Source22AuditTests(unittest.TestCase):
     def test_make_target_parser_ignores_recipe_lines(self) -> None:
         text = "verify: build\n\tpython tool.py\nsource-2-2-audit:\n"
         self.assertEqual(make_targets(text), {"verify", "source-2-2-audit"})
+
+    def test_project_make_targets_include_fragments(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        targets = repository_make_targets(root)
+        self.assertIn("test-relocation", targets)
+        self.assertIn("source-2-2-audit", targets)
 
     def test_project_source_layout_is_complete(self) -> None:
         root = Path(__file__).resolve().parents[1]
