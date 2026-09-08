@@ -5,6 +5,7 @@
 - [source_reconstruction_1_0.md](./source_reconstruction_1_0.md): preservation contract, evidence matrix, and tag procedure.
 - [source_reconstruction_2_0.md](./source_reconstruction_2_0.md): authoring and official-revision release scope.
 - [source_reconstruction_2_1.md](./source_reconstruction_2_1.md): compatible delta and aggregate acceptance gates.
+- [source_reconstruction_2_2.md](./source_reconstruction_2_2.md): compatible-minor project contract and modernization boundary.
 - [roadmap.md](./roadmap.md): project direction, evidence rules, and completion criteria.
 - [validation.md](./validation.md): lint, unit, identity, debugger, runtime, and release layers.
 - [licensing.md](./licensing.md): distribution boundary, license status, and third-party provenance.

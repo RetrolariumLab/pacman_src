@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "canonical_profile": "japan_v10",
+  "canonical_entrypoint": "src/main.asm",
+  "cpu_window": {"start": "0xC000", "end": "0xFFFF"},
+  "modules": [
+    {"order": 1, "path": "src/system/boot_and_frame.asm", "start": "0xC000", "end": "0xC1F4", "kind": "semantic-code", "responsibility": "Reset, NMI, controller input, and frame bootstrap"},
+    {"order": 2, "path": "src/game/title/screen.asm", "start": "0xC1F5", "end": "0xC457", "kind": "semantic-code", "responsibility": "Title drawing and menu input"},
+    {"order": 3, "path": "src/game/title/attract_intro.asm", "start": "0xC458", "end": "0xC6C7", "kind": "semantic-code", "responsibility": "Attract introduction and text packets"},
+    {"order": 4, "path": "src/game/title/attract_chase.asm", "start": "0xC6C8", "end": "0xC989", "kind": "semantic-code", "responsibility": "Attract chase simulation and animation"},
+    {"order": 5, "path": "src/game/round/gameplay_loop.asm", "start": "0xC98A", "end": "0xCA9C", "kind": "semantic-code", "responsibility": "Session loop, script dispatch, and pause", "size_exception": {"kind": "small-cohesive-module", "reason": "The complete gameplay loop is one contiguous 275-byte control-flow range."}},
+    {"order": 6, "path": "src/game/round/ready.asm", "start": "0xCA9D", "end": "0xCC0E", "kind": "semantic-code", "responsibility": "READY sequence and player handoff"},
+    {"order": 7, "path": "src/game/round/transitions.asm", "start": "0xCC0F", "end": "0xCE34", "kind": "semantic-code", "responsibility": "Death, stage clear, and game over transitions"},
+    {"order": 8, "path": "src/game/round/setup.asm", "start": "0xCE35", "end": "0xD0EE", "kind": "semantic-code", "responsibility": "Round initialization and table loading"},
+    {"order": 9, "path": "src/game/round/runtime.asm", "start": "0xD0EF", "end": "0xD2FA", "kind": "semantic-code", "responsibility": "Round timers, ghost release, fruit, and collisions"},
+    {"order": 10, "path": "src/game/pacman_movement.asm", "start": "0xD2FB", "end": "0xD4C1", "kind": "semantic-code", "responsibility": "Pac-Man input and movement"},
+    {"order": 11, "path": "src/game/ghosts/navigation.asm", "start": "0xD4C2", "end": "0xD78B", "kind": "semantic-code", "responsibility": "Ghost movement, targeting, and path selection"},
+    {"order": 12, "path": "src/game/ghosts/house.asm", "start": "0xD78C", "end": "0xD8F8", "kind": "semantic-code", "responsibility": "Ghost speed profiles, house behavior, and release logic"},
+    {"order": 13, "path": "src/rendering/actors/animation.asm", "start": "0xD8F9", "end": "0xDA5B", "kind": "semantic-code", "responsibility": "Actor animation and position selection"},
+    {"order": 14, "path": "src/rendering/actors/oam.asm", "start": "0xDA5C", "end": "0xDDC8", "kind": "semantic-code", "responsibility": "OAM construction and actor sprite tables"},
+    {"order": 15, "path": "src/rendering/ppu_updates.asm", "start": "0xDDC9", "end": "0xDEDE", "kind": "semantic-code", "responsibility": "Buffered PPU writes and pellet blinking", "size_exception": {"kind": "small-cohesive-module", "reason": "The complete PPU update subsystem is one contiguous 278-byte range."}},
+    {"order": 16, "path": "src/game/scoring.asm", "start": "0xDEDF", "end": "0xE153", "kind": "semantic-code", "responsibility": "Pellets, fruit, score, and extra-life awards"},
+    {"order": 17, "path": "src/rendering/tile_coordinates.asm", "start": "0xE154", "end": "0xE25B", "kind": "semantic-code", "responsibility": "Tile probes and coordinate conversion", "size_exception": {"kind": "small-cohesive-module", "reason": "The coordinate helpers form one contiguous 264-byte contract."}},
+    {"order": 18, "path": "src/rendering/maze_rendering.asm", "start": "0xE25C", "end": "0xE378", "kind": "semantic-code", "responsibility": "Maze upload and nametable clearing", "size_exception": {"kind": "small-cohesive-module", "reason": "The maze renderer is a complete contiguous 285-byte subsystem."}},
+    {"order": 19, "path": "src/rendering/hud/score.asm", "start": "0xE379", "end": "0xE42A", "kind": "semantic-code", "responsibility": "Score and high-score display", "size_exception": {"kind": "small-cohesive-module", "reason": "The score display helpers occupy one complete 178-byte range."}},
+    {"order": 20, "path": "src/game/turn_candidates.asm", "start": "0xE42B", "end": "0xE47B", "kind": "semantic-code", "responsibility": "Valid movement-direction collection", "size_exception": {"kind": "small-cohesive-module", "reason": "The direction candidate routine is a self-contained 81-byte range."}},
+    {"order": 21, "path": "src/rendering/hud/status.asm", "start": "0xE47C", "end": "0xE654", "kind": "semantic-code", "responsibility": "Text, lives, fruit history, and status icons"},
+    {"order": 22, "path": "src/game/intermission/setup.asm", "start": "0xE655", "end": "0xE74A", "kind": "semantic-code", "responsibility": "Intermission playfield setup", "size_exception": {"kind": "small-cohesive-module", "reason": "The intermission setup path is a complete contiguous 246-byte range."}},
+    {"order": 23, "path": "src/game/intermission/scenes.asm", "start": "0xE74B", "end": "0xE9A4", "kind": "semantic-code", "responsibility": "Three intermission scene scripts"},
+    {"order": 24, "path": "src/game/intermission/actors.asm", "start": "0xE9A5", "end": "0xEA1F", "kind": "semantic-code", "responsibility": "Intermission actor movement and visibility", "size_exception": {"kind": "small-cohesive-module", "reason": "The intermission actor helpers occupy one complete 123-byte range."}},
+    {"order": 25, "path": "src/game/intermission/animation.asm", "start": "0xEA20", "end": "0xEB41", "kind": "semantic-code", "responsibility": "Intermission tile animation"},
+    {"order": 26, "path": "src/data/stage_parameters.asm", "start": "0xEB42", "end": "0xEC77", "kind": "owned-data", "responsibility": "Stage tuning tables"},
+    {"order": 27, "path": "src/data/maze.asm", "start": "0xEC78", "end": "0xEE17", "kind": "generated-data-wrapper", "responsibility": "Manifest-managed compressed maze data", "size_exception": {"kind": "generated-data-wrapper", "reason": "The short source wrapper includes the complete generated maze payload."}},
+    {"order": 28, "path": "src/audio/engine.asm", "start": "0xEE18", "end": "0xF0AD", "kind": "semantic-code", "responsibility": "Audio decoder and support tables"},
+    {"order": 29, "path": "src/audio/streams.asm", "start": "0xF0AE", "end": "0xF427", "kind": "generated-data-wrapper", "responsibility": "Manifest-managed audio streams", "size_exception": {"kind": "generated-data-wrapper", "reason": "The short source wrapper includes all generated audio payloads in canonical order."}},
+    {"order": 30, "path": "src/data/tail_and_vectors.asm", "start": "0xF428", "end": "0xFFFF", "kind": "fixed-tail", "responsibility": "Padding, maze pointer, copyright data, and interrupt vectors", "size_exception": {"kind": "fixed-address-tail", "reason": "The source wrapper owns a large padding span and the fixed vector tail at the end of PRG."}}
+  ],
+  "non_emitting_includes": [
+    "src/revisions/profile_ids.inc",
+    "src/memory/ram.inc",
+    "src/memory/hardware.inc",
+    "src/memory/constants.inc",
+    "src/macros/memory.inc",
+    "src/macros/ppu.inc",
+    "src/macros/hud.inc",
+    "src/macros/actors.inc",
+    "src/data/active_tables.inc"
+  ],
+  "variant_entrypoints": [
+    "src/variants/stage5.asm",
+    "src/expanded/nrom256.asm"
+  ]
+}

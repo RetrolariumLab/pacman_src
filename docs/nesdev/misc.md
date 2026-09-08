@@ -6978,7 +6978,7 @@ Reading this register acknowledges disk IRQs.
 xxxx xPRS
       |||
       ||+- Disk flag  (0: Disk inserted; 1: Disk not inserted)
-      |+-- Ready flag (0: Disk readу; 1: Disk not ready)
+      |+-- Ready flag (0: Disk ready; 1: Disk not ready)
       +--- Protect flag (0: Not write protected; 1: Write protected or disk ejected)
 
 ```
@@ -12986,7 +12986,7 @@ Here is a list of games from the NES's commercial era whose music has been rippe
 | Atsushi Chikuma | Bomberman | 1985 Hudson Soft |  |
 | Atsushi Chikuma | Bomberman 2 | 1991 Hudson Soft |  |
 | Atsushi Chikuma and Itasan | Doraemon (ドラえもん) (J) | 1986 Hudson Soft | Based on the Japanese children's anime/manga by Fujiko F. Fujio |
-| Brad Fuller | Tetяis | 1989 Tengen Games | Game invented by Alexey Pajitnov and cloned on NES by Ed Logg |
+| Brad Fuller | Tetris | 1989 Tengen Games | Game invented by Alexey Pajitnov and cloned on NES by Ed Logg |
 | Bügsük, Lx Rudis, and Dave O'riva | Klax | 199? Tengen |  |
 | BUNBUN | Megaman 3 | 1990 Capcom Co. Ltd. | AKA Rockman 3 |
 | C. Manami & Yuukichan's Papa | Megaman | 1987 Capcom Co. Ltd. | AKA Rockman |
@@ -13354,8 +13354,8 @@ A mouse that came with cartridges and keyboard famiclones manufactured by Macro 
 
 Example games:
 - Smart Genius
-- Магистр Гений 2 Говорящий Картридж
-- Мооспирв Обучающий Компьютер 2000 (a.k.a. Educational Computer 2000, though there are others with that title)
+- Magistr Geniy 2 Talking Cartridge
+- Moospirv Educational Computer 2000 (though there are others with that title)
 
 The Mega Book Mouse is virtually identical to the Macro Winners Mouse; the only difference is that the two bits that indicate the "byte number" are in a different bit position.
 

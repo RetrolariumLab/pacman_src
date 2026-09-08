@@ -69,6 +69,7 @@ REVISION ?= $(shell $(PYTHON) "$(PROJECT_DIR)scripts/revision_profiles.py" --man
 REVISION_BUILD_DIR ?= $(BUILD_DIR)/revisions/$(REVISION)
 REVISION_REFERENCE_DIR ?= $(PROJECT_DIR)
 SOURCE_2_1_MANIFEST ?= $(PROJECT_DIR)config/source_reconstruction_2_1.json
+SOURCE_2_2_MANIFEST ?= $(PROJECT_DIR)config/source_reconstruction_2_2.json
 TOOLCHAIN_MANIFEST ?= $(PROJECT_DIR)config/toolchain.json
 REVISION_DEBUG_SUMMARY ?= $(REVISION_BUILD_DIR)/debug_symbols.json
 REVISION_SMOKE_SCENARIOS ?= $(PROJECT_DIR)scenarios/revision_smoke.json
@@ -138,7 +139,7 @@ RELOCATION_HEARTBEAT_INTERVAL ?= 5000
 
 .DEFAULT_GOAL := build
 
-.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-revisions smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols test-relocation format lint roundtrip-formats reconstruction-audit reconstruction-audit-2 source-2-1-audit source-2-1-release-audit source-2-1-post-tag-audit source-2-1-check run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces trace-evidence validate-evidence chunk help _require-assets _manifest _batch
+.PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-revisions smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols test-relocation format lint roundtrip-formats reconstruction-audit reconstruction-audit-2 source-2-1-audit source-2-1-release-audit source-2-1-post-tag-audit source-2-1-baseline-check source-2-1-check source-2-2-audit source-2-2-release-audit source-2-2-post-tag-audit source-2-2-check run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces trace-evidence validate-evidence chunk help _require-assets _manifest _batch
 
 build: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -734,6 +735,38 @@ source-2-1-check:
 	$(MAKE) test-relocation
 	$(MAKE) source-2-1-release-audit
 
+# Reusable functional predecessor gate. Unlike the historical pre-tag command,
+# this target remains runnable after the Source 2.1 tag has been published.
+source-2-1-baseline-check:
+	$(MAKE) reconstruction-audit-2
+	$(MAKE) validate-hack
+	$(MAKE) validate-expanded
+	$(MAKE) test-relocation
+	$(MAKE) source-2-1-audit
+
+source-2-2-audit:
+	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_2_audit.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--manifest "$(SOURCE_2_2_MANIFEST)"
+
+source-2-2-release-audit:
+	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_2_audit.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--manifest "$(SOURCE_2_2_MANIFEST)" \
+		--require-ready
+
+source-2-2-post-tag-audit:
+	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_2_audit.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--manifest "$(SOURCE_2_2_MANIFEST)" \
+		--require-ready \
+		--verify-tag
+
+source-2-2-check:
+	$(MAKE) clean
+	$(MAKE) source-2-1-baseline-check
+	$(MAKE) source-2-2-release-audit
+
 chunk: build
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/extract_rename_chunk.py" \
 		--source "$(NATIVE_SOURCE)" \
@@ -793,6 +826,10 @@ help:
 	@echo   make source-2-1-audit              Check the Source 2.1 repository contract
 	@echo   make source-2-1-check              Run the tag-ready Source 2.1 gate
 	@echo   make source-2-1-post-tag-audit     Verify the clean, annotated Source 2.1 tag
+	@echo   make source-2-1-baseline-check     Re-run the accepted Source 2.1 guarantees
+	@echo   make source-2-2-audit              Check the developing Source 2.2 contract
+	@echo   make source-2-2-check              Run the tag-ready Source 2.2 gate
+	@echo   make source-2-2-post-tag-audit     Verify the clean, annotated Source 2.2 tag
 	@echo Workflow:
 	@echo   make run                           Build and run the ROM in FCEUX
 	@echo   make build-dev                     Prepare the FCEUX development tools

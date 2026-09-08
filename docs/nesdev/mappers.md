@@ -6483,7 +6483,7 @@ It should be discovered whether this mapper number is used for any other unlicen
 
 This is supported by BizHawk as of r3975 and FCEUX for some time prior but definitely as of 26-nov-2012.
 
-Formerly FCEUX emulated this with unique code, but as of r2722 Санчез asserts that it is a duplicate of INES Mapper 023. This means the only difference between 27 and the other VRC4 mappers (21, 23, and 25) is the way the board wires up the address lines. However, FCEUX's VRC2/4 emulation is filled with hacks for unlicensed games which are otherwise similar to VRC2/4.
+Formerly FCEUX emulated this with unique code, but as of r2722 Sanchez asserts that it is a duplicate of INES Mapper 023. This means the only difference between 27 and the other VRC4 mappers (21, 23, and 25) is the way the board wires up the address lines. However, FCEUX's VRC2/4 emulation is filled with hacks for unlicensed games which are otherwise similar to VRC2/4.
 
 In particular, World Hero depends on the VRC4's 9-bit CHR bank numbers, where the most significant nibble of the CHR banks are actually 5 bits.
 
@@ -6520,7 +6520,7 @@ PRG E000-FFFF is probably fixed to the last bank.
 
 ```
 
-In FCEUX r2947, Санчез subsequently reallocated this mapper to a set of games that the source refers to has "Mi Hun Che", a very simple (if conflated) mapper:
+In FCEUX r2947, Sanchez subsequently reallocated this mapper to a set of games that the source refers to has "Mi Hun Che", a very simple (if conflated) mapper:
 
 ```text
 $8000: [.... ...X] - Select both 4 KiB CHR-ROM bank (mirrored across both PPU $0xxx and $1xxx) and 1scA/1scB mirroring.
@@ -14996,7 +14996,7 @@ The most succinct description is `EffectiveData = (ROM[address] & (WrittenData|1
 
 Source: https://www.nesdev.org/wiki/INES_Mapper_145
 
-Nestopia, GoodNES, and Санчез all agree: iNES Mapper 145is Yet Another CNROM clone. It's a singleton, labeled SA-72007, and used by the Sachen game Sidewinder . It is very similar to iNES Mapper 087.
+Nestopia, GoodNES, and Sanchez all agree: iNES Mapper 145is Yet Another CNROM clone. It's a singleton, labeled SA-72007, and used by the Sachen game Sidewinder . It is very similar to iNES Mapper 087.
 
 ```text
  Mask: $E100
@@ -16399,7 +16399,7 @@ Source: https://www.nesdev.org/wiki/INES_Mapper_165
 
 Source: https://www.nesdev.org/wiki/INES_Mapper_166
 
-iNES Mapper 167 denotes the circuit board for Subor's Chinese 小霸王 中英文电脑学习机 IV ("Subor Chinese and English Computer Learning Machine IV") and Russian Сюбор Обучающий Компьютер ("Subor Educational Computer") cartridges. Overview
+iNES Mapper 167 denotes the circuit board for Subor's Chinese 小霸王 中英文电脑学习机 IV ("Subor Chinese and English Computer Learning Machine IV") and Russian "Subor Educational Computer" cartridges. Overview
 - CPU $6000-$7FFF: 8 KiB unbanked PRG-RAM
 - CPU $8000-$BFFF: 16 KiB fixed or switchable window into 1 MiB PRG-ROM
 - CPU $C000-$FFFF: 16 KiB fixed or switchable window into 1 MiB PRG-ROM
@@ -16464,7 +16464,7 @@ INES Mapper 166had been used at one time to denote mapper 167 ROM image files wi
 
 Source: https://www.nesdev.org/wiki/INES_Mapper_167
 
-iNES Mapper 167 denotes the circuit board for Subor's Chinese 小霸王 中英文电脑学习机 IV ("Subor Chinese and English Computer Learning Machine IV") and Russian Сюбор Обучающий Компьютер ("Subor Educational Computer") cartridges. Overview
+iNES Mapper 167 denotes the circuit board for Subor's Chinese 小霸王 中英文电脑学习机 IV ("Subor Chinese and English Computer Learning Machine IV") and Russian "Subor Educational Computer" cartridges. Overview
 - CPU $6000-$7FFF: 8 KiB unbanked PRG-RAM
 - CPU $8000-$BFFF: 16 KiB fixed or switchable window into 1 MiB PRG-ROM
 - CPU $C000-$FFFF: 16 KiB fixed or switchable window into 1 MiB PRG-ROM
@@ -26158,7 +26158,7 @@ NES 2.0 Mapper 284 is used for the homebrew conversion of the game Drip . Its UN
 
 Source: https://www.nesdev.org/wiki/NES_2.0_Mapper_285
 
-NES 2.0 Mapper 285 is used for the A65AS and JY-066 multicarts. The UNIF board name for both incompatible variants is BMC-A65AS . A second UNIF board name, BMC-GF-401CD refers to submapper 1. A later-discovered Russian bootleg cartridge of Highway Star (Русские Гонки) is assigned to mapper 285 submapper 1 as well, as it uses UNROM-banking while changing mirroring via latch bit 3. Banks
+NES 2.0 Mapper 285 is used for the A65AS and JY-066 multicarts. The UNIF board name for both incompatible variants is BMC-A65AS . A second UNIF board name, BMC-GF-401CD refers to submapper 1. A later-discovered Russian bootleg cartridge of Highway Star (Russkiye Gonki, "Russian Racing") is assigned to mapper 285 submapper 1 as well, as it uses UNROM-banking while changing mirroring via latch bit 3. Banks
 - CPU $8000-$BFFF: In 16 KiB mode: 16 KiB switchable inner bank, 128 KiB switchable outer bank
 - CPU $C000-$FFFF: In 16 KiB mode: 16 KiB fixed inner bank 7, 128 KiB switchable outer bank
 - CPU $8000-$FFFF: In 32 KiB mode: 32 KiB switchable bank
@@ -47547,7 +47547,7 @@ Reading this register acknowledges disk IRQs.
 xxxx xPRS
       |||
       ||+- Disk flag  (0: Disk inserted; 1: Disk not inserted)
-      |+-- Ready flag (0: Disk readу; 1: Disk not ready)
+      |+-- Ready flag (0: Disk ready; 1: Disk not ready)
       +--- Protect flag (0: Not write protected; 1: Write protected or disk ejected)
 
 ```
