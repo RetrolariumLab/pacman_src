@@ -2518,7 +2518,7 @@ See: NES 2.0 Mapper 515
 - Sunsonic Educational Computer Learning Card
 - Sunsonic English Blaster - Make for Boys and Girls
 - Zhong Tian Speech Educational Software
-- Магистр Гений 2 Говорящий Картридж
+- Magistr Geniy 2 Talking Cartridge
 - 声霸 for Doctor PC jr.
 - 大华电脑 超級教学卡 (WH-453)
 - 打字练习集合 18-in-1
@@ -3209,7 +3209,7 @@ See: NES 2.0 Mapper 515
 - Sunsonic Educational Computer Learning Card
 - Sunsonic English Blaster - Make for Boys and Girls
 - Zhong Tian Speech Educational Software
-- Магистр Гений 2 Говорящий Картридж
+- Magistr Geniy 2 Talking Cartridge
 - 声霸 for Doctor PC jr.
 - 大华电脑 超級教学卡 (WH-453)
 - 打字练习集合 18-in-1
@@ -5999,7 +5999,7 @@ Reading this register acknowledges disk IRQs.
 xxxx xPRS
       |||
       ||+- Disk flag  (0: Disk inserted; 1: Disk not inserted)
-      |+-- Ready flag (0: Disk readу; 1: Disk not ready)
+      |+-- Ready flag (0: Disk ready; 1: Disk not ready)
       +--- Protect flag (0: Not write protected; 1: Write protected or disk ejected)
 
 ```

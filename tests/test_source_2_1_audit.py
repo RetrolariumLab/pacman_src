@@ -9,7 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from source_2_1_audit import (  # noqa: E402
-    EXPECTED_CONTRACT,
+    EXPECTED_RELEASE_LINE,
     EXPECTED_PREDECESSOR,
     EXPECTED_RELEASE,
     EXPECTED_SCOPE,
@@ -23,7 +23,7 @@ from source_2_1_audit import (  # noqa: E402
 
 def release_manifest() -> dict[str, object]:
     return {
-        "contract": EXPECTED_CONTRACT.copy(),
+        "release_line": EXPECTED_RELEASE_LINE,
         "release": EXPECTED_RELEASE.copy(),
         "release_kind": "compatible_minor",
         "tag": EXPECTED_TAG,

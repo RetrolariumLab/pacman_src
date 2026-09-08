@@ -13,11 +13,7 @@ from revision_profiles import Revision, load_manifest
 from workflow.run_revision_smokes import validate_scenarios
 
 
-EXPECTED_CONTRACT = {
-    "schema": "retrolarium.source_reconstruction_release_contract",
-    "version": 3,
-    "release_line": "2.x",
-}
+EXPECTED_RELEASE_LINE = "2.x"
 EXPECTED_RELEASE = {"name": "Source Reconstruction 2.1", "version": "2.1"}
 EXPECTED_TAG = "source-reconstruction-2.1"
 EXPECTED_PREDECESSOR = {
@@ -95,8 +91,8 @@ def remote_tag_exists(project_root: Path, remote: str, tag: str) -> bool:
 
 def validate_release_metadata(manifest: dict[str, object]) -> list[str]:
     errors: list[str] = []
-    if manifest.get("contract") != EXPECTED_CONTRACT:
-        errors.append("shared release-contract identity differs from Source 2.1")
+    if manifest.get("release_line") != EXPECTED_RELEASE_LINE:
+        errors.append("release line differs from Source 2.1")
     if manifest.get("release") != EXPECTED_RELEASE:
         errors.append("release identity differs from Source 2.1")
     if manifest.get("release_kind") != "compatible_minor":

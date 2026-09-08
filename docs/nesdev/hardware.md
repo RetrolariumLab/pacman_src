@@ -2868,7 +2868,7 @@ Reading this register acknowledges disk IRQs.
 xxxx xPRS
       |||
       ||+- Disk flag  (0: Disk inserted; 1: Disk not inserted)
-      |+-- Ready flag (0: Disk readу; 1: Disk not ready)
+      |+-- Ready flag (0: Disk ready; 1: Disk not ready)
       +--- Protect flag (0: Not write protected; 1: Write protected or disk ejected)
 
 ```
@@ -12174,8 +12174,8 @@ A mouse that came with cartridges and keyboard famiclones manufactured by Macro 
 
 Example games:
 - Smart Genius
-- Магистр Гений 2 Говорящий Картридж
-- Мооспирв Обучающий Компьютер 2000 (a.k.a. Educational Computer 2000, though there are others with that title)
+- Magistr Geniy 2 Talking Cartridge
+- Moospirv Educational Computer 2000 (though there are others with that title)
 
 The Mega Book Mouse is virtually identical to the Macro Winners Mouse; the only difference is that the two bits that indicate the "byte number" are in a different bit position.
 
