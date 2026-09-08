@@ -19,6 +19,7 @@
     "responsibility_make_layout",
     "machine_readable_tooling_ownership",
     "romless_scaffold_and_generated_help",
+    "workstation_ui_interaction_smokes",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -78,6 +79,12 @@
       "kind": "tooling",
       "summary": "Generate command help from an exact public-target registry and exercise public Make orchestration in a disposable checkout containing no private ROM, extracted assets, workspace, or saved build state.",
       "evidence": ["config/make_help.json", "scripts/make_help.py", "scripts/scaffold_check.py", "tests/test_make_help.py", "tests/test_scaffold_check.py"]
+    },
+    {
+      "id": "workstation_ui_interaction_smokes",
+      "kind": "tooling",
+      "summary": "Create real Tk windows for all four supported Studios and exercise edit, save, build dispatch, dirty-close handling, sound preview, and available undo actions against isolated build copies.",
+      "evidence": ["config/authoring/ui_smokes.json", "scripts/ui_smoke.py", "tests/test_ui_smoke.py", "docs/ui_smoke.md"]
     }
   ],
   "requirements": {
@@ -137,6 +144,10 @@
       "status": "satisfied",
       "evidence": {"targets": ["help", "help-check", "scaffold-check", "source-2-2-audit"], "files": ["config/make_help.json", "scripts/make_help.py", "scripts/scaffold_check.py", "tests/test_make_help.py", "tests/test_scaffold_check.py"], "scenarios": ["romless_disposable_checkout"], "artifacts": []}
     },
+    "workstation_ui_smokes": {
+      "status": "satisfied",
+      "evidence": {"targets": ["ui-smoke-check", "ui-smoke"], "files": ["config/authoring/ui_smokes.json", "scripts/ui_smoke.py", "tests/test_ui_smoke.py", "docs/ui_smoke.md"], "scenarios": ["sound_studio_actions", "maze_studio_actions", "graphics_studio_actions", "screen_studio_actions"], "artifacts": []}
+    },
     "release_integrity": {
       "status": "planned",
       "evidence": {"targets": ["source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"], "scenarios": [], "artifacts": []}
@@ -147,6 +158,7 @@
     "source_layout_registry": "config/reconstruction/source_layout.json",
     "tooling_layout_registry": "config/tooling_layout.json",
     "make_help_manifest": "config/make_help.json",
+    "ui_smoke_manifest": "config/authoring/ui_smokes.json",
     "src_root_asm": ["main.asm"],
     "variant_entrypoints": ["src/expanded/nrom256.asm", "src/variants/stage5.asm"],
     "revision_ids": "src/revisions/profile_ids.inc",
@@ -164,6 +176,7 @@
       "tests/test_source_2_1_audit.py",
       "tests/test_source_2_2_audit.py",
       "tests/test_scaffold_check.py",
+      "tests/test_ui_smoke.py",
       "tests/test_tooling_layout.py"
     ]
   },
@@ -255,6 +268,7 @@
     "mk/authoring.mk",
     "mk/runtime.mk",
     "mk/validation.mk",
+    "config/authoring/ui_smokes.json",
     "config/reconstruction/source_layout.json",
     "config/make_help.json",
     "config/tooling_layout.json",
@@ -267,6 +281,7 @@
     "docs/source_reconstruction_2_2.md",
     "docs/source_layout.md",
     "docs/tooling_layout.md",
+    "docs/ui_smoke.md",
     "docs/multi_revision_builds.md",
     "scripts/build_dev.py",
     "scripts/build_revision.py",
@@ -275,7 +290,8 @@
     "scripts/run.py",
     "scripts/scaffold_check.py",
     "scripts/source_2_1_audit.py",
-    "scripts/source_2_2_audit.py"
+    "scripts/source_2_2_audit.py",
+    "scripts/ui_smoke.py"
   ],
   "required_make_targets": [
     "verify", "verify-revision", "verify-revisions", "smoke-revisions",
@@ -285,6 +301,6 @@
     "source-2-1-post-tag-audit", "source-2-1-check",
     "source-2-2-audit", "source-2-2-release-audit",
     "source-2-2-post-tag-audit", "source-2-2-check", "tool-list",
-    "help-check", "scaffold-check"
+    "help-check", "scaffold-check", "ui-smoke-check", "ui-smoke"
   ]
 }

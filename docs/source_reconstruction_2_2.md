@@ -21,8 +21,9 @@ to the canonical build root. The root Makefile is now the stable interface over
 bounded authoring, runtime, and validation fragments. Tool paths are now frozen
 behind a stable dispatcher and an exhaustive responsibility
 and test-owner registry; the non-package layout is a checked compatibility
-deviation. Clean release sequencing, UI smoke coverage, and the complete
-project release audit are not yet complete. No 2.2 tag should be created
+deviation. Real-window interaction smokes now cover all four supported Studios
+without modifying private workspace files. Clean release sequencing and the
+complete project release audit are not yet complete. No 2.2 tag should be created
 until every planned requirement is satisfied and the full pre-tag gate passes
 from a clean build on the supported Windows host.
 
@@ -48,8 +49,7 @@ The remaining compatible work is organized as vertical, testable slices:
 
 1. separate reusable functional gates from pre-tag and post-tag repository
    state checks, and require a clean build for the release path;
-2. add workstation UI interaction smokes for the supported Studios;
-3. validate history, delta, paths, profile coverage, artifacts, and tag state in
+2. validate history, delta, paths, profile coverage, artifacts, and tag state in
    the Source 2.2 release audit.
 
 Cross-profile relocation, a sibling engine, and a new platform/container ABI

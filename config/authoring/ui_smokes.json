@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "host": {"os": "Windows", "toolkit": "tkinter"},
+  "output_root": "build/ui_smoke",
+  "studios": [
+    {
+      "id": "sound",
+      "entrypoint": "scripts/sound_studio.py",
+      "inputs": {
+        "sound_json": "content/workspace/sound_streams.json",
+        "asset_manifest": "assets/manifest.json",
+        "asset_dir": "assets/generated"
+      },
+      "actions": ["open", "edit", "preview", "save", "build-dispatch", "dirty-close"]
+    },
+    {
+      "id": "maze",
+      "entrypoint": "scripts/maze_studio.py",
+      "inputs": {
+        "maze_json": "content/workspace/maze.json",
+        "original_rle": "assets/generated/maze/maze.rle",
+        "chr": "assets/generated/chr/pacman.chr"
+      },
+      "actions": ["open", "edit", "undo-redo", "save", "build-dispatch", "dirty-close"]
+    },
+    {
+      "id": "graphics",
+      "entrypoint": "scripts/graphics_studio.py",
+      "inputs": {
+        "chr": "assets/generated/chr/pacman.chr",
+        "actors": "content/workspace/actor_sprites.json",
+        "palettes": "content/workspace/palettes.json",
+        "rom": "Pac-Man (J) (V1.0) [!].nes"
+      },
+      "actions": ["open", "edit", "undo", "save", "build-dispatch", "dirty-close"]
+    },
+    {
+      "id": "screen",
+      "entrypoint": "scripts/screen_studio.py",
+      "inputs": {
+        "chr": "assets/generated/chr/pacman.chr",
+        "screens": "content/workspace/screens.json",
+        "palettes": "content/workspace/palettes.json",
+        "rom": "Pac-Man (J) (V1.0) [!].nes"
+      },
+      "actions": ["open", "edit", "save", "build-dispatch", "dirty-close"]
+    }
+  ]
+}
