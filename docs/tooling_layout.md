@@ -5,6 +5,13 @@ The stable project interface is the root `Makefile`. For direct Python use,
 the supported command names and `python scripts/run.py <command> [arguments]`
 forwards arguments from the project root.
 
+`make help` is rendered from `config/make_help.json`. `make help-check` proves
+that every `.PHONY` target is either documented once or explicitly hidden as an
+internal/compatibility target. `make scaffold-check` copies only tracked and
+non-ignored files into a disposable Git checkout, proves that no ROM, extracted
+asset, workspace, or build output crossed that boundary, and runs synthetic
+tests plus real `help-check`, `tool-list`, and `source-2-2-audit` Make commands.
+
 `config/tooling_layout.json` is the machine-readable ownership contract. Every
 tracked Python or Lua file below `scripts/` belongs to exactly one of these
 responsibilities:

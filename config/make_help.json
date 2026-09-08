@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "title": "Pac-Man NES Source Reconstruction targets:",
+  "categories": [
+    {
+      "id": "build_profiles",
+      "title": "Build and official profiles",
+      "commands": [
+        {"target": "build", "usage": "build", "summary": "Build the canonical Japan V1.0 ROM."},
+        {"target": "verify", "usage": "verify", "summary": "Rebuild and verify the canonical ROM byte for byte."},
+        {"target": "build-revision", "usage": "build-revision REVISION=name", "summary": "Build one official revision profile."},
+        {"target": "verify-revision", "usage": "verify-revision REVISION=name", "summary": "Verify one official revision profile."},
+        {"target": "verify-revisions", "usage": "verify-revisions", "summary": "Verify every locally available official revision."},
+        {"target": "symbols-revision", "usage": "symbols-revision REVISION=name", "summary": "Generate debugger symbols for one revision."},
+        {"target": "smoke-revisions", "usage": "smoke-revisions", "summary": "Boot every revision profile and validate title/menu state."},
+        {"target": "build-dev", "usage": "build-dev", "summary": "Verify the pinned assembler, linker, and FCEUX tools."},
+        {"target": "split", "usage": "split", "summary": "Extract private canonical assets from the original ROM."}
+      ]
+    },
+    {
+      "id": "variants",
+      "title": "Isolated variants",
+      "commands": [
+        {"target": "build-hack", "usage": "build-hack", "summary": "Build the fixed-layout stage-5 variant."},
+        {"target": "verify-hack", "usage": "verify-hack", "summary": "Verify the declared fixed-layout ROM differences."},
+        {"target": "symbols-hack", "usage": "symbols-hack", "summary": "Generate debugger symbols for the fixed-layout variant."},
+        {"target": "validate-hack", "usage": "validate-hack", "summary": "Validate the fixed-layout variant live in FCEUX."},
+        {"target": "run-hack", "usage": "run-hack", "summary": "Build and run the fixed-layout variant."},
+        {"target": "init-expanded-assets", "usage": "init-expanded-assets", "summary": "Initialize private editable JSON assets once."},
+        {"target": "build-expanded", "usage": "build-expanded", "summary": "Build the JSON-backed NROM-256 variant."},
+        {"target": "verify-expanded", "usage": "verify-expanded", "summary": "Verify expanded assets, layout, and fixed-bank changes."},
+        {"target": "symbols-expanded", "usage": "symbols-expanded", "summary": "Generate debugger symbols for the expanded variant."},
+        {"target": "validate-expanded", "usage": "validate-expanded", "summary": "Validate expanded asset consumption live in FCEUX."},
+        {"target": "run-expanded", "usage": "run-expanded", "summary": "Build and run the expanded variant."}
+      ]
+    },
+    {
+      "id": "authoring",
+      "title": "Authoring tools",
+      "commands": [
+        {"target": "sound-studio", "usage": "sound-studio", "summary": "Open the sound editor and piano roll."},
+        {"target": "maze-studio", "usage": "maze-studio", "summary": "Open the CHR-backed maze editor."},
+        {"target": "graphics-studio", "usage": "graphics-studio", "summary": "Open the CHR, palette, and metasprite editor."},
+        {"target": "screen-studio", "usage": "screen-studio", "summary": "Open the screen, text, HUD, and intermission editor."},
+        {"target": "describe-sound", "usage": "describe-sound SOUND_SLOT=4", "summary": "Describe one decoded sound slot."},
+        {"target": "preview-sound", "usage": "preview-sound SOUND_SLOT=4", "summary": "Render one sound slot to a WAV preview."},
+        {"target": "import-midi", "usage": "import-midi MIDI_FILE=x.mid", "summary": "Import monophonic MIDI into editable sound JSON."}
+      ]
+    },
+    {
+      "id": "validation",
+      "title": "Validation and evidence",
+      "commands": [
+        {"target": "format", "usage": "format", "summary": "Normalize ca65 assembly style and lint the result."},
+        {"target": "lint", "usage": "lint", "summary": "Check assembly, source policy, and documentation."},
+        {"target": "test", "usage": "test", "summary": "Run the complete fast Python test suite."},
+        {"target": "test-debug-symbols", "usage": "test-debug-symbols", "summary": "Run focused debugger-symbol unit tests."},
+        {"target": "test-runtime-traces", "usage": "test-runtime-traces", "summary": "Run focused runtime-trace validator tests."},
+        {"target": "symbols", "usage": "symbols", "summary": "Build canonical debugger symbols and FCEUX labels."},
+        {"target": "validate-symbols", "usage": "validate-symbols", "summary": "Validate symbol lookup and semantic NMI live in FCEUX."},
+        {"target": "roundtrip-formats", "usage": "roundtrip-formats", "summary": "Round-trip every documented binary format."},
+        {"target": "trace-scoring", "usage": "trace-scoring", "summary": "Capture semantic scoring evidence."},
+        {"target": "validate-scoring-trace", "usage": "validate-scoring-trace", "summary": "Revalidate existing scoring evidence."},
+        {"target": "trace-runtime", "usage": "trace-runtime", "summary": "Capture focused runtime evidence."},
+        {"target": "validate-runtime-traces", "usage": "validate-runtime-traces", "summary": "Revalidate existing runtime evidence."},
+        {"target": "trace-evidence", "usage": "trace-evidence", "summary": "Recapture resolved reconstruction evidence."},
+        {"target": "validate-evidence", "usage": "validate-evidence", "summary": "Revalidate existing reconstruction evidence."},
+        {"target": "test-relocation", "usage": "test-relocation", "summary": "Build and exercise the canonical symbolic relocation."},
+        {"target": "help-check", "usage": "help-check", "summary": "Verify exact public-target help coverage."},
+        {"target": "scaffold-check", "usage": "scaffold-check", "summary": "Run ROM-less checks in a disposable tracked-file checkout."}
+      ]
+    },
+    {
+      "id": "release",
+      "title": "Reconstruction and release gates",
+      "commands": [
+        {"target": "reconstruction-audit", "usage": "reconstruction-audit", "summary": "Run the Source Reconstruction 1.0 functional gate."},
+        {"target": "reconstruction-audit-2", "usage": "reconstruction-audit-2", "summary": "Run the Source Reconstruction 2.0 functional gate."},
+        {"target": "source-2-1-audit", "usage": "source-2-1-audit", "summary": "Audit the accepted Source 2.1 repository contract."},
+        {"target": "source-2-1-release-audit", "usage": "source-2-1-release-audit", "summary": "Audit Source 2.1 pre-tag repository state."},
+        {"target": "source-2-1-post-tag-audit", "usage": "source-2-1-post-tag-audit", "summary": "Verify the annotated Source 2.1 tag."},
+        {"target": "source-2-1-baseline-check", "usage": "source-2-1-baseline-check", "summary": "Re-run all accepted Source 2.1 guarantees."},
+        {"target": "source-2-1-check", "usage": "source-2-1-check", "summary": "Run the historical Source 2.1 pre-tag gate."},
+        {"target": "source-2-2-audit", "usage": "source-2-2-audit", "summary": "Audit the developing Source 2.2 repository contract."},
+        {"target": "source-2-2-release-audit", "usage": "source-2-2-release-audit", "summary": "Audit Source 2.2 pre-tag repository state."},
+        {"target": "source-2-2-post-tag-audit", "usage": "source-2-2-post-tag-audit", "summary": "Verify the annotated Source 2.2 tag."},
+        {"target": "source-2-2-check", "usage": "source-2-2-check", "summary": "Run the complete clean Source 2.2 pre-tag gate."}
+      ]
+    },
+    {
+      "id": "workflow",
+      "title": "Workflow",
+      "commands": [
+        {"target": "run", "usage": "run", "summary": "Build and run the canonical ROM in FCEUX."},
+        {"target": "reference", "usage": "reference", "summary": "Capture the longplay reference set."},
+        {"target": "analyze", "usage": "analyze COUNT=32", "summary": "Run reverse-engineering analysis."},
+        {"target": "chunk", "usage": "chunk START=260 LINES=60", "summary": "Prepare a source rename and analysis chunk."},
+        {"target": "tool-list", "usage": "tool-list", "summary": "List stable direct Python tool commands."},
+        {"target": "clean", "usage": "clean", "summary": "Remove generated build output while preserving private inputs."},
+        {"target": "help", "usage": "help", "summary": "Show this generated public command reference."}
+      ]
+    }
+  ],
+  "hidden_targets": ["_batch", "_manifest", "_require-assets", "expanded-assets", "smoke-regional-revisions"]
+}

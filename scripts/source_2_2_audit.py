@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from build_dev import load_toolchain_manifest
+from make_help import load_help, validate_help
 from revision_profiles import Revision, load_manifest
 from workflow.run_revision_smokes import validate_scenarios
 
@@ -28,6 +29,7 @@ EXPECTED_SCOPE = (
     "unified_output_layout",
     "responsibility_make_layout",
     "machine_readable_tooling_ownership",
+    "romless_scaffold_and_generated_help",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -50,6 +52,7 @@ EXPECTED_REQUIREMENTS = {
     "output_boundaries",
     "make_orchestration_layout",
     "tooling_layout_ownership",
+    "public_interface_smoke",
     "release_integrity",
 }
 EXPECTED_LICENSE_CATEGORIES = {
@@ -264,7 +267,7 @@ def validate_layout(project_root: Path, contract: object) -> list[str]:
         errors.append("linker configs must not remain in src root")
     for key in (
         "canonical_source", "revision_ids", "source_layout_registry",
-        "tooling_layout_registry",
+        "tooling_layout_registry", "make_help_manifest",
     ):
         value = contract.get(key)
         if not isinstance(value, str) or not (project_root / value).is_file():
@@ -847,6 +850,12 @@ def audit(
     tooling_registry = layout.get("tooling_layout_registry") if isinstance(layout, dict) else None
     if isinstance(tooling_registry, str):
         errors.extend(validate_tooling_layout(project_root, project_root / tooling_registry))
+    help_manifest = layout.get("make_help_manifest") if isinstance(layout, dict) else None
+    if isinstance(help_manifest, str):
+        try:
+            errors.extend(validate_help(project_root, load_help(project_root / help_manifest)))
+        except (OSError, ValueError, json.JSONDecodeError) as error:
+            errors.append(f"invalid Make help manifest: {error}")
     revision_errors, revisions = validate_revision_contract(
         project_root, manifest.get("revision_contract"),
     )
