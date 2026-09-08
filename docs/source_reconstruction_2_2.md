@@ -18,8 +18,10 @@ input/layout/output/capability contracts, and the accepted 2.1 guarantees have
 a reusable predecessor gate. Generated results now stay under `build/`, private
 editor documents stay under `content/workspace/`, and `make clean` is confined
 to the canonical build root. The root Makefile is now the stable interface over
-bounded authoring, runtime, and validation fragments. Tool package
-reorganization, clean release sequencing, UI smoke coverage, and the complete
+bounded authoring, runtime, and validation fragments. Tool paths are now frozen
+behind a stable dispatcher and an exhaustive responsibility
+and test-owner registry; the non-package layout is a checked compatibility
+deviation. Clean release sequencing, UI smoke coverage, and the complete
 project release audit are not yet complete. No 2.2 tag should be created
 until every planned requirement is satisfied and the full pre-tag gate passes
 from a clean build on the supported Windows host.
@@ -46,11 +48,9 @@ The remaining compatible work is organized as vertical, testable slices:
 
 1. separate reusable functional gates from pre-tag and post-tag repository
    state checks, and require a clean build for the release path;
-2. group Python tools and tests by responsibility or record a precise deviation
-   with an equivalent control;
-3. add a ROM-less scaffold gate, generated/tested command help, and workstation
+2. add a ROM-less scaffold gate, generated/tested command help, and workstation
    UI interaction smokes for the supported Studios;
-4. validate history, delta, paths, profile coverage, artifacts, and tag state in
+3. validate history, delta, paths, profile coverage, artifacts, and tag state in
    the Source 2.2 release audit.
 
 Cross-profile relocation, a sibling engine, and a new platform/container ABI

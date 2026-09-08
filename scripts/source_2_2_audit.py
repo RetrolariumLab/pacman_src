@@ -27,6 +27,7 @@ EXPECTED_SCOPE = (
     "machine_readable_profile_contracts",
     "unified_output_layout",
     "responsibility_make_layout",
+    "machine_readable_tooling_ownership",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -48,6 +49,7 @@ EXPECTED_REQUIREMENTS = {
     "profile_contracts",
     "output_boundaries",
     "make_orchestration_layout",
+    "tooling_layout_ownership",
     "release_integrity",
 }
 EXPECTED_LICENSE_CATEGORIES = {
@@ -260,7 +262,10 @@ def validate_layout(project_root: Path, contract: object) -> list[str]:
         errors.append(f"src root ASM files are {actual_root}, expected {expected_root}")
     if list((project_root / "src").glob("*.cfg")):
         errors.append("linker configs must not remain in src root")
-    for key in ("canonical_source", "revision_ids", "source_layout_registry"):
+    for key in (
+        "canonical_source", "revision_ids", "source_layout_registry",
+        "tooling_layout_registry",
+    ):
         value = contract.get(key)
         if not isinstance(value, str) or not (project_root / value).is_file():
             errors.append(f"missing layout path: {value}")
@@ -305,6 +310,122 @@ def validate_layout(project_root: Path, contract: object) -> list[str]:
                     line_count = len(fragment.read_text(encoding="utf-8").splitlines())
                     if line_count > 350:
                         errors.append(f"Make fragment exceeds 350 lines: {value}")
+    return errors
+
+
+EXPECTED_TOOL_RESPONSIBILITIES = {
+    "authoring", "build", "launcher", "runtime", "validation", "workflow",
+}
+
+
+def validate_tooling_layout(project_root: Path, path: Path) -> list[str]:
+    """Verify complete script ownership and public-command test ownership."""
+    try:
+        document = read_json(path)
+    except (OSError, ValueError, json.JSONDecodeError) as error:
+        return [f"invalid tooling-layout registry: {error}"]
+    if not isinstance(document, dict) or document.get("schema_version") != 1:
+        return ["unsupported tooling-layout registry schema"]
+
+    errors: list[str] = []
+    if document.get("stable_launcher") != "scripts/run.py":
+        errors.append("tooling registry must declare scripts/run.py as stable launcher")
+    if document.get("scripts_root") != "scripts" or document.get("tests_root") != "tests":
+        errors.append("tooling registry roots differ from repository layout")
+
+    responsibilities = document.get("responsibilities")
+    if not isinstance(responsibilities, list) or not responsibilities:
+        return errors + ["tooling registry has no responsibility groups"]
+
+    owned_paths: list[str] = []
+    owners_by_path: dict[str, set[str]] = {}
+    responsibility_ids: list[str] = []
+    for row in responsibilities:
+        if not isinstance(row, dict) or set(row) != {"id", "paths", "test_owners"}:
+            errors.append("tooling responsibility has an invalid shape")
+            continue
+        responsibility = row.get("id")
+        paths = row.get("paths")
+        test_owners = row.get("test_owners")
+        if not isinstance(responsibility, str):
+            errors.append("tooling responsibility lacks an ID")
+            continue
+        responsibility_ids.append(responsibility)
+        if not isinstance(paths, list) or not paths or not all(
+            isinstance(value, str) and value for value in paths
+        ):
+            errors.append(f"tooling responsibility {responsibility} has invalid paths")
+            continue
+        if not isinstance(test_owners, list) or not test_owners or not all(
+            isinstance(value, str)
+            and value.startswith("tests/test_")
+            and value.endswith(".py")
+            and (project_root / value).is_file()
+            for value in test_owners
+        ):
+            errors.append(f"tooling responsibility {responsibility} has invalid test owners")
+            continue
+        owner_set = set(test_owners)
+        for value in paths:
+            owned_paths.append(value)
+            owners_by_path[value] = owner_set
+            tool_path = project_root / value
+            if not value.startswith("scripts/") or Path(value).suffix not in {".py", ".lua"}:
+                errors.append(f"invalid owned tool path: {value}")
+            elif not tool_path.is_file():
+                errors.append(f"missing owned tool: {value}")
+
+    if set(responsibility_ids) != EXPECTED_TOOL_RESPONSIBILITIES:
+        errors.append("tooling responsibility IDs differ from Source 2.2")
+    if len(responsibility_ids) != len(set(responsibility_ids)):
+        errors.append("tooling responsibility IDs are not unique")
+    if len(owned_paths) != len(set(owned_paths)):
+        errors.append("tooling paths have multiple responsibility owners")
+
+    scripts_root = project_root / "scripts"
+    actual_paths = sorted(
+        path.relative_to(project_root).as_posix()
+        for path in scripts_root.rglob("*")
+        if path.is_file()
+        and path.suffix in {".py", ".lua"}
+        and "__pycache__" not in path.parts
+    )
+    if sorted(owned_paths) != actual_paths:
+        missing = sorted(set(actual_paths) - set(owned_paths))
+        stale = sorted(set(owned_paths) - set(actual_paths))
+        if missing:
+            errors.append("unowned tooling paths: " + ", ".join(missing))
+        if stale:
+            errors.append("stale tooling paths: " + ", ".join(stale))
+
+    public_commands = document.get("public_commands")
+    if not isinstance(public_commands, list) or not public_commands:
+        return errors + ["tooling registry has no public commands"]
+    command_names: list[str] = []
+    command_paths: list[str] = []
+    for row in public_commands:
+        if not isinstance(row, dict) or set(row) != {"name", "path", "test_owner"}:
+            errors.append("public tooling command has an invalid shape")
+            continue
+        name = row.get("name")
+        tool_path = row.get("path")
+        test_owner = row.get("test_owner")
+        if not isinstance(name, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name):
+            errors.append(f"invalid public tooling command name: {name!r}")
+            continue
+        command_names.append(name)
+        if not isinstance(tool_path, str) or tool_path not in owners_by_path:
+            errors.append(f"public command {name} refers to an unowned tool")
+            continue
+        command_paths.append(tool_path)
+        if Path(tool_path).suffix != ".py":
+            errors.append(f"public command {name} must dispatch to Python")
+        if not isinstance(test_owner, str) or test_owner not in owners_by_path[tool_path]:
+            errors.append(f"public command {name} lacks its declared test owner")
+    if len(command_names) != len(set(command_names)):
+        errors.append("public tooling command names are not unique")
+    if len(command_paths) != len(set(command_paths)):
+        errors.append("public tooling command paths are not unique")
     return errors
 
 
@@ -722,6 +843,10 @@ def audit(
         if missing:
             errors.append(f"missing Make targets: {', '.join(missing)}")
     errors.extend(validate_layout(project_root, manifest.get("layout")))
+    layout = manifest.get("layout")
+    tooling_registry = layout.get("tooling_layout_registry") if isinstance(layout, dict) else None
+    if isinstance(tooling_registry, str):
+        errors.extend(validate_tooling_layout(project_root, project_root / tooling_registry))
     revision_errors, revisions = validate_revision_contract(
         project_root, manifest.get("revision_contract"),
     )

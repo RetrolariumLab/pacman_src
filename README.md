@@ -130,6 +130,7 @@ pacman_src/
 |-- scenarios/                     # Runtime, scoring, and revision smoke cases
 |-- scripts/
 |   |-- workflow/                  # Analysis and reporting tools
+|   |-- run.py                     # Stable direct-tool dispatcher
 |   |-- build_native.py            # Native build and byte verification
 |   |-- build_dev.py               # FCEUX bootstrap
 |   |-- sound_studio.py            # Music and sound editor
@@ -158,7 +159,9 @@ pacman_src/
 `assets/generated/` and `build/` are generated artifacts and are not tracked.
 Private editor documents live under ignored `content/workspace/`; legacy local
 artifact directories remain ignored but are not touched by `make clean`. The
-source tools under `scripts/workflow/` are tracked. See
+source tools under `scripts/workflow/` are tracked. Tool responsibilities,
+public commands, and test owners are pinned by `config/tooling_layout.json`; see
+[`docs/tooling_layout.md`](docs/tooling_layout.md). See
 [`docs/assets.md`](docs/assets.md) for the source-versus-asset policy.
 
 ## Make Targets

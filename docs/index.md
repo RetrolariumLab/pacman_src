@@ -20,6 +20,7 @@
 - [macros.md](./macros.md): allowed ca65 abstractions and byte-identity rules.
 - [naming.md](./naming.md): semantic symbol names and control-flow prefixes.
 - [assembly_style.md](./assembly_style.md): mechanically enforced ca65 layout, case, labels, and comments.
+- [tooling_layout.md](./tooling_layout.md): stable dispatcher, responsibility ownership, test owners, and recorded layout deviations.
 - [provenance/README.md](./provenance/README.md): imported-label provenance policy and complete rename map.
 - [unknowns.md](./unknowns.md): resolved research record and canonical home for future findings.
 - [relocation_testing.md](./relocation_testing.md): progressively shifted ROM and semantic FCEUX proof.
