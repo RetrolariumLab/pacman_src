@@ -53,6 +53,7 @@
 - [maze_authoring.md](./maze_authoring.md): CHR-backed editing, RLE export, and runtime guards.
 - [graphics_authoring.md](./graphics_authoring.md): reversible CHR and actor-mapping editing.
 - [screen_authoring.md](./screen_authoring.md): title, text, HUD, and intermission editing.
+- [ui_smoke.md](./ui_smoke.md): real-window authoring interaction coverage on the supported Windows host.
 
 ## Verification Rule
 After each edit batch:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import json
 import shutil
 import sys
 import tempfile
@@ -57,6 +58,15 @@ class ToolingLayoutTests(unittest.TestCase):
             registry.write_text(REGISTRY.read_text(encoding="utf-8"), encoding="utf-8")
             errors = validate_tooling_layout(root, registry)
         self.assertTrue(any("unowned tooling paths" in error for error in errors))
+
+    def test_registry_requires_review_for_every_oversized_tool(self) -> None:
+        document = json.loads(REGISTRY.read_text(encoding="utf-8"))
+        document["size_exceptions"].pop()
+        with tempfile.TemporaryDirectory() as directory:
+            registry = Path(directory) / "tooling_layout.json"
+            registry.write_text(json.dumps(document), encoding="utf-8")
+            errors = validate_tooling_layout(PROJECT_ROOT, registry)
+        self.assertTrue(any("size exceptions differ" in error for error in errors))
 
     def test_launcher_rejects_unknown_command(self) -> None:
         error = io.StringIO()

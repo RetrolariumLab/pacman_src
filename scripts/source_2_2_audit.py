@@ -11,6 +11,8 @@ from pathlib import Path
 from build_dev import load_toolchain_manifest
 from make_help import load_help, validate_help
 from revision_profiles import Revision, load_manifest
+from ui_smoke import load_manifest as load_ui_manifest
+from ui_smoke import validate_manifest as validate_ui_manifest
 from workflow.run_revision_smokes import validate_scenarios
 
 
@@ -30,6 +32,7 @@ EXPECTED_SCOPE = (
     "responsibility_make_layout",
     "machine_readable_tooling_ownership",
     "romless_scaffold_and_generated_help",
+    "workstation_ui_interaction_smokes",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -53,6 +56,7 @@ EXPECTED_REQUIREMENTS = {
     "make_orchestration_layout",
     "tooling_layout_ownership",
     "public_interface_smoke",
+    "workstation_ui_smokes",
     "release_integrity",
 }
 EXPECTED_LICENSE_CATEGORIES = {
@@ -267,7 +271,7 @@ def validate_layout(project_root: Path, contract: object) -> list[str]:
         errors.append("linker configs must not remain in src root")
     for key in (
         "canonical_source", "revision_ids", "source_layout_registry",
-        "tooling_layout_registry", "make_help_manifest",
+        "tooling_layout_registry", "make_help_manifest", "ui_smoke_manifest",
     ):
         value = contract.get(key)
         if not isinstance(value, str) or not (project_root / value).is_file():
@@ -429,6 +433,43 @@ def validate_tooling_layout(project_root: Path, path: Path) -> list[str]:
         errors.append("public tooling command names are not unique")
     if len(command_paths) != len(set(command_paths)):
         errors.append("public tooling command paths are not unique")
+
+    threshold = document.get("python_review_threshold")
+    exceptions = document.get("size_exceptions")
+    if threshold != 700 or not isinstance(exceptions, list):
+        errors.append("tooling Python size-review contract is invalid")
+        return errors
+    exception_paths: list[str] = []
+    for row in exceptions:
+        required = {"path", "threshold", "reason", "cohesion", "split_decision"}
+        if not isinstance(row, dict) or set(row) != required:
+            errors.append("tooling size exception has an invalid shape")
+            continue
+        exception_path = row.get("path")
+        if not isinstance(exception_path, str):
+            errors.append("tooling size exception lacks a path")
+            continue
+        exception_paths.append(exception_path)
+        if row.get("threshold") != threshold or not all(
+            isinstance(row.get(key), str) and row[key]
+            for key in ("reason", "cohesion", "split_decision")
+        ):
+            errors.append(f"tooling size exception is incomplete: {exception_path}")
+    oversized = {
+        value
+        for value in actual_paths
+        if value.endswith(".py")
+        and len((project_root / value).read_text(encoding="utf-8").splitlines()) > threshold
+    }
+    if set(exception_paths) != oversized or len(exception_paths) != len(set(exception_paths)):
+        errors.append("tooling size exceptions differ from Python files above 700 lines")
+    oversized_tests = [
+        path.relative_to(project_root).as_posix()
+        for path in (project_root / "tests").glob("test_*.py")
+        if len(path.read_text(encoding="utf-8").splitlines()) > 600
+    ]
+    if oversized_tests:
+        errors.append("test modules exceed the 600-line review threshold: " + ", ".join(oversized_tests))
     return errors
 
 
@@ -856,6 +897,15 @@ def audit(
             errors.extend(validate_help(project_root, load_help(project_root / help_manifest)))
         except (OSError, ValueError, json.JSONDecodeError) as error:
             errors.append(f"invalid Make help manifest: {error}")
+    ui_manifest = layout.get("ui_smoke_manifest") if isinstance(layout, dict) else None
+    if isinstance(ui_manifest, str):
+        try:
+            errors.extend(validate_ui_manifest(
+                project_root, load_ui_manifest(project_root / ui_manifest),
+                require_inputs=False,
+            ))
+        except (OSError, ValueError, json.JSONDecodeError) as error:
+            errors.append(f"invalid UI smoke manifest: {error}")
     revision_errors, revisions = validate_revision_contract(
         project_root, manifest.get("revision_contract"),
     )

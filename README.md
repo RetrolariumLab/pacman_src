@@ -167,7 +167,8 @@ public commands, and test owners are pinned by `config/tooling_layout.json`; see
 ## Make Targets
 
 `make help` is generated from the checked public-target registry. Use
-`make scaffold-check` for the ROM-less disposable-checkout smoke.
+`make scaffold-check` for the ROM-less disposable-checkout smoke and
+`make ui-smoke` for real-window interaction coverage of all four Studios.
 
 ```bash
 make                                    # Same as `make build`

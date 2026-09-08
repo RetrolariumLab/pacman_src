@@ -11,6 +11,8 @@ internal/compatibility target. `make scaffold-check` copies only tracked and
 non-ignored files into a disposable Git checkout, proves that no ROM, extracted
 asset, workspace, or build output crossed that boundary, and runs synthetic
 tests plus real `help-check`, `tool-list`, and `source-2-2-audit` Make commands.
+The separate `make ui-smoke` workstation gate exercises actual Studio windows;
+its contract-only `make ui-smoke-check` form is safe inside the ROM-less gate.
 
 `config/tooling_layout.json` is the machine-readable ownership contract. Every
 tracked Python or Lua file below `scripts/` belongs to exactly one of these
@@ -27,6 +29,11 @@ Each responsibility names its test owners. Every command exposed by the stable
 dispatcher additionally names one specific test owner. The Source 2.2 audit
 compares the registry with the complete `.py`/`.lua` inventory and rejects
 missing, stale, multiply owned, or untested public entries.
+
+The registry also enforces the guide's 700-line Python review threshold and the
+600-line test-module threshold. The two current oversized workflow/contract
+tools carry explicit cohesion and split decisions; a new oversized tool cannot
+appear without an equally reviewable exception.
 
 ## Recorded layout deviation
 

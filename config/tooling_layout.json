@@ -3,6 +3,23 @@
   "stable_launcher": "scripts/run.py",
   "scripts_root": "scripts",
   "tests_root": "tests",
+  "python_review_threshold": 700,
+  "size_exceptions": [
+    {
+      "path": "scripts/source_2_2_audit.py",
+      "threshold": 700,
+      "reason": "The release validator is intentionally an ordered, self-contained evaluation of one manifest, so shared error aggregation and gate state remain visible in one review surface.",
+      "cohesion": "Parsing, repository inspection, and requirement checks all feed the single audit result; GUI, build, and capture behavior remain outside this module.",
+      "split_decision": "Split reusable validators into a validation package only when a later release line has a second consumer; doing so inside 2.2 would add import-path churn to the release gate."
+    },
+    {
+      "path": "scripts/workflow/compare_progress_capture.py",
+      "threshold": 700,
+      "reason": "This legacy non-release workflow emits one coupled comparison report across aligned frame images, memory snapshots, ASCII screens, sprites, and summary tables.",
+      "cohesion": "All parsers and formatters serve one command and share its frame-offset and report-order contract; production build and validation code do not import it.",
+      "split_decision": "Keep the workflow atomic until its report formats gain independent consumers and focused tests that can support a compatible extraction."
+    }
+  ],
   "responsibilities": [
     {
       "id": "build",
@@ -42,7 +59,8 @@
         "scripts/screen_studio.py",
         "scripts/sound_authoring.py",
         "scripts/sound_studio.py",
-        "scripts/sound_studio_model.py"
+        "scripts/sound_studio_model.py",
+        "scripts/ui_smoke.py"
       ],
       "test_owners": [
         "tests/test_data_formats.py",
@@ -52,7 +70,8 @@
         "tests/test_screen_studio.py",
         "tests/test_sound_authoring.py",
         "tests/test_sound_preview.py",
-        "tests/test_sound_studio.py"
+        "tests/test_sound_studio.py",
+        "tests/test_ui_smoke.py"
       ]
     },
     {
@@ -151,6 +170,7 @@
     {"name": "sound-studio", "path": "scripts/sound_studio.py", "test_owner": "tests/test_sound_studio.py"},
     {"name": "source-2-1-audit", "path": "scripts/source_2_1_audit.py", "test_owner": "tests/test_source_2_1_audit.py"},
     {"name": "source-2-2-audit", "path": "scripts/source_2_2_audit.py", "test_owner": "tests/test_source_2_2_audit.py"},
+    {"name": "ui-smoke", "path": "scripts/ui_smoke.py", "test_owner": "tests/test_ui_smoke.py"},
     {"name": "verify-expanded", "path": "scripts/verify_expanded.py", "test_owner": "tests/test_verify_expanded.py"},
     {"name": "verify-hack", "path": "scripts/verify_hack.py", "test_owner": "tests/test_verify_hack.py"},
     {"name": "verify-revisions", "path": "scripts/workflow/verify_revision_matrix.py", "test_owner": "tests/test_revision_matrix.py"}

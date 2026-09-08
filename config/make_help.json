@@ -67,7 +67,9 @@
         {"target": "validate-evidence", "usage": "validate-evidence", "summary": "Revalidate existing reconstruction evidence."},
         {"target": "test-relocation", "usage": "test-relocation", "summary": "Build and exercise the canonical symbolic relocation."},
         {"target": "help-check", "usage": "help-check", "summary": "Verify exact public-target help coverage."},
-        {"target": "scaffold-check", "usage": "scaffold-check", "summary": "Run ROM-less checks in a disposable tracked-file checkout."}
+        {"target": "scaffold-check", "usage": "scaffold-check", "summary": "Run ROM-less checks in a disposable tracked-file checkout."},
+        {"target": "ui-smoke-check", "usage": "ui-smoke-check", "summary": "Validate the workstation UI interaction contract without opening windows."},
+        {"target": "ui-smoke", "usage": "ui-smoke", "summary": "Open all four Studios and exercise required workstation actions."}
       ]
     },
     {

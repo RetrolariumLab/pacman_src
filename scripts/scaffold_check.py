@@ -21,6 +21,7 @@ SYNTHETIC_TESTS = (
     "tests.test_scaffold_check",
     "tests.test_source_2_2_audit",
     "tests.test_tooling_layout",
+    "tests.test_ui_smoke",
 )
 
 
@@ -89,6 +90,7 @@ def check_scaffold(project_root: Path, python: str, make: str) -> None:
         run(["git", "-c", "core.autocrlf=false", "add", "-A"], root)
         run([make, "help-check"], root)
         run([make, "tool-list"], root)
+        run([make, "ui-smoke-check"], root)
         run([python, "-m", "unittest", *SYNTHETIC_TESTS, "-v"], root)
         run([make, "source-2-2-audit"], root)
     print(f"[OK] ROM-less scaffold passed {len(SYNTHETIC_TESTS)} synthetic test modules and public Make smokes.")

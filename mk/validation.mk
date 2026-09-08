@@ -41,6 +41,17 @@ scaffold-check:
 		--python "$(PYTHON)" \
 		--make "$(MAKE)"
 
+ui-smoke-check:
+	$(PYTHON) "$(PROJECT_DIR)scripts/ui_smoke.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--manifest "$(PROJECT_DIR)config/authoring/ui_smokes.json" \
+		--check
+
+ui-smoke: _require-assets
+	$(PYTHON) "$(PROJECT_DIR)scripts/ui_smoke.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--manifest "$(PROJECT_DIR)config/authoring/ui_smokes.json"
+
 validate-symbols: build-dev symbols
 	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(DEBUG_RUNTIME_RESULT)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
 	set "PACMAN_DEBUG_SYMBOL_RESULT=$(DEBUG_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \
