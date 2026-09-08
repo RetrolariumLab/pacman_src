@@ -263,6 +263,14 @@ def make_targets(makefile: str) -> set[str]:
     return set(re.findall(r"^([A-Za-z0-9][A-Za-z0-9_.-]*):", makefile, re.MULTILINE))
 
 
+def repository_make_targets(project_root: Path) -> set[str]:
+    paths = [project_root / "Makefile", *sorted((project_root / "mk").glob("*.mk"))]
+    targets: set[str] = set()
+    for path in paths:
+        targets.update(make_targets(path.read_text(encoding="utf-8")))
+    return targets
+
+
 def validate_paths(project_root: Path, values: object, field: str) -> list[str]:
     if not isinstance(values, list) or not values:
         return [f"{field} must be a non-empty list"]
@@ -491,7 +499,7 @@ def audit(
     errors.extend(validate_delta_evidence(project_root, manifest.get("delta")))
     errors.extend(validate_paths(project_root, manifest.get("required_files"), "required_files"))
     try:
-        targets = make_targets((project_root / "Makefile").read_text(encoding="utf-8"))
+        targets = repository_make_targets(project_root)
     except OSError as exc:
         errors.append(f"cannot read Makefile: {exc}")
         targets = set()

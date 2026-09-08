@@ -26,6 +26,7 @@ EXPECTED_SCOPE = (
     "machine_readable_source_layout",
     "machine_readable_profile_contracts",
     "unified_output_layout",
+    "responsibility_make_layout",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -46,6 +47,7 @@ EXPECTED_REQUIREMENTS = {
     "source_layout_ownership",
     "profile_contracts",
     "output_boundaries",
+    "make_orchestration_layout",
     "release_integrity",
 }
 EXPECTED_LICENSE_CATEGORIES = {
@@ -265,7 +267,10 @@ def validate_layout(project_root: Path, contract: object) -> list[str]:
     registry = contract.get("source_layout_registry")
     if isinstance(registry, str):
         errors.extend(validate_source_layout(project_root, project_root / registry))
-    for key in ("variant_entrypoints", "linker_configs", "required_test_modules"):
+    for key in (
+        "variant_entrypoints", "linker_configs", "required_test_modules",
+        "make_fragments",
+    ):
         values = contract.get(key)
         if not isinstance(values, list) or not values or not all(
             isinstance(value, str) for value in values
@@ -280,6 +285,26 @@ def validate_layout(project_root: Path, contract: object) -> list[str]:
         errors.append("invalid tests root contract")
     if any((project_root / "scripts" / "tests").glob("test_*.py")):
         errors.append("legacy scripts/tests directory still exists")
+    root_makefile = project_root / "Makefile"
+    if root_makefile.is_file():
+        root_lines = len(root_makefile.read_text(encoding="utf-8").splitlines())
+        if root_lines > 300:
+            errors.append(f"root Makefile exceeds 300 lines: {root_lines}")
+        fragments = contract.get("make_fragments")
+        if isinstance(fragments, list):
+            root_text = root_makefile.read_text(encoding="utf-8")
+            expected_includes = [f"include $(PROJECT_DIR){path}" for path in fragments]
+            actual_includes = [
+                line for line in root_text.splitlines() if line.startswith("include ")
+            ]
+            if actual_includes != expected_includes:
+                errors.append("Makefile fragment include order differs from layout contract")
+            for value in fragments:
+                fragment = project_root / value
+                if fragment.is_file():
+                    line_count = len(fragment.read_text(encoding="utf-8").splitlines())
+                    if line_count > 350:
+                        errors.append(f"Make fragment exceeds 350 lines: {value}")
     return errors
 
 
@@ -386,6 +411,20 @@ def validate_profiles(contract: object, revisions: list[Revision]) -> list[str]:
 
 def make_targets(makefile: str) -> set[str]:
     return set(re.findall(r"^([A-Za-z0-9][A-Za-z0-9_.-]*):", makefile, re.MULTILINE))
+
+
+def makefile_paths(project_root: Path) -> list[Path]:
+    return [
+        project_root / "Makefile",
+        *sorted((project_root / "mk").glob("*.mk")),
+    ]
+
+
+def repository_make_targets(project_root: Path) -> set[str]:
+    targets: set[str] = set()
+    for path in makefile_paths(project_root):
+        targets.update(make_targets(path.read_text(encoding="utf-8")))
+    return targets
 
 
 def validate_paths(project_root: Path, values: object, field: str) -> list[str]:
@@ -500,7 +539,9 @@ def validate_output_layout(project_root: Path, contract: object) -> list[str]:
     for ignored in ("/build/", "/assets/generated/", "/content/workspace/"):
         if ignored not in ignore:
             errors.append(f"generated/private path is not ignored: {ignored}")
-    makefile = (project_root / "Makefile").read_text(encoding="utf-8")
+    makefile = "\n".join(
+        path.read_text(encoding="utf-8") for path in makefile_paths(project_root)
+    )
     forbidden_make_paths = (
         "$(PROJECT_DIR)tmp", "?= reference", "?= diffs", "?= workflow",
         "$(PROJECT_DIR)hacks/local",
@@ -669,7 +710,7 @@ def audit(
     errors.extend(validate_delta_evidence(project_root, manifest.get("delta")))
     errors.extend(validate_paths(project_root, manifest.get("required_files"), "required_files"))
     try:
-        targets = make_targets((project_root / "Makefile").read_text(encoding="utf-8"))
+        targets = repository_make_targets(project_root)
     except OSError as exc:
         errors.append(f"cannot read Makefile: {exc}")
         targets = set()

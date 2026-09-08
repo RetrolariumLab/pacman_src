@@ -122,7 +122,10 @@ pacman_src/
 |-- build/                         # Generated ROM and linker artifacts
 |-- config/                        # Emulator/reference/linker configuration
 |   `-- linker/                    # ld65 layouts
+|-- content/
+|   `-- workspace/                 # Ignored private editor documents
 |-- docs/                          # Architecture and RE notes
+|-- mk/                            # Authoring, runtime, and validation recipes
 |-- movies/                        # FM2 inputs for automated capture
 |-- scenarios/                     # Runtime, scoring, and revision smoke cases
 |-- scripts/

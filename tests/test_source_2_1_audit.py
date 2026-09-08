@@ -15,6 +15,7 @@ from source_2_1_audit import (  # noqa: E402
     EXPECTED_SCOPE,
     EXPECTED_TAG,
     make_targets,
+    repository_make_targets,
     validate_delta_evidence,
     validate_layout,
     validate_release_metadata,
@@ -65,6 +66,12 @@ class Source21AuditTests(unittest.TestCase):
     def test_make_target_parser_ignores_recipe_lines(self) -> None:
         text = "verify: build\n\tpython tool.py\nsource-2-1-audit:\n"
         self.assertEqual(make_targets(text), {"verify", "source-2-1-audit"})
+
+    def test_project_make_targets_include_fragments(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        targets = repository_make_targets(root)
+        self.assertIn("validate-expanded", targets)
+        self.assertIn("source-2-1-audit", targets)
 
     def test_layout_rejects_extra_root_entrypoint(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

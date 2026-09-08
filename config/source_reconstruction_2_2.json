@@ -16,6 +16,7 @@
     "machine_readable_source_layout",
     "machine_readable_profile_contracts",
     "unified_output_layout",
+    "responsibility_make_layout",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -56,6 +57,12 @@
       "kind": "tooling",
       "summary": "Place every reproducible build, runtime, preview, round-trip, and analysis result under one removable build root while preserving private authoring documents.",
       "evidence": ["Makefile", "scripts/clean_artifacts.py", "tests/test_clean_artifacts.py", ".gitignore"]
+    },
+    {
+      "id": "responsibility_make_layout",
+      "kind": "tooling",
+      "summary": "Reduce the root Makefile to the stable interface and group authoring, runtime, and validation orchestration into bounded responsibility fragments.",
+      "evidence": ["Makefile", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "tests/test_source_2_2_audit.py"]
     }
   ],
   "requirements": {
@@ -103,6 +110,10 @@
       "status": "satisfied",
       "evidence": {"targets": ["clean", "source-2-2-audit"], "files": ["scripts/clean_artifacts.py", "tests/test_clean_artifacts.py", ".gitignore"], "scenarios": [], "artifacts": []}
     },
+    "make_orchestration_layout": {
+      "status": "satisfied",
+      "evidence": {"targets": ["help", "source-2-2-audit"], "files": ["Makefile", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk"], "scenarios": [], "artifacts": []}
+    },
     "release_integrity": {
       "status": "planned",
       "evidence": {"targets": ["source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"], "scenarios": [], "artifacts": []}
@@ -115,6 +126,7 @@
     "variant_entrypoints": ["src/expanded/nrom256.asm", "src/variants/stage5.asm"],
     "revision_ids": "src/revisions/profile_ids.inc",
     "linker_configs": ["config/linker/nrom128_prg_only.cfg", "config/linker/nrom256_expanded.cfg"],
+    "make_fragments": ["mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk"],
     "tests_root": "tests",
     "required_test_modules": [
       "tests/test_build_dev.py",
@@ -206,6 +218,9 @@
     "post_tag": ["make source-2-2-post-tag-audit"]
   },
   "required_files": [
+    "mk/authoring.mk",
+    "mk/runtime.mk",
+    "mk/validation.mk",
     "config/reconstruction/source_layout.json",
     "docs/index.md",
     "docs/adr/0001-expanded-nrom256.md",

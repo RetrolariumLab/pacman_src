@@ -29,6 +29,7 @@ TEXT_SUFFIXES = {
     ".json",
     ".lua",
     ".md",
+    ".mk",
     ".py",
     ".txt",
 }
