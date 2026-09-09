@@ -201,7 +201,7 @@ def check_asm_file(
             result.error(
                 path,
                 "inline label provenance is forbidden; update "
-                "docs/provenance/label_renames.json",
+                "config/reconstruction/label_renames.json",
                 line_number,
             )
 

@@ -46,7 +46,7 @@
       "id": "assembly_style_and_provenance",
       "kind": "tooling",
       "summary": "Enforce canonical ca65 style, label roles, contribution rules, and complete imported-label provenance.",
-      "evidence": ["docs/assembly_style.md", "docs/provenance/label_renames.json", "tests/test_label_provenance.py"]
+      "evidence": ["docs/assembly_style.md", "config/reconstruction/label_renames.json", "tests/test_label_provenance.py"]
     },
     {
       "id": "canonical_symbolic_relocation",
@@ -80,7 +80,7 @@
     },
     "semantic_source_and_provenance": {
       "status": "satisfied",
-      "evidence": {"targets": ["lint", "test"], "files": ["docs/provenance/label_renames.json", "docs/unknowns.md"], "scenarios": [], "artifacts": []}
+      "evidence": {"targets": ["lint", "test"], "files": ["config/reconstruction/label_renames.json", "docs/unknowns.md"], "scenarios": [], "artifacts": []}
     },
     "official_revision_profiles": {
       "status": "satisfied",
@@ -185,7 +185,7 @@
     {"component": "fceux_automation", "category": "external_unbundled_tool", "origin": "https://github.com/oranguthang/fceux_automation.git commit ec507d86c57acd8979547bc35e9627fb199fac9a", "license_id_or_status": "external_unbundled", "redistribution": "not distributed by this repository", "notes": "The external checkout and resulting executable are locally verified."}
   ],
   "provenance": {
-    "references": ["docs/provenance/README.md", "docs/provenance/label_renames.json", "docs/nesdev/docs.md", "config/toolchain.json"],
+    "references": ["docs/provenance/README.md", "config/reconstruction/label_renames.json", "docs/nesdev/README.md", "docs/nesdev/fds.md", "config/toolchain.json"],
     "private_inputs_tracked": false
   },
   "aggregate_gates": {

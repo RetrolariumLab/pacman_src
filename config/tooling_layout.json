@@ -79,6 +79,7 @@
       "paths": [
         "scripts/asm_style.py",
         "scripts/debug_symbols.py",
+        "scripts/documentation_audit.py",
         "scripts/lint_source.py",
         "scripts/make_help.py",
         "scripts/scaffold_check.py",
@@ -90,6 +91,7 @@
       "test_owners": [
         "tests/test_asm_style.py",
         "tests/test_debug_symbols.py",
+        "tests/test_documentation_audit.py",
         "tests/test_lint_source.py",
         "tests/test_make_help.py",
         "tests/test_scaffold_check.py",
@@ -127,6 +129,7 @@
         "scripts/workflow/capture_runtime_trace.lua",
         "scripts/workflow/capture_scoring_trace.lua",
         "scripts/workflow/check_scoring_trace_setup.py",
+        "scripts/workflow/movie_format.py",
         "scripts/workflow/relocation_test.py",
         "scripts/workflow/run_reconstruction_evidence.py",
         "scripts/workflow/run_revision_smokes.py",
@@ -145,6 +148,7 @@
       ],
       "test_owners": [
         "tests/test_reconstruction_evidence.py",
+        "tests/test_movie_format.py",
         "tests/test_relocation.py",
         "tests/test_revision_smokes.py",
         "tests/test_runtime_traces.py",
@@ -161,6 +165,7 @@
     {"name": "build-dev", "path": "scripts/build_dev.py", "test_owner": "tests/test_build_dev.py"},
     {"name": "build-native", "path": "scripts/build_native.py", "test_owner": "tests/test_build_revision.py"},
     {"name": "build-revision", "path": "scripts/build_revision.py", "test_owner": "tests/test_build_revision.py"},
+    {"name": "docs-audit", "path": "scripts/documentation_audit.py", "test_owner": "tests/test_documentation_audit.py"},
     {"name": "graphics-studio", "path": "scripts/graphics_studio.py", "test_owner": "tests/test_graphics_studio.py"},
     {"name": "lint", "path": "scripts/lint_source.py", "test_owner": "tests/test_lint_source.py"},
     {"name": "make-help", "path": "scripts/make_help.py", "test_owner": "tests/test_make_help.py"},

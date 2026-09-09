@@ -9,6 +9,7 @@ import sys
 from pathlib import Path, PurePosixPath
 
 from build_dev import load_toolchain_manifest
+from documentation_audit import audit_documentation
 from make_help import load_help, validate_help
 from revision_profiles import Revision, load_manifest
 from ui_smoke import load_manifest as load_ui_manifest
@@ -19,7 +20,7 @@ from workflow.run_revision_smokes import validate_scenarios
 EXPECTED_RELEASE_LINE = "2.x"
 EXPECTED_RELEASE = {"name": "Source Reconstruction 2.2", "version": "2.2"}
 EXPECTED_TAG = "source-reconstruction-2.2"
-EXPECTED_RELEASE_SUBJECT = "Complete Source Reconstruction 2.2"
+EXPECTED_RELEASE_SUBJECT = "Record the reviewed modernization candidate"
 CODEX_TRAILER = "Co-Authored-By: Codex <noreply@openai.com>"
 PUBLIC_TEXT_SUFFIXES = {
     ".asm", ".cfg", ".inc", ".json", ".lua", ".md", ".mk", ".py", ".txt",
@@ -44,6 +45,8 @@ EXPECTED_SCOPE = (
     "machine_readable_tooling_ownership",
     "romless_scaffold_and_generated_help",
     "workstation_ui_interaction_smokes",
+    "canonical_movie_serialization",
+    "reviewed_documentation_corpus",
     "resolved_reconstruction_unknowns",
     "semantic_runtime_evidence",
     "assembly_style_and_label_provenance",
@@ -68,6 +71,8 @@ EXPECTED_REQUIREMENTS = {
     "tooling_layout_ownership",
     "public_interface_smoke",
     "workstation_ui_smokes",
+    "movie_serialization",
+    "documentation_corpus",
     "release_integrity",
 }
 EXPECTED_LICENSE_CATEGORIES = {
@@ -460,7 +465,8 @@ def validate_layout(project_root: Path, contract: object) -> list[str]:
         errors.append("linker configs must not remain in src root")
     for key in (
         "canonical_source", "revision_ids", "source_layout_registry",
-        "tooling_layout_registry", "make_help_manifest", "ui_smoke_manifest",
+        "tooling_layout_registry", "documentation_layout_registry",
+        "label_rename_registry", "make_help_manifest", "ui_smoke_manifest",
     ):
         value = contract.get(key)
         if not isinstance(value, str) or not (project_root / value).is_file():
@@ -486,6 +492,14 @@ def validate_layout(project_root: Path, contract: object) -> list[str]:
         errors.append("invalid tests root contract")
     if any((project_root / "scripts" / "tests").glob("test_*.py")):
         errors.append("legacy scripts/tests directory still exists")
+    if contract.get("label_rename_registry") != "config/reconstruction/label_renames.json":
+        errors.append("label rename registry must use its canonical reconstruction path")
+    try:
+        rename_registries = git_output(project_root, "ls-files", "*label_renames.json").splitlines()
+        if rename_registries != ["config/reconstruction/label_renames.json"]:
+            errors.append("tracked label rename registry must be unique and canonical")
+    except ValueError as error:
+        errors.append(str(error))
     root_makefile = project_root / "Makefile"
     if root_makefile.is_file():
         root_lines = len(root_makefile.read_text(encoding="utf-8").splitlines())
@@ -1085,6 +1099,16 @@ def audit(
     tooling_registry = layout.get("tooling_layout_registry") if isinstance(layout, dict) else None
     if isinstance(tooling_registry, str):
         errors.extend(validate_tooling_layout(project_root, project_root / tooling_registry))
+    documentation_registry = (
+        layout.get("documentation_layout_registry") if isinstance(layout, dict) else None
+    )
+    if isinstance(documentation_registry, str):
+        try:
+            errors.extend(audit_documentation(
+                project_root, read_json(project_root / documentation_registry),
+            ))
+        except (OSError, ValueError, json.JSONDecodeError) as error:
+            errors.append(f"invalid documentation layout manifest: {error}")
     help_manifest = layout.get("make_help_manifest") if isinstance(layout, dict) else None
     if isinstance(help_manifest, str):
         try:

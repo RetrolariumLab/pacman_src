@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "docs_root": "docs",
+  "index": "docs/index.md",
+  "review": "docs/documentation_architecture.md",
+  "project_documents": [
+    "docs/adr/0001-expanded-nrom256.md",
+    "docs/assembly_style.md",
+    "docs/assets.md",
+    "docs/bank_ff_map.md",
+    "docs/data_formats.md",
+    "docs/debugger_workflow.md",
+    "docs/documentation_architecture.md",
+    "docs/expanded_rom_assets.md",
+    "docs/gameplay_feature_map.md",
+    "docs/ghost_ai.md",
+    "docs/goodnes_variant_notes.md",
+    "docs/graphics_authoring.md",
+    "docs/index.md",
+    "docs/intermission_flow.md",
+    "docs/licensing.md",
+    "docs/macros.md",
+    "docs/maze_authoring.md",
+    "docs/movement_and_collisions.md",
+    "docs/multi_revision_builds.md",
+    "docs/naming.md",
+    "docs/postmortem.md",
+    "docs/provenance/README.md",
+    "docs/ram_fields.md",
+    "docs/relocation_testing.md",
+    "docs/rendering_pipeline.md",
+    "docs/roadmap.md",
+    "docs/rom_hack_variants.md",
+    "docs/runtime_trace_scenarios.md",
+    "docs/score_and_bonus.md",
+    "docs/scoring_trace_scenarios.md",
+    "docs/screen_authoring.md",
+    "docs/script_states.md",
+    "docs/sound_authoring.md",
+    "docs/sound_engine.md",
+    "docs/source_layout.md",
+    "docs/source_reconstruction_1_0.md",
+    "docs/source_reconstruction_2_0.md",
+    "docs/source_reconstruction_2_1.md",
+    "docs/source_reconstruction_2_2.md",
+    "docs/stage_params_and_data_tail.md",
+    "docs/tooling_layout.md",
+    "docs/ui_smoke.md",
+    "docs/unknowns.md",
+    "docs/validation.md"
+  ],
+  "reader_journeys": [
+    {
+      "id": "build_and_verify",
+      "paths": ["README.md", "docs/validation.md", "docs/source_reconstruction_2_2.md"]
+    },
+    {
+      "id": "change_source",
+      "paths": ["docs/source_layout.md", "docs/naming.md", "docs/assembly_style.md", "docs/unknowns.md"]
+    },
+    {
+      "id": "author_content",
+      "paths": ["docs/data_formats.md", "docs/expanded_rom_assets.md", "docs/ui_smoke.md"]
+    },
+    {
+      "id": "review_provenance",
+      "paths": ["docs/licensing.md", "docs/provenance/README.md", "docs/nesdev/README.md"]
+    }
+  ],
+  "size_policy": {
+    "recommended_max_lines": 600,
+    "exceptions": [
+      {
+        "path": "docs/roadmap.md",
+        "reason": "The roadmap is a chronological planning and completed-milestone ledger whose ordering would be obscured by mechanical splitting."
+      }
+    ]
+  },
+  "prefix_policy": {
+    "minimum_cluster_size": 3,
+    "exceptions": [
+      {
+        "prefix": "source_reconstruction",
+        "reason": "Each release document is a stable record with its own version boundary and lifecycle."
+      }
+    ]
+  },
+  "vendored_boundary": {
+    "root": "docs/nesdev",
+    "policy": "docs/nesdev/README.md",
+    "documents": [
+      "docs/nesdev/README.md",
+      "docs/nesdev/apu.md",
+      "docs/nesdev/cpu.md",
+      "docs/nesdev/devtools.md",
+      "docs/nesdev/fds.md",
+      "docs/nesdev/games.md",
+      "docs/nesdev/hardware.md",
+      "docs/nesdev/mappers.md",
+      "docs/nesdev/misc.md",
+      "docs/nesdev/pinouts.md",
+      "docs/nesdev/ppu.md",
+      "docs/nesdev/timing.md",
+      "docs/nesdev/visual6502.md"
+    ]
+  }
+}

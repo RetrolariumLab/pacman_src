@@ -4,6 +4,7 @@ REFERENCE_DIR ?= $(BUILD_DIR)/analysis/reference
 DIFFS_DIR ?= $(BUILD_DIR)/analysis/diffs
 WORKFLOW_DIR ?= $(BUILD_DIR)/analysis/workflow
 LONGPLAY_MOVIE_FILE ?= movies/pacman_j_longplay.fm2
+CANONICAL_LONGPLAY_MOVIE ?= $(BUILD_DIR)/runtime/inputs/pacman_j_longplay.fm2
 MAX_FRAMES_LONGPLAY ?= 120000
 ANALYSIS_INTERVAL ?= 20
 CAPTURE_START_FRAME ?= 0
@@ -54,10 +55,16 @@ RELOCATION_HEARTBEAT_INTERVAL ?= 5000
 run: build build-dev
 	"$(FCEUX_EXE)" "$(NATIVE_ROM)"
 
-reference: build-dev
+_canonical-movie:
+	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/movie_format.py" \
+		--movie "$(LONGPLAY_MOVIE_FILE)" \
+		--manifest "$(RUNTIME_SCENARIOS)" \
+		--output "$(CANONICAL_LONGPLAY_MOVIE)"
+
+reference: build-dev _canonical-movie
 	@$(PYTHON) -c "import pathlib; pathlib.Path(r'$(REFERENCE_DIR)/longplay').mkdir(parents=True, exist_ok=True)"
 	"$(FCEUX_EXE)" \
-		-playmovie "$(LONGPLAY_MOVIE_FILE)" \
+		-playmovie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		-screenshot-interval $(ANALYSIS_INTERVAL) \
 		-screenshot-start-frame $(CAPTURE_START_FRAME) \
 		-screenshot-dir "$(REFERENCE_DIR)/longplay" \
@@ -82,13 +89,13 @@ _batch: _manifest
 		--count "$(COUNT)" \
 		--output "$(WORKFLOW_DIR)/rts_batch.txt"
 
-analyze: build-dev _batch
+analyze: build-dev _batch _canonical-movie
 	@$(PYTHON) -c "import pathlib; p=pathlib.Path(r'$(REFERENCE_DIR)/longplay'); p.is_dir() or (_ for _ in ()).throw(SystemExit('[ERROR] Missing reference capture; run make reference first.'))"
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/analyze_subroutines.py" \
 		--manifest "$(WORKFLOW_DIR)/procedure_manifest.csv" \
 		--batch "$(WORKFLOW_DIR)/rts_batch.txt" \
 		--original-rom "$(ORIGINAL_ROM)" \
-		--movie "$(LONGPLAY_MOVIE_FILE)" \
+		--movie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		--fceux "$(FCEUX_EXE)" \
 		--reference-dir "$(REFERENCE_DIR)/longplay" \
 		--diff-root "$(DIFFS_DIR)/longplay/subroutines" \
@@ -105,14 +112,14 @@ analyze: build-dev _batch
 		--nothrottle
 	@echo Analysis complete: $(ANALYSIS_REPORT_CSV)
 
-trace-scoring: build-dev verify
+trace-scoring: build-dev verify _canonical-movie
 	@$(PYTHON) -c "import pathlib; t=pathlib.Path(r'$(SCORING_TRACE)'); t.parent.mkdir(parents=True, exist_ok=True); t.unlink() if t.exists() else None"
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/check_scoring_trace_setup.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--labels "$(NATIVE_LABELS)" \
 		--lua "$(SCORING_TRACE_LUA)"
 	set "PACMAN_SCORING_TRACE=$(SCORING_TRACE)" && set "PACMAN_SCORING_MAX_FRAMES=$(SCORING_MAX_FRAMES)" && "$(FCEUX_EXE)" \
-		-playmovie "$(LONGPLAY_MOVIE_FILE)" \
+		-playmovie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		-lua "$(subst /,\,$(SCORING_TRACE_LUA))" \
 		-max-frames "$(SCORING_MAX_FRAMES)" \
 		-turbo 1 \
@@ -130,11 +137,11 @@ validate-scoring-trace:
 		--scenarios "$(SCORING_SCENARIOS)" \
 		--trace "$(SCORING_TRACE)"
 
-trace-runtime: build-dev symbols
+trace-runtime: build-dev symbols _canonical-movie
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_runtime_traces.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--rom "$(NATIVE_ROM)" \
-		--movie "$(LONGPLAY_MOVIE_FILE)" \
+		--movie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		--lua "$(RUNTIME_TRACE_LUA)" \
 		--scenarios "$(RUNTIME_SCENARIOS)" \
 		--output-dir "$(RUNTIME_TRACE_DIR)"
@@ -145,11 +152,11 @@ validate-runtime-traces:
 		--scenarios "$(RUNTIME_SCENARIOS)" \
 		--trace-dir "$(RUNTIME_TRACE_DIR)"
 
-trace-evidence: build-dev verify symbols
+trace-evidence: build-dev verify symbols _canonical-movie
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_reconstruction_evidence.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--rom "$(NATIVE_ROM)" \
-		--movie "$(LONGPLAY_MOVIE_FILE)" \
+		--movie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		--lua "$(RECONSTRUCTION_EVIDENCE_LUA)" \
 		--scenarios "$(RECONSTRUCTION_EVIDENCE_SCENARIOS)" \
 		--output-dir "$(RECONSTRUCTION_EVIDENCE_DIR)"
@@ -162,7 +169,7 @@ validate-evidence:
 		--rom "$(NATIVE_ROM)" \
 		--labels "$(NATIVE_LABELS)"
 
-test-relocation: lint test build-dev symbols
+test-relocation: lint test build-dev symbols _canonical-movie
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/relocation_test.py" prepare \
 		--main "$(NATIVE_SOURCE)" \
 		--output "$(RELOCATION_SOURCE)" \
@@ -181,7 +188,7 @@ test-relocation: lint test build-dev symbols
 		--output-rom "$(RELOCATION_ROM)"
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/relocation_test.py" verify-layout \
 		--manifest "$(RELOCATION_MANIFEST)" \
-		--provenance "$(PROJECT_DIR)docs/provenance/label_renames.json" \
+		--provenance "$(PROJECT_DIR)config/reconstruction/label_renames.json" \
 		--base-labels "$(NATIVE_LABELS)" \
 		--candidate-labels "$(RELOCATION_LABELS)" \
 		--base-rom "$(NATIVE_ROM)" \
@@ -214,7 +221,7 @@ test-relocation: lint test build-dev symbols
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_runtime_traces.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--rom "$(RELOCATION_ROM)" \
-		--movie "$(LONGPLAY_MOVIE_FILE)" \
+		--movie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		--lua "$(RUNTIME_TRACE_LUA)" \
 		--scenarios "$(RELOCATION_RUNTIME_SCENARIOS)" \
 		--output-dir "$(RELOCATION_RUNTIME_DIR)" \
@@ -233,7 +240,7 @@ test-relocation: lint test build-dev symbols
 		--labels "$(RELOCATION_LABELS)" \
 		--lua "$(SCORING_TRACE_LUA)"
 	set "PACMAN_SCORING_TRACE=$(RELOCATION_SCORING_TRACE)" && set "PACMAN_SCORING_MAX_FRAMES=$(SCORING_MAX_FRAMES)" && "$(FCEUX_EXE)" \
-		-playmovie "$(LONGPLAY_MOVIE_FILE)" \
+		-playmovie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		-lua "$(subst /,\,$(SCORING_TRACE_LUA))" \
 		-max-frames "$(SCORING_MAX_FRAMES)" \
 		-turbo 1 \
@@ -254,7 +261,7 @@ test-relocation: lint test build-dev symbols
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_reconstruction_evidence.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--rom "$(RELOCATION_ROM)" \
-		--movie "$(LONGPLAY_MOVIE_FILE)" \
+		--movie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		--lua "$(RECONSTRUCTION_EVIDENCE_LUA)" \
 		--scenarios "$(RELOCATION_EVIDENCE_SCENARIOS)" \
 		--output-dir "$(RELOCATION_EVIDENCE_DIR)"

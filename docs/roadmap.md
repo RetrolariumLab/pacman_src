@@ -130,7 +130,7 @@ tag uncertain claims instead of filling the template speculatively.
   tracked text file.
 
 The naming rules are documented in `docs/naming.md`. Direct import-to-current
-provenance is recorded in `docs/provenance/label_renames.json`. Future renames
+provenance is recorded in `config/reconstruction/label_renames.json`. Future renames
 must update that map, retain the same evidence standard, and pass `make verify`.
 
 ### 2. Unknowns Registry and Evidence Cleanup — Complete

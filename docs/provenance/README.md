@@ -1,6 +1,7 @@
 # Source Provenance
 
-`label_renames.json` maps every active colon label in the imported
+[`config/reconstruction/label_renames.json`](../../config/reconstruction/label_renames.json)
+maps every active colon label in the imported
 `bank_FF.asm` directly to its current semantic name and module. The source side
 is pinned to repository commit `95cff8bc55bd1c6cbf4570091e40a12a1474222e`,
 which preserves the imported file independently of the mutable upstream branch.
