@@ -24,12 +24,13 @@ release contract. Its tag name is `source-reconstruction-2.1`; the preserved
 predecessor tags are `source-reconstruction-1.0` and
 `source-reconstruction-2.0`.
 
-Source Reconstruction 2.2 is the compatible-minor development line. Its project
+Source Reconstruction 2.2 is the tag-ready compatible-minor candidate. Its project
 manifest preserves the published 2.1 tag, records the modernization delta,
 enforces newline-format-independent text and FM2 runtime inputs, records the
 reviewed documentation and vendored-reference boundary, and exposes
 `make source-2-2-functional-check` for the accepted predecessor plus the current
-delta. The tag-ready gate remains `make source-2-2-check`.
+delta. The complete pre-tag gate is `make source-2-2-check`; publication and
+tag creation remain owner actions.
 
 The annotated source covers every major subsystem, milestone 23 has resolved
 every registered unknown, and the complete validation matrix is available

@@ -5,7 +5,7 @@
   "release_kind": "compatible_minor",
   "tag": "source-reconstruction-2.2",
   "publish_remote": "origin",
-  "status": "development",
+  "status": "tag-ready",
   "predecessor": {
     "tag": "source-reconstruction-2.1",
     "commit": "959bee80064aaa692e456cf710b527cc31bfba81",
@@ -109,7 +109,7 @@
   ],
   "history": {
     "range_start": "959bee80064aaa692e456cf710b527cc31bfba81",
-    "commit_count": 11,
+    "commit_count": 12,
     "commits": [
       {"subject": "Establish the Source Reconstruction 2.2 project contract", "delta_ids": ["self_contained_release_metadata", "machine_readable_source_layout"], "paths": ["Makefile", "config/reconstruction/source_layout.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/nesdev/apu.md", "docs/nesdev/hardware.md", "docs/nesdev/mappers.md", "docs/nesdev/misc.md", "docs/source_reconstruction_2_2.md", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]},
       {"subject": "Define machine-readable revision contracts", "delta_ids": ["machine_readable_profile_contracts"], "paths": ["Makefile", "config/revisions.json", "config/source_reconstruction_2_2.json", "docs/multi_revision_builds.md", "docs/source_reconstruction_2_2.md", "scripts/build_revision.py", "scripts/revision_profiles.py", "scripts/source_2_2_audit.py", "tests/test_build_revision.py", "tests/test_revision_matrix.py"]},
@@ -121,7 +121,8 @@
       {"subject": "Enforce release history and clean gate sequencing", "delta_ids": ["release_integrity"], "paths": ["Makefile", "README.md", "config/make_help.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/source_reconstruction_2_2.md", "mk/validation.mk", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "tests/test_scaffold_check.py", "tests/test_source_2_2_audit.py"]},
       {"subject": "Make EOF validation newline-format independent", "delta_ids": ["release_integrity"], "paths": ["scripts/lint_source.py", "scripts/workflow/prepare_rts_batch.py", "tests/test_lint_source.py"]},
       {"subject": "Record the modernization candidate metadata", "delta_ids": ["release_integrity"], "paths": ["README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]},
-      {"subject": "Resolve runtime and documentation review findings", "delta_ids": ["canonical_movie_serialization", "reviewed_documentation_corpus", "release_integrity"], "paths": ["CONTRIBUTING.md", "Makefile", "README.md", "config/documentation_layout.json", "config/make_help.json", "config/reconstruction/label_renames.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "config/tooling_layout.json", "docs/assembly_style.md", "docs/documentation_architecture.md", "docs/index.md", "docs/naming.md", "docs/nesdev/README.md", "docs/nesdev/docs.md", "docs/nesdev/fds.md", "docs/provenance/README.md", "docs/provenance/label_renames.json", "docs/roadmap.md", "docs/runtime_trace_scenarios.md", "docs/validation.md", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "scripts/documentation_audit.py", "scripts/lint_source.py", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "scripts/workflow/movie_format.py", "scripts/workflow/run_reconstruction_evidence.py", "scripts/workflow/run_runtime_traces.py", "tests/test_documentation_audit.py", "tests/test_label_provenance.py", "tests/test_movie_format.py"]}
+      {"subject": "Resolve runtime and documentation review findings", "delta_ids": ["canonical_movie_serialization", "reviewed_documentation_corpus", "release_integrity"], "paths": ["CONTRIBUTING.md", "Makefile", "README.md", "config/documentation_layout.json", "config/make_help.json", "config/reconstruction/label_renames.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "config/tooling_layout.json", "docs/assembly_style.md", "docs/documentation_architecture.md", "docs/index.md", "docs/naming.md", "docs/nesdev/README.md", "docs/nesdev/docs.md", "docs/nesdev/fds.md", "docs/provenance/README.md", "docs/provenance/label_renames.json", "docs/roadmap.md", "docs/runtime_trace_scenarios.md", "docs/validation.md", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "scripts/documentation_audit.py", "scripts/lint_source.py", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "scripts/workflow/movie_format.py", "scripts/workflow/run_reconstruction_evidence.py", "scripts/workflow/run_runtime_traces.py", "tests/test_documentation_audit.py", "tests/test_label_provenance.py", "tests/test_movie_format.py"]},
+      {"subject": "Record the reviewed modernization candidate", "delta_ids": ["release_integrity"], "paths": ["README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]}
     ]
   },
   "requirements": {
@@ -194,7 +195,7 @@
       "evidence": {"targets": ["docs-audit", "lint"], "files": ["config/documentation_layout.json", "config/reconstruction/label_renames.json", "docs/documentation_architecture.md", "docs/nesdev/README.md", "scripts/documentation_audit.py", "tests/test_documentation_audit.py"], "scenarios": [], "artifacts": []}
     },
     "release_integrity": {
-      "status": "planned",
+      "status": "satisfied",
       "evidence": {"targets": ["source-2-2-functional-check", "source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "scripts/lint_source.py", "scripts/source_2_2_audit.py", "scripts/workflow/prepare_rts_batch.py", "tests/test_lint_source.py", "tests/test_source_2_2_audit.py"], "scenarios": [], "artifacts": []}
     }
   },
