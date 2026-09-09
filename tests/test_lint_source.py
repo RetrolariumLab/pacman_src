@@ -149,6 +149,13 @@ class LintSourceTests(unittest.TestCase):
                     2,
                 )
 
+    def test_rejects_crlf_blank_line_at_eof(self) -> None:
+        result = LintResult()
+        check_text_format(Path("scripts/example.py"), "first\r\n\r\n", result)
+        self.assertTrue(
+            any("blank line at EOF" in error for error in result.errors)
+        )
+
     def test_rejects_repeated_assembly_blank_lines(self) -> None:
         result = LintResult()
         check_text_format(Path("src/test.asm"), "sub_test:\n\n\n    RTS\n", result)

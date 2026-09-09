@@ -135,9 +135,10 @@ def read_text(project_root: Path, path: Path, result: LintResult) -> str | None:
 
 def check_text_format(path: Path, text: str, result: LintResult) -> None:
     result.checked_text_files += 1
-    if not text.endswith("\n"):
+    normalized_text = text.replace("\r\n", "\n").replace("\r", "\n")
+    if not normalized_text.endswith("\n"):
         result.error(path, "text file must end with one newline")
-    elif text.endswith("\n\n"):
+    elif normalized_text.endswith("\n\n"):
         result.error(path, "text file has a blank line at EOF")
 
     lines = text.splitlines()
