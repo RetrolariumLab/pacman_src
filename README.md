@@ -24,8 +24,9 @@ release contract. Its tag name is `source-reconstruction-2.1`; the preserved
 predecessor tags are `source-reconstruction-1.0` and
 `source-reconstruction-2.0`.
 
-Source Reconstruction 2.2 is the compatible-minor development line. Its
-project manifest preserves the published 2.1 tag and exposes
+Source Reconstruction 2.2 is the compatible-minor development line. Its project
+manifest preserves the published 2.1 tag, records the modernization delta,
+enforces newline-format-independent text hygiene, and exposes
 `make source-2-2-functional-check` for the accepted predecessor plus the current
 delta. The tag-ready gate remains `make source-2-2-check`.
 
