@@ -6,8 +6,8 @@
 - [source_reconstruction_2_0.md](./source_reconstruction_2_0.md): authoring and official-revision release scope.
 - [source_reconstruction_2_1.md](./source_reconstruction_2_1.md): compatible delta and aggregate acceptance gates.
 - [source_reconstruction_2_2.md](./source_reconstruction_2_2.md): compatible-minor project contract and modernization boundary.
-- `nesdev/` is an attributed primary-source reference mirror. Project audits
-  still require its tracked text to satisfy the repository language policy.
+- [documentation_architecture.md](./documentation_architecture.md): reviewed reader journeys, corpus ownership, and consolidation decisions.
+- [nesdev/README.md](./nesdev/README.md): boundary and refresh policy for attributed primary-source snapshots.
 - [roadmap.md](./roadmap.md): project direction, evidence rules, and completion criteria.
 - [validation.md](./validation.md): lint, unit, identity, debugger, runtime, and release layers.
 - [licensing.md](./licensing.md): distribution boundary, license status, and third-party provenance.
@@ -23,7 +23,7 @@
 - [naming.md](./naming.md): semantic symbol names and control-flow prefixes.
 - [assembly_style.md](./assembly_style.md): mechanically enforced ca65 layout, case, labels, and comments.
 - [tooling_layout.md](./tooling_layout.md): stable dispatcher, responsibility ownership, test owners, and recorded layout deviations.
-- [provenance/README.md](./provenance/README.md): imported-label provenance policy and complete rename map.
+- [provenance/README.md](./provenance/README.md): imported-label provenance policy and link to the canonical rename registry.
 - [unknowns.md](./unknowns.md): resolved research record and canonical home for future findings.
 - [relocation_testing.md](./relocation_testing.md): progressively shifted ROM and semantic FCEUX proof.
 

@@ -70,6 +70,12 @@ format:
 lint:
 	$(PYTHON) "$(PROJECT_DIR)scripts/asm_style.py" "$(PROJECT_DIR)src"
 	$(PYTHON) "$(PROJECT_DIR)scripts/lint_source.py"
+	$(MAKE) docs-audit
+
+docs-audit:
+	$(PYTHON) "$(PROJECT_DIR)scripts/documentation_audit.py" \
+		--project-root "$(PROJECT_DIR)" \
+		--layout "$(PROJECT_DIR)config/documentation_layout.json"
 
 roundtrip-formats: verify
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/roundtrip_data_formats.py" \

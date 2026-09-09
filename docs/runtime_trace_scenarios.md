@@ -13,6 +13,10 @@ make validate-runtime-traces
 
 `make trace-runtime` rebuilds the byte-identical ROM, exports fresh debugger
 symbols, and runs the scenarios declared in `scenarios/runtime_trace.json`.
+Before hashing or playback, the workflow normalizes the tracked FM2 text to its
+canonical CRLF serialization under `build/runtime/inputs/`. This makes the
+recorded movie digest and the bytes consumed by FCEUX independent of Git or
+host checkout newline settings without changing the tracked source movie.
 Each scenario writes an ignored CSV under `build/runtime/traces/`; the target then
 validates semantic invariants automatically. The second command revalidates
 existing local traces without starting the emulator.
@@ -60,6 +64,7 @@ or if the expected state-machine path is absent.
 
 These runs prove control flow from the explicitly patched state. They are not
 evidence that ordinary play produced that state. All scenarios use the
-preservation ROM and exact FM2 SHA-1 values recorded in the configuration; the
-runner rejects either input if its digest differs. Generated traces stay ignored
-because they are reproducible evidence artifacts rather than source.
+preservation ROM and exact canonical FM2 SHA-1 values recorded in the
+configuration; the runner rejects either input if its digest differs. Generated
+traces and canonical movie copies stay ignored because they are reproducible
+evidence artifacts rather than source.

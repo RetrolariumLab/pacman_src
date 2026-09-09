@@ -10,6 +10,8 @@ import os
 import subprocess
 from pathlib import Path
 
+from movie_format import materialize_canonical_movie
+
 
 def sha1(path: Path) -> str:
     digest = hashlib.sha1()
@@ -35,15 +37,21 @@ def main() -> int:
         raise SystemExit(f"[FAIL] Missing reconstruction-evidence input: {', '.join(missing)}")
 
     document = json.loads(args.scenarios.read_text(encoding="utf-8"))
-    for path, expected in ((args.rom, document["rom_sha1"]),
-                           (args.movie, document["movie_sha1"])):
-        actual = sha1(path)
-        if actual != expected:
-            raise SystemExit(
-                f"[FAIL] SHA-1 mismatch for {path}: expected={expected}, actual={actual}"
-            )
-
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    actual_rom_sha1 = sha1(args.rom)
+    if actual_rom_sha1 != document["rom_sha1"]:
+        raise SystemExit(
+            f"[FAIL] SHA-1 mismatch for {args.rom}: "
+            f"expected={document['rom_sha1']}, actual={actual_rom_sha1}"
+        )
+    try:
+        movie = materialize_canonical_movie(
+            args.movie,
+            args.output_dir / "_inputs" / args.movie.name,
+            document["movie_sha1"],
+        )
+    except ValueError as error:
+        raise SystemExit(f"[FAIL] {error}") from error
     for scenario in document["scenarios"]:
         output = args.output_dir / f"{scenario['id']}.csv"
         output.unlink(missing_ok=True)
@@ -54,7 +62,7 @@ def main() -> int:
             PACMAN_RECONSTRUCTION_EVIDENCE_MAX_FRAMES=str(scenario["max_frames"]),
         )
         command = [
-            str(args.fceux.resolve()), "-playmovie", str(args.movie.resolve()),
+            str(args.fceux.resolve()), "-playmovie", str(movie.resolve()),
             "-lua", str(args.lua.resolve()),
             "-max-frames", str(scenario["max_frames"] + 2),
             "-turbo", "1", "-nothrottle", "1", str(args.rom.resolve()),

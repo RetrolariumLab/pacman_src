@@ -78,10 +78,10 @@ symbols-hack: verify-hack
 		--watches "$(DEBUG_WATCHES)" \
 		--summary "$(HACK_DEBUG_SUMMARY)"
 
-validate-hack: build-dev symbols-hack
+validate-hack: build-dev symbols-hack _canonical-movie
 	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(HACK_RUNTIME_RESULT)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
 	set "PACMAN_HACK_RUNTIME_RESULT=$(HACK_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \
-		-playmovie "$(LONGPLAY_MOVIE_FILE)" \
+		-playmovie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		-lua "$(subst /,\,$(HACK_RUNTIME_LUA))" \
 		-max-frames "10000" \
 		-turbo 1 \
@@ -167,10 +167,10 @@ symbols-expanded: verify-expanded
 		--watches "$(DEBUG_WATCHES)" \
 		--summary "$(EXPANDED_DEBUG_SUMMARY)"
 
-validate-expanded: build-dev symbols-expanded
+validate-expanded: build-dev symbols-expanded _canonical-movie
 	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(EXPANDED_RUNTIME_RESULT)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
 	set "PACMAN_EXPANDED_RUNTIME_RESULT=$(EXPANDED_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \
-		-playmovie "$(LONGPLAY_MOVIE_FILE)" \
+		-playmovie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		-lua "$(subst /,\,$(EXPANDED_RUNTIME_LUA))" \
 		-max-frames "10000" \
 		-turbo 1 \

@@ -71,7 +71,7 @@ not sufficient.
 3. Keep state numbers and opcode values only when they are part of the decoded
    format, such as `handler_script_0a_game_over`.
 4. Preserve original-to-current names in
-   `docs/provenance/label_renames.json`, and keep addresses in generated maps
+   `config/reconstruction/label_renames.json`, and keep addresses in generated maps
    rather than inline provenance comments.
 5. Every rename-only change must pass `make verify`; names must never affect the
    reproduced ROM.

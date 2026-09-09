@@ -26,7 +26,8 @@ predecessor tags are `source-reconstruction-1.0` and
 
 Source Reconstruction 2.2 is the compatible-minor development line. Its project
 manifest preserves the published 2.1 tag, records the modernization delta,
-enforces newline-format-independent text hygiene, and exposes
+enforces newline-format-independent text and FM2 runtime inputs, records the
+reviewed documentation and vendored-reference boundary, and exposes
 `make source-2-2-functional-check` for the accepted predecessor plus the current
 delta. The tag-ready gate remains `make source-2-2-check`.
 
@@ -65,7 +66,7 @@ Symbols are named by program role rather than ROM address. The `sub_`,
 `handler_`, `loc_`, and `bra_` prefixes distinguish callable subroutines from
 dispatch handlers and internal control flow; see [`docs/naming.md`](docs/naming.md).
 The complete import-to-current label history is maintained separately in
-[`docs/provenance/label_renames.json`](docs/provenance/label_renames.json).
+[`config/reconstruction/label_renames.json`](config/reconstruction/label_renames.json).
 
 `make symbols` generates native ld65 source mappings for Mesen, FCEUX ROM/RAM
 labels, breakpoint groups, and a standard watch list. See

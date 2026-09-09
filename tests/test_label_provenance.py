@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-MANIFEST_PATH = PROJECT_ROOT / "docs" / "provenance" / "label_renames.json"
+MANIFEST_PATH = PROJECT_ROOT / "config" / "reconstruction" / "label_renames.json"
 IMPORT_COMMIT = "95cff8bc55bd1c6cbf4570091e40a12a1474222e"
 LABEL_RE = re.compile(
     r"^(?:bra|handler|loc|off|sub|tbl|unused|vec)_"

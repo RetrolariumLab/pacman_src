@@ -1,5 +1,3 @@
-# docs
-
 # FDS disk format
 
 Source: https://www.nesdev.org/wiki/FDS_disk_format

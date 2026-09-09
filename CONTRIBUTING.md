@@ -43,7 +43,7 @@ If shared revision code changes, also run `make verify-revisions` with all seven
 local reference ROMs available.
 
 Every active colon label is covered by
-`docs/provenance/label_renames.json`. Update its existing current target when
+`config/reconstruction/label_renames.json`. Update its existing current target when
 renaming a label. Add a `project_additions` record only when the new label has no
 active counterpart in the imported `bank_FF.asm`; do not add inline `was:`
 comments to the assembly source.
