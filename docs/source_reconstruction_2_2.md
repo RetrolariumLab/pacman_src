@@ -8,7 +8,7 @@ guarantee.
 The published `source-reconstruction-2.1` tag and its manifest remain immutable.
 The exact predecessor is commit
 `959bee80064aaa692e456cf710b527cc31bfba81`; all 2.2 work occurs after that
-commit on the `source-reconstruction-2.2` branch.
+commit on a dedicated modernization branch.
 
 ## Current status
 
@@ -24,9 +24,11 @@ and test-owner registry; the non-package layout is a checked compatibility
 deviation. Real-window interaction smokes now cover all four supported Studios
 without modifying private workspace files. The project audit now checks the
 complete Git range, exact delta-to-path mappings, non-empty commits, and
-English-only public text. Release status remains
-`development` until the full functional gate passes on the supported Windows
-host. No 2.2 tag should be created before the final clean pre-tag gate succeeds.
+English-only public text. Text hygiene is independent of checkout newline
+format, and regression coverage rejects a blank terminal line represented with
+CRLF as well as LF. Independent review remains in progress for the canonical
+movie and documentation corpus. No 2.2 tag should be created before those
+findings are resolved and the final clean pre-tag gate succeeds.
 
 ## Accepted baseline
 
@@ -46,12 +48,12 @@ delta after Source 2.1.
 
 ## Release completion
 
-The implementation delta is complete. Release completion has two stateful steps:
+Release completion has two stateful steps:
 
 1. run `make source-2-2-functional-check` while the manifest remains in
    `development`;
-2. record the successful result in the release metadata, create the substantive
-   release commit, and run `make source-2-2-check` from a clean build root.
+2. record the successful result in substantive candidate metadata and run
+   `make source-2-2-check` from a clean build root.
 
 Cross-profile relocation, a sibling engine, and a new platform/container ABI
 remain excluded. The existing NROM-256 architecture predates this minor line
@@ -59,7 +61,7 @@ and remains isolated by `docs/adr/0001-expanded-nrom256.md`.
 
 ## Gate names
 
-During development, the fast contract and the complete functional gate are:
+During development, the fast contract and complete functional gate are:
 
 ```text
 make source-2-2-audit
