@@ -5,7 +5,7 @@
   "studios": [
     {
       "id": "sound",
-      "entrypoint": "scripts/sound_studio.py",
+      "entrypoint": "scripts/authoring/sound_studio.py",
       "inputs": {
         "sound_json": "content/workspace/sound_streams.json",
         "asset_manifest": "assets/manifest.json",
@@ -15,7 +15,7 @@
     },
     {
       "id": "maze",
-      "entrypoint": "scripts/maze_studio.py",
+      "entrypoint": "scripts/authoring/maze_studio.py",
       "inputs": {
         "maze_json": "content/workspace/maze.json",
         "original_rle": "assets/generated/maze/maze.rle",
@@ -25,7 +25,7 @@
     },
     {
       "id": "graphics",
-      "entrypoint": "scripts/graphics_studio.py",
+      "entrypoint": "scripts/authoring/graphics_studio.py",
       "inputs": {
         "chr": "assets/generated/chr/pacman.chr",
         "actors": "content/workspace/actor_sprites.json",
@@ -36,7 +36,7 @@
     },
     {
       "id": "screen",
-      "entrypoint": "scripts/screen_studio.py",
+      "entrypoint": "scripts/authoring/screen_studio.py",
       "inputs": {
         "chr": "assets/generated/chr/pacman.chr",
         "screens": "content/workspace/screens.json",

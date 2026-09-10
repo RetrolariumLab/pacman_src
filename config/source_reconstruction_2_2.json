@@ -5,7 +5,7 @@
   "release_kind": "compatible_minor",
   "tag": "source-reconstruction-2.2",
   "publish_remote": "origin",
-  "status": "development",
+  "status": "tag-ready",
   "predecessor": {
     "tag": "source-reconstruction-2.1",
     "commit": "959bee80064aaa692e456cf710b527cc31bfba81",
@@ -35,8 +35,6 @@
     {"id": "profile_aware_authoring", "status": "not_applicable", "reason": "Authoring remains scoped to the isolated expanded build, not every official profile."},
     {"id": "sibling_engine", "status": "not_applicable", "reason": "No sibling or later engine is claimed by this repository."},
     {"id": "additional_platform_abi", "status": "not_applicable", "reason": "All accepted profiles use the same NES NROM execution ABI."},
-    {"id": "script_package_layout", "status": "not_applicable", "reason": "A physical package migration would break established Make, documentation, and direct-script interfaces; Source 2.2 instead freezes those paths behind a stable launcher and complete ownership registry."},
-    {"id": "mirrored_test_package_layout", "status": "not_applicable", "reason": "Tests retain their established flat discovery layout while the tooling registry gives every responsibility group and every public command an explicit test owner."},
     {"id": "unified_qt_studio", "status": "planned", "reason": "Existing headless models and separate tools satisfy the accepted authoring scope."}
   ],
   "delta": [
@@ -44,72 +42,72 @@
       "id": "self_contained_release_metadata",
       "kind": "documentation",
       "summary": "Keep release metadata limited to public project facts and enforce English-only tracked project text.",
-      "evidence": ["config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/provenance.md", "docs/source_reconstruction_2_2.md", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]
+      "evidence": ["config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/provenance.md", "docs/source_reconstruction_2_2.md", "scripts/validation/source_2_1_audit.py", "scripts/validation/source_2_2_audit.py", "tests/validation/test_source_2_1_audit.py", "tests/validation/test_source_2_2_audit.py"]
     },
     {
       "id": "machine_readable_source_layout",
       "kind": "tooling",
       "summary": "Give every canonical PRG range one machine-readable semantic owner and validate contiguous ownership against the source entrypoint.",
-      "evidence": ["config/reconstruction/source_layout.json", "tests/test_source_2_2_audit.py"]
+      "evidence": ["config/reconstruction/source_layout.json", "tests/validation/test_source_2_2_audit.py"]
     },
     {
       "id": "machine_readable_profile_contracts",
       "kind": "tooling",
       "summary": "Define inputs, platform layout, default outputs, and evidence-backed capabilities for every accepted official revision profile.",
-      "evidence": ["Makefile", "config/revisions.json", "docs/multi_revision_builds.md", "scripts/build_revision.py", "scripts/revision_profiles.py", "scripts/source_2_2_audit.py", "tests/test_build_revision.py", "tests/test_revision_matrix.py"]
+      "evidence": ["Makefile", "config/revisions.json", "docs/multi_revision_builds.md", "scripts/build/build_revision.py", "scripts/build/revision_profiles.py", "scripts/validation/source_2_2_audit.py", "tests/build/test_build_revision.py", "tests/build/test_revision_matrix.py"]
     },
     {
       "id": "unified_output_layout",
       "kind": "tooling",
       "summary": "Place every reproducible build, runtime, preview, round-trip, and analysis result under one removable build root while preserving private authoring documents.",
-      "evidence": [".gitignore", "Makefile", "README.md", "docs/data_formats.md", "docs/expanded_rom_assets.md", "docs/graphics_authoring.md", "docs/roadmap.md", "docs/runtime_trace_scenarios.md", "docs/scoring_trace_scenarios.md", "docs/screen_authoring.md", "docs/sound_authoring.md", "docs/sound_engine.md", "docs/source_reconstruction_1_0.md", "docs/validation.md", "scenarios/scoring_trace.json", "scripts/clean_artifacts.py", "scripts/maze_studio.py", "scripts/sound_studio.py", "scripts/source_2_2_audit.py", "tests/test_clean_artifacts.py", "tests/test_source_2_2_audit.py"]
+      "evidence": [".gitignore", "Makefile", "README.md", "docs/data_formats.md", "docs/expanded_rom_assets.md", "docs/graphics_authoring.md", "docs/roadmap.md", "docs/runtime_trace_scenarios.md", "docs/scoring_trace_scenarios.md", "docs/screen_authoring.md", "docs/sound_authoring.md", "docs/sound_engine.md", "docs/source_reconstruction_1_0.md", "docs/validation.md", "scenarios/scoring_trace.json", "scripts/build/clean_artifacts.py", "scripts/authoring/maze_studio.py", "scripts/authoring/sound_studio.py", "scripts/validation/source_2_2_audit.py", "tests/build/test_clean_artifacts.py", "tests/validation/test_source_2_2_audit.py"]
     },
     {
       "id": "responsibility_make_layout",
       "kind": "tooling",
       "summary": "Reduce the root Makefile to the stable interface and group authoring, runtime, and validation orchestration into bounded responsibility fragments.",
-      "evidence": ["Makefile", "README.md", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "scripts/lint_source.py", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]
+      "evidence": ["Makefile", "README.md", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "scripts/validation/lint_source.py", "scripts/validation/source_2_1_audit.py", "scripts/validation/source_2_2_audit.py", "tests/validation/test_source_2_1_audit.py", "tests/validation/test_source_2_2_audit.py"]
     },
     {
       "id": "machine_readable_tooling_ownership",
       "kind": "tooling",
       "summary": "Publish a stable tool dispatcher and give every Python or Lua tool exactly one machine-readable responsibility owner, with explicit test ownership for public commands.",
-      "evidence": ["Makefile", "README.md", "config/tooling_layout.json", "docs/index.md", "docs/tooling_layout.md", "scripts/run.py", "scripts/source_2_2_audit.py", "tests/test_tooling_layout.py"]
+      "evidence": ["Makefile", "README.md", "config/tooling_layout.json", "docs/index.md", "docs/tooling_layout.md", "scripts/run.py", "scripts/validation/source_2_2_audit.py", "tests/validation/test_tooling_layout.py"]
     },
     {
       "id": "romless_scaffold_and_generated_help",
       "kind": "tooling",
       "summary": "Generate command help from an exact public-target registry and exercise public Make orchestration in a disposable checkout containing no private ROM, extracted assets, workspace, or saved build state.",
-      "evidence": ["Makefile", "README.md", "config/make_help.json", "config/tooling_layout.json", "docs/tooling_layout.md", "mk/validation.mk", "scripts/make_help.py", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "tests/test_make_help.py", "tests/test_scaffold_check.py"]
+      "evidence": ["Makefile", "README.md", "config/make_help.json", "config/tooling_layout.json", "docs/tooling_layout.md", "mk/validation.mk", "scripts/validation/make_help.py", "scripts/validation/scaffold_check.py", "scripts/validation/source_2_2_audit.py", "tests/validation/test_make_help.py", "tests/validation/test_scaffold_check.py"]
     },
     {
       "id": "workstation_ui_interaction_smokes",
       "kind": "tooling",
       "summary": "Create real Tk windows for all four supported Studios and exercise edit, save, build dispatch, dirty-close handling, sound preview, and available undo actions against isolated build copies.",
-      "evidence": ["Makefile", "README.md", "config/authoring/ui_smokes.json", "config/make_help.json", "config/tooling_layout.json", "docs/index.md", "docs/tooling_layout.md", "docs/ui_smoke.md", "mk/validation.mk", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "scripts/ui_smoke.py", "tests/test_tooling_layout.py", "tests/test_ui_smoke.py"]
+      "evidence": ["Makefile", "README.md", "config/authoring/ui_smokes.json", "config/make_help.json", "config/tooling_layout.json", "docs/index.md", "docs/tooling_layout.md", "docs/ui_smoke.md", "mk/validation.mk", "scripts/validation/scaffold_check.py", "scripts/validation/source_2_2_audit.py", "scripts/authoring/ui_smoke.py", "tests/validation/test_tooling_layout.py", "tests/authoring/test_ui_smoke.py"]
     },
     {
       "id": "canonical_movie_serialization",
       "kind": "tooling",
       "summary": "Canonicalize FM2 inputs to CRLF before hashing or emulator playback so Git checkout line endings cannot change runtime evidence.",
-      "evidence": ["Makefile", "mk/authoring.mk", "mk/runtime.mk", "movies/pacman_j_longplay.fm2", "scenarios/runtime_trace.json", "scenarios/reconstruction_evidence.json", "scripts/workflow/movie_format.py", "scripts/workflow/run_runtime_traces.py", "scripts/workflow/run_reconstruction_evidence.py", "tests/test_movie_format.py"]
+      "evidence": ["Makefile", "mk/authoring.mk", "mk/runtime.mk", "movies/pacman_j_longplay.fm2", "scenarios/runtime_trace.json", "scenarios/reconstruction_evidence.json", "scripts/runtime/movie_format.py", "scripts/runtime/run_runtime_traces.py", "scripts/runtime/run_reconstruction_evidence.py", "tests/runtime/test_movie_format.py"]
     },
     {
       "id": "reviewed_documentation_corpus",
       "kind": "documentation",
       "summary": "Inventory the complete task-oriented documentation corpus, enforce reader journeys and size or prefix review, consolidate the expanded-ROM decision with its live contract, and keep source provenance concise and top-level.",
-      "evidence": ["config/documentation_layout.json", "config/reconstruction/label_renames.json", "docs/documentation_architecture.md", "docs/expanded_rom_assets.md", "docs/index.md", "docs/provenance.md", "scripts/documentation_audit.py", "scripts/source_2_2_audit.py", "tests/test_documentation_audit.py", "tests/test_label_provenance.py"]
+      "evidence": ["config/documentation_layout.json", "config/reconstruction/label_renames.json", "docs/documentation_architecture.md", "docs/expanded_rom_assets.md", "docs/index.md", "docs/provenance.md", "scripts/validation/documentation_audit.py", "scripts/validation/source_2_2_audit.py", "tests/validation/test_documentation_audit.py", "tests/validation/test_label_provenance.py"]
     },
     {
       "id": "release_integrity",
       "kind": "tooling",
       "summary": "Validate the complete non-empty commit range and its delta mapping, preserve Git history in the ROM-less scaffold, enforce checkout-independent text hygiene and authenticated build tools, and sequence the accepted predecessor, current delta, clean build boundaries, and pre/post-tag repository audits.",
-      "evidence": ["Makefile", "README.md", "config/make_help.json", "config/toolchain.json", "docs/source_reconstruction_2_2.md", "docs/validation.md", "mk/validation.mk", "scripts/build_native.py", "scripts/lint_source.py", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "scripts/workflow/prepare_rts_batch.py", "tests/test_build_revision.py", "tests/test_lint_source.py", "tests/test_scaffold_check.py", "tests/test_source_2_2_audit.py"]
+      "evidence": ["Makefile", "README.md", "config/make_help.json", "config/toolchain.json", "docs/source_reconstruction_2_2.md", "docs/validation.md", "mk/validation.mk", "scripts/build/build_native.py", "scripts/validation/lint_source.py", "scripts/validation/scaffold_check.py", "scripts/validation/source_2_2_audit.py", "scripts/workflow/prepare_rts_batch.py", "tests/build/test_build_revision.py", "tests/validation/test_lint_source.py", "tests/validation/test_scaffold_check.py", "tests/validation/test_source_2_2_audit.py"]
     }
   ],
   "history": {
     "range_start": "959bee80064aaa692e456cf710b527cc31bfba81",
-    "commit_count": 15,
+    "commit_count": 16,
     "commits": [
       {"subject": "Establish the Source Reconstruction 2.2 project contract", "delta_ids": ["self_contained_release_metadata", "machine_readable_source_layout"], "paths": ["Makefile", "config/reconstruction/source_layout.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/nesdev/apu.md", "docs/nesdev/hardware.md", "docs/nesdev/mappers.md", "docs/nesdev/misc.md", "docs/source_reconstruction_2_2.md", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]},
       {"subject": "Define machine-readable revision contracts", "delta_ids": ["machine_readable_profile_contracts"], "paths": ["Makefile", "config/revisions.json", "config/source_reconstruction_2_2.json", "docs/multi_revision_builds.md", "docs/source_reconstruction_2_2.md", "scripts/build_revision.py", "scripts/revision_profiles.py", "scripts/source_2_2_audit.py", "tests/test_build_revision.py", "tests/test_revision_matrix.py"]},
@@ -125,7 +123,8 @@
       {"subject": "Record the reviewed modernization candidate", "delta_ids": ["release_integrity"], "paths": ["README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]},
       {"subject": "Consolidate the public documentation architecture", "delta_ids": ["self_contained_release_metadata", "reviewed_documentation_corpus", "release_integrity"], "paths": ["README.md", "config/documentation_layout.json", "config/make_help.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/adr/0001-expanded-nrom256.md", "docs/documentation_architecture.md", "docs/expanded_rom_assets.md", "docs/index.md", "docs/licensing.md", "docs/nesdev/README.md", "docs/nesdev/apu.md", "docs/nesdev/cpu.md", "docs/nesdev/devtools.md", "docs/nesdev/fds.md", "docs/nesdev/games.md", "docs/nesdev/hardware.md", "docs/nesdev/mappers.md", "docs/nesdev/misc.md", "docs/nesdev/pinouts.md", "docs/nesdev/ppu.md", "docs/nesdev/timing.md", "docs/nesdev/visual6502.md", "docs/provenance.md", "docs/provenance/README.md", "docs/source_reconstruction_2_2.md", "docs/validation.md", "scripts/documentation_audit.py", "scripts/lint_source.py", "scripts/source_2_2_audit.py", "tests/test_documentation_audit.py", "tests/test_lint_source.py"]},
       {"subject": "Record the final documentation review correction", "delta_ids": ["release_integrity"], "paths": ["README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]},
-      {"subject": "Authenticate build tools at the execution boundary", "delta_ids": ["release_integrity"], "paths": ["Makefile", "README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "docs/validation.md", "mk/authoring.mk", "mk/runtime.mk", "scripts/build_expanded.py", "scripts/build_native.py", "scripts/build_revision.py", "scripts/source_2_2_audit.py", "tests/test_build_revision.py"]}
+      {"subject": "Authenticate build tools at the execution boundary", "delta_ids": ["release_integrity"], "paths": ["Makefile", "README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "docs/validation.md", "mk/authoring.mk", "mk/runtime.mk", "scripts/build_expanded.py", "scripts/build_native.py", "scripts/build_revision.py", "scripts/source_2_2_audit.py", "tests/test_build_revision.py"]},
+      {"subject":"Complete Source Reconstruction 2.2","delta_ids":["responsibility_make_layout","machine_readable_tooling_ownership","romless_scaffold_and_generated_help","workstation_ui_interaction_smokes","reviewed_documentation_corpus","release_integrity"],"paths":["Makefile","README.md","config/authoring/ui_smokes.json","config/source_reconstruction_2_1.json","config/source_reconstruction_2_2.json","config/tooling_layout.json","docs/data_formats.md","docs/debugger_workflow.md","docs/index.md","docs/multi_revision_builds.md","docs/source_reconstruction_2_1.md","docs/source_reconstruction_2_2.md","docs/tooling_layout.md","docs/validation.md","mk/authoring.mk","mk/runtime.mk","mk/validation.mk","scripts/asm_style.py","scripts/authoring/data_formats.py","scripts/authoring/graphics_studio.py","scripts/authoring/graphics_studio_model.py","scripts/authoring/maze_studio.py","scripts/authoring/maze_studio_model.py","scripts/authoring/midi_to_sound.py","scripts/authoring/palette_assets.py","scripts/authoring/prepare_expanded_assets.py","scripts/authoring/render_sound_preview.py","scripts/authoring/screen_assets.py","scripts/authoring/screen_studio.py","scripts/authoring/sound_authoring.py","scripts/authoring/sound_studio.py","scripts/authoring/sound_studio_model.py","scripts/authoring/ui_smoke.py","scripts/build/build_dev.py","scripts/build/build_expanded.py","scripts/build/build_native.py","scripts/build/build_revision.py","scripts/build/check_assets.py","scripts/build/clean_artifacts.py","scripts/build/compare_roms.py","scripts/build/flatten_listing.py","scripts/build/listing_source.py","scripts/build/revision_profiles.py","scripts/build/split_assets.py","scripts/build_dev.py","scripts/build_expanded.py","scripts/build_native.py","scripts/build_revision.py","scripts/check_assets.py","scripts/clean_artifacts.py","scripts/compare_roms.py","scripts/data_formats.py","scripts/debug_symbols.py","scripts/documentation_audit.py","scripts/flatten_listing.py","scripts/graphics_studio.py","scripts/graphics_studio_model.py","scripts/lint_source.py","scripts/listing_source.py","scripts/make_help.py","scripts/maze_studio.py","scripts/maze_studio_model.py","scripts/midi_to_sound.py","scripts/palette_assets.py","scripts/prepare_expanded_assets.py","scripts/render_sound_preview.py","scripts/revision_profiles.py","scripts/runtime/capture_reconstruction_evidence.lua","scripts/runtime/capture_runtime_trace.lua","scripts/runtime/capture_scoring_trace.lua","scripts/runtime/check_scoring_trace_setup.py","scripts/runtime/movie_format.py","scripts/runtime/relocation_test.py","scripts/runtime/run_reconstruction_evidence.py","scripts/runtime/run_revision_smokes.py","scripts/runtime/run_runtime_traces.py","scripts/runtime/validate_debug_runtime.py","scripts/runtime/validate_debug_symbols.lua","scripts/runtime/validate_expanded_rom.lua","scripts/runtime/validate_expanded_runtime.py","scripts/runtime/validate_hack_runtime.py","scripts/runtime/validate_hack_variant.lua","scripts/runtime/validate_reconstruction_evidence.py","scripts/runtime/validate_relocation_symbols.lua","scripts/runtime/validate_revision_smoke.lua","scripts/runtime/validate_runtime_traces.py","scripts/runtime/validate_scoring_trace.py","scripts/scaffold_check.py","scripts/screen_assets.py","scripts/screen_studio.py","scripts/sound_authoring.py","scripts/sound_studio.py","scripts/sound_studio_model.py","scripts/source_2_1_audit.py","scripts/source_2_2_audit.py","scripts/split_assets.py","scripts/ui_smoke.py","scripts/validation/asm_style.py","scripts/validation/debug_symbols.py","scripts/validation/documentation_audit.py","scripts/validation/lint_source.py","scripts/validation/make_help.py","scripts/validation/scaffold_check.py","scripts/validation/source_2_1_audit.py","scripts/validation/source_2_2_audit.py","scripts/validation/verify_expanded.py","scripts/validation/verify_hack.py","scripts/verify_expanded.py","scripts/verify_hack.py","scripts/workflow/capture_reconstruction_evidence.lua","scripts/workflow/capture_runtime_trace.lua","scripts/workflow/capture_scoring_trace.lua","scripts/workflow/check_scoring_trace_setup.py","scripts/workflow/extract_rename_chunk.py","scripts/workflow/movie_format.py","scripts/workflow/relocation_test.py","scripts/workflow/roundtrip_data_formats.py","scripts/workflow/run_reconstruction_evidence.py","scripts/workflow/run_revision_smokes.py","scripts/workflow/run_runtime_traces.py","scripts/workflow/validate_debug_runtime.py","scripts/workflow/validate_debug_symbols.lua","scripts/workflow/validate_expanded_rom.lua","scripts/workflow/validate_expanded_runtime.py","scripts/workflow/validate_hack_runtime.py","scripts/workflow/validate_hack_variant.lua","scripts/workflow/validate_reconstruction_evidence.py","scripts/workflow/validate_relocation_symbols.lua","scripts/workflow/validate_revision_smoke.lua","scripts/workflow/validate_runtime_traces.py","scripts/workflow/validate_scoring_trace.py","scripts/workflow/verify_revision_matrix.py","tests/authoring/__init__.py","tests/authoring/test_data_formats.py","tests/authoring/test_graphics_studio.py","tests/authoring/test_maze_studio.py","tests/authoring/test_midi_to_sound.py","tests/authoring/test_screen_studio.py","tests/authoring/test_sound_authoring.py","tests/authoring/test_sound_music_model.py","tests/authoring/test_sound_preview.py","tests/authoring/test_sound_studio.py","tests/authoring/test_ui_smoke.py","tests/build/__init__.py","tests/build/test_build_dev.py","tests/build/test_build_revision.py","tests/build/test_clean_artifacts.py","tests/build/test_revision_matrix.py","tests/runtime/__init__.py","tests/runtime/test_movie_format.py","tests/runtime/test_reconstruction_evidence.py","tests/runtime/test_relocation.py","tests/runtime/test_revision_smokes.py","tests/runtime/test_runtime_traces.py","tests/runtime/test_scoring_trace_setup.py","tests/test_asm_style.py","tests/test_build_dev.py","tests/test_build_revision.py","tests/test_clean_artifacts.py","tests/test_data_formats.py","tests/test_debug_symbols.py","tests/test_documentation_audit.py","tests/test_graphics_studio.py","tests/test_label_provenance.py","tests/test_lint_source.py","tests/test_make_help.py","tests/test_maze_studio.py","tests/test_midi_to_sound.py","tests/test_movie_format.py","tests/test_reconstruction_evidence.py","tests/test_relocation.py","tests/test_revision_alignment.py","tests/test_revision_matrix.py","tests/test_revision_smokes.py","tests/test_rom_collection.py","tests/test_runtime_traces.py","tests/test_scaffold_check.py","tests/test_scoring_trace_setup.py","tests/test_screen_studio.py","tests/test_sound_authoring.py","tests/test_sound_music_model.py","tests/test_sound_preview.py","tests/test_sound_studio.py","tests/test_source_2_1_audit.py","tests/test_source_2_2_audit.py","tests/test_tooling_layout.py","tests/test_ui_smoke.py","tests/test_verify_expanded.py","tests/test_verify_hack.py","tests/validation/__init__.py","tests/validation/test_asm_style.py","tests/validation/test_debug_symbols.py","tests/validation/test_documentation_audit.py","tests/validation/test_label_provenance.py","tests/validation/test_lint_source.py","tests/validation/test_make_help.py","tests/validation/test_scaffold_check.py","tests/validation/test_source_2_1_audit.py","tests/validation/test_source_2_2_audit.py","tests/validation/test_tooling_layout.py","tests/validation/test_verify_expanded.py","tests/validation/test_verify_hack.py","tests/workflow/__init__.py","tests/workflow/test_revision_alignment.py","tests/workflow/test_rom_collection.py"]}
     ]
   },
   "requirements": {
@@ -155,11 +154,11 @@
     },
     "reproducible_toolchain": {
       "status": "satisfied",
-      "evidence": {"targets": ["build-dev", "verify", "verify-revisions"], "files": ["config/toolchain.json", "scripts/build_dev.py", "scripts/build_native.py", "tests/test_build_dev.py", "tests/test_build_revision.py"], "scenarios": [], "artifacts": []}
+      "evidence": {"targets": ["build-dev", "verify", "verify-revisions"], "files": ["config/toolchain.json", "scripts/build/build_dev.py", "scripts/build/build_native.py", "tests/build/test_build_dev.py", "tests/build/test_build_revision.py"], "scenarios": [], "artifacts": []}
     },
     "public_release_metadata": {
       "status": "satisfied",
-      "evidence": {"targets": ["source-2-2-audit"], "files": ["config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py"], "scenarios": [], "artifacts": []}
+      "evidence": {"targets": ["source-2-2-audit"], "files": ["config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "scripts/validation/source_2_1_audit.py", "scripts/validation/source_2_2_audit.py"], "scenarios": [], "artifacts": []}
     },
     "source_layout_ownership": {
       "status": "satisfied",
@@ -167,11 +166,11 @@
     },
     "profile_contracts": {
       "status": "satisfied",
-      "evidence": {"targets": ["verify-revisions", "smoke-revisions", "source-2-2-audit"], "files": ["config/revisions.json", "scripts/revision_profiles.py"], "scenarios": ["title_menu_boot"], "artifacts": ["pacman_japan_v10", "pacman_japan_v11", "pacman_japan_revb", "pacman_usa_tengen_unlicensed", "pacman_usa_tengen", "pacman_usa_namco", "pacman_europe"]}
+      "evidence": {"targets": ["verify-revisions", "smoke-revisions", "source-2-2-audit"], "files": ["config/revisions.json", "scripts/build/revision_profiles.py"], "scenarios": ["title_menu_boot"], "artifacts": ["pacman_japan_v10", "pacman_japan_v11", "pacman_japan_revb", "pacman_usa_tengen_unlicensed", "pacman_usa_tengen", "pacman_usa_namco", "pacman_europe"]}
     },
     "output_boundaries": {
       "status": "satisfied",
-      "evidence": {"targets": ["clean", "source-2-2-audit"], "files": ["scripts/clean_artifacts.py", "tests/test_clean_artifacts.py", ".gitignore"], "scenarios": [], "artifacts": []}
+      "evidence": {"targets": ["clean", "source-2-2-audit"], "files": ["scripts/build/clean_artifacts.py", "tests/build/test_clean_artifacts.py", ".gitignore"], "scenarios": [], "artifacts": []}
     },
     "make_orchestration_layout": {
       "status": "satisfied",
@@ -179,27 +178,27 @@
     },
     "tooling_layout_ownership": {
       "status": "satisfied",
-      "evidence": {"targets": ["tool-list", "source-2-2-audit"], "files": ["config/tooling_layout.json", "scripts/run.py", "tests/test_tooling_layout.py"], "scenarios": [], "artifacts": []}
+      "evidence": {"targets": ["tool-list", "source-2-2-audit"], "files": ["config/tooling_layout.json", "scripts/run.py", "tests/validation/test_tooling_layout.py"], "scenarios": [], "artifacts": []}
     },
     "public_interface_smoke": {
       "status": "satisfied",
-      "evidence": {"targets": ["help", "help-check", "scaffold-check", "source-2-2-audit"], "files": ["config/make_help.json", "scripts/make_help.py", "scripts/scaffold_check.py", "tests/test_make_help.py", "tests/test_scaffold_check.py"], "scenarios": ["romless_disposable_checkout"], "artifacts": []}
+      "evidence": {"targets": ["help", "help-check", "scaffold-check", "source-2-2-audit"], "files": ["config/make_help.json", "scripts/validation/make_help.py", "scripts/validation/scaffold_check.py", "tests/validation/test_make_help.py", "tests/validation/test_scaffold_check.py"], "scenarios": ["romless_disposable_checkout"], "artifacts": []}
     },
     "workstation_ui_smokes": {
       "status": "satisfied",
-      "evidence": {"targets": ["ui-smoke-check", "ui-smoke"], "files": ["config/authoring/ui_smokes.json", "scripts/ui_smoke.py", "tests/test_ui_smoke.py", "docs/ui_smoke.md"], "scenarios": ["sound_studio_actions", "maze_studio_actions", "graphics_studio_actions", "screen_studio_actions"], "artifacts": []}
+      "evidence": {"targets": ["ui-smoke-check", "ui-smoke"], "files": ["config/authoring/ui_smokes.json", "scripts/authoring/ui_smoke.py", "tests/authoring/test_ui_smoke.py", "docs/ui_smoke.md"], "scenarios": ["sound_studio_actions", "maze_studio_actions", "graphics_studio_actions", "screen_studio_actions"], "artifacts": []}
     },
     "movie_serialization": {
       "status": "satisfied",
-      "evidence": {"targets": ["trace-runtime", "trace-scoring", "trace-evidence"], "files": ["scripts/workflow/movie_format.py", "tests/test_movie_format.py", "scenarios/runtime_trace.json", "scenarios/reconstruction_evidence.json"], "scenarios": ["runtime_trace_suite", "scoring_transactions", "reconstruction_evidence"], "artifacts": []}
+      "evidence": {"targets": ["trace-runtime", "trace-scoring", "trace-evidence"], "files": ["scripts/runtime/movie_format.py", "tests/runtime/test_movie_format.py", "scenarios/runtime_trace.json", "scenarios/reconstruction_evidence.json"], "scenarios": ["runtime_trace_suite", "scoring_transactions", "reconstruction_evidence"], "artifacts": []}
     },
     "documentation_corpus": {
       "status": "satisfied",
-      "evidence": {"targets": ["docs-audit", "lint"], "files": ["config/documentation_layout.json", "config/reconstruction/label_renames.json", "docs/documentation_architecture.md", "docs/expanded_rom_assets.md", "docs/provenance.md", "scripts/documentation_audit.py", "tests/test_documentation_audit.py"], "scenarios": [], "artifacts": []}
+      "evidence": {"targets": ["docs-audit", "lint"], "files": ["config/documentation_layout.json", "config/reconstruction/label_renames.json", "docs/documentation_architecture.md", "docs/expanded_rom_assets.md", "docs/provenance.md", "scripts/validation/documentation_audit.py", "tests/validation/test_documentation_audit.py"], "scenarios": [], "artifacts": []}
     },
     "release_integrity": {
-      "status": "partial",
-      "evidence": {"targets": ["source-2-2-functional-check", "source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "scripts/build_native.py", "scripts/lint_source.py", "scripts/source_2_2_audit.py", "scripts/workflow/prepare_rts_batch.py", "tests/test_build_revision.py", "tests/test_lint_source.py", "tests/test_source_2_2_audit.py"], "scenarios": [], "artifacts": []}
+      "status": "satisfied",
+      "evidence": {"targets": ["source-2-2-functional-check", "source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "scripts/build/build_native.py", "scripts/validation/lint_source.py", "scripts/validation/source_2_2_audit.py", "scripts/workflow/prepare_rts_batch.py", "tests/build/test_build_revision.py", "tests/validation/test_lint_source.py", "tests/validation/test_source_2_2_audit.py"], "scenarios": [], "artifacts": []}
     }
   },
   "layout": {
@@ -217,20 +216,20 @@
     "make_fragments": ["mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk"],
     "tests_root": "tests",
     "required_test_modules": [
-      "tests/test_build_dev.py",
-      "tests/test_build_revision.py",
-      "tests/test_clean_artifacts.py",
-      "tests/test_documentation_audit.py",
-      "tests/test_make_help.py",
-      "tests/test_movie_format.py",
-      "tests/test_relocation.py",
-      "tests/test_revision_matrix.py",
-      "tests/test_revision_smokes.py",
-      "tests/test_source_2_1_audit.py",
-      "tests/test_source_2_2_audit.py",
-      "tests/test_scaffold_check.py",
-      "tests/test_ui_smoke.py",
-      "tests/test_tooling_layout.py"
+      "tests/build/test_build_dev.py",
+      "tests/build/test_build_revision.py",
+      "tests/build/test_clean_artifacts.py",
+      "tests/validation/test_documentation_audit.py",
+      "tests/validation/test_make_help.py",
+      "tests/runtime/test_movie_format.py",
+      "tests/runtime/test_relocation.py",
+      "tests/build/test_revision_matrix.py",
+      "tests/runtime/test_revision_smokes.py",
+      "tests/validation/test_source_2_1_audit.py",
+      "tests/validation/test_source_2_2_audit.py",
+      "tests/validation/test_scaffold_check.py",
+      "tests/authoring/test_ui_smoke.py",
+      "tests/validation/test_tooling_layout.py"
     ]
   },
   "output_layout": {
@@ -238,23 +237,10 @@
     "authoring_workspace": "content/workspace",
     "generated_assets": "assets/generated",
     "clean_target": "clean",
-    "clean_script": "scripts/clean_artifacts.py",
+    "clean_script": "scripts/build/clean_artifacts.py",
     "legacy_local_paths_preserved": ["tmp", "workflow", "reference", "diffs", "reports", "hacks/local"]
   },
-  "layout_deviations": [
-    {
-      "rule_id": "scripts_package_layout",
-      "actual_path": "scripts/*.py and scripts/workflow/",
-      "reason": "Established direct-script paths are already public through Make, documentation, and downstream automation, so a minor-release move would create avoidable compatibility churn.",
-      "equivalent_control": "config/tooling_layout.json assigns every Python and Lua file exactly one responsibility, scripts/run.py provides a stable public dispatcher, and source-2-2-audit rejects unowned, stale, duplicate, or untested public entries."
-    },
-    {
-      "rule_id": "mirrored_tests_package_layout",
-      "actual_path": "tests/test_*.py",
-      "reason": "The established flat unittest discovery surface is stable and responsibility packages would require coordinated import-path churn without changing test behavior.",
-      "equivalent_control": "config/tooling_layout.json maps every responsibility group and public command to existing test owners, while tests/test_tooling_layout.py and source-2-2-audit verify all mappings and paths."
-    }
-  ],
+  "layout_deviations": [],
   "revision_contract": {
     "manifest": "config/revisions.json",
     "schema_format": 2,
@@ -340,16 +326,16 @@
     "docs/tooling_layout.md",
     "docs/ui_smoke.md",
     "docs/multi_revision_builds.md",
-    "scripts/build_dev.py",
-    "scripts/build_revision.py",
-    "scripts/documentation_audit.py",
-    "scripts/make_help.py",
-    "scripts/revision_profiles.py",
+    "scripts/build/build_dev.py",
+    "scripts/build/build_revision.py",
+    "scripts/validation/documentation_audit.py",
+    "scripts/validation/make_help.py",
+    "scripts/build/revision_profiles.py",
     "scripts/run.py",
-    "scripts/scaffold_check.py",
-    "scripts/source_2_1_audit.py",
-    "scripts/source_2_2_audit.py",
-    "scripts/ui_smoke.py"
+    "scripts/validation/scaffold_check.py",
+    "scripts/validation/source_2_1_audit.py",
+    "scripts/validation/source_2_2_audit.py",
+    "scripts/authoring/ui_smoke.py"
   ],
   "required_make_targets": [
     "verify", "verify-revision", "verify-revisions", "smoke-revisions",

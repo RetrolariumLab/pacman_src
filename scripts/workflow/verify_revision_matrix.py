@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Sequence
 
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "build"))
 
 from revision_profiles import Revision, load_manifest  # noqa: E402
 

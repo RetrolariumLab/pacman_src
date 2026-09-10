@@ -40,37 +40,37 @@
       "id": "resolved_reconstruction_unknowns",
       "kind": "evidence",
       "summary": "Close remaining unknowns and validate semantic runtime traces.",
-      "evidence": ["docs/unknowns.md", "scenarios/reconstruction_evidence.json", "tests/test_reconstruction_evidence.py"]
+      "evidence": ["docs/unknowns.md", "scenarios/reconstruction_evidence.json", "tests/runtime/test_reconstruction_evidence.py"]
     },
     {
       "id": "assembly_style_and_provenance",
       "kind": "tooling",
       "summary": "Enforce canonical ca65 style, label roles, contribution rules, and complete imported-label provenance.",
-      "evidence": ["docs/assembly_style.md", "config/reconstruction/label_renames.json", "tests/test_label_provenance.py"]
+      "evidence": ["docs/assembly_style.md", "config/reconstruction/label_renames.json", "tests/validation/test_label_provenance.py"]
     },
     {
       "id": "canonical_symbolic_relocation",
       "kind": "evidence",
       "summary": "Prove canonical symbolic relocation in the emulator.",
-      "evidence": ["scripts/workflow/relocation_test.py", "tests/test_relocation.py"]
+      "evidence": ["scripts/runtime/relocation_test.py", "tests/runtime/test_relocation.py"]
     },
     {
       "id": "normalized_repository_layout",
       "kind": "source",
       "summary": "Normalize source, linker, variant, and test boundaries while keeping stable compatibility aliases.",
-      "evidence": ["docs/source_layout.md", "tests/test_source_2_1_audit.py"]
+      "evidence": ["docs/source_layout.md", "tests/validation/test_source_2_1_audit.py"]
     },
     {
       "id": "manifest_driven_revision_builds",
       "kind": "tooling",
       "summary": "Make the revision manifest own build metadata and preserve one shared source entrypoint.",
-      "evidence": ["config/revisions.json", "scripts/build_revision.py", "tests/test_revision_matrix.py"]
+      "evidence": ["config/revisions.json", "scripts/build/build_revision.py", "tests/build/test_revision_matrix.py"]
     },
     {
       "id": "pinned_toolchain_and_profile_runtime",
       "kind": "tooling",
       "summary": "Pin every executable used by the gate and directly boot all seven official revision profiles.",
-      "evidence": ["config/toolchain.json", "scenarios/revision_smoke.json", "tests/test_build_dev.py", "tests/test_revision_smokes.py"]
+      "evidence": ["config/toolchain.json", "scenarios/revision_smoke.json", "tests/build/test_build_dev.py", "tests/runtime/test_revision_smokes.py"]
     }
   ],
   "requirements": {
@@ -115,22 +115,15 @@
     "linker_configs": ["config/linker/nrom128_prg_only.cfg", "config/linker/nrom256_expanded.cfg"],
     "tests_root": "tests",
     "required_test_modules": [
-      "tests/test_build_dev.py",
-      "tests/test_build_revision.py",
-      "tests/test_relocation.py",
-      "tests/test_revision_matrix.py",
-      "tests/test_revision_smokes.py",
-      "tests/test_source_2_1_audit.py"
+      "tests/build/test_build_dev.py",
+      "tests/build/test_build_revision.py",
+      "tests/runtime/test_relocation.py",
+      "tests/build/test_revision_matrix.py",
+      "tests/runtime/test_revision_smokes.py",
+      "tests/validation/test_source_2_1_audit.py"
     ]
   },
-  "layout_deviations": [
-    {
-      "rule_id": "scripts_package_layout",
-      "actual_path": "scripts/*.py and scripts/workflow/",
-      "reason": "Existing public paths are referenced by Make, tests, and documentation.",
-      "equivalent_control": "Exact paths remain covered by Make targets, Python syntax lint, import tests, and the release audit; migration is deferred to a coordinated compatible release."
-    }
-  ],
+  "layout_deviations": [],
   "revision_contract": {
     "manifest": "config/revisions.json",
     "schema_format": 2,
@@ -202,10 +195,10 @@
     "docs/source_reconstruction_2_1.md",
     "docs/source_layout.md",
     "docs/multi_revision_builds.md",
-    "scripts/build_dev.py",
-    "scripts/build_revision.py",
-    "scripts/revision_profiles.py",
-    "scripts/source_2_1_audit.py"
+    "scripts/build/build_dev.py",
+    "scripts/build/build_revision.py",
+    "scripts/build/revision_profiles.py",
+    "scripts/validation/source_2_1_audit.py"
   ],
   "required_make_targets": [
     "verify", "verify-revision", "verify-revisions", "smoke-revisions",

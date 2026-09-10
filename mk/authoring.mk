@@ -10,7 +10,7 @@ HACK_DEBUG ?= $(BUILD_DIR)/hack/pacman.dbg
 HACK_DEBUG_SUMMARY ?= $(BUILD_DIR)/hack/debug_symbols.json
 HACK_CHR ?= $(GENERATED_CHR)
 HACK_MANIFEST ?= $(PROJECT_DIR)config/hack_variants.json
-HACK_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_hack_variant.lua
+HACK_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/runtime/validate_hack_variant.lua
 HACK_RUNTIME_RESULT ?= $(BUILD_DIR)/runtime/hack_variant.txt
 
 EXPANDED_SOURCE ?= $(PROJECT_DIR)src/expanded/nrom256.asm
@@ -36,7 +36,7 @@ EXPANDED_PALETTE_JSON ?= $(PROJECT_DIR)content/workspace/palettes.json
 EXPANDED_PALETTE_BIN ?= $(EXPANDED_DIR)/assets/palettes.bin
 EXPANDED_SCREEN_JSON ?= $(PROJECT_DIR)content/workspace/screens.json
 EXPANDED_SCREEN_BIN ?= $(EXPANDED_DIR)/assets/screens.bin
-EXPANDED_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_expanded_rom.lua
+EXPANDED_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/runtime/validate_expanded_rom.lua
 EXPANDED_RUNTIME_RESULT ?= $(BUILD_DIR)/runtime/expanded_rom.txt
 
 EDITED_CHR ?= $(PROJECT_DIR)content/workspace/pacman.chr
@@ -48,7 +48,7 @@ MIDI_CHANNEL ?= 0
 MIDI_OUTPUT ?= $(PROJECT_DIR)content/workspace/sound_streams.midi.json
 
 build-hack: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_native.py" \
 		--source "$(HACK_SOURCE)" \
 		--config "$(NATIVE_CFG)" \
 		--original-rom "$(ORIGINAL_ROM)" \
@@ -62,14 +62,14 @@ build-hack: _require-assets
 		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
 
 verify-hack: build-hack
-	$(PYTHON) "$(PROJECT_DIR)scripts/verify_hack.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/verify_hack.py" \
 		--original "$(ORIGINAL_ROM)" \
 		--candidate "$(HACK_ROM)" \
 		--manifest "$(HACK_MANIFEST)" \
 		--variant default
 
 symbols-hack: verify-hack
-	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/debug_symbols.py" \
 		--debug "$(HACK_DEBUG)" \
 		--map "$(HACK_MAP)" \
 		--labels "$(HACK_LABELS)" \
@@ -88,7 +88,7 @@ validate-hack: build-dev symbols-hack _canonical-movie
 		-turbo 1 \
 		-nothrottle 1 \
 		"$(HACK_ROM)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_hack_runtime.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_hack_runtime.py" \
 		--result "$(HACK_RUNTIME_RESULT)" \
 		--expected-stage 5
 
@@ -96,7 +96,7 @@ run-hack: build-hack build-dev
 	"$(FCEUX_EXE)" "$(HACK_ROM)"
 
 init-expanded-assets: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/prepare_expanded_assets.py" init \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/prepare_expanded_assets.py" init \
 		--maze-source "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
 		--maze-json "$(EXPANDED_MAZE_JSON)" \
 		--original-rom "$(ORIGINAL_ROM)" \
@@ -110,7 +110,7 @@ init-expanded-assets: _require-assets
 		--demo-frightened-duration 14
 
 expanded-assets:
-	$(PYTHON) "$(PROJECT_DIR)scripts/prepare_expanded_assets.py" encode \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/prepare_expanded_assets.py" encode \
 		--maze-source "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
 		--maze-json "$(EXPANDED_MAZE_JSON)" \
 		--maze-output "$(EXPANDED_MAZE_BIN)" \
@@ -130,7 +130,7 @@ expanded-assets:
 		--screen-output "$(EXPANDED_SCREEN_BIN)"
 
 build-expanded: _require-assets expanded-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/build_expanded.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_expanded.py" \
 		--source "$(EXPANDED_SOURCE)" \
 		--config "$(EXPANDED_CFG)" \
 		--original-rom "$(ORIGINAL_ROM)" \
@@ -144,7 +144,7 @@ build-expanded: _require-assets expanded-assets
 		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
 
 verify-expanded: build-expanded
-	$(PYTHON) "$(PROJECT_DIR)scripts/verify_expanded.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/verify_expanded.py" \
 		--original "$(ORIGINAL_ROM)" \
 		--candidate "$(EXPANDED_ROM)" \
 		--maze-original "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
@@ -159,7 +159,7 @@ verify-expanded: build-expanded
 		--layout "$(PROJECT_DIR)config/expanded_layout.json"
 
 symbols-expanded: verify-expanded
-	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/debug_symbols.py" \
 		--debug "$(EXPANDED_DEBUG)" \
 		--map "$(EXPANDED_MAP)" \
 		--labels "$(EXPANDED_LABELS)" \
@@ -178,7 +178,7 @@ validate-expanded: build-dev symbols-expanded _canonical-movie
 		-turbo 1 \
 		-nothrottle 1 \
 		"$(EXPANDED_ROM)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_expanded_runtime.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_expanded_runtime.py" \
 		--result "$(EXPANDED_RUNTIME_RESULT)" \
 		--stage-json "$(EXPANDED_STAGE_JSON)" \
 		--sound-json "$(EXPANDED_SOUND_JSON)" \
@@ -189,19 +189,19 @@ run-expanded: build-expanded build-dev
 	"$(FCEUX_EXE)" "$(EXPANDED_ROM)"
 
 sound-studio:
-	$(PYTHON) "$(PROJECT_DIR)scripts/sound_studio.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/sound_studio.py" \
 		--sound-json "$(EXPANDED_SOUND_JSON)" \
 		--asset-manifest "$(ASSET_MANIFEST)" \
 		--asset-dir "$(GENERATED_ASSET_DIR)"
 
 maze-studio:
-	$(PYTHON) "$(PROJECT_DIR)scripts/maze_studio.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/maze_studio.py" \
 		--maze-json "$(EXPANDED_MAZE_JSON)" \
 		--original-rle "$(GENERATED_ASSET_DIR)/maze/maze.rle" \
 		--chr "$(GENERATED_CHR)"
 
 graphics-studio:
-	$(PYTHON) "$(PROJECT_DIR)scripts/graphics_studio.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/graphics_studio.py" \
 		--chr "$(GENERATED_ASSET_DIR)/chr/pacman.chr" \
 		--output "$(EDITED_CHR)" \
 		--actors "$(EXPANDED_ACTOR_JSON)" \
@@ -210,7 +210,7 @@ graphics-studio:
 		--project "$(PROJECT_DIR)"
 
 screen-studio:
-	$(PYTHON) "$(PROJECT_DIR)scripts/screen_studio.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/screen_studio.py" \
 		--rom "$(ORIGINAL_ROM)" \
 		--chr "$(GENERATED_CHR)" \
 		--screens "$(EXPANDED_SCREEN_JSON)" \
@@ -218,19 +218,19 @@ screen-studio:
 		--project "$(PROJECT_DIR)"
 
 describe-sound:
-	$(PYTHON) "$(PROJECT_DIR)scripts/sound_authoring.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/sound_authoring.py" \
 		--input "$(EXPANDED_SOUND_JSON)" \
 		--slot "$(SOUND_SLOT)"
 
 preview-sound:
-	$(PYTHON) "$(PROJECT_DIR)scripts/render_sound_preview.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/render_sound_preview.py" \
 		--sound-json "$(EXPANDED_SOUND_JSON)" \
 		--slot "$(SOUND_SLOT)" \
 		--output "$(SOUND_PREVIEW)"
 
 import-midi:
 	@$(PYTHON) -c "import sys; sys.exit(0 if r'$(MIDI_FILE)' else 'Set MIDI_FILE=path/to/file.mid')"
-	$(PYTHON) "$(PROJECT_DIR)scripts/midi_to_sound.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/midi_to_sound.py" \
 		--midi "$(MIDI_FILE)" \
 		--sound-json "$(EXPANDED_SOUND_JSON)" \
 		--output "$(MIDI_OUTPUT)" \

@@ -1,6 +1,6 @@
 # Source Reconstruction 2.2
 
-Source Reconstruction 2.2 is a development compatible-minor candidate over the
+Source Reconstruction 2.2 is a tag-ready compatible-minor candidate over the
 published Source Reconstruction 2.1 tag. It modernizes the repository without
 changing the canonical Japan V1.0 image or weakening any accepted 2.1
 guarantee.
@@ -12,16 +12,16 @@ commit on a dedicated modernization branch.
 
 ## Current status
 
-The release status is `development`. The project manifest and canonical
+The release status is `tag-ready`. The project manifest and canonical
 source-layout registry are present, every official revision publishes explicit
 input/layout/output/capability contracts, and the accepted 2.1 guarantees have
 a reusable predecessor gate. Generated results now stay under `build/`, private
 editor documents stay under `content/workspace/`, and `make clean` is confined
 to the canonical build root. The root Makefile is now the stable interface over
-bounded authoring, runtime, and validation fragments. Tool package
-paths are now frozen behind a stable dispatcher and an exhaustive responsibility
-and test-owner registry; the non-package layout is a checked compatibility
-deviation. Real-window interaction smokes now cover all four supported Studios
+bounded authoring, runtime, and validation fragments. Tools now use physical
+authoring, build, runtime, validation, and workflow directories, with a
+mirrored test tree, stable dispatcher, and exhaustive responsibility and
+test-owner registry. Real-window interaction smokes cover all four supported Studios
 without modifying private workspace files. The project audit now checks the
 complete Git range, exact delta-to-path mappings, non-empty commits, and
 English-only public text. Text hygiene is independent of checkout newline
@@ -33,9 +33,10 @@ the sole label-rename registry lives under reconstruction configuration. The
 expanded-ROM decision is integrated with its live architecture and workflow,
 while source provenance has one concise top-level document. Every native build
 now authenticates the manifest-selected ca65 and ld65 binaries before assembly
-or linking. The complete `make source-2-2-check` gate must validate the corrected
-candidate from a clean build root. The candidate remains untagged and
-unpublished pending owner review.
+or linking. The corrected `make source-2-2-functional-check` aggregate passed
+before the final metadata transition. The complete `make source-2-2-check` gate
+must validate this exact candidate from a clean build root. The candidate
+remains untagged and unpublished pending owner review.
 
 ## Accepted baseline
 
