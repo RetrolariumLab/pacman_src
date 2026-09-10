@@ -31,8 +31,11 @@ canonical CRLF serialization even when the Git blob or checkout uses LF. The
 reviewed documentation inventory covers every current project document, and
 the sole label-rename registry lives under reconstruction configuration. The
 expanded-ROM decision is integrated with its live architecture and workflow,
-while source provenance has one concise top-level document. The candidate
-remains untagged and unpublished pending owner review.
+while source provenance has one concise top-level document. The corrected
+`make source-2-2-functional-check` aggregate passed before the final metadata
+transition. The complete `make source-2-2-check` gate must validate this exact
+candidate from a clean build root. The candidate remains untagged and
+unpublished pending owner review.
 
 ## Accepted baseline
 
