@@ -6,7 +6,7 @@ checks do not silently grow into emulator runs.
 ```text
 make format               # normalize ca65 assembly source style, then lint
 make lint                 # assembly style, tracked text, naming, docs, Python syntax
-make docs-audit           # documentation inventory, links, sizes, and vendored boundary
+make docs-audit           # documentation inventory, links, sizes, and reader journeys
 make test                 # all focused Python workflow unit tests
 make verify               # authoritative byte-identical ROM gate
 make roundtrip-formats    # six binary format decode/encode checks
@@ -48,13 +48,10 @@ in one run. Together these layers enforce:
 - direct `JSR`/`sub_` consistency;
 - symbolic NES hardware operands;
 - backticked semantic symbols and relative links in project-authored docs;
-- complete documentation inventory, reader journeys, size exceptions, filename clusters, and attributed vendored snapshots;
+- complete documentation inventory, reader journeys, size exceptions, and filename clusters;
 - syntax parsing of every tracked Python file.
 
-The imported `docs/nesdev/` reference snapshot is checked as UTF-8 text and as
-one attributed vendored boundary. It is excluded from project-authored size and
-filename-cluster rules because it retains primary-source context. README and all
-other `docs/*.md` files remain in the reviewed project corpus described by
+Every `docs/*.md` file belongs to the reviewed project corpus described by
 `documentation_architecture.md` and `config/documentation_layout.json`.
 
 ## Unit tests

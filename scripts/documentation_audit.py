@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the task-oriented documentation corpus and vendored boundary."""
+"""Validate the task-oriented documentation corpus."""
 
 from __future__ import annotations
 
@@ -12,9 +12,6 @@ from urllib.parse import unquote
 
 
 LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
-NESDEV_SOURCE = "Source: https://www.nesdev.org/wiki/"
-
-
 def topic_prefix(path: str) -> str:
     """Return a stable prefix used to flag flat filename clusters."""
     parts = PurePosixPath(path).stem.split("_")
@@ -56,26 +53,16 @@ def audit_documentation(project_root: Path, layout: object) -> list[str]:
     errors: list[str] = []
     docs_root = layout.get("docs_root")
     project_documents = layout.get("project_documents")
-    boundary = layout.get("vendored_boundary")
     if not isinstance(docs_root, str) or not isinstance(project_documents, list):
         return ["documentation layout lacks its root or project inventory"]
-    if not isinstance(boundary, dict) or not isinstance(boundary.get("documents"), list):
-        return ["documentation layout lacks a vendored boundary inventory"]
 
     project_set = {item for item in project_documents if isinstance(item, str)}
-    vendored_set = {item for item in boundary["documents"] if isinstance(item, str)}
     if len(project_set) != len(project_documents):
         errors.append("project documentation inventory contains duplicates or invalid paths")
-    if len(vendored_set) != len(boundary["documents"]):
-        errors.append("vendored documentation inventory contains duplicates or invalid paths")
-    overlap = project_set & vendored_set
-    if overlap:
-        errors.append("documentation inventories overlap: " + ", ".join(sorted(overlap)))
     actual = markdown_inventory(project_root, docs_root)
-    declared = project_set | vendored_set
-    if actual != declared:
-        missing = declared - actual
-        unowned = actual - declared
+    if actual != project_set:
+        missing = project_set - actual
+        unowned = actual - project_set
         if missing:
             errors.append("declared documentation is missing: " + ", ".join(sorted(missing)))
         if unowned:
@@ -85,19 +72,6 @@ def audit_documentation(project_root: Path, layout: object) -> list[str]:
         value = layout.get(key)
         if value not in project_set:
             errors.append(f"documentation {key} is not a project document")
-    policy = boundary.get("policy")
-    root = boundary.get("root")
-    if policy not in vendored_set:
-        errors.append("vendored boundary policy is not inventoried")
-    if not isinstance(root, str) or any(
-        not path.startswith(root.rstrip("/") + "/") for path in vendored_set
-    ):
-        errors.append("vendored documents escape their declared boundary")
-    for relative in sorted(vendored_set - {policy}):
-        path = project_root / relative
-        if path.is_file() and NESDEV_SOURCE not in path.read_text(encoding="utf-8"):
-            errors.append(f"vendored NESdev snapshot lacks source attribution: {relative}")
-
     size_policy = layout.get("size_policy")
     if not isinstance(size_policy, dict):
         errors.append("documentation layout lacks a size policy")
@@ -162,8 +136,7 @@ def audit_documentation(project_root: Path, layout: object) -> list[str]:
                 if not isinstance(relative, str) or not (project_root / relative).is_file():
                     errors.append(f"reader journey path is missing: {journey['id']} -> {relative}")
 
-    link_scope = project_set | ({policy} if isinstance(policy, str) else set())
-    errors.extend(local_link_errors(project_root, link_scope))
+    errors.extend(local_link_errors(project_root, project_set))
     return errors
 
 
@@ -181,7 +154,7 @@ def main(argv: list[str] | None = None) -> int:
         for error in errors:
             print(f"[FAIL] {error}")
         return 1
-    print("[OK] Documentation inventory, reader journeys, links, sizes, and vendored boundary are consistent.")
+    print("[OK] Documentation inventory, reader journeys, links, sizes, and filename clusters are consistent.")
     return 0
 
 

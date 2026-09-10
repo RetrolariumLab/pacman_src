@@ -13,7 +13,7 @@ policy, source architecture, runtime behavior, authoring, and provenance.
   `assembly_style.md`, and the relevant subsystem document before changing ASM.
 - An authoring-tool contributor starts with `data_formats.md`, follows the
   format-specific authoring document, and checks `expanded_rom_assets.md`.
-- A reviewer follows `licensing.md`, `provenance/README.md`, `unknowns.md`, and
+- A reviewer follows `licensing.md`, `provenance.md`, `unknowns.md`, and
   the release documents to distinguish imported facts from project claims.
 
 These journeys and the exact Markdown inventory are checked from
@@ -33,6 +33,13 @@ documents also remain separate because each is the stable record for a specific
 accepted or candidate boundary. Their shared filename prefix is intentional and
 is declared as the only project-document prefix exception.
 
+The NROM-256 decision is part of `expanded_rom_assets.md`, alongside the build
+layout and verification consequences it governs. Keeping that decision with
+the live expanded-ROM workflow prevents a short architectural note from
+drifting away from its implementation contract. Imported-label origin and
+rename policy remain concise in the top-level `provenance.md`; the JSON registry
+under `config/reconstruction/` is the sole machine-readable mapping.
+
 `roadmap.md` is retained as a chronological planning and completed-milestone
 ledger. It exceeds the normal document-size recommendation because splitting it
 would obscure milestone ordering; current release instructions remain in the
@@ -40,15 +47,6 @@ short release and validation documents. The C rewrite postmortem remains a
 standalone historical design analysis with a different audience from current
 source architecture.
 
-## Vendored Reference Boundary
-
-`nesdev/` is reviewed as one attributed reference boundary. Its large topic
-snapshots preserve primary-source context and are excluded from project-authored
-size and filename-cluster rules. They do not define project behavior or release
-status. `nesdev/README.md` records the attribution, refresh, licensing, and
-ownership policy, while each content file retains its source URL.
-
-The review found one misleading filename: the FDS format snapshot was stored as
-`nesdev/docs.md`. It is now `nesdev/fds.md`, matching its actual subject. No
-short, same-prefix project-document clusters required consolidation; all other
-project documents have a distinct task, subsystem, or release lifecycle.
+No short, same-prefix project-document clusters require consolidation. Every
+current document has a distinct task, subsystem, or release lifecycle, and the
+inventory contains no vendored documentation boundary.

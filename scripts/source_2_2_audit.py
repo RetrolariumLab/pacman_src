@@ -20,7 +20,7 @@ from workflow.run_revision_smokes import validate_scenarios
 EXPECTED_RELEASE_LINE = "2.x"
 EXPECTED_RELEASE = {"name": "Source Reconstruction 2.2", "version": "2.2"}
 EXPECTED_TAG = "source-reconstruction-2.2"
-EXPECTED_RELEASE_SUBJECT = "Record the reviewed modernization candidate"
+EXPECTED_RELEASE_SUBJECT = "Record the final documentation review correction"
 CODEX_TRAILER = "Co-Authored-By: Codex <noreply@openai.com>"
 PUBLIC_TEXT_SUFFIXES = {
     ".asm", ".cfg", ".inc", ".json", ".lua", ".md", ".mk", ".py", ".txt",
@@ -30,7 +30,6 @@ PUBLIC_TEXT_NAMES = {".gitignore", "Makefile"}
 NON_ENGLISH_SCRIPT = re.compile(
     r"[\u0370-\u052f\u0590-\u08ff\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]"
 )
-CYRILLIC_SCRIPT = re.compile(r"[\u0400-\u052f]")
 EXPECTED_PREDECESSOR = {
     "tag": "source-reconstruction-2.1",
     "commit": "959bee80064aaa692e456cf710b527cc31bfba81",
@@ -276,14 +275,9 @@ def validate_public_text_language(project_root: Path) -> list[str]:
         except (OSError, UnicodeDecodeError) as error:
             errors.append(f"cannot read tracked public text {value}: {error}")
             continue
-        imported_reference = relative.parts[:2] == ("docs", "nesdev")
-        imported_source_is_explained = (
-            imported_reference and "Source: https://www.nesdev.org/wiki/" in "\n".join(lines)
-        )
         hits = [
             str(index) for index, line in enumerate(lines, 1)
             if NON_ENGLISH_SCRIPT.search(line)
-            and (CYRILLIC_SCRIPT.search(line) or not imported_source_is_explained)
         ]
         if hits:
             errors.append(

@@ -28,6 +28,24 @@ bytes remain in the fixed bank for layout stability. The expanded variant
 duplicates them at `$8000` for stage 1 and selects the editable maze at `$82D6`
 from stage 2 onward.
 
+## Architecture decision
+
+The preservation entrypoint fills the original NROM-128 PRG and must remain
+byte-identical. Editable mazes, stage data, sound, graphics, palettes, and
+screens need additional capacity, so the project isolates them in the separate
+`src/expanded/nrom256.asm` entrypoint and
+`config/linker/nrom256_expanded.cfg` layout. Generated JSON-derived assets live
+in the added PRG bank; the fixed bank continues to use shared game source and a
+manifest-reviewed operand allowlist. Output, symbols, verification, and FCEUX
+runtime evidence remain separate from the default build.
+
+Post-link patching was rejected because it would hide executable changes from
+source and symbols. Enlarging the preservation build would break its container
+identity, while opaque editable payloads would prevent reviewable codecs,
+capacity checks, and round trips. The chosen boundary preserves the canonical
+ROM and makes the expanded variant explicit. It does not imply expanded layouts
+or profile-aware authoring for other official profiles.
+
 ## Editable asset workflow
 
 Initialize the ignored local JSON files exactly once:

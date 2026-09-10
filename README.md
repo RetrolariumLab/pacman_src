@@ -11,8 +11,6 @@ catch behavioural regressions frame by frame.
 
 **Base `bank_FF.asm` reference**: [cyneprepou4uk/NES-Games-Disassembly - Pac-Man](https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man)
 
-**Local docs source**: [Nesdev Wiki](https://www.nesdev.org/wiki/Nesdev_Wiki)
-
 ## Status
 
 Source Reconstruction 2.1 is the current release contract. It retains the 1.0
@@ -27,7 +25,7 @@ predecessor tags are `source-reconstruction-1.0` and
 Source Reconstruction 2.2 is the tag-ready compatible-minor candidate. Its project
 manifest preserves the published 2.1 tag, records the modernization delta,
 enforces newline-format-independent text and FM2 runtime inputs, records the
-reviewed documentation and vendored-reference boundary, and exposes
+reviewed task-oriented documentation corpus, and exposes
 `make source-2-2-functional-check` for the accepted predecessor plus the current
 delta. The complete pre-tag gate is `make source-2-2-check`; publication and
 tag creation remain owner actions.
@@ -267,7 +265,6 @@ checkout or the original ROM.
 ## Credits
 
 - `bank_FF.asm` base reference: [cyneprepou4uk/NES-Games-Disassembly - Pac-Man](https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man)
-- NES hardware documentation mirrored locally from [Nesdev Wiki](https://www.nesdev.org/wiki/Nesdev_Wiki)
 
 ## License
 

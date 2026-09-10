@@ -180,12 +180,12 @@
     {"component": "project_tools_and_documentation", "category": "project_authored", "origin": "pacman_src contributors", "license_id_or_status": "license_not_granted", "redistribution": "requires permission", "notes": "No repository-wide open-source license grant is present."},
     {"component": "reconstructed_game_source", "category": "reconstructed_game_source", "origin": "reverse engineering plus the attributed imported disassembly base", "license_id_or_status": "license_not_granted", "redistribution": "requires rights review", "notes": "Reconstruction does not grant rights in original game code or data."},
     {"component": "bundled_cc65_tools", "category": "bundled_external_tools", "origin": "https://github.com/cc65/cc65 commit 0fca835", "license_id_or_status": "unknown", "redistribution": "requires upstream license review", "notes": "Binary identity and upstream provenance are pinned independently of license status."},
-    {"component": "imported_source_and_materials", "category": "imported_materials", "origin": "docs/provenance/README.md and docs/nesdev/", "license_id_or_status": "unknown", "redistribution": "requires source-specific review", "notes": "Origin is recorded separately from current semantic naming."},
+    {"component": "imported_source_and_materials", "category": "imported_materials", "origin": "docs/provenance.md", "license_id_or_status": "unknown", "redistribution": "requires source-specific review", "notes": "Origin is recorded separately from current semantic naming."},
     {"component": "private_rom_and_extracted_inputs", "category": "private_user_inputs", "origin": "user-supplied original game images", "license_id_or_status": "private_user_supplied", "redistribution": "not distributed", "notes": "Only hashes, metadata, and extraction recipes are tracked."},
     {"component": "fceux_automation", "category": "external_unbundled_tool", "origin": "https://github.com/oranguthang/fceux_automation.git commit ec507d86c57acd8979547bc35e9627fb199fac9a", "license_id_or_status": "external_unbundled", "redistribution": "not distributed by this repository", "notes": "The external checkout and resulting executable are locally verified."}
   ],
   "provenance": {
-    "references": ["docs/provenance/README.md", "config/reconstruction/label_renames.json", "docs/nesdev/README.md", "docs/nesdev/fds.md", "config/toolchain.json"],
+    "references": ["docs/provenance.md", "config/reconstruction/label_renames.json", "config/toolchain.json"],
     "private_inputs_tracked": false
   },
   "aggregate_gates": {
@@ -194,7 +194,8 @@
   },
   "required_files": [
     "docs/index.md",
-    "docs/adr/0001-expanded-nrom256.md",
+    "docs/expanded_rom_assets.md",
+    "docs/provenance.md",
     "docs/licensing.md",
     "docs/source_reconstruction_1_0.md",
     "docs/source_reconstruction_2_0.md",
