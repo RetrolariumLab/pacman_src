@@ -28,10 +28,11 @@ English-only public text. Text hygiene is independent of checkout newline
 format, and regression coverage rejects a blank terminal line represented with
 CRLF as well as LF. Runtime movie hashing and FCEUX playback now use one
 canonical CRLF serialization even when the Git blob or checkout uses LF. The
-reviewed documentation inventory covers every project document and the
-attributed NESdev snapshot boundary, and the sole label-rename registry lives
-under reconstruction configuration. The candidate remains untagged and
-unpublished pending owner review.
+reviewed documentation inventory covers every current project document, and
+the sole label-rename registry lives under reconstruction configuration. The
+expanded-ROM decision is integrated with its live architecture and workflow,
+while source provenance has one concise top-level document. The candidate
+remains untagged and unpublished pending owner review.
 
 ## Accepted baseline
 
@@ -60,7 +61,7 @@ Release completion has two stateful steps:
 
 Cross-profile relocation, a sibling engine, and a new platform/container ABI
 remain excluded. The existing NROM-256 architecture predates this minor line
-and remains isolated by `docs/adr/0001-expanded-nrom256.md`.
+and remains isolated as documented in `docs/expanded_rom_assets.md`.
 
 ## Gate names
 

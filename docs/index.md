@@ -7,7 +7,6 @@
 - [source_reconstruction_2_1.md](./source_reconstruction_2_1.md): compatible delta and aggregate acceptance gates.
 - [source_reconstruction_2_2.md](./source_reconstruction_2_2.md): compatible-minor project contract and modernization boundary.
 - [documentation_architecture.md](./documentation_architecture.md): reviewed reader journeys, corpus ownership, and consolidation decisions.
-- [nesdev/README.md](./nesdev/README.md): boundary and refresh policy for attributed primary-source snapshots.
 - [roadmap.md](./roadmap.md): project direction, evidence rules, and completion criteria.
 - [validation.md](./validation.md): lint, unit, identity, debugger, runtime, and release layers.
 - [licensing.md](./licensing.md): distribution boundary, license status, and third-party provenance.
@@ -23,7 +22,7 @@
 - [naming.md](./naming.md): semantic symbol names and control-flow prefixes.
 - [assembly_style.md](./assembly_style.md): mechanically enforced ca65 layout, case, labels, and comments.
 - [tooling_layout.md](./tooling_layout.md): stable dispatcher, responsibility ownership, test owners, and recorded layout deviations.
-- [provenance/README.md](./provenance/README.md): imported-label provenance policy and link to the canonical rename registry.
+- [provenance.md](./provenance.md): imported-label provenance policy and link to the canonical rename registry.
 - [unknowns.md](./unknowns.md): resolved research record and canonical home for future findings.
 - [relocation_testing.md](./relocation_testing.md): progressively shifted ROM and semantic FCEUX proof.
 
@@ -47,8 +46,7 @@
 - [multi_revision_builds.md](./multi_revision_builds.md): seven official profiles and shared-source workflow.
 - [goodnes_variant_notes.md](./goodnes_variant_notes.md): classification of overdumps, hacks, and derivatives.
 - [rom_hack_variants.md](./rom_hack_variants.md): isolated optional builds and declared differences.
-- [expanded_rom_assets.md](./expanded_rom_assets.md): NROM-256 editable-asset pipeline.
-- [adr/0001-expanded-nrom256.md](./adr/0001-expanded-nrom256.md): rationale and isolation boundary for expansion.
+- [expanded_rom_assets.md](./expanded_rom_assets.md): NROM-256 architecture decision, isolation boundary, and editable-asset pipeline.
 - [data_formats.md](./data_formats.md): six decoded formats and exact round trips.
 - [assets.md](./assets.md): policy and reproducible extraction of opaque assets.
 - [sound_authoring.md](./sound_authoring.md): variable-length streams, MIDI import, and WAV preview.

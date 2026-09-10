@@ -363,7 +363,7 @@ def check_documentation_references(
         path: text
         for path, text in text_by_path.items()
         if path in {Path("README.md"), Path("CONTRIBUTING.md")}
-        or (path.parts[:1] == ("docs",) and path.parts[:2] != ("docs", "nesdev"))
+        or path.parts[:1] == ("docs",)
     }
     for path, text in documentation.items():
         for line_number, line in enumerate(text.splitlines(), start=1):

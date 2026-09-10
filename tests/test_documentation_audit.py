@@ -20,14 +20,9 @@ class DocumentationAuditTests(unittest.TestCase):
         )
 
     def fixture(self, root: Path) -> dict[str, object]:
-        (root / "docs/nesdev").mkdir(parents=True)
+        (root / "docs").mkdir(parents=True)
         (root / "docs/index.md").write_text("# Index\n", encoding="utf-8")
         (root / "docs/review.md").write_text("# Review\n", encoding="utf-8")
-        (root / "docs/nesdev/README.md").write_text("# Boundary\n", encoding="utf-8")
-        (root / "docs/nesdev/fds.md").write_text(
-            "# FDS\n\nSource: https://www.nesdev.org/wiki/FDS_disk_format\n",
-            encoding="utf-8",
-        )
         return {
             "schema_version": 1,
             "docs_root": "docs",
@@ -37,11 +32,6 @@ class DocumentationAuditTests(unittest.TestCase):
             "reader_journeys": [{"id": "read", "paths": ["docs/index.md"]}],
             "size_policy": {"recommended_max_lines": 20, "exceptions": []},
             "prefix_policy": {"minimum_cluster_size": 3, "exceptions": []},
-            "vendored_boundary": {
-                "root": "docs/nesdev",
-                "policy": "docs/nesdev/README.md",
-                "documents": ["docs/nesdev/README.md", "docs/nesdev/fds.md"],
-            },
         }
 
     def test_project_documentation_corpus_passes_review_contract(self) -> None:
@@ -59,13 +49,14 @@ class DocumentationAuditTests(unittest.TestCase):
             errors = audit_documentation(root, layout)
             self.assertTrue(any("not inventoried" in error for error in errors))
 
-    def test_vendored_snapshot_without_source_is_rejected(self) -> None:
+    def test_nested_document_must_be_inventoried(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             layout = self.fixture(root)
-            (root / "docs/nesdev/fds.md").write_text("# FDS\n", encoding="utf-8")
+            (root / "docs/reference").mkdir()
+            (root / "docs/reference/note.md").write_text("# Note\n", encoding="utf-8")
             errors = audit_documentation(root, layout)
-            self.assertTrue(any("lacks source attribution" in error for error in errors))
+            self.assertTrue(any("not inventoried" in error for error in errors))
 
     def test_unreviewed_filename_cluster_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -5,7 +5,7 @@
   "release_kind": "compatible_minor",
   "tag": "source-reconstruction-2.2",
   "publish_remote": "origin",
-  "status": "tag-ready",
+  "status": "development",
   "predecessor": {
     "tag": "source-reconstruction-2.1",
     "commit": "959bee80064aaa692e456cf710b527cc31bfba81",
@@ -44,7 +44,7 @@
       "id": "self_contained_release_metadata",
       "kind": "documentation",
       "summary": "Keep release metadata limited to public project facts and enforce English-only tracked project text.",
-      "evidence": ["config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/nesdev/README.md", "docs/nesdev/fds.md", "docs/nesdev/apu.md", "docs/nesdev/hardware.md", "docs/nesdev/mappers.md", "docs/nesdev/misc.md", "docs/source_reconstruction_2_2.md", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]
+      "evidence": ["config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/provenance.md", "docs/source_reconstruction_2_2.md", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]
     },
     {
       "id": "machine_readable_source_layout",
@@ -97,8 +97,8 @@
     {
       "id": "reviewed_documentation_corpus",
       "kind": "documentation",
-      "summary": "Inventory the complete task-oriented documentation corpus, enforce reader journeys and size or prefix review, and isolate attributed NESdev snapshots behind an explicit vendored boundary.",
-      "evidence": ["config/documentation_layout.json", "config/reconstruction/label_renames.json", "docs/documentation_architecture.md", "docs/index.md", "docs/nesdev/README.md", "scripts/documentation_audit.py", "scripts/source_2_2_audit.py", "tests/test_documentation_audit.py", "tests/test_label_provenance.py"]
+      "summary": "Inventory the complete task-oriented documentation corpus, enforce reader journeys and size or prefix review, consolidate the expanded-ROM decision with its live contract, and keep source provenance concise and top-level.",
+      "evidence": ["config/documentation_layout.json", "config/reconstruction/label_renames.json", "docs/documentation_architecture.md", "docs/expanded_rom_assets.md", "docs/index.md", "docs/provenance.md", "scripts/documentation_audit.py", "scripts/source_2_2_audit.py", "tests/test_documentation_audit.py", "tests/test_label_provenance.py"]
     },
     {
       "id": "release_integrity",
@@ -109,7 +109,7 @@
   ],
   "history": {
     "range_start": "959bee80064aaa692e456cf710b527cc31bfba81",
-    "commit_count": 12,
+    "commit_count": 13,
     "commits": [
       {"subject": "Establish the Source Reconstruction 2.2 project contract", "delta_ids": ["self_contained_release_metadata", "machine_readable_source_layout"], "paths": ["Makefile", "config/reconstruction/source_layout.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/nesdev/apu.md", "docs/nesdev/hardware.md", "docs/nesdev/mappers.md", "docs/nesdev/misc.md", "docs/source_reconstruction_2_2.md", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]},
       {"subject": "Define machine-readable revision contracts", "delta_ids": ["machine_readable_profile_contracts"], "paths": ["Makefile", "config/revisions.json", "config/source_reconstruction_2_2.json", "docs/multi_revision_builds.md", "docs/source_reconstruction_2_2.md", "scripts/build_revision.py", "scripts/revision_profiles.py", "scripts/source_2_2_audit.py", "tests/test_build_revision.py", "tests/test_revision_matrix.py"]},
@@ -122,7 +122,8 @@
       {"subject": "Make EOF validation newline-format independent", "delta_ids": ["release_integrity"], "paths": ["scripts/lint_source.py", "scripts/workflow/prepare_rts_batch.py", "tests/test_lint_source.py"]},
       {"subject": "Record the modernization candidate metadata", "delta_ids": ["release_integrity"], "paths": ["README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]},
       {"subject": "Resolve runtime and documentation review findings", "delta_ids": ["canonical_movie_serialization", "reviewed_documentation_corpus", "release_integrity"], "paths": ["CONTRIBUTING.md", "Makefile", "README.md", "config/documentation_layout.json", "config/make_help.json", "config/reconstruction/label_renames.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "config/tooling_layout.json", "docs/assembly_style.md", "docs/documentation_architecture.md", "docs/index.md", "docs/naming.md", "docs/nesdev/README.md", "docs/nesdev/docs.md", "docs/nesdev/fds.md", "docs/provenance/README.md", "docs/provenance/label_renames.json", "docs/roadmap.md", "docs/runtime_trace_scenarios.md", "docs/validation.md", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "scripts/documentation_audit.py", "scripts/lint_source.py", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "scripts/workflow/movie_format.py", "scripts/workflow/run_reconstruction_evidence.py", "scripts/workflow/run_runtime_traces.py", "tests/test_documentation_audit.py", "tests/test_label_provenance.py", "tests/test_movie_format.py"]},
-      {"subject": "Record the reviewed modernization candidate", "delta_ids": ["release_integrity"], "paths": ["README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]}
+      {"subject": "Record the reviewed modernization candidate", "delta_ids": ["release_integrity"], "paths": ["README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]},
+      {"subject": "Consolidate the public documentation architecture", "delta_ids": ["self_contained_release_metadata", "reviewed_documentation_corpus", "release_integrity"], "paths": ["README.md", "config/documentation_layout.json", "config/make_help.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/adr/0001-expanded-nrom256.md", "docs/documentation_architecture.md", "docs/expanded_rom_assets.md", "docs/index.md", "docs/licensing.md", "docs/nesdev/README.md", "docs/nesdev/apu.md", "docs/nesdev/cpu.md", "docs/nesdev/devtools.md", "docs/nesdev/fds.md", "docs/nesdev/games.md", "docs/nesdev/hardware.md", "docs/nesdev/mappers.md", "docs/nesdev/misc.md", "docs/nesdev/pinouts.md", "docs/nesdev/ppu.md", "docs/nesdev/timing.md", "docs/nesdev/visual6502.md", "docs/provenance.md", "docs/provenance/README.md", "docs/source_reconstruction_2_2.md", "docs/validation.md", "scripts/documentation_audit.py", "scripts/lint_source.py", "scripts/source_2_2_audit.py", "tests/test_documentation_audit.py", "tests/test_lint_source.py"]}
     ]
   },
   "requirements": {
@@ -192,10 +193,10 @@
     },
     "documentation_corpus": {
       "status": "satisfied",
-      "evidence": {"targets": ["docs-audit", "lint"], "files": ["config/documentation_layout.json", "config/reconstruction/label_renames.json", "docs/documentation_architecture.md", "docs/nesdev/README.md", "scripts/documentation_audit.py", "tests/test_documentation_audit.py"], "scenarios": [], "artifacts": []}
+      "evidence": {"targets": ["docs-audit", "lint"], "files": ["config/documentation_layout.json", "config/reconstruction/label_renames.json", "docs/documentation_architecture.md", "docs/expanded_rom_assets.md", "docs/provenance.md", "scripts/documentation_audit.py", "tests/test_documentation_audit.py"], "scenarios": [], "artifacts": []}
     },
     "release_integrity": {
-      "status": "satisfied",
+      "status": "partial",
       "evidence": {"targets": ["source-2-2-functional-check", "source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "scripts/lint_source.py", "scripts/source_2_2_audit.py", "scripts/workflow/prepare_rts_batch.py", "tests/test_lint_source.py", "tests/test_source_2_2_audit.py"], "scenarios": [], "artifacts": []}
     }
   },
@@ -302,12 +303,12 @@
     {"component": "project_tools_and_documentation", "category": "project_authored", "origin": "pacman_src contributors", "license_id_or_status": "license_not_granted", "redistribution": "requires permission", "notes": "No repository-wide open-source license grant is present."},
     {"component": "reconstructed_game_source", "category": "reconstructed_game_source", "origin": "reverse engineering plus the attributed imported disassembly base", "license_id_or_status": "license_not_granted", "redistribution": "requires rights review", "notes": "Reconstruction does not grant rights in original game code or data."},
     {"component": "bundled_cc65_tools", "category": "bundled_external_tools", "origin": "https://github.com/cc65/cc65 commit 0fca835", "license_id_or_status": "unknown", "redistribution": "requires upstream license review", "notes": "Binary identity and upstream provenance are pinned independently of license status."},
-    {"component": "imported_source_and_materials", "category": "imported_materials", "origin": "docs/provenance/README.md and docs/nesdev/", "license_id_or_status": "unknown", "redistribution": "requires source-specific review", "notes": "Origin is recorded separately from current semantic naming."},
+    {"component": "imported_source_and_materials", "category": "imported_materials", "origin": "docs/provenance.md", "license_id_or_status": "unknown", "redistribution": "requires source-specific review", "notes": "Origin is recorded separately from current semantic naming."},
     {"component": "private_rom_and_extracted_inputs", "category": "private_user_inputs", "origin": "user-supplied original game images", "license_id_or_status": "private_user_supplied", "redistribution": "not distributed", "notes": "Only hashes, metadata, and extraction recipes are tracked."},
     {"component": "fceux_automation", "category": "external_unbundled_tool", "origin": "https://github.com/oranguthang/fceux_automation.git commit ec507d86c57acd8979547bc35e9627fb199fac9a", "license_id_or_status": "external_unbundled", "redistribution": "not distributed by this repository", "notes": "The external checkout and resulting executable are locally verified."}
   ],
   "provenance": {
-    "references": ["docs/provenance/README.md", "config/reconstruction/label_renames.json", "docs/nesdev/README.md", "docs/nesdev/fds.md", "config/toolchain.json"],
+    "references": ["docs/provenance.md", "config/reconstruction/label_renames.json", "config/toolchain.json"],
     "private_inputs_tracked": false
   },
   "aggregate_gates": {
@@ -326,9 +327,9 @@
     "config/tooling_layout.json",
     "docs/index.md",
     "docs/documentation_architecture.md",
-    "docs/nesdev/README.md",
-    "docs/adr/0001-expanded-nrom256.md",
+    "docs/expanded_rom_assets.md",
     "docs/licensing.md",
+    "docs/provenance.md",
     "docs/source_reconstruction_1_0.md",
     "docs/source_reconstruction_2_0.md",
     "docs/source_reconstruction_2_1.md",

@@ -53,7 +53,7 @@
       "commands": [
         {"target": "format", "usage": "format", "summary": "Normalize ca65 assembly style and lint the result."},
         {"target": "lint", "usage": "lint", "summary": "Check assembly, source policy, and documentation."},
-        {"target": "docs-audit", "usage": "docs-audit", "summary": "Validate the documentation inventory, reader journeys, and vendored boundary."},
+        {"target": "docs-audit", "usage": "docs-audit", "summary": "Validate the documentation inventory, reader journeys, links, and review policies."},
         {"target": "test", "usage": "test", "summary": "Run the complete fast Python test suite."},
         {"target": "test-debug-symbols", "usage": "test-debug-symbols", "summary": "Run focused debugger-symbol unit tests."},
         {"target": "test-runtime-traces", "usage": "test-runtime-traces", "summary": "Run focused runtime-trace validator tests."},

@@ -179,16 +179,6 @@ class LintSourceTests(unittest.TestCase):
             self.assertIn("broken local documentation link", messages)
             self.assertNotIn("sub_EE5C", messages)
 
-    def test_imported_nesdev_reference_is_outside_project_doc_checks(self) -> None:
-        result = LintResult()
-        check_documentation_references(
-            Path.cwd(),
-            {Path("docs/nesdev/import.md"): "`ram_missing` [wiki syntax](not-a-file)\n"},
-            set(),
-            result,
-        )
-        self.assertEqual(result.errors, [])
-
     def test_contributing_links_are_checked_as_project_documentation(self) -> None:
         result = LintResult()
         check_documentation_references(

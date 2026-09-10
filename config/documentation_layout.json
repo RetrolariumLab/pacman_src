@@ -4,7 +4,6 @@
   "index": "docs/index.md",
   "review": "docs/documentation_architecture.md",
   "project_documents": [
-    "docs/adr/0001-expanded-nrom256.md",
     "docs/assembly_style.md",
     "docs/assets.md",
     "docs/bank_ff_map.md",
@@ -25,7 +24,7 @@
     "docs/multi_revision_builds.md",
     "docs/naming.md",
     "docs/postmortem.md",
-    "docs/provenance/README.md",
+    "docs/provenance.md",
     "docs/ram_fields.md",
     "docs/relocation_testing.md",
     "docs/rendering_pipeline.md",
@@ -64,7 +63,7 @@
     },
     {
       "id": "review_provenance",
-      "paths": ["docs/licensing.md", "docs/provenance/README.md", "docs/nesdev/README.md"]
+      "paths": ["docs/licensing.md", "docs/provenance.md", "docs/unknowns.md"]
     }
   ],
   "size_policy": {
@@ -83,25 +82,6 @@
         "prefix": "source_reconstruction",
         "reason": "Each release document is a stable record with its own version boundary and lifecycle."
       }
-    ]
-  },
-  "vendored_boundary": {
-    "root": "docs/nesdev",
-    "policy": "docs/nesdev/README.md",
-    "documents": [
-      "docs/nesdev/README.md",
-      "docs/nesdev/apu.md",
-      "docs/nesdev/cpu.md",
-      "docs/nesdev/devtools.md",
-      "docs/nesdev/fds.md",
-      "docs/nesdev/games.md",
-      "docs/nesdev/hardware.md",
-      "docs/nesdev/mappers.md",
-      "docs/nesdev/misc.md",
-      "docs/nesdev/pinouts.md",
-      "docs/nesdev/ppu.md",
-      "docs/nesdev/timing.md",
-      "docs/nesdev/visual6502.md"
     ]
   }
 }

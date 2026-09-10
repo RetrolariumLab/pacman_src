@@ -19,7 +19,7 @@ The release manifest classifies each boundary explicitly:
 | Project-authored tools and documentation | `license_not_granted` | Requires permission until an explicit license is added |
 | Reconstructed game source | `license_not_granted` | Requires separate rights review; reconstruction does not grant rights in the original |
 | Bundled cc65 executables | `unknown` in this project contract | Upstream provenance is pinned, but redistribution requires an upstream-license review |
-| Imported source and reference materials | `unknown` | Each source requires its own review; origin is recorded under `docs/provenance/` and `docs/nesdev/` |
+| Imported disassembly-derived labels and notes | `unknown` | The imported baseline requires its own review; origin is recorded in `docs/provenance.md` |
 | User-supplied ROMs and extracted inputs | `private_user_supplied` | Never distributed by this repository |
 | External `fceux_automation` checkout | `external_unbundled` | Not distributed by this repository |
 
