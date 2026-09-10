@@ -87,6 +87,9 @@ title/OAM smoke for every official revision profile. Unlike the convenient
 standalone matrix commands, the release gate treats every missing reference ROM
 as a failure. `make build-dev` first verifies the pinned ca65, ld65, FCEUX source
 commit, and FCEUX binary identities from `config/toolchain.json`.
+Every native build entrypoint also authenticates the manifest-selected ca65 and
+ld65 binaries by SHA-256 and exact version before assembly begins. The builders
+do not fall back to unverified executables from `PATH`.
 The revision Lua hook records raw menu/NMI/OAM facts, while the Python runner
 owns the manifest comparison and PASS/FAIL decision.
 

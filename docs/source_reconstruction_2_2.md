@@ -1,6 +1,6 @@
 # Source Reconstruction 2.2
 
-Source Reconstruction 2.2 is a tag-ready compatible-minor candidate over the
+Source Reconstruction 2.2 is a development compatible-minor candidate over the
 published Source Reconstruction 2.1 tag. It modernizes the repository without
 changing the canonical Japan V1.0 image or weakening any accepted 2.1
 guarantee.
@@ -12,7 +12,7 @@ commit on a dedicated modernization branch.
 
 ## Current status
 
-The release status is `tag-ready`. The project manifest and canonical
+The release status is `development`. The project manifest and canonical
 source-layout registry are present, every official revision publishes explicit
 input/layout/output/capability contracts, and the accepted 2.1 guarantees have
 a reusable predecessor gate. Generated results now stay under `build/`, private
@@ -31,9 +31,9 @@ canonical CRLF serialization even when the Git blob or checkout uses LF. The
 reviewed documentation inventory covers every current project document, and
 the sole label-rename registry lives under reconstruction configuration. The
 expanded-ROM decision is integrated with its live architecture and workflow,
-while source provenance has one concise top-level document. The corrected
-`make source-2-2-functional-check` aggregate passed before the final metadata
-transition. The complete `make source-2-2-check` gate must validate this exact
+while source provenance has one concise top-level document. Every native build
+now authenticates the manifest-selected ca65 and ld65 binaries before assembly
+or linking. The complete `make source-2-2-check` gate must validate the corrected
 candidate from a clean build root. The candidate remains untagged and
 unpublished pending owner review.
 

@@ -5,6 +5,7 @@ import json
 import sys
 import tempfile
 import unittest
+from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
@@ -12,10 +13,59 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 import build_revision  # noqa: E402
+import build_native  # noqa: E402
 from revision_profiles import Revision, RevisionLayout  # noqa: E402
 
 
 class BuildRevisionTests(unittest.TestCase):
+    def test_mismatched_build_tool_is_rejected_before_launch(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            bin_dir = root / "bin"
+            bin_dir.mkdir()
+            (bin_dir / "ca65.exe").write_bytes(b"untrusted ca65")
+            (bin_dir / "ld65.exe").write_bytes(b"untrusted ld65")
+            manifest = root / "toolchain.json"
+            manifest.write_text(json.dumps({
+                "format": 1,
+                "hosts": [{
+                    "os": "Windows", "architecture": "x64",
+                    "shell": "PowerShell with GNU Make",
+                    "python_tested": "3.14.6", "status": "tested",
+                }],
+                "components": {
+                    "ca65": {
+                        "path": "bin/ca65.exe", "version": "ca65 test",
+                        "source": "https://example.invalid/cc65",
+                        "source_commit": "abc123", "binary_sha256": "0" * 64,
+                        "provenance": "bundled",
+                    },
+                    "ld65": {
+                        "path": "bin/ld65.exe", "version": "ld65 test",
+                        "source": "https://example.invalid/cc65",
+                        "source_commit": "abc123", "binary_sha256": "0" * 64,
+                        "provenance": "bundled",
+                    },
+                    "fceux_automation": {
+                        "source": "https://example.invalid/fceux",
+                        "source_commit": "d" * 40, "binary_sha256": "0" * 64,
+                        "configuration": "Release", "platform": "x64",
+                        "toolset": "v143",
+                        "provenance": "source-built external checkout",
+                    },
+                },
+            }), encoding="utf-8")
+
+            with patch("build_native.run_tool") as run_tool, patch(
+                "build_dev.command_output"
+            ) as version_command, patch("sys.stderr", new_callable=StringIO) as stderr:
+                with self.assertRaises(SystemExit):
+                    build_native.load_verified_build_tools(root, manifest)
+
+            self.assertIn("ca65 SHA256", stderr.getvalue())
+            version_command.assert_not_called()
+            run_tool.assert_not_called()
+
     def test_reference_layout_rejects_wrong_mapper(self) -> None:
         layout = RevisionLayout(
             "ines-1.0", 0, "horizontal", 16, 16384, 0xC000, True, 8192, 0,

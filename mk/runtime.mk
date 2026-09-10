@@ -185,7 +185,8 @@ test-relocation: lint test build-dev symbols _canonical-movie
 		--labels "$(RELOCATION_LABELS)" \
 		--map "$(RELOCATION_MAP)" \
 		--debug-info "$(RELOCATION_DEBUG)" \
-		--output-rom "$(RELOCATION_ROM)"
+		--output-rom "$(RELOCATION_ROM)" \
+		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
 	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/relocation_test.py" verify-layout \
 		--manifest "$(RELOCATION_MANIFEST)" \
 		--provenance "$(PROJECT_DIR)config/reconstruction/label_renames.json" \

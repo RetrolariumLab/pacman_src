@@ -58,7 +58,8 @@ build-hack: _require-assets
 		--labels "$(HACK_LABELS)" \
 		--map "$(HACK_MAP)" \
 		--debug-info "$(HACK_DEBUG)" \
-		--output-rom "$(HACK_ROM)"
+		--output-rom "$(HACK_ROM)" \
+		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
 
 verify-hack: build-hack
 	$(PYTHON) "$(PROJECT_DIR)scripts/verify_hack.py" \
@@ -139,7 +140,8 @@ build-expanded: _require-assets expanded-assets
 		--labels "$(EXPANDED_LABELS)" \
 		--map "$(EXPANDED_MAP)" \
 		--debug-info "$(EXPANDED_DEBUG)" \
-		--output-rom "$(EXPANDED_ROM)"
+		--output-rom "$(EXPANDED_ROM)" \
+		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
 
 verify-expanded: build-expanded
 	$(PYTHON) "$(PROJECT_DIR)scripts/verify_expanded.py" \

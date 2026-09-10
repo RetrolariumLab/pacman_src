@@ -20,7 +20,7 @@ from workflow.run_revision_smokes import validate_scenarios
 EXPECTED_RELEASE_LINE = "2.x"
 EXPECTED_RELEASE = {"name": "Source Reconstruction 2.2", "version": "2.2"}
 EXPECTED_TAG = "source-reconstruction-2.2"
-EXPECTED_RELEASE_SUBJECT = "Record the final documentation review correction"
+EXPECTED_RELEASE_SUBJECT = "Record verified build tool enforcement"
 CODEX_TRAILER = "Co-Authored-By: Codex <noreply@openai.com>"
 PUBLIC_TEXT_SUFFIXES = {
     ".asm", ".cfg", ".inc", ".json", ".lua", ".md", ".mk", ".py", ".txt",
@@ -945,7 +945,7 @@ def validate_toolchain(project_root: Path, contract: object) -> list[str]:
             "source_commit": components["ca65"]["source_commit"],
             "binary_sha256": components["ca65"]["binary_sha256"],
             "provenance": components["ca65"]["provenance"],
-            "verification": "make build-dev",
+            "verification": "make verify",
         },
         {
             "id": "linker",
@@ -954,7 +954,7 @@ def validate_toolchain(project_root: Path, contract: object) -> list[str]:
             "source_commit": components["ld65"]["source_commit"],
             "binary_sha256": components["ld65"]["binary_sha256"],
             "provenance": components["ld65"]["provenance"],
-            "verification": "make build-dev",
+            "verification": "make verify",
         },
         {
             "id": "emulator",
