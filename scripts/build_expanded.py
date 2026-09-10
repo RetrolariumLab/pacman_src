@@ -29,11 +29,12 @@ def main() -> int:
     parser.add_argument("--map", required=True)
     parser.add_argument("--debug-info", required=True)
     parser.add_argument("--output-rom", required=True)
+    parser.add_argument("--toolchain-manifest", default="config/toolchain.json")
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parent.parent
     paths = {name: rooted(project_root, value) for name, value in vars(args).items()}
-    for name in ("source", "config", "original_rom", "chr"):
+    for name in ("source", "config", "original_rom", "chr", "toolchain_manifest"):
         if not paths[name].is_file():
             fail(f"Required file not found: {paths[name]}")
 
@@ -52,6 +53,7 @@ def main() -> int:
         paths["debug_info"],
         paths["output_rom"],
         expected_prg_size=EXPANDED_PRG_SIZE,
+        toolchain_manifest=paths["toolchain_manifest"],
     )
     expanded_header = bytearray(header)
     expanded_header[4] = 2

@@ -56,7 +56,8 @@ build: _require-assets
 		--labels "$(NATIVE_LABELS)" \
 		--map "$(NATIVE_MAP)" \
 		--debug-info "$(NATIVE_DEBUG)" \
-		--output-rom "$(NATIVE_ROM)"
+		--output-rom "$(NATIVE_ROM)" \
+		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
 
 verify: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
@@ -70,6 +71,7 @@ verify: _require-assets
 		--map "$(NATIVE_MAP)" \
 		--debug-info "$(NATIVE_DEBUG)" \
 		--output-rom "$(NATIVE_ROM)" \
+		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)" \
 		--verify
 
 build-revision: _require-assets
@@ -77,7 +79,8 @@ build-revision: _require-assets
 		--manifest "$(REVISION_MANIFEST)" \
 		--profile "$(REVISION)" \
 		--reference-dir "$(REVISION_REFERENCE_DIR)" \
-		--project-dir "$(PROJECT_DIR)"
+		--project-dir "$(PROJECT_DIR)" \
+		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
 
 verify-revision: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build_revision.py" \
@@ -85,6 +88,7 @@ verify-revision: _require-assets
 		--profile "$(REVISION)" \
 		--reference-dir "$(REVISION_REFERENCE_DIR)" \
 		--project-dir "$(PROJECT_DIR)" \
+		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)" \
 		--verify
 
 verify-revisions:

@@ -66,6 +66,7 @@ def main() -> int:
     parser.add_argument("--profile", required=True)
     parser.add_argument("--reference-dir", type=Path, required=True)
     parser.add_argument("--project-dir", type=Path, required=True)
+    parser.add_argument("--toolchain-manifest", type=Path)
     parser.add_argument("--source", type=Path)
     parser.add_argument("--config", type=Path)
     parser.add_argument("--generated-chr", type=Path)
@@ -141,6 +142,10 @@ def main() -> int:
         "--map", str(build_dir / "pacman.map"),
         "--debug-info", str(build_dir / "pacman.dbg"),
         "--output-rom", str(build_dir / "pacman.nes"),
+        "--toolchain-manifest", str(
+            args.toolchain_manifest
+            or args.project_dir / "config" / "toolchain.json"
+        ),
     ]
     if revision.chr_source == "reference":
         command.append("--chr-from-reference")

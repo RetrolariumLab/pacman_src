@@ -11,6 +11,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from build_dev import load_toolchain_manifest, verify_bundled_tool
 from debug_symbols import normalize_dbg_for_ines
 
 
@@ -22,15 +23,23 @@ def fail(message: str) -> None:
     raise SystemExit(1)
 
 
-def resolve_tool(name: str, project_root: Path) -> Path:
-    bundled = project_root / "bin" / f"{name}.exe"
-    if bundled.is_file():
-        return bundled
-    found = shutil.which(name)
-    if found:
-        return Path(found)
-    fail(f"{name} not found (expected in bin/ or PATH)")
-    raise AssertionError
+def load_verified_build_tools(
+    project_root: Path, manifest_path: Path,
+) -> tuple[Path, Path]:
+    try:
+        components = load_toolchain_manifest(manifest_path)
+        tools: list[Path] = []
+        for component_id in ("ca65", "ld65"):
+            component = components[component_id]
+            if component.get("provenance") != "bundled":
+                raise ValueError(
+                    f"{component_id} must use the manifest-owned bundled binary"
+                )
+            verify_bundled_tool(project_root, component_id, component)
+            tools.append((project_root / str(component["path"])).resolve())
+    except (OSError, ValueError) as error:
+        fail(str(error))
+    return tools[0], tools[1]
 
 
 def run_tool(tool: Path, arguments: list[str], cwd: Path) -> None:
@@ -58,15 +67,18 @@ def assemble_prg(
     expected_prg_size: int = PRG_SIZE,
     defines: list[str] | None = None,
     include_dirs: list[Path] | None = None,
+    toolchain_manifest: Path | None = None,
 ) -> bytes:
+    ca65, ld65 = load_verified_build_tools(
+        project_root,
+        toolchain_manifest or project_root / "config" / "toolchain.json",
+    )
     object_path.parent.mkdir(parents=True, exist_ok=True)
     prg_path.parent.mkdir(parents=True, exist_ok=True)
     labels_path.parent.mkdir(parents=True, exist_ok=True)
     map_path.parent.mkdir(parents=True, exist_ok=True)
     debug_path.parent.mkdir(parents=True, exist_ok=True)
     raw_debug_path = debug_path.with_name(f"{debug_path.stem}.ld65.dbg")
-    ca65 = resolve_tool("ca65", project_root)
-    ld65 = resolve_tool("ld65", project_root)
     ca65_arguments = [str(source), "-g"]
     for define in defines or []:
         ca65_arguments.extend(["-D", define])
@@ -154,6 +166,10 @@ def main() -> int:
     parser.add_argument("--debug-info", default="build/pacman.dbg")
     parser.add_argument("--output-rom", default="build/pacman.nes")
     parser.add_argument(
+        "--toolchain-manifest", default="config/toolchain.json",
+        help="Pinned build-tool paths, versions, and SHA-256 identities",
+    )
+    parser.add_argument(
         "--define",
         action="append",
         default=[],
@@ -180,6 +196,7 @@ def main() -> int:
     map_path = rooted(project_root, args.map)
     debug_path = rooted(project_root, args.debug_info)
     output_rom = rooted(project_root, args.output_rom)
+    toolchain_manifest = rooted(project_root, args.toolchain_manifest)
     required_paths = [source, config, original_rom]
     if not args.chr_from_reference:
         required_paths.append(chr_path)
@@ -207,6 +224,7 @@ def main() -> int:
         output_rom,
         defines=args.define,
         include_dirs=[rooted(project_root, value) for value in args.include_dir],
+        toolchain_manifest=toolchain_manifest,
     )
     candidate = header + prg + chr_data
     output_rom.parent.mkdir(parents=True, exist_ok=True)

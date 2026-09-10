@@ -5,7 +5,7 @@
   "release_kind": "compatible_minor",
   "tag": "source-reconstruction-2.2",
   "publish_remote": "origin",
-  "status": "tag-ready",
+  "status": "development",
   "predecessor": {
     "tag": "source-reconstruction-2.1",
     "commit": "959bee80064aaa692e456cf710b527cc31bfba81",
@@ -103,13 +103,13 @@
     {
       "id": "release_integrity",
       "kind": "tooling",
-      "summary": "Validate the complete non-empty commit range and its delta mapping, preserve Git history in the ROM-less scaffold, enforce checkout-independent text hygiene, and sequence the accepted predecessor, current delta, clean build boundaries, and pre/post-tag repository audits.",
-      "evidence": ["Makefile", "README.md", "config/make_help.json", "docs/source_reconstruction_2_2.md", "mk/validation.mk", "scripts/lint_source.py", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "scripts/workflow/prepare_rts_batch.py", "tests/test_lint_source.py", "tests/test_scaffold_check.py", "tests/test_source_2_2_audit.py"]
+      "summary": "Validate the complete non-empty commit range and its delta mapping, preserve Git history in the ROM-less scaffold, enforce checkout-independent text hygiene and authenticated build tools, and sequence the accepted predecessor, current delta, clean build boundaries, and pre/post-tag repository audits.",
+      "evidence": ["Makefile", "README.md", "config/make_help.json", "config/toolchain.json", "docs/source_reconstruction_2_2.md", "docs/validation.md", "mk/validation.mk", "scripts/build_native.py", "scripts/lint_source.py", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "scripts/workflow/prepare_rts_batch.py", "tests/test_build_revision.py", "tests/test_lint_source.py", "tests/test_scaffold_check.py", "tests/test_source_2_2_audit.py"]
     }
   ],
   "history": {
     "range_start": "959bee80064aaa692e456cf710b527cc31bfba81",
-    "commit_count": 14,
+    "commit_count": 15,
     "commits": [
       {"subject": "Establish the Source Reconstruction 2.2 project contract", "delta_ids": ["self_contained_release_metadata", "machine_readable_source_layout"], "paths": ["Makefile", "config/reconstruction/source_layout.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/index.md", "docs/nesdev/apu.md", "docs/nesdev/hardware.md", "docs/nesdev/mappers.md", "docs/nesdev/misc.md", "docs/source_reconstruction_2_2.md", "scripts/source_2_1_audit.py", "scripts/source_2_2_audit.py", "tests/test_source_2_1_audit.py", "tests/test_source_2_2_audit.py"]},
       {"subject": "Define machine-readable revision contracts", "delta_ids": ["machine_readable_profile_contracts"], "paths": ["Makefile", "config/revisions.json", "config/source_reconstruction_2_2.json", "docs/multi_revision_builds.md", "docs/source_reconstruction_2_2.md", "scripts/build_revision.py", "scripts/revision_profiles.py", "scripts/source_2_2_audit.py", "tests/test_build_revision.py", "tests/test_revision_matrix.py"]},
@@ -124,7 +124,8 @@
       {"subject": "Resolve runtime and documentation review findings", "delta_ids": ["canonical_movie_serialization", "reviewed_documentation_corpus", "release_integrity"], "paths": ["CONTRIBUTING.md", "Makefile", "README.md", "config/documentation_layout.json", "config/make_help.json", "config/reconstruction/label_renames.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "config/tooling_layout.json", "docs/assembly_style.md", "docs/documentation_architecture.md", "docs/index.md", "docs/naming.md", "docs/nesdev/README.md", "docs/nesdev/docs.md", "docs/nesdev/fds.md", "docs/provenance/README.md", "docs/provenance/label_renames.json", "docs/roadmap.md", "docs/runtime_trace_scenarios.md", "docs/validation.md", "mk/authoring.mk", "mk/runtime.mk", "mk/validation.mk", "scripts/documentation_audit.py", "scripts/lint_source.py", "scripts/scaffold_check.py", "scripts/source_2_2_audit.py", "scripts/workflow/movie_format.py", "scripts/workflow/run_reconstruction_evidence.py", "scripts/workflow/run_runtime_traces.py", "tests/test_documentation_audit.py", "tests/test_label_provenance.py", "tests/test_movie_format.py"]},
       {"subject": "Record the reviewed modernization candidate", "delta_ids": ["release_integrity"], "paths": ["README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]},
       {"subject": "Consolidate the public documentation architecture", "delta_ids": ["self_contained_release_metadata", "reviewed_documentation_corpus", "release_integrity"], "paths": ["README.md", "config/documentation_layout.json", "config/make_help.json", "config/source_reconstruction_2_1.json", "config/source_reconstruction_2_2.json", "docs/adr/0001-expanded-nrom256.md", "docs/documentation_architecture.md", "docs/expanded_rom_assets.md", "docs/index.md", "docs/licensing.md", "docs/nesdev/README.md", "docs/nesdev/apu.md", "docs/nesdev/cpu.md", "docs/nesdev/devtools.md", "docs/nesdev/fds.md", "docs/nesdev/games.md", "docs/nesdev/hardware.md", "docs/nesdev/mappers.md", "docs/nesdev/misc.md", "docs/nesdev/pinouts.md", "docs/nesdev/ppu.md", "docs/nesdev/timing.md", "docs/nesdev/visual6502.md", "docs/provenance.md", "docs/provenance/README.md", "docs/source_reconstruction_2_2.md", "docs/validation.md", "scripts/documentation_audit.py", "scripts/lint_source.py", "scripts/source_2_2_audit.py", "tests/test_documentation_audit.py", "tests/test_lint_source.py"]},
-      {"subject": "Record the final documentation review correction", "delta_ids": ["release_integrity"], "paths": ["README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]}
+      {"subject": "Record the final documentation review correction", "delta_ids": ["release_integrity"], "paths": ["README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md"]},
+      {"subject": "Authenticate build tools at the execution boundary", "delta_ids": ["release_integrity"], "paths": ["Makefile", "README.md", "config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "docs/validation.md", "mk/authoring.mk", "mk/runtime.mk", "scripts/build_expanded.py", "scripts/build_native.py", "scripts/build_revision.py", "scripts/source_2_2_audit.py", "tests/test_build_revision.py"]}
     ]
   },
   "requirements": {
@@ -154,7 +155,7 @@
     },
     "reproducible_toolchain": {
       "status": "satisfied",
-      "evidence": {"targets": ["build-dev"], "files": ["config/toolchain.json"], "scenarios": [], "artifacts": []}
+      "evidence": {"targets": ["build-dev", "verify", "verify-revisions"], "files": ["config/toolchain.json", "scripts/build_dev.py", "scripts/build_native.py", "tests/test_build_dev.py", "tests/test_build_revision.py"], "scenarios": [], "artifacts": []}
     },
     "public_release_metadata": {
       "status": "satisfied",
@@ -197,8 +198,8 @@
       "evidence": {"targets": ["docs-audit", "lint"], "files": ["config/documentation_layout.json", "config/reconstruction/label_renames.json", "docs/documentation_architecture.md", "docs/expanded_rom_assets.md", "docs/provenance.md", "scripts/documentation_audit.py", "tests/test_documentation_audit.py"], "scenarios": [], "artifacts": []}
     },
     "release_integrity": {
-      "status": "satisfied",
-      "evidence": {"targets": ["source-2-2-functional-check", "source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "scripts/lint_source.py", "scripts/source_2_2_audit.py", "scripts/workflow/prepare_rts_batch.py", "tests/test_lint_source.py", "tests/test_source_2_2_audit.py"], "scenarios": [], "artifacts": []}
+      "status": "partial",
+      "evidence": {"targets": ["source-2-2-functional-check", "source-2-2-check", "source-2-2-post-tag-audit"], "files": ["config/source_reconstruction_2_2.json", "docs/source_reconstruction_2_2.md", "scripts/build_native.py", "scripts/lint_source.py", "scripts/source_2_2_audit.py", "scripts/workflow/prepare_rts_batch.py", "tests/test_build_revision.py", "tests/test_lint_source.py", "tests/test_source_2_2_audit.py"], "scenarios": [], "artifacts": []}
     }
   },
   "layout": {
@@ -283,8 +284,8 @@
   "toolchain": {
     "manifest": "config/toolchain.json",
     "components": [
-      {"id": "assembler", "version": "ca65 V2.19 - Git 0fca835", "source": "https://github.com/cc65/cc65", "source_commit": "0fca835", "binary_sha256": "9109d7118ff070e78f031bee4eb776061e56b74e7c8f9f40c70fd6707ea0ac5a", "provenance": "bundled", "verification": "make build-dev"},
-      {"id": "linker", "version": "ld65 V2.19 - Git 0fca835", "source": "https://github.com/cc65/cc65", "source_commit": "0fca835", "binary_sha256": "5f68367a135c578c88744e27ba0b1234604d87ef1ff6294b46fcb031ff984db4", "provenance": "bundled", "verification": "make build-dev"},
+      {"id": "assembler", "version": "ca65 V2.19 - Git 0fca835", "source": "https://github.com/cc65/cc65", "source_commit": "0fca835", "binary_sha256": "9109d7118ff070e78f031bee4eb776061e56b74e7c8f9f40c70fd6707ea0ac5a", "provenance": "bundled", "verification": "make verify"},
+      {"id": "linker", "version": "ld65 V2.19 - Git 0fca835", "source": "https://github.com/cc65/cc65", "source_commit": "0fca835", "binary_sha256": "5f68367a135c578c88744e27ba0b1234604d87ef1ff6294b46fcb031ff984db4", "provenance": "bundled", "verification": "make verify"},
       {"id": "emulator", "version": "source commit ec507d86c57acd8979547bc35e9627fb199fac9a", "source": "https://github.com/oranguthang/fceux_automation.git", "source_commit": "ec507d86c57acd8979547bc35e9627fb199fac9a", "binary_sha256": "97aadff4970e98a413377810a296c045fab717661dd8270f84d58190f43a232e", "provenance": "source-built", "verification": "make build-dev"}
     ],
     "hosts": [
