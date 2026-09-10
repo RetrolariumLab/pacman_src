@@ -16,12 +16,12 @@ ASSET_MANIFEST ?= $(PROJECT_DIR)assets/manifest.json
 GENERATED_ASSET_DIR ?= $(PROJECT_DIR)assets/generated
 GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
 REVISION_MANIFEST ?= $(PROJECT_DIR)config/revisions.json
-REVISION ?= $(shell $(PYTHON) "$(PROJECT_DIR)scripts/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --print-default)
-REVISION_BUILD_DIR ?= $(PROJECT_DIR)$(shell $(PYTHON) "$(PROJECT_DIR)scripts/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --profile "$(REVISION)" --print-output-dir)
+REVISION ?= $(shell $(PYTHON) "$(PROJECT_DIR)scripts/build/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --print-default)
+REVISION_BUILD_DIR ?= $(PROJECT_DIR)$(shell $(PYTHON) "$(PROJECT_DIR)scripts/build/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --profile "$(REVISION)" --print-output-dir)
 REVISION_REFERENCE_DIR ?= $(PROJECT_DIR)
 REVISION_DEBUG_SUMMARY ?= $(REVISION_BUILD_DIR)/debug_symbols.json
 REVISION_SMOKE_SCENARIOS ?= $(PROJECT_DIR)scenarios/revision_smoke.json
-REVISION_SMOKE_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_revision_smoke.lua
+REVISION_SMOKE_LUA ?= $(PROJECT_DIR)scripts/runtime/validate_revision_smoke.lua
 REVISION_SMOKE_DIR ?= $(BUILD_DIR)/runtime/revision_smokes
 REVISION_REQUIRE_ALL ?=
 
@@ -46,7 +46,7 @@ include $(PROJECT_DIR)mk/validation.mk
 .PHONY: build verify build-revision verify-revision verify-revisions symbols-revision smoke-revisions smoke-regional-revisions build-hack verify-hack symbols-hack validate-hack run-hack init-expanded-assets expanded-assets build-expanded verify-expanded symbols-expanded validate-expanded run-expanded sound-studio maze-studio graphics-studio screen-studio describe-sound preview-sound import-midi symbols test test-debug-symbols test-runtime-traces validate-symbols test-relocation format lint docs-audit help-check scaffold-check ui-smoke-check ui-smoke roundtrip-formats reconstruction-audit reconstruction-audit-2 source-2-1-audit source-2-1-release-audit source-2-1-post-tag-audit source-2-1-baseline-check source-2-1-check source-2-2-audit source-2-2-release-audit source-2-2-post-tag-audit source-2-2-functional-check source-2-2-check run clean split build-dev reference analyze trace-scoring validate-scoring-trace trace-runtime validate-runtime-traces trace-evidence validate-evidence chunk tool-list help _require-assets _manifest _batch _canonical-movie
 
 build: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_native.py" \
 		--source "$(NATIVE_SOURCE)" \
 		--config "$(NATIVE_CFG)" \
 		--original-rom "$(ORIGINAL_ROM)" \
@@ -60,7 +60,7 @@ build: _require-assets
 		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
 
 verify: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_native.py" \
 		--source "$(NATIVE_SOURCE)" \
 		--config "$(NATIVE_CFG)" \
 		--original-rom "$(ORIGINAL_ROM)" \
@@ -75,7 +75,7 @@ verify: _require-assets
 		--verify
 
 build-revision: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/build_revision.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_revision.py" \
 		--manifest "$(REVISION_MANIFEST)" \
 		--profile "$(REVISION)" \
 		--reference-dir "$(REVISION_REFERENCE_DIR)" \
@@ -83,7 +83,7 @@ build-revision: _require-assets
 		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
 
 verify-revision: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/build_revision.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_revision.py" \
 		--manifest "$(REVISION_MANIFEST)" \
 		--profile "$(REVISION)" \
 		--reference-dir "$(REVISION_REFERENCE_DIR)" \
@@ -99,7 +99,7 @@ verify-revisions:
 		--make "$(MAKE)" $(REVISION_REQUIRE_ALL)
 
 symbols-revision: build-revision
-	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/debug_symbols.py" \
 		--debug "$(REVISION_BUILD_DIR)/pacman.dbg" \
 		--map "$(REVISION_BUILD_DIR)/pacman.map" \
 		--labels "$(REVISION_BUILD_DIR)/pacman.lbl" \
@@ -110,7 +110,7 @@ symbols-revision: build-revision
 		--summary "$(REVISION_DEBUG_SUMMARY)"
 
 smoke-revisions: build-dev
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_revision_smokes.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/run_revision_smokes.py" \
 		--manifest "$(REVISION_MANIFEST)" \
 		--scenarios "$(REVISION_SMOKE_SCENARIOS)" \
 		--reference-dir "$(REVISION_REFERENCE_DIR)" \
@@ -124,21 +124,21 @@ smoke-revisions: build-dev
 smoke-regional-revisions: smoke-revisions
 
 clean:
-	$(PYTHON) "$(PROJECT_DIR)scripts/clean_artifacts.py"
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/clean_artifacts.py"
 
 split:
-	$(PYTHON) "$(PROJECT_DIR)scripts/split_assets.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/split_assets.py" \
 		--rom "$(ORIGINAL_ROM)" \
 		--manifest "$(ASSET_MANIFEST)" \
 		--output-dir "$(GENERATED_ASSET_DIR)"
 
 _require-assets:
-	$(PYTHON) "$(PROJECT_DIR)scripts/check_assets.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/check_assets.py" \
 		--manifest "$(ASSET_MANIFEST)" \
 		--asset-dir "$(GENERATED_ASSET_DIR)"
 
 build-dev:
-	$(PYTHON) "$(PROJECT_DIR)scripts/build_dev.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_dev.py" \
 		--fceux-dir "$(FCEUX_DIR)" \
 		--manifest "$(TOOLCHAIN_MANIFEST)" \
 		--configuration "$(FCEUX_CONFIG)" \
@@ -161,6 +161,6 @@ tool-list:
 	$(PYTHON) "$(PROJECT_DIR)scripts/run.py" list
 
 help:
-	@$(PYTHON) "$(PROJECT_DIR)scripts/make_help.py" \
+	@$(PYTHON) "$(PROJECT_DIR)scripts/validation/make_help.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(PROJECT_DIR)config/make_help.json"

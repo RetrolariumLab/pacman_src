@@ -4,13 +4,13 @@ DEBUG_SUMMARY ?= $(BUILD_DIR)/debug_symbols.json
 FCEUX_SYMBOL_DIR ?= $(BUILD_DIR)
 DEBUG_BREAKPOINTS ?= $(PROJECT_DIR)config/debugger_breakpoints.json
 DEBUG_WATCHES ?= $(PROJECT_DIR)config/debugger_watches.json
-DEBUG_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_debug_symbols.lua
+DEBUG_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/runtime/validate_debug_symbols.lua
 DEBUG_RUNTIME_RESULT ?= $(BUILD_DIR)/runtime/debug_symbols.txt
 DATA_FORMAT_CONFIG ?= $(PROJECT_DIR)config/data_formats.json
 DATA_FORMAT_OUTPUT_DIR ?= $(BUILD_DIR)/roundtrip/data_formats
 
 symbols: build
-	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/debug_symbols.py" \
 		--debug "$(NATIVE_DEBUG)" \
 		--map "$(NATIVE_MAP)" \
 		--labels "$(NATIVE_LABELS)" \
@@ -30,25 +30,25 @@ test:
 	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)tests" -p "test_*.py" -v
 
 help-check:
-	$(PYTHON) "$(PROJECT_DIR)scripts/make_help.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/make_help.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(PROJECT_DIR)config/make_help.json" \
 		--check
 
 scaffold-check:
-	$(PYTHON) "$(PROJECT_DIR)scripts/scaffold_check.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/scaffold_check.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--python "$(PYTHON)" \
 		--make "$(MAKE)"
 
 ui-smoke-check:
-	$(PYTHON) "$(PROJECT_DIR)scripts/ui_smoke.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/ui_smoke.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(PROJECT_DIR)config/authoring/ui_smokes.json" \
 		--check
 
 ui-smoke: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/ui_smoke.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/ui_smoke.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(PROJECT_DIR)config/authoring/ui_smokes.json"
 
@@ -60,20 +60,20 @@ validate-symbols: build-dev symbols
 		-turbo 1 \
 		-nothrottle 1 \
 		"$(NATIVE_ROM)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_debug_runtime.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_debug_runtime.py" \
 		--result "$(DEBUG_RUNTIME_RESULT)"
 
 format:
-	$(PYTHON) "$(PROJECT_DIR)scripts/asm_style.py" --fix "$(PROJECT_DIR)src"
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/asm_style.py" --fix "$(PROJECT_DIR)src"
 	$(MAKE) lint
 
 lint:
-	$(PYTHON) "$(PROJECT_DIR)scripts/asm_style.py" "$(PROJECT_DIR)src"
-	$(PYTHON) "$(PROJECT_DIR)scripts/lint_source.py"
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/asm_style.py" "$(PROJECT_DIR)src"
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/lint_source.py"
 	$(MAKE) docs-audit
 
 docs-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/documentation_audit.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/documentation_audit.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--layout "$(PROJECT_DIR)config/documentation_layout.json"
 
@@ -101,18 +101,18 @@ reconstruction-audit-2: reconstruction-audit
 	$(MAKE) smoke-revisions REVISION_REQUIRE_ALL=--require-all
 
 source-2-1-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_1_audit.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_1_audit.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(SOURCE_2_1_MANIFEST)"
 
 source-2-1-release-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_1_audit.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_1_audit.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(SOURCE_2_1_MANIFEST)" \
 		--require-ready
 
 source-2-1-post-tag-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_1_audit.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_1_audit.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(SOURCE_2_1_MANIFEST)" \
 		--require-ready \
@@ -135,18 +135,18 @@ source-2-1-baseline-check:
 	$(MAKE) source-2-1-audit
 
 source-2-2-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_2_audit.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_2_audit.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(SOURCE_2_2_MANIFEST)"
 
 source-2-2-release-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_2_audit.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_2_audit.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(SOURCE_2_2_MANIFEST)" \
 		--require-ready
 
 source-2-2-post-tag-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/source_2_2_audit.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_2_audit.py" \
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(SOURCE_2_2_MANIFEST)" \
 		--require-ready \

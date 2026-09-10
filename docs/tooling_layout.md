@@ -35,18 +35,13 @@ The registry also enforces the guide's 700-line Python review threshold and the
 tools carry explicit cohesion and split decisions; a new oversized tool cannot
 appear without an equally reviewable exception.
 
-## Recorded layout deviation
+## Physical layout
 
-The preferred layout uses responsibility packages below both `scripts/` and
-`tests/`. This repository retains its established root scripts, its existing
-`scripts/workflow/` paths, and flat unittest discovery for compatibility with
-Make targets, documentation, direct invocations, and downstream automation.
-The ownership registry and stable launcher provide the equivalent enforceable
-boundary without changing those public paths in a compatible-minor release.
-
-The exact deviations, reasons, and controls are release-facing data in
-`config/source_reconstruction_2_2.json`; they do not waive identity,
-provenance, evidence, or release gates.
+Tool files live under `scripts/authoring/`, `scripts/build/`,
+`scripts/runtime/`, `scripts/validation/`, and `scripts/workflow/`. Tests mirror
+those responsibilities below `tests/`. Only the stable `scripts/run.py`
+dispatcher remains at the scripts root. Make targets and documentation use the
+category paths directly, while the dispatcher provides stable command names.
 
 ## Adding or changing a tool
 

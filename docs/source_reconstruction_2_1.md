@@ -16,7 +16,7 @@ reconstruction generation. Historical 1.0 and 2.0 tags remain unchanged.
 | Variants are visibly isolated | Expanded and stage-5 entrypoints live under `src/expanded/` and `src/variants/` |
 | Tool configuration is separate from source | ld65 layouts live under `config/linker/` |
 | Tests are a first-class project interface | All unit and contract tests live under top-level `tests/` |
-| Revision metadata has one owner | `config/revisions.json` selects ROM, hash, ca65 ID, and CHR source through `scripts/build_revision.py` |
+| Revision metadata has one owner | `config/revisions.json` selects ROM, hash, ca65 ID, and CHR source through `scripts/build/build_revision.py` |
 | Every official profile has direct runtime evidence | `make smoke-revisions` builds and boots all seven revisions in FCEUX |
 | Release tools are pinned | `config/toolchain.json` owns the versions, commits, and SHA-256 identities used by `make build-dev` |
 | Multi-revision source is not mislabeled | `src/main.asm` contains semantic module order but no Japan-only address ranges |
@@ -76,10 +76,9 @@ coverage, toolchain manifest, licensing document, and pre/post-tag gates. The
 auditor checks those semantics rather than treating a file-count threshold as
 evidence of completeness.
 
-The flat `scripts/` directory is a documented layout deviation. Exact paths are
-still controlled by Make targets, Python syntax lint, import tests, and the
-release audit. Moving them into packages would touch stable public workflows
-without strengthening 2.1 evidence, so the coordinated migration is deferred.
+The current tree groups scripts and tests by responsibility. The published 2.1
+tag preserves its original layout, while the reusable 2.1 baseline gate follows
+the categorized paths used by later compatible releases.
 
 ## Tag Procedure
 

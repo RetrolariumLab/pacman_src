@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "build"))
 from listing_source import read_listing_lines  # noqa: E402
 
 LABEL_RE = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*):')

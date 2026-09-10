@@ -22,12 +22,12 @@ LINES ?= 250
 SCORING_TRACE ?= $(BUILD_DIR)/runtime/scoring/scoring_trace.csv
 SCORING_SCENARIOS ?= $(PROJECT_DIR)scenarios/scoring_trace.json
 SCORING_MAX_FRAMES ?= $(MAX_FRAMES_LONGPLAY)
-SCORING_TRACE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_scoring_trace.lua
+SCORING_TRACE_LUA ?= $(PROJECT_DIR)scripts/runtime/capture_scoring_trace.lua
 RUNTIME_SCENARIOS ?= $(PROJECT_DIR)scenarios/runtime_trace.json
-RUNTIME_TRACE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_runtime_trace.lua
+RUNTIME_TRACE_LUA ?= $(PROJECT_DIR)scripts/runtime/capture_runtime_trace.lua
 RUNTIME_TRACE_DIR ?= $(BUILD_DIR)/runtime/traces
 RECONSTRUCTION_EVIDENCE_SCENARIOS ?= $(PROJECT_DIR)scenarios/reconstruction_evidence.json
-RECONSTRUCTION_EVIDENCE_LUA ?= $(PROJECT_DIR)scripts/workflow/capture_reconstruction_evidence.lua
+RECONSTRUCTION_EVIDENCE_LUA ?= $(PROJECT_DIR)scripts/runtime/capture_reconstruction_evidence.lua
 RECONSTRUCTION_EVIDENCE_DIR ?= $(BUILD_DIR)/runtime/reconstruction_evidence
 
 RELOCATION_DIR ?= $(BUILD_DIR)/relocation
@@ -42,7 +42,7 @@ RELOCATION_LABELS ?= $(RELOCATION_DIR)/pacman.lbl
 RELOCATION_MAP ?= $(RELOCATION_DIR)/pacman.map
 RELOCATION_DEBUG ?= $(RELOCATION_DIR)/pacman.dbg
 RELOCATION_DEBUG_SUMMARY ?= $(RELOCATION_DIR)/debug_symbols.json
-RELOCATION_DEBUG_LUA ?= $(PROJECT_DIR)scripts/workflow/validate_relocation_symbols.lua
+RELOCATION_DEBUG_LUA ?= $(PROJECT_DIR)scripts/runtime/validate_relocation_symbols.lua
 RELOCATION_DEBUG_RESULT ?= $(RELOCATION_DIR)/runtime/debug_symbols.txt
 RELOCATION_RUNTIME_SCENARIOS ?= $(RELOCATION_DIR)/runtime_trace.json
 RELOCATION_RUNTIME_DIR ?= $(RELOCATION_DIR)/runtime/traces
@@ -56,7 +56,7 @@ run: build build-dev
 	"$(FCEUX_EXE)" "$(NATIVE_ROM)"
 
 _canonical-movie:
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/movie_format.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/movie_format.py" \
 		--movie "$(LONGPLAY_MOVIE_FILE)" \
 		--manifest "$(RUNTIME_SCENARIOS)" \
 		--output "$(CANONICAL_LONGPLAY_MOVIE)"
@@ -114,7 +114,7 @@ analyze: build-dev _batch _canonical-movie
 
 trace-scoring: build-dev verify _canonical-movie
 	@$(PYTHON) -c "import pathlib; t=pathlib.Path(r'$(SCORING_TRACE)'); t.parent.mkdir(parents=True, exist_ok=True); t.unlink() if t.exists() else None"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/check_scoring_trace_setup.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/check_scoring_trace_setup.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--labels "$(NATIVE_LABELS)" \
 		--lua "$(SCORING_TRACE_LUA)"
@@ -125,7 +125,7 @@ trace-scoring: build-dev verify _canonical-movie
 		-turbo 1 \
 		-nothrottle 1 \
 		"$(NATIVE_ROM)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/check_scoring_trace_setup.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/check_scoring_trace_setup.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--labels "$(NATIVE_LABELS)" \
 		--lua "$(SCORING_TRACE_LUA)" \
@@ -133,12 +133,12 @@ trace-scoring: build-dev verify _canonical-movie
 	@echo Scoring trace saved to $(SCORING_TRACE)
 
 validate-scoring-trace:
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_scoring_trace.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_scoring_trace.py" \
 		--scenarios "$(SCORING_SCENARIOS)" \
 		--trace "$(SCORING_TRACE)"
 
 trace-runtime: build-dev symbols _canonical-movie
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_runtime_traces.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/run_runtime_traces.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--rom "$(NATIVE_ROM)" \
 		--movie "$(CANONICAL_LONGPLAY_MOVIE)" \
@@ -148,12 +148,12 @@ trace-runtime: build-dev symbols _canonical-movie
 	$(MAKE) validate-runtime-traces
 
 validate-runtime-traces:
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_runtime_traces.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_runtime_traces.py" \
 		--scenarios "$(RUNTIME_SCENARIOS)" \
 		--trace-dir "$(RUNTIME_TRACE_DIR)"
 
 trace-evidence: build-dev verify symbols _canonical-movie
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_reconstruction_evidence.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/run_reconstruction_evidence.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--rom "$(NATIVE_ROM)" \
 		--movie "$(CANONICAL_LONGPLAY_MOVIE)" \
@@ -163,18 +163,18 @@ trace-evidence: build-dev verify symbols _canonical-movie
 	$(MAKE) validate-evidence
 
 validate-evidence:
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_reconstruction_evidence.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_reconstruction_evidence.py" \
 		--scenarios "$(RECONSTRUCTION_EVIDENCE_SCENARIOS)" \
 		--trace-dir "$(RECONSTRUCTION_EVIDENCE_DIR)" \
 		--rom "$(NATIVE_ROM)" \
 		--labels "$(NATIVE_LABELS)"
 
 test-relocation: lint test build-dev symbols _canonical-movie
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/relocation_test.py" prepare \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/relocation_test.py" prepare \
 		--main "$(NATIVE_SOURCE)" \
 		--output "$(RELOCATION_SOURCE)" \
 		--manifest "$(RELOCATION_MANIFEST)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/build_native.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_native.py" \
 		--source "$(RELOCATION_SOURCE)" \
 		--include-dir "$(PROJECT_DIR)src" \
 		--config "$(NATIVE_CFG)" \
@@ -187,7 +187,7 @@ test-relocation: lint test build-dev symbols _canonical-movie
 		--debug-info "$(RELOCATION_DEBUG)" \
 		--output-rom "$(RELOCATION_ROM)" \
 		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/relocation_test.py" verify-layout \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/relocation_test.py" verify-layout \
 		--manifest "$(RELOCATION_MANIFEST)" \
 		--provenance "$(PROJECT_DIR)config/reconstruction/label_renames.json" \
 		--base-labels "$(NATIVE_LABELS)" \
@@ -195,7 +195,7 @@ test-relocation: lint test build-dev symbols _canonical-movie
 		--base-rom "$(NATIVE_ROM)" \
 		--candidate-rom "$(RELOCATION_ROM)" \
 		--probe-addresses-output "$(RELOCATION_PROBES)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/debug_symbols.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/validation/debug_symbols.py" \
 		--debug "$(RELOCATION_DEBUG)" \
 		--map "$(RELOCATION_MAP)" \
 		--labels "$(RELOCATION_LABELS)" \
@@ -211,15 +211,15 @@ test-relocation: lint test build-dev symbols _canonical-movie
 		-turbo 1 \
 		-nothrottle 1 \
 		"$(RELOCATION_ROM)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_debug_runtime.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_debug_runtime.py" \
 		--result "$(RELOCATION_DEBUG_RESULT)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/relocation_test.py" prepare-scenario \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/relocation_test.py" prepare-scenario \
 		--base "$(RUNTIME_SCENARIOS)" \
 		--candidate-rom "$(RELOCATION_ROM)" \
 		--output "$(RELOCATION_RUNTIME_SCENARIOS)" \
 		--max-frames "$(RELOCATION_MAX_FRAMES)" \
 		--heartbeat-interval "$(RELOCATION_HEARTBEAT_INTERVAL)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_runtime_traces.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/run_runtime_traces.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--rom "$(RELOCATION_ROM)" \
 		--movie "$(CANONICAL_LONGPLAY_MOVIE)" \
@@ -227,16 +227,16 @@ test-relocation: lint test build-dev symbols _canonical-movie
 		--scenarios "$(RELOCATION_RUNTIME_SCENARIOS)" \
 		--output-dir "$(RELOCATION_RUNTIME_DIR)" \
 		--probe-addresses "$(RELOCATION_PROBES)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_runtime_traces.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_runtime_traces.py" \
 		--scenarios "$(RELOCATION_RUNTIME_SCENARIOS)" \
 		--trace-dir "$(RELOCATION_RUNTIME_DIR)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/relocation_test.py" validate-runtime \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/relocation_test.py" validate-runtime \
 		--trace "$(RELOCATION_RUNTIME_DIR)/natural-longplay.csv" \
 		--max-frames "$(RELOCATION_MAX_FRAMES)" \
 		--heartbeat-interval "$(RELOCATION_HEARTBEAT_INTERVAL)" \
 		--trace-dir "$(RELOCATION_RUNTIME_DIR)"
 	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(RELOCATION_SCORING_TRACE)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/check_scoring_trace_setup.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/check_scoring_trace_setup.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--labels "$(RELOCATION_LABELS)" \
 		--lua "$(SCORING_TRACE_LUA)"
@@ -247,26 +247,26 @@ test-relocation: lint test build-dev symbols _canonical-movie
 		-turbo 1 \
 		-nothrottle 1 \
 		"$(RELOCATION_ROM)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/check_scoring_trace_setup.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/check_scoring_trace_setup.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--labels "$(RELOCATION_LABELS)" \
 		--lua "$(SCORING_TRACE_LUA)" \
 		--trace "$(RELOCATION_SCORING_TRACE)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_scoring_trace.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_scoring_trace.py" \
 		--scenarios "$(SCORING_SCENARIOS)" \
 		--trace "$(RELOCATION_SCORING_TRACE)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/relocation_test.py" rehash-manifest \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/relocation_test.py" rehash-manifest \
 		--base "$(RECONSTRUCTION_EVIDENCE_SCENARIOS)" \
 		--candidate-rom "$(RELOCATION_ROM)" \
 		--output "$(RELOCATION_EVIDENCE_SCENARIOS)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/run_reconstruction_evidence.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/run_reconstruction_evidence.py" \
 		--fceux "$(FCEUX_EXE)" \
 		--rom "$(RELOCATION_ROM)" \
 		--movie "$(CANONICAL_LONGPLAY_MOVIE)" \
 		--lua "$(RECONSTRUCTION_EVIDENCE_LUA)" \
 		--scenarios "$(RELOCATION_EVIDENCE_SCENARIOS)" \
 		--output-dir "$(RELOCATION_EVIDENCE_DIR)"
-	$(PYTHON) "$(PROJECT_DIR)scripts/workflow/validate_reconstruction_evidence.py" \
+	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_reconstruction_evidence.py" \
 		--scenarios "$(RELOCATION_EVIDENCE_SCENARIOS)" \
 		--trace-dir "$(RELOCATION_EVIDENCE_DIR)" \
 		--rom "$(RELOCATION_ROM)" \

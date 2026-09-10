@@ -22,15 +22,16 @@ release contract. Its tag name is `source-reconstruction-2.1`; the preserved
 predecessor tags are `source-reconstruction-1.0` and
 `source-reconstruction-2.0`.
 
-Source Reconstruction 2.2 is the development compatible-minor candidate. Its project
+Source Reconstruction 2.2 is the tag-ready compatible-minor candidate. Its project
 manifest preserves the published 2.1 tag, records the modernization delta,
 enforces newline-format-independent text and FM2 runtime inputs, records the
 reviewed task-oriented documentation corpus, authenticates every selected
 assembler and linker before use, and exposes
 `make source-2-2-functional-check` for the accepted predecessor plus the current
-delta. The complete pre-tag gate is `make source-2-2-check`; it must pass on the
-exact candidate commit after the toolchain review correction, and publication
-and tag creation remain owner actions.
+delta. The corrected functional aggregate passed before the final metadata
+transition. The complete pre-tag gate is `make source-2-2-check`; it must pass
+on the exact candidate commit, and publication and tag creation remain owner
+actions.
 
 The annotated source covers every major subsystem, milestone 23 has resolved
 every registered unknown, and the complete validation matrix is available
@@ -137,16 +138,12 @@ pacman_src/
 |-- movies/                        # FM2 inputs for automated capture
 |-- scenarios/                     # Runtime, scoring, and revision smoke cases
 |-- scripts/
+|   |-- authoring/                 # Codecs, editor models, and Studios
+|   |-- build/                     # Builds, profiles, assets, and cleanup
+|   |-- runtime/                   # Emulator capture and evidence validation
+|   |-- validation/                # Lint, symbols, release, and policy checks
 |   |-- workflow/                  # Analysis and reporting tools
-|   |-- run.py                     # Stable direct-tool dispatcher
-|   |-- build_native.py            # Native build and byte verification
-|   |-- build_dev.py               # FCEUX bootstrap
-|   |-- sound_studio.py            # Music and sound editor
-|   |-- maze_studio.py             # Maze editor
-|   |-- graphics_studio.py         # CHR, actor, and palette editor
-|   |-- screen_studio.py           # Screen, text, HUD, and intermission editor
-|   |-- clean_artifacts.py         # Generated-artifact cleanup
-|   `-- split_assets.py            # Validated ROM asset extractor
+|   `-- run.py                     # Stable direct-tool dispatcher
 |-- src/
 |   |-- main.asm                   # Address-ordered ca65 entrypoint
 |   |-- expanded/nrom256.asm       # JSON-backed NROM-256 entrypoint
@@ -159,16 +156,17 @@ pacman_src/
 |   |-- data/
 |   |-- memory/
 |   `-- revisions/
-|-- tests/                         # Python unit and contract tests
+|-- tests/                         # Mirrors the script responsibility groups
 |-- Makefile
 `-- Pac-Man (J) (V1.0) [!].nes     # Original ROM (not distributed)
 ```
 
 `assets/generated/` and `build/` are generated artifacts and are not tracked.
 Private editor documents live under ignored `content/workspace/`; legacy local
-artifact directories remain ignored but are not touched by `make clean`. The
-source tools under `scripts/workflow/` are tracked. Tool responsibilities,
-public commands, and test owners are pinned by `config/tooling_layout.json`; see
+artifact directories remain ignored but are not touched by `make clean`. All
+source tools under `scripts/` are tracked and grouped by responsibility, and
+the test tree mirrors those groups. Tool responsibilities, public commands,
+and test owners are pinned by `config/tooling_layout.json`; see
 [`docs/tooling_layout.md`](docs/tooling_layout.md). See
 [`docs/assets.md`](docs/assets.md) for the source-versus-asset policy.
 

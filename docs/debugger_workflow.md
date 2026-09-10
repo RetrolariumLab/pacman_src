@@ -25,7 +25,7 @@ The `.dbg` file contains the source paths recorded by ca65, so regenerate it
 after moving the checkout or changing source line positions.
 
 The linker first produces a bare 16 KiB PRG, while the debugger opens the final
-iNES file. `scripts/debug_symbols.py` therefore retargets segment output names
+iNES file. `scripts/validation/debug_symbols.py` therefore retargets segment output names
 to `pacman.nes` and adds the 16-byte iNES header to ld65 file offsets. Without
 this normalization, source spans would point 16 bytes before the instructions
 in the ROM file.

@@ -56,7 +56,7 @@ Every `docs/*.md` file belongs to the reviewed project corpus described by
 
 ## Unit tests
 
-`make test` discovers every `tests/test_*.py` module. Narrow targets
+`make test` recursively discovers every `tests/**/test_*.py` module. Narrow targets
 such as `make test-debug-symbols` and `make test-runtime-traces` remain useful
 during development, but the aggregate target is the pre-commit gate. Tests use
 small synthetic inputs and do not start FCEUX.

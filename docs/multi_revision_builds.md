@@ -50,7 +50,7 @@ and verifies the full shadow-OAM initialization pattern (`$00` for the NTSC
 profiles and `$EF` for PAL).
 
 The Lua runner only captures menu, NMI, and observed OAM facts. The Python
-validator in `scripts/workflow/run_revision_smokes.py` independently compares
+validator in `scripts/runtime/run_revision_smokes.py` independently compares
 that capture with `scenarios/revision_smoke.json`; changing capture code alone
 cannot redefine a passing scenario.
 

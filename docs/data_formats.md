@@ -14,12 +14,12 @@ The target first requires `make verify`, decodes each format into
 byte with the original region. All output stays ignored. Neither `make build`
 nor `make verify` reads generated JSON or overwrites extracted assets.
 
-For individual binary files, `scripts/data_formats.py` exposes explicit
+For individual binary files, `scripts/authoring/data_formats.py` exposes explicit
 `decode` and `encode` operations:
 
 ```text
-python scripts/data_formats.py decode maze --input maze.rle --output maze.json
-python scripts/data_formats.py encode maze --input maze.json --output maze.rle
+python scripts/authoring/data_formats.py decode maze --input maze.rle --output maze.json
+python scripts/authoring/data_formats.py encode maze --input maze.json --output maze.rle
 ```
 
 The supported names are `stage`, `maze`, `sound`, `ppu`, `actors`, and
