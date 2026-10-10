@@ -107,6 +107,13 @@ con_sound_opcode_set_reg4               = $F5
 con_state_handler_entry_size            = $02
 con_ghost_slot_stride                   = $02
 con_ghost_slot_span                     = $08
+
+; Ghost slots (byte offsets into the per-ghost arrays), by their Japanese
+; character and nickname; the English names are Blinky, Pinky, Inky and Clyde
+con_ghost_slot_akabei                   = $00  ; OIKAKE, chases Pac-Man directly
+con_ghost_slot_pinky                    = $02  ; MACHIBUSE, aims ahead of Pac-Man
+con_ghost_slot_aosuke                   = $04  ; KIMAGURE, aims off Akabei's position
+con_ghost_slot_guzuta                   = $06  ; OTOBOKE, chases only while far away
 con_actor_position_record_size          = $04
 con_oam_entry_size                      = $04
 con_oam_quad_offset_span                = $08

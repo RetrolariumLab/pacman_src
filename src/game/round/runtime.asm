@@ -418,22 +418,22 @@ tbl_ghost_score_popup_lo:
 
 ; High-byte fruit score values by stage
 tbl_fruit_score_hi:
-    .byte $01  ; 00
-    .byte $03  ; 01
-    .byte $05  ; 02
-    .byte $07  ; 03
-    .byte $00  ; 04
-    .byte $00  ; 05
-    .byte $00  ; 06
-    .byte $00  ; 07
+    .byte $01  ; 00 cherry
+    .byte $03  ; 01 strawberry
+    .byte $05  ; 02 orange
+    .byte $07  ; 03 apple
+    .byte $00  ; 04 melon
+    .byte $00  ; 05 Galaxian flagship
+    .byte $00  ; 06 bell
+    .byte $00  ; 07 key
 
 ; Low-byte fruit score values by stage
 tbl_fruit_score_lo:
-    .byte $00  ; 00
-    .byte $00  ; 01
-    .byte $00  ; 02
-    .byte $00  ; 03
-    .byte $01  ; 04
-    .byte $02  ; 05
-    .byte $03  ; 06
-    .byte $05  ; 07
+    .byte $00  ; 00 cherry
+    .byte $00  ; 01 strawberry
+    .byte $00  ; 02 orange
+    .byte $00  ; 03 apple
+    .byte $01  ; 04 melon
+    .byte $02  ; 05 Galaxian flagship
+    .byte $03  ; 06 bell
+    .byte $05  ; 07 key

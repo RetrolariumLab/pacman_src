@@ -89,6 +89,11 @@
       "id": "expanded-revision",
       "kind": "tooling",
       "summary": "The expanded NROM-256 variant is the built revision japan-v10-nrom256; scripts/build/ owns the codecs its build needs."
+    },
+    {
+      "id": "object-names",
+      "kind": "source",
+      "summary": "The third ghost's attract packets are named for KIMAGURE and AOSUKE (Tengen spells INKY there), the ghost slots get constants by character, and the fruit tables name their fruit."
     }
   ],
   "retrolarium": {

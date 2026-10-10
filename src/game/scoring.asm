@@ -165,14 +165,14 @@ bra_next_release_slot_legacy:
 ; Fruit sprite tile ID by stage
 tbl_fruit_sprite_tile_by_stage:
 ; !(OBS) Values are consecutive, but the source reconstruction retains the table
-    .byte $24  ; 00
-    .byte $25  ; 01
-    .byte $26  ; 02
-    .byte $27  ; 03
-    .byte $28  ; 04
-    .byte $29  ; 05
-    .byte $2A  ; 06
-    .byte $2B  ; 07
+    .byte $24  ; 00 cherry
+    .byte $25  ; 01 strawberry
+    .byte $26  ; 02 orange
+    .byte $27  ; 03 apple
+    .byte $28  ; 04 melon
+    .byte $29  ; 05 Galaxian flagship
+    .byte $2A  ; 06 bell
+    .byte $2B  ; 07 key
 
 ; Start frightened mode after a power pellet is consumed
 

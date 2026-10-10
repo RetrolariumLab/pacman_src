@@ -318,8 +318,8 @@ tbl_attract_ppu_packet_ptrs:
     .word off_attract_text_name_akabei
     .word off_attract_text_alias_machibuse
     .word off_attract_text_name_pinky
-    .word off_attract_text_alias_tiles_0a
-    .word off_attract_text_name_tiles_0c
+    .word off_attract_text_alias_kimagure
+    .word off_attract_text_name_aosuke
     .word off_attract_text_alias_otoboke
     .word off_attract_text_name_guzuta
     .word off_attract_text_points_table
@@ -411,8 +411,8 @@ off_attract_text_name_pinky:
     .byte $FF  ; end token
 .endif
 
-; Attract packet: alias text tile sequence (set 0A)
-off_attract_text_alias_tiles_0a:
+; Attract packet: alias KIMAGURE, drawn with its own tiles (set 0A)
+off_attract_text_alias_kimagure:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2208
@@ -428,8 +428,8 @@ off_attract_text_alias_tiles_0a:
     .byte $00  ; condition
 .endif
 
-; Attract packet: name tile sequence (set 0C)
-off_attract_text_name_tiles_0c:
+; Attract packet: name AOSUKE, drawn with its own tiles (set 0C; Tengen: INKY)
+off_attract_text_name_aosuke:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .dbyt $2213
