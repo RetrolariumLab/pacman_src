@@ -1,0 +1,452 @@
+{
+  "schema_version": 1,
+  "release_line": "3.0",
+  "release": {
+    "name": "Source Reconstruction 3.0",
+    "version": "3.0"
+  },
+  "release_kind": "retrolarium",
+  "tag": "source-reconstruction-3.0",
+  "status": "development",
+  "predecessor": {
+    "manifest": "config/source_reconstruction_2_2.json",
+    "tag": "source-reconstruction-2.2",
+    "commit": "841834bab35e62e4c76a37d452e954ea6353f592"
+  },
+  "delta_history": {
+    "from_exclusive": "841834bab35e62e4c76a37d452e954ea6353f592",
+    "through_inclusive": "release-commit",
+    "commits": [
+      {
+        "commit": "5a190229bbfc8544907952440f6326ba1a4f1063",
+        "subject": "Retrolarium Studio descriptor"
+      },
+      {
+        "commit": "d9852f277b91a221ee86eb9752a43363873c0e1f",
+        "subject": "Retrolarium descriptor: views come from the kit"
+      },
+      {
+        "commit": "7ed71353d1bb08435730c340120cd7ea8db1c97b",
+        "subject": "Source Reconstruction 3.0: editing moves to Retrolarium"
+      }
+    ]
+  },
+  "included_scope": [
+    "inherited-source-reconstruction-2.2-contract",
+    "retrolarium-descriptor",
+    "kit-owned-editing",
+    "studio-check"
+  ],
+  "excluded_scope": [
+    {
+      "id": "cross_profile_relocation",
+      "status": "unsupported",
+      "reason": "Relocation is proved only for the canonical Japan V1.0 profile."
+    },
+    {
+      "id": "profile_aware_authoring",
+      "status": "not_applicable",
+      "reason": "Authoring remains scoped to the isolated expanded build, not every official profile."
+    },
+    {
+      "id": "sibling_engine",
+      "status": "not_applicable",
+      "reason": "No sibling or later engine is claimed by this repository."
+    },
+    {
+      "id": "additional_platform_abi",
+      "status": "not_applicable",
+      "reason": "All accepted profiles use the same NES NROM execution ABI."
+    },
+    {
+      "id": "unified_qt_studio",
+      "status": "planned",
+      "reason": "Existing headless models and separate tools satisfy the accepted authoring scope."
+    }
+  ],
+  "delta": [
+    {
+      "id": "retrolarium-descriptor",
+      "kind": "tooling",
+      "summary": "pacman.rlj names the game, its kit profile pacman.v1, the revisions it builds and its asset split; the studio views come from the kit's profile."
+    },
+    {
+      "id": "editing-moves-to-retrolarium",
+      "kind": "tooling",
+      "summary": "The editors, their models, the workspace composer, the UI smokes and their tests, Make targets and documentation are removed; editing happens in Retrolarium Studio over hack/<revision>/ (docs/retrolarium.md)."
+    },
+    {
+      "id": "studio-check",
+      "kind": "validation",
+      "summary": "make studio-check: in a throwaway copy the kit prepares, validates and rebuilds every revision with no edits, byte for byte."
+    },
+    {
+      "id": "tag-bound-2x-audits",
+      "kind": "validation",
+      "summary": "The 2.x manifests describe their tags' trees, so their audits run at the tag in a disposable clone; the functional 2.x gate stays on HEAD."
+    },
+    {
+      "id": "expanded-revision",
+      "kind": "tooling",
+      "summary": "The expanded NROM-256 variant is the built revision japan-v10-nrom256; scripts/build/ owns the codecs its build needs."
+    }
+  ],
+  "retrolarium": {
+    "descriptor": "pacman.rlj",
+    "profile": "pacman.v1",
+    "kit": {
+      "version": null,
+      "commit": null
+    },
+    "studio_min_version": null,
+    "revisions": [
+      "japan-v10",
+      "japan-v11",
+      "japan-v10-nrom256"
+    ],
+    "removed_authoring": [
+      {
+        "path": "scripts/authoring/graphics_studio.py",
+        "replaced_by": "Graphics and Animations & Mappings views"
+      },
+      {
+        "path": "scripts/authoring/graphics_studio_model.py",
+        "replaced_by": "Graphics and Animations & Mappings views"
+      },
+      {
+        "path": "scripts/authoring/maze_studio.py",
+        "replaced_by": "Maze view"
+      },
+      {
+        "path": "scripts/authoring/maze_studio_model.py",
+        "replaced_by": "Maze view"
+      },
+      {
+        "path": "scripts/authoring/midi_to_sound.py",
+        "replaced_by": "Sound view (MIDI import)"
+      },
+      {
+        "path": "scripts/authoring/prepare_expanded_assets.py",
+        "replaced_by": "scripts/build/expanded_assets.py and the japan-v10-nrom256 revision"
+      },
+      {
+        "path": "scripts/authoring/render_sound_preview.py",
+        "replaced_by": "Sound view"
+      },
+      {
+        "path": "scripts/authoring/screen_studio.py",
+        "replaced_by": "Screens and Text views"
+      },
+      {
+        "path": "scripts/authoring/sound_authoring.py",
+        "replaced_by": "Sound view"
+      },
+      {
+        "path": "scripts/authoring/sound_studio.py",
+        "replaced_by": "Sound view"
+      },
+      {
+        "path": "scripts/authoring/sound_studio_model.py",
+        "replaced_by": "Sound view"
+      },
+      {
+        "path": "scripts/authoring/ui_smoke.py",
+        "replaced_by": "studio tests and live checks in Retrolarium"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "japan_v10",
+      "status": "supported",
+      "artifact": "pacman_japan_v10",
+      "identity": "byte-identical"
+    },
+    {
+      "id": "japan_v11",
+      "status": "supported",
+      "artifact": "pacman_japan_v11",
+      "identity": "byte-identical"
+    },
+    {
+      "id": "japan_revb",
+      "status": "supported",
+      "artifact": "pacman_japan_revb",
+      "identity": "byte-identical"
+    },
+    {
+      "id": "usa_tengen_unlicensed",
+      "status": "supported",
+      "artifact": "pacman_usa_tengen_unlicensed",
+      "identity": "byte-identical"
+    },
+    {
+      "id": "usa_tengen",
+      "status": "supported",
+      "artifact": "pacman_usa_tengen",
+      "identity": "byte-identical"
+    },
+    {
+      "id": "usa_namco",
+      "status": "supported",
+      "artifact": "pacman_usa_namco",
+      "identity": "byte-identical"
+    },
+    {
+      "id": "europe",
+      "status": "supported",
+      "artifact": "pacman_europe",
+      "identity": "byte-identical"
+    }
+  ],
+  "runtime_coverage_manifest": "scenarios/revision_smoke.json",
+  "runtime_coverage": [
+    {
+      "profile_id": "japan_v10",
+      "mode": "direct",
+      "scenarios": [
+        "title_menu_boot",
+        "runtime_trace_suite",
+        "scoring_transactions",
+        "reconstruction_evidence"
+      ]
+    },
+    {
+      "profile_id": "japan_v11",
+      "mode": "direct",
+      "scenarios": [
+        "title_menu_boot"
+      ]
+    },
+    {
+      "profile_id": "japan_revb",
+      "mode": "direct",
+      "scenarios": [
+        "title_menu_boot"
+      ]
+    },
+    {
+      "profile_id": "usa_tengen_unlicensed",
+      "mode": "direct",
+      "scenarios": [
+        "title_menu_boot"
+      ]
+    },
+    {
+      "profile_id": "usa_tengen",
+      "mode": "direct",
+      "scenarios": [
+        "title_menu_boot"
+      ]
+    },
+    {
+      "profile_id": "usa_namco",
+      "mode": "direct",
+      "scenarios": [
+        "title_menu_boot"
+      ]
+    },
+    {
+      "profile_id": "europe",
+      "mode": "direct",
+      "scenarios": [
+        "title_menu_boot"
+      ]
+    }
+  ],
+  "revision_contract": {
+    "manifest": "config/revisions.json",
+    "schema_format": 2,
+    "profile_contract_version": 1,
+    "profile_ids": [
+      "japan_v10",
+      "japan_v11",
+      "japan_revb",
+      "usa_tengen_unlicensed",
+      "usa_tengen",
+      "usa_namco",
+      "europe"
+    ],
+    "ca65_revisions": [
+      0,
+      1,
+      4,
+      2,
+      3,
+      5,
+      6
+    ]
+  },
+  "toolchain": {
+    "manifest": "config/toolchain.json",
+    "components": [
+      {
+        "id": "assembler",
+        "version": "ca65 V2.19 - Git 0fca835",
+        "source": "https://github.com/cc65/cc65",
+        "source_commit": "0fca835",
+        "binary_sha256": "9109d7118ff070e78f031bee4eb776061e56b74e7c8f9f40c70fd6707ea0ac5a",
+        "provenance": "bundled",
+        "verification": "make verify"
+      },
+      {
+        "id": "linker",
+        "version": "ld65 V2.19 - Git 0fca835",
+        "source": "https://github.com/cc65/cc65",
+        "source_commit": "0fca835",
+        "binary_sha256": "5f68367a135c578c88744e27ba0b1234604d87ef1ff6294b46fcb031ff984db4",
+        "provenance": "bundled",
+        "verification": "make verify"
+      },
+      {
+        "id": "emulator",
+        "version": "source commit ec507d86c57acd8979547bc35e9627fb199fac9a",
+        "source": "https://github.com/oranguthang/fceux_automation.git",
+        "source_commit": "ec507d86c57acd8979547bc35e9627fb199fac9a",
+        "binary_sha256": "97aadff4970e98a413377810a296c045fab717661dd8270f84d58190f43a232e",
+        "provenance": "source-built",
+        "verification": "make build-dev"
+      }
+    ],
+    "hosts": [
+      {
+        "os": "Windows",
+        "architecture": "x64",
+        "shell": "PowerShell with GNU Make 4.4.1",
+        "language_versions": {
+          "python": "3.14.6"
+        },
+        "supported_status": "supported"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "id": "pacman_japan_v10",
+      "profile": "japan_v10",
+      "build_target": "make verify-revision REVISION=japan_v10",
+      "size": 24592,
+      "sha1": "adb4d7d7d28c89ca177aad231e0fdad992c0fbfb",
+      "sha256": "c67e20d7144dac97ba9d4cef1ad90f13d6504e8492e60a6193c33695d68c4b22"
+    },
+    {
+      "id": "pacman_japan_v11",
+      "profile": "japan_v11",
+      "build_target": "make verify-revision REVISION=japan_v11",
+      "size": 24592,
+      "sha1": "b8be2bffb4592873cc211becb529bf64071c7f90",
+      "sha256": "06ed4f706d87940728d623d289caa7fd0abd5c0d6466cb52d4c491ff3b8c0ed9"
+    },
+    {
+      "id": "pacman_japan_revb",
+      "profile": "japan_revb",
+      "build_target": "make verify-revision REVISION=japan_revb",
+      "size": 24592,
+      "sha1": "8b874a704e37557941179b232bac41644f6d01fc",
+      "sha256": "bae6f184d345a1351447a232d69103470fedcb82e161b2d2ae095d3283ae38ff"
+    },
+    {
+      "id": "pacman_usa_tengen_unlicensed",
+      "profile": "usa_tengen_unlicensed",
+      "build_target": "make verify-revision REVISION=usa_tengen_unlicensed",
+      "size": 24592,
+      "sha1": "f1d9eb92f931ed925bd6119d00d1023a45da583f",
+      "sha256": "1e59847da9369f6b116c95454d53e1508cdfeef6f00ea1a6968d725517ab852f"
+    },
+    {
+      "id": "pacman_usa_tengen",
+      "profile": "usa_tengen",
+      "build_target": "make verify-revision REVISION=usa_tengen",
+      "size": 24592,
+      "sha1": "727176933c25de055e7daa92e8b943f67cae4d9b",
+      "sha256": "d5e9c4e81ff7316d4d8b15f2198471606fdb728b8cd9da92b153bdc45124b565"
+    },
+    {
+      "id": "pacman_usa_namco",
+      "profile": "usa_namco",
+      "build_target": "make verify-revision REVISION=usa_namco",
+      "size": 24592,
+      "sha1": "e7d818e128593109b5c480497a050facc0744f1b",
+      "sha256": "254fb93e16d0db63b36ffa3ef1bc5a9e6cf9e9b1de347712d9936fe2ab7b690d"
+    },
+    {
+      "id": "pacman_europe",
+      "profile": "europe",
+      "build_target": "make verify-revision REVISION=europe",
+      "size": 24592,
+      "sha1": "feb45bcbcd2326c14280db17330b665ec6adc0cc",
+      "sha256": "754675c07b8648772e27ce805b4049d99308ac560b6f70e9b7b6e2581f8ad96f"
+    }
+  ],
+  "layout_deviations": [],
+  "licensing": [
+    {
+      "component": "project_tools_and_documentation",
+      "category": "project_authored",
+      "origin": "pacman_src contributors",
+      "license_id_or_status": "license_not_granted",
+      "redistribution": "requires permission",
+      "notes": "No repository-wide open-source license grant is present."
+    },
+    {
+      "component": "reconstructed_game_source",
+      "category": "reconstructed_game_source",
+      "origin": "reverse engineering plus the attributed imported disassembly base",
+      "license_id_or_status": "license_not_granted",
+      "redistribution": "requires rights review",
+      "notes": "Reconstruction does not grant rights in original game code or data."
+    },
+    {
+      "component": "bundled_cc65_tools",
+      "category": "bundled_external_tools",
+      "origin": "https://github.com/cc65/cc65 commit 0fca835",
+      "license_id_or_status": "unknown",
+      "redistribution": "requires upstream license review",
+      "notes": "Binary identity and upstream provenance are pinned independently of license status."
+    },
+    {
+      "component": "imported_source_and_materials",
+      "category": "imported_materials",
+      "origin": "docs/provenance.md",
+      "license_id_or_status": "unknown",
+      "redistribution": "requires source-specific review",
+      "notes": "Origin is recorded separately from current semantic naming."
+    },
+    {
+      "component": "private_rom_and_extracted_inputs",
+      "category": "private_user_inputs",
+      "origin": "user-supplied original game images",
+      "license_id_or_status": "private_user_supplied",
+      "redistribution": "not distributed",
+      "notes": "Only hashes, metadata, and extraction recipes are tracked."
+    },
+    {
+      "component": "fceux_automation",
+      "category": "external_unbundled_tool",
+      "origin": "https://github.com/oranguthang/fceux_automation.git commit ec507d86c57acd8979547bc35e9627fb199fac9a",
+      "license_id_or_status": "external_unbundled",
+      "redistribution": "not distributed by this repository",
+      "notes": "The external checkout and resulting executable are locally verified."
+    }
+  ],
+  "provenance": {
+    "references": [
+      "docs/provenance.md",
+      "config/reconstruction/label_renames.json",
+      "config/toolchain.json"
+    ],
+    "private_inputs_tracked": false
+  },
+  "aggregate_gates": {
+    "development": [
+      "make source-3-check"
+    ],
+    "pre_tag": [
+      "make source-3-check"
+    ],
+    "post_tag": [
+      "make source-3-audit"
+    ]
+  },
+  "functional_gate": "make source-2-2-functional-check"
+}

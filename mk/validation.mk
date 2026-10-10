@@ -41,17 +41,6 @@ scaffold-check:
 		--python "$(PYTHON)" \
 		--make "$(MAKE)"
 
-ui-smoke-check:
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/ui_smoke.py" \
-		--project-root "$(PROJECT_DIR)" \
-		--manifest "$(PROJECT_DIR)config/authoring/ui_smokes.json" \
-		--check
-
-ui-smoke: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/ui_smoke.py" \
-		--project-root "$(PROJECT_DIR)" \
-		--manifest "$(PROJECT_DIR)config/authoring/ui_smokes.json"
-
 validate-symbols: build-dev symbols
 	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(DEBUG_RUNTIME_RESULT)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
 	set "PACMAN_DEBUG_SYMBOL_RESULT=$(DEBUG_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \
@@ -134,29 +123,26 @@ source-2-1-baseline-check:
 	$(MAKE) test-relocation
 	$(MAKE) source-2-1-audit
 
+# The Source 2.2 manifest describes the tree tagged source-reconstruction-2.2
+# (with the editors 3.0 retired), so its audits run there, by the tag's own
+# script, in a disposable clone.
+SOURCE_2_2_TAG ?= source-reconstruction-2.2
+SOURCE_2_2_AT_TAG = $(PYTHON) "$(PROJECT_DIR)scripts/validation/tag_audit.py" --tag "$(SOURCE_2_2_TAG)" -- \
+	scripts/validation/source_2_2_audit.py --project-root "{root}" --manifest "{root}/config/source_reconstruction_2_2.json"
+
 source-2-2-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_2_audit.py" \
-		--project-root "$(PROJECT_DIR)" \
-		--manifest "$(SOURCE_2_2_MANIFEST)"
+	$(SOURCE_2_2_AT_TAG)
 
 source-2-2-release-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_2_audit.py" \
-		--project-root "$(PROJECT_DIR)" \
-		--manifest "$(SOURCE_2_2_MANIFEST)" \
-		--require-ready
+	$(SOURCE_2_2_AT_TAG) --require-ready
 
 source-2-2-post-tag-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_2_audit.py" \
-		--project-root "$(PROJECT_DIR)" \
-		--manifest "$(SOURCE_2_2_MANIFEST)" \
-		--require-ready \
-		--verify-tag
+	$(SOURCE_2_2_AT_TAG) --require-ready --verify-tag
 
 source-2-2-functional-check:
 	$(MAKE) source-2-1-baseline-check
 	$(MAKE) format
 	$(MAKE) scaffold-check
-	$(MAKE) ui-smoke
 	$(MAKE) source-2-2-audit
 
 source-2-2-check:

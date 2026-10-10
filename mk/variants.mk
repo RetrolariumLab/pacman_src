@@ -1,4 +1,4 @@
-# Fixed-layout and expanded authoring variants.
+# The stage-5 hack, the expanded NROM-256 variant and the Retrolarium check.
 
 HACK_SOURCE ?= $(PROJECT_DIR)src/variants/stage5.asm
 HACK_OBJ ?= $(BUILD_DIR)/hack/pacman.o
@@ -23,29 +23,14 @@ EXPANDED_LABELS ?= $(EXPANDED_DIR)/pacman.lbl
 EXPANDED_MAP ?= $(EXPANDED_DIR)/pacman.map
 EXPANDED_DEBUG ?= $(EXPANDED_DIR)/pacman.dbg
 EXPANDED_DEBUG_SUMMARY ?= $(EXPANDED_DIR)/debug_symbols.json
-EXPANDED_MAZE_JSON ?= $(PROJECT_DIR)content/workspace/maze.json
-EXPANDED_MAZE_BIN ?= $(EXPANDED_DIR)/assets/maze.rle
-EXPANDED_STAGE_JSON ?= $(PROJECT_DIR)content/workspace/stage_parameters.json
-EXPANDED_STAGE_BIN ?= $(EXPANDED_DIR)/assets/stage_parameters.bin
-EXPANDED_SOUND_JSON ?= $(PROJECT_DIR)content/workspace/sound_streams.json
-EXPANDED_SOUND_BIN ?= $(EXPANDED_DIR)/assets/sound_streams.bin
-EXPANDED_SOUND_POINTERS_BIN ?= $(EXPANDED_DIR)/assets/sound_pointers.bin
-EXPANDED_ACTOR_JSON ?= $(PROJECT_DIR)content/workspace/actor_sprites.json
-EXPANDED_ACTOR_BIN ?= $(EXPANDED_DIR)/assets/actor_sprites.bin
-EXPANDED_PALETTE_JSON ?= $(PROJECT_DIR)content/workspace/palettes.json
-EXPANDED_PALETTE_BIN ?= $(EXPANDED_DIR)/assets/palettes.bin
-EXPANDED_SCREEN_JSON ?= $(PROJECT_DIR)content/workspace/screens.json
-EXPANDED_SCREEN_BIN ?= $(EXPANDED_DIR)/assets/screens.bin
+# src/expanded/nrom256.asm includes the assets from here.
+EXPANDED_ASSET_DIR ?= $(BUILD_DIR)/expanded/assets
+EXPANDED_ASSET_FLAGS ?=
+EXPANDED_PROBE_DIR ?= $(BUILD_DIR)/expanded-probe
 EXPANDED_RUNTIME_LUA ?= $(PROJECT_DIR)scripts/runtime/validate_expanded_rom.lua
 EXPANDED_RUNTIME_RESULT ?= $(BUILD_DIR)/runtime/expanded_rom.txt
 
-EDITED_CHR ?= $(PROJECT_DIR)content/workspace/pacman.chr
-SOUND_SLOT ?= 4
-SOUND_PREVIEW ?= $(BUILD_DIR)/previews/sound_preview.wav
-MIDI_FILE ?=
-MIDI_TRACK ?= 0
-MIDI_CHANNEL ?= 0
-MIDI_OUTPUT ?= $(PROJECT_DIR)content/workspace/sound_streams.midi.json
+RLTOOL ?= rltool
 
 build-hack: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_native.py" \
@@ -95,39 +80,16 @@ validate-hack: build-dev symbols-hack _canonical-movie
 run-hack: build-hack build-dev
 	"$(FCEUX_EXE)" "$(HACK_ROM)"
 
-init-expanded-assets: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/prepare_expanded_assets.py" init \
-		--maze-source "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
-		--maze-json "$(EXPANDED_MAZE_JSON)" \
+# The expanded variant's data, as the v1.0 ROM holds it; Retrolarium edits
+# the built variant (the japan-v10-nrom256 revision of pacman.rlj).
+expanded-assets: _require-assets
+	$(PYTHON) "$(PROJECT_DIR)scripts/build/expanded_assets.py" \
 		--original-rom "$(ORIGINAL_ROM)" \
-		--stage-json "$(EXPANDED_STAGE_JSON)" \
+		--maze-source "$(GENERATED_ASSET_DIR)/maze/maze.rle" \
 		--asset-manifest "$(ASSET_MANIFEST)" \
 		--asset-dir "$(GENERATED_ASSET_DIR)" \
-		--sound-json "$(EXPANDED_SOUND_JSON)" \
-		--actor-json "$(EXPANDED_ACTOR_JSON)" \
-		--palette-json "$(EXPANDED_PALETTE_JSON)" \
-		--screen-json "$(EXPANDED_SCREEN_JSON)" \
-		--demo-frightened-duration 14
-
-expanded-assets:
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/prepare_expanded_assets.py" encode \
-		--maze-source "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
-		--maze-json "$(EXPANDED_MAZE_JSON)" \
-		--maze-output "$(EXPANDED_MAZE_BIN)" \
-		--original-rom "$(ORIGINAL_ROM)" \
-		--stage-json "$(EXPANDED_STAGE_JSON)" \
-		--stage-output "$(EXPANDED_STAGE_BIN)" \
-		--asset-manifest "$(ASSET_MANIFEST)" \
-		--asset-dir "$(GENERATED_ASSET_DIR)" \
-		--sound-json "$(EXPANDED_SOUND_JSON)" \
-		--sound-output "$(EXPANDED_SOUND_BIN)" \
-		--sound-pointers-output "$(EXPANDED_SOUND_POINTERS_BIN)" \
-		--actor-json "$(EXPANDED_ACTOR_JSON)" \
-		--actor-output "$(EXPANDED_ACTOR_BIN)" \
-		--palette-json "$(EXPANDED_PALETTE_JSON)" \
-		--palette-output "$(EXPANDED_PALETTE_BIN)" \
-		--screen-json "$(EXPANDED_SCREEN_JSON)" \
-		--screen-output "$(EXPANDED_SCREEN_BIN)"
+		--output-dir "$(EXPANDED_ASSET_DIR)" \
+		$(EXPANDED_ASSET_FLAGS)
 
 build-expanded: _require-assets expanded-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_expanded.py" \
@@ -147,14 +109,14 @@ verify-expanded: build-expanded
 	$(PYTHON) "$(PROJECT_DIR)scripts/validation/verify_expanded.py" \
 		--original "$(ORIGINAL_ROM)" \
 		--candidate "$(EXPANDED_ROM)" \
-		--maze-original "$(PROJECT_DIR)assets/generated/maze/maze.rle" \
-		--maze-stage2 "$(EXPANDED_MAZE_BIN)" \
-		--stage "$(EXPANDED_STAGE_BIN)" \
-		--sound-pointers "$(EXPANDED_SOUND_POINTERS_BIN)" \
-		--sound-streams "$(EXPANDED_SOUND_BIN)" \
-		--actors "$(EXPANDED_ACTOR_BIN)" \
-		--palettes "$(EXPANDED_PALETTE_BIN)" \
-		--screens "$(EXPANDED_SCREEN_BIN)" \
+		--maze-original "$(GENERATED_ASSET_DIR)/maze/maze.rle" \
+		--maze-stage2 "$(EXPANDED_ASSET_DIR)/maze.rle" \
+		--stage "$(EXPANDED_ASSET_DIR)/stage_parameters.bin" \
+		--sound-pointers "$(EXPANDED_ASSET_DIR)/sound_pointers.bin" \
+		--sound-streams "$(EXPANDED_ASSET_DIR)/sound_streams.bin" \
+		--actors "$(EXPANDED_ASSET_DIR)/actor_sprites.bin" \
+		--palettes "$(EXPANDED_ASSET_DIR)/palettes.bin" \
+		--screens "$(EXPANDED_ASSET_DIR)/screens.bin" \
 		--expected-chr "$(GENERATED_CHR)" \
 		--layout "$(PROJECT_DIR)config/expanded_layout.json"
 
@@ -169,7 +131,11 @@ symbols-expanded: verify-expanded
 		--watches "$(DEBUG_WATCHES)" \
 		--summary "$(EXPANDED_DEBUG_SUMMARY)"
 
+# The runtime check plays a build with two probed values, so it sees the
+# relocated data being read. The probe build and its debugger labels have their
+# own directory, and the plain assets are written back afterwards.
 validate-expanded: build-dev symbols-expanded _canonical-movie
+	$(MAKE) symbols-expanded EXPANDED_DIR="$(EXPANDED_PROBE_DIR)" EXPANDED_ASSET_FLAGS=--probe
 	@$(PYTHON) -c "import pathlib; r=pathlib.Path(r'$(EXPANDED_RUNTIME_RESULT)'); r.parent.mkdir(parents=True, exist_ok=True); r.unlink() if r.exists() else None"
 	set "PACMAN_EXPANDED_RUNTIME_RESULT=$(EXPANDED_RUNTIME_RESULT)" && "$(FCEUX_EXE)" \
 		-playmovie "$(CANONICAL_LONGPLAY_MOVIE)" \
@@ -177,63 +143,28 @@ validate-expanded: build-dev symbols-expanded _canonical-movie
 		-max-frames "10000" \
 		-turbo 1 \
 		-nothrottle 1 \
-		"$(EXPANDED_ROM)"
+		"$(EXPANDED_PROBE_DIR)/pacman.nes"
 	$(PYTHON) "$(PROJECT_DIR)scripts/runtime/validate_expanded_runtime.py" \
 		--result "$(EXPANDED_RUNTIME_RESULT)" \
-		--stage-json "$(EXPANDED_STAGE_JSON)" \
-		--sound-json "$(EXPANDED_SOUND_JSON)" \
-		--palette-json "$(EXPANDED_PALETTE_JSON)" \
-		--screen-json "$(EXPANDED_SCREEN_JSON)"
+		--assets "$(EXPANDED_ASSET_DIR)"
+	$(MAKE) expanded-assets
 
 run-expanded: build-expanded build-dev
 	"$(FCEUX_EXE)" "$(EXPANDED_ROM)"
 
-sound-studio:
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/sound_studio.py" \
-		--sound-json "$(EXPANDED_SOUND_JSON)" \
-		--asset-manifest "$(ASSET_MANIFEST)" \
-		--asset-dir "$(GENERATED_ASSET_DIR)"
+# Every revision of pacman.rlj opens in the kit and builds back to its ROM,
+# in a throwaway copy of the repository.
+studio-check: _require-assets
+	$(RLTOOL) studio check "$(PROJECT_DIR)pacman.rlj"
 
-maze-studio:
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/maze_studio.py" \
-		--maze-json "$(EXPANDED_MAZE_JSON)" \
-		--original-rle "$(GENERATED_ASSET_DIR)/maze/maze.rle" \
-		--chr "$(GENERATED_CHR)"
+# Source Reconstruction 3.0, in development until Retrolarium is tagged: the
+# source-2-2-functional-check gate, then studio-check with the manifest's
+# Retrolarium section checked against the descriptor and the running kit.
+SOURCE_3_MANIFEST ?= config/source_reconstruction_3_0.json
 
-graphics-studio:
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/graphics_studio.py" \
-		--chr "$(GENERATED_ASSET_DIR)/chr/pacman.chr" \
-		--output "$(EDITED_CHR)" \
-		--actors "$(EXPANDED_ACTOR_JSON)" \
-		--palettes "$(EXPANDED_PALETTE_JSON)" \
-		--rom "$(ORIGINAL_ROM)" \
-		--project "$(PROJECT_DIR)"
+source-3-audit: _require-assets
+	$(RLTOOL) studio check "$(PROJECT_DIR)pacman.rlj" --release "$(PROJECT_DIR)$(SOURCE_3_MANIFEST)"
 
-screen-studio:
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/screen_studio.py" \
-		--rom "$(ORIGINAL_ROM)" \
-		--chr "$(GENERATED_CHR)" \
-		--screens "$(EXPANDED_SCREEN_JSON)" \
-		--palettes "$(EXPANDED_PALETTE_JSON)" \
-		--project "$(PROJECT_DIR)"
-
-describe-sound:
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/sound_authoring.py" \
-		--input "$(EXPANDED_SOUND_JSON)" \
-		--slot "$(SOUND_SLOT)"
-
-preview-sound:
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/render_sound_preview.py" \
-		--sound-json "$(EXPANDED_SOUND_JSON)" \
-		--slot "$(SOUND_SLOT)" \
-		--output "$(SOUND_PREVIEW)"
-
-import-midi:
-	@$(PYTHON) -c "import sys; sys.exit(0 if r'$(MIDI_FILE)' else 'Set MIDI_FILE=path/to/file.mid')"
-	$(PYTHON) "$(PROJECT_DIR)scripts/authoring/midi_to_sound.py" \
-		--midi "$(MIDI_FILE)" \
-		--sound-json "$(EXPANDED_SOUND_JSON)" \
-		--output "$(MIDI_OUTPUT)" \
-		--slot "$(SOUND_SLOT)" \
-		--track "$(MIDI_TRACK)" \
-		--channel "$(MIDI_CHANNEL)"
+source-3-check:
+	$(MAKE) source-2-2-functional-check
+	$(MAKE) source-3-audit

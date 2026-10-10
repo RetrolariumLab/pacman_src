@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "authoring"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "build"))
 
 from data_formats import (  # noqa: E402
     decode_actors,

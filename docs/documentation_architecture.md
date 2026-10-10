@@ -3,7 +3,7 @@
 The documentation is organized around reader tasks rather than the order in
 which reconstruction work happened. `README.md` gives the legal-input boundary
 and shortest verification path, while `docs/index.md` routes readers to release
-policy, source architecture, runtime behavior, authoring, and provenance.
+policy, source architecture, runtime behavior, variants, and provenance.
 
 ## Reader Journeys
 
@@ -11,8 +11,8 @@ policy, source architecture, runtime behavior, authoring, and provenance.
   the applicable release document for the complete gate.
 - A source contributor reads `source_layout.md`, `naming.md`,
   `assembly_style.md`, and the relevant subsystem document before changing ASM.
-- An authoring-tool contributor starts with `data_formats.md`, follows the
-  format-specific authoring document, and checks `expanded_rom_assets.md`.
+- A content editor starts with `retrolarium.md`; a contributor to the data
+  codecs reads `data_formats.md` and `expanded_rom_assets.md`.
 - A reviewer follows `licensing.md`, `provenance.md`, `unknowns.md`, and
   the release documents to distinguish imported facts from project claims.
 
@@ -28,7 +28,9 @@ validation evidence. `bank_ff_map.md` is a compact bank-navigation entry point;
 `source_layout.md` owns module sizing and complete address-range ownership, so
 their scopes are complementary rather than duplicate.
 
-The authoring documents remain separate by codec and workstation task. Release
+Editing has one page, `retrolarium.md`: the studio and its kit own the
+editors, so the repository documents only how to open the game and what the
+expanded revision is. Release
 documents also remain separate because each is the stable record for a specific
 accepted or candidate boundary. Their shared filename prefix is intentional and
 is declared as the only project-document prefix exception.

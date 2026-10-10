@@ -1,4 +1,4 @@
-# Expanded ROM and JSON Assets
+# Expanded NROM-256 ROM
 
 The expanded variant is an optional NROM-256 build with 32 KiB of PRG. It does
 not replace the default byte-identical build or the fixed-size demonstration
@@ -6,14 +6,14 @@ hack.
 
 ```text
 $8000..$819F  original stage-1 maze RLE
-$81A0..$82D5  JSON-generated stage parameters
-$82D6..$8475  JSON-generated stage-2-and-later maze RLE
+$81A0..$82D5  relocated stage parameters
+$82D6..$8475  stage-2-and-later maze RLE
 $8476..$848E  stage-aware maze selector
 $848F..$84AE  generated 16-entry sound pointer table
-$84AF..$A4AE  8 KiB variable-length JSON sound region
-$A4AF..$A71E  JSON-generated actor tile/attribute mappings and OAM offsets
-$A71F..$A79D  JSON-generated title/gameplay/dynamic palette collection
-$A79E..$ABAF  JSON-generated title/text/HUD/intermission visual collection
+$84AF..$A4AE  8 KiB variable-length sound region
+$A4AF..$A71E  actor tile/attribute mappings and OAM offsets
+$A71F..$A79D  title/gameplay/dynamic palette collection
+$A79E..$ABAF  title/text/HUD/intermission visual collection
 $ABB0..$BFFF  $FF free space for future assets
 $C000..$FFF7  original fixed PRG bank
 $CEB8..$CF8D  reviewed stage-table operand bytes target $81A0..$82D2
@@ -28,14 +28,17 @@ bytes remain in the fixed bank for layout stability. The expanded variant
 duplicates them at `$8000` for stage 1 and selects the editable maze at `$82D6`
 from stage 2 onward.
 
+This is the `japan-v10-nrom256` revision of `pacman.rlj`: Retrolarium Studio
+builds it from the v1.0 ROM and edits it like a dump, with the room the added
+bank makes (a second maze, 8 KiB of sound). See [retrolarium.md](./retrolarium.md).
+
 ## Architecture decision
 
 The preservation entrypoint fills the original NROM-128 PRG and must remain
-byte-identical. Editable mazes, stage data, sound, graphics, palettes, and
-screens need additional capacity, so the project isolates them in the separate
+byte-identical. A second maze, longer sound, and relocated stage, graphics,
+palette, and screen data need additional capacity, so the project isolates them in the separate
 `src/expanded/nrom256.asm` entrypoint and
-`config/linker/nrom256_expanded.cfg` layout. Generated JSON-derived assets live
-in the added PRG bank; the fixed bank continues to use shared game source and a
+`config/linker/nrom256_expanded.cfg` layout. The relocated data lives in the added PRG bank; the fixed bank continues to use shared game source and a
 manifest-reviewed operand allowlist. Output, symbols, verification, and FCEUX
 runtime evidence remain separate from the default build.
 
@@ -46,28 +49,7 @@ capacity checks, and round trips. The chosen boundary preserves the canonical
 ROM and makes the expanded variant explicit. It does not imply expanded layouts
 or profile-aware authoring for other official profiles.
 
-## Editable asset workflow
-
-Initialize the ignored local JSON files exactly once:
-
-```text
-make init-expanded-assets
-```
-
-This decodes `assets/generated/maze/maze.rle` into `content/workspace/maze.json` for
-the stage-2-and-later layout and the reference `$EB42..$EC77` region into
-`content/workspace/stage_parameters.json`. It also decodes all 16 manifest-managed
-streams into `content/workspace/sound_streams.json` and the 624-byte actor mapping
-block into `content/workspace/actor_sprites.json`. All title, attract, gameplay,
-intermission, frightened, and per-stage fruit colors are decoded into
-`content/workspace/palettes.json`. Screen-oriented title, attract, HUD, pause, and intermission visual data are
-decoded into `content/workspace/screens.json`; executable intermission pointers are
-retained only as read-only catalogue metadata. The demonstrations change
-first-level frightened duration from 7 to 14 and the first slot-04 pellet note
-from `$01` to `$B1`. Existing JSON files are left untouched, protecting local
-edits from an accidental bootstrap rerun.
-
-Then build or validate the variant:
+## Building
 
 ```text
 make build-expanded
@@ -76,13 +58,16 @@ make validate-expanded
 make run-expanded
 ```
 
-Every build explicitly encodes all six JSON files through the documented codecs
-into `build/expanded/assets/`, links the original maze at `$8000`, stage
-parameters at `$81A0`, the editable maze at `$82D6`, the sound pointer table
-and streams at `$848F`, actor mappings at `$A4AF`, palettes at `$A71F`, and
-screen assets at `$A79E`. All other artifacts remain below `build/expanded/`. Missing or
-structurally invalid JSON fails the build instead of falling back to extracted
-binary data.
+`make expanded-assets` (run by the build) writes the data, as the v1.0 ROM
+holds it, into `build/expanded/assets/`: the original maze for stage 2 and
+later, the stage parameters, the 16 sound streams with their pointer table,
+the actor mappings, the palettes, and the screens. The build links the original
+maze at `$8000`, stage parameters at `$81A0`, the second maze at `$82D6`, the
+sound pointer table and streams at `$848F`, actor mappings at `$A4AF`,
+palettes at `$A71F`, and screen assets at `$A79E`. All other artifacts remain
+below `build/expanded/`. `scripts/build/build_expanded_base.py` makes the same
+image from a given v1.0 ROM; it is the build Retrolarium runs, and the kit
+pins the image's SHA-256.
 
 `make verify-expanded` requires:
 
@@ -98,18 +83,20 @@ binary data.
   changed in the fixed bank, with every other byte preserved.
 
 `make validate-expanded` additionally loads expanded-ROM symbols in FCEUX,
-uses a controlled stage-index patch to enter stage 2, proves that the live
-decompressor pointer selects `$82D6`, and requires the second profile's JSON
-frightened duration to match both expanded data and runtime RAM. It then
-requests pellet slot 04 and proves its runtime cursor and edited note originate
-from the expanded sound table at `$848F`. Finally, it compares all 32 bytes of
-live FCEUX PPU palette RAM with the gameplay JSON and the documented stage-fruit
-override at `$3F1D`. It also observes the first title-logo tile from `$A79E`
+builds a probe image in `build/expanded-probe/` whose round 2 frightened time
+is 14 (it is 6) and whose first pellet note is `$B1`, so the run can tell the
+relocated data from the original. It uses a controlled stage-index patch to
+enter stage 2, proves that the live decompressor pointer selects `$82D6`, and
+requires the second profile's frightened duration to match both expanded data
+and runtime RAM. It then requests pellet slot 04 and proves its runtime cursor
+and probed note originate from the expanded sound table at `$848F`. Finally, it
+compares all 32 bytes of live FCEUX PPU palette RAM with the relocated gameplay
+palette and the documented stage-fruit override at `$3F1D`. It also observes the first title-logo tile from `$A79E`
 at live PPU `$20E5`.
 
-## Extending the pipeline
+## Extending the layout
 
-Additional JSON codecs can allocate data after the maze in `HACK_BANK`. Each
-asset needs a deterministic encoder, a linker symbol, bounds validation, and a
-runtime consumer before it is considered connected. Keep generated binary and
-ROM output ignored; only schemas, tooling, and documentation belong in Git.
+More data can move into the free space after the screens. Each moved table
+needs a linker symbol, bounds validation, a runtime consumer, and a resource
+override for the `japan-v10-nrom256` revision in the kit's Pac-Man profile, so
+Retrolarium finds it there. Keep generated binary and ROM output ignored.

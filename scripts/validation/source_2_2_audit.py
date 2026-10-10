@@ -9,7 +9,6 @@ import sys
 from pathlib import Path, PurePosixPath
 
 SCRIPTS_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(SCRIPTS_ROOT / "authoring"))
 sys.path.insert(0, str(SCRIPTS_ROOT / "build"))
 sys.path.insert(0, str(SCRIPTS_ROOT / "runtime"))
 
@@ -18,8 +17,6 @@ from documentation_audit import audit_documentation
 from make_help import load_help, validate_help
 from revision_profiles import Revision, load_manifest  # noqa: E402
 from run_revision_smokes import validate_scenarios  # noqa: E402
-from ui_smoke import load_manifest as load_ui_manifest  # noqa: E402
-from ui_smoke import validate_manifest as validate_ui_manifest  # noqa: E402
 
 
 EXPECTED_RELEASE_LINE = "2.x"
@@ -522,8 +519,9 @@ def validate_layout(project_root: Path, contract: object) -> list[str]:
     return errors
 
 
+# Source Reconstruction 3.0 retired the authoring group with the editors.
 EXPECTED_TOOL_RESPONSIBILITIES = {
-    "authoring", "build", "launcher", "runtime", "validation", "workflow",
+    "build", "launcher", "runtime", "validation", "workflow",
 }
 
 
@@ -1115,15 +1113,6 @@ def audit(
             errors.extend(validate_help(project_root, load_help(project_root / help_manifest)))
         except (OSError, ValueError, json.JSONDecodeError) as error:
             errors.append(f"invalid Make help manifest: {error}")
-    ui_manifest = layout.get("ui_smoke_manifest") if isinstance(layout, dict) else None
-    if isinstance(ui_manifest, str):
-        try:
-            errors.extend(validate_ui_manifest(
-                project_root, load_ui_manifest(project_root / ui_manifest),
-                require_inputs=False,
-            ))
-        except (OSError, ValueError, json.JSONDecodeError) as error:
-            errors.append(f"invalid UI smoke manifest: {error}")
     revision_errors, revisions = validate_revision_contract(
         project_root, manifest.get("revision_contract"),
     )

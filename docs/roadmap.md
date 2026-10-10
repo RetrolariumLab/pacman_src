@@ -592,25 +592,22 @@ and connects every editable section through reviewed fixed-bank operands while
 the preservation build remains byte-identical. FCEUX observes the JSON title
 tile reaching its live PPU address.
 
-### 20. Unified Qt Content Studio — Planned, Low Priority
+### 20. Unified Qt Content Studio — Superseded by Retrolarium
 
-Optionally replace the separate Tkinter front ends with one native Qt desktop
-application organized into sound, maze, graphics, palette, screen/text, and
-build/run tabs. It should ship as a standalone executable that does not require
-a user-installed Python runtime, keep project state synchronized between tabs,
-and use responsive native drawing surfaces for pixel and tile editing.
+The planned single Qt application became Retrolarium Studio, which serves
+several games from one kit. It edits everything milestones 16-19 covered, in
+v1.0, v1.1 and the expanded variant alike, so the four Tkinter editors, their
+JSON workspace under `content/workspace/`, their UI smokes and their pages were
+removed. Milestones 12-19 remain the record of how the expanded layout and its
+codecs were proven.
 
-This is a convenience and packaging milestone, not a missing content feature.
-The existing Python editors, JSON schemas, codecs, Makefile targets, tests, and
-expanded-ROM pipeline are complete and remain the reference implementation.
-The Qt application should consume the same project documents and invoke the
-same deterministic validation rules rather than inventing a second asset
-format or weakening the byte-identical preservation gate.
-
-Priority is deliberately low. Start this milestone only when distribution as a
-single executable, cross-editor project state, or measured GUI responsiveness
-justifies the additional C++/Qt build and maintenance surface. Until then the
-four focused applications are the supported authoring workflow.
+What stays in this repository is the build: the expanded NROM-256 variant takes
+its data from the v1.0 ROM (`make expanded-assets`), the codecs it and the
+round trips need live under `scripts/build/`, and `pacman.rlj` lists the three
+revisions Retrolarium opens, the expanded one built by
+`scripts/build/build_expanded_base.py`. A last comparison of the kit's decoded
+resources with the retired editors' decoders matched for v1.0 and v1.1 before
+they were removed. See [retrolarium.md](./retrolarium.md).
 
 ### 21. Official Multi-Revision Source Builds — Complete
 

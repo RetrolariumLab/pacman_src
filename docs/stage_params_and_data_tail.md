@@ -68,16 +68,17 @@ the stream.
 
 ## Optional Expanded Stage Parameters
 
-The NROM-256 entrypoint can place an editable JSON representation of this
-entire stage-parameter family at `$81A0..$82D5` in the added PRG bank. Build-time
+The NROM-256 entrypoint places this entire stage-parameter family at
+`$81A0..$82D5` in the added PRG bank, where Retrolarium edits it as the round
+tables of the expanded revision. Build-time
 aliases redirect every round-setup consumer to the relocated tables while the
 preservation entrypoint continues to use the original `$EB42` data unchanged.
 
 The expanded layout manifest fixes both asset ranges and enumerates every
 allowed operand-byte change in the original bank. `make validate-expanded`
-also proves in FCEUX that the first profile's frightened duration is read from
-the relocated asset and reaches runtime RAM. See
-[Expanded ROM Assets](expanded_rom_assets.md) for the editable workflow and
+also proves in FCEUX that the second profile's frightened duration is read
+from the relocated asset and reaches runtime RAM. See
+[Expanded NROM-256 ROM](expanded_rom_assets.md) for the build and
 layout contract.
 
 ## Padding and Fixed Tail

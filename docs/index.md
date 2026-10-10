@@ -41,19 +41,15 @@
 - [sound_engine.md](./sound_engine.md): audio update loop, stream decoder, and opcodes.
 - [stage_params_and_data_tail.md](./stage_params_and_data_tail.md): stage tables, maze RLE, vectors, and tail layout.
 
-## Profiles, Variants, and Authoring
+## Profiles, Variants, and Editing
 
 - [multi_revision_builds.md](./multi_revision_builds.md): seven official profiles and shared-source workflow.
 - [goodnes_variant_notes.md](./goodnes_variant_notes.md): classification of overdumps, hacks, and derivatives.
 - [rom_hack_variants.md](./rom_hack_variants.md): isolated optional builds and declared differences.
-- [expanded_rom_assets.md](./expanded_rom_assets.md): NROM-256 architecture decision, isolation boundary, and editable-asset pipeline.
+- [retrolarium.md](./retrolarium.md): editing in Retrolarium Studio, the three revisions, and `make studio-check`.
+- [expanded_rom_assets.md](./expanded_rom_assets.md): NROM-256 architecture decision, isolation boundary, and build.
 - [data_formats.md](./data_formats.md): six decoded formats and exact round trips.
 - [assets.md](./assets.md): policy and reproducible extraction of opaque assets.
-- [sound_authoring.md](./sound_authoring.md): variable-length streams, MIDI import, and WAV preview.
-- [maze_authoring.md](./maze_authoring.md): CHR-backed editing, RLE export, and runtime guards.
-- [graphics_authoring.md](./graphics_authoring.md): reversible CHR and actor-mapping editing.
-- [screen_authoring.md](./screen_authoring.md): title, text, HUD, and intermission editing.
-- [ui_smoke.md](./ui_smoke.md): real-window authoring interaction coverage on the supported Windows host.
 
 ## Verification Rule
 After each edit batch:
@@ -67,8 +63,8 @@ After each edit batch:
 - `make source-2-1-check` is the strict pre-tag release gate for the reference
   build, all official revisions, runtime evidence, relocation, and authoring
   pipelines; `make source-2-1-post-tag-audit` verifies the resulting tag.
-- Sound, maze, graphics, and screen editors are available as local Python tools;
-  their JSON assets feed the isolated expanded NROM-256 build.
+- Editing is done in Retrolarium Studio from `pacman.rlj`; the repository's own
+  editors were retired once the studio covered them.
 - The milestone-23 audit resolved every registered unknown; the registry retains
   their evidence histories and accepts future findings. A unified Qt editor is
   retained as a low-priority packaging improvement, not a release blocker.

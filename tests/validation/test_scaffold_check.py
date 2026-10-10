@@ -23,13 +23,13 @@ class ScaffoldCheckTests(unittest.TestCase):
         values = {path.as_posix() for path in repository_files(PROJECT_ROOT)}
         self.assertFalse(any(path.endswith((".nes", ".fds")) for path in values))
         self.assertFalse(any(path.startswith("assets/generated/") for path in values))
-        self.assertFalse(any(path.startswith("content/workspace/") for path in values))
+        self.assertFalse(any(path.startswith(("hack/", ".retrolarium/")) for path in values))
         self.assertFalse(any(path.startswith("build/") for path in values))
 
     def test_private_input_detection_rejects_rom_and_workspace(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / "content/workspace").mkdir(parents=True)
+            (root / "hack/japan-v10").mkdir(parents=True)
             (root / "game.nes").write_bytes(b"NES\x1a")
             with self.assertRaisesRegex(ValueError, "private/generated"):
                 validate_no_private_inputs(root)

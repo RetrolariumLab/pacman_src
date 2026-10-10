@@ -108,11 +108,12 @@ decode/encode path, including preserved post-stop bytes. Editing the pointer
 table or decoder remains source work; promoting an edited stream still requires
 updated asset evidence and preservation review.
 
-The optional expanded variant promotes all 16 streams to an ignored editable
-`content/workspace/sound_streams.json`. Its build emits a pointer table at `$848F`
-and an 8 KiB variable-length stream region at `$84AF`; preservation builds retain
-the original table and payload addresses. `make validate-expanded` requests pellet slot 04
-in FCEUX and proves that its cursor advances through the JSON-generated stream.
+The optional expanded variant moves all 16 streams to its added bank: a
+pointer table at `$848F` and an 8 KiB variable-length stream region at `$84AF`,
+which Retrolarium edits in that revision; preservation builds retain the
+original table and payload addresses. `make validate-expanded` requests pellet
+slot 04 in FCEUX and proves that its cursor advances through the relocated
+stream.
 
 ## Preservation Invariants
 

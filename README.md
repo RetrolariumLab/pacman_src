@@ -40,12 +40,12 @@ the evidence rules in the unknowns registry. See
 [`docs/source_reconstruction_1_0.md`](docs/source_reconstruction_1_0.md) for the
 original preservation contract and evidence summary.
 
-The optional NROM-256 content-authoring workflow is complete. Four focused
-local applications edit sound and music, the maze, CHR and actor mappings,
-palettes, screens, English game text, HUD data, and intermission visuals. They
-share validated ignored-local assets and one deterministic expanded-ROM build
-pipeline. A future unified Qt application is tracked as a low-priority
-convenience milestone; it is not required to use or maintain the current tools.
+Editing moved to Retrolarium: open `pacman.rlj` in Retrolarium Studio to edit
+the maze, round tables, sound and music, CHR and actor frames, palettes,
+screens, text and the attract demo of v1.0, v1.1 or the optional NROM-256
+expanded variant, which the studio builds from the v1.0 ROM. The repository's
+own editors were retired once the studio covered them; see
+[`docs/retrolarium.md`](docs/retrolarium.md).
 
 Seven official cartridge profiles rebuild byte-identically from the shared
 source. `make verify-revisions` checks every locally available reference, while
@@ -131,22 +131,19 @@ pacman_src/
 |-- build/                         # Generated ROM and linker artifacts
 |-- config/                        # Emulator/reference/linker configuration
 |   `-- linker/                    # ld65 layouts
-|-- content/
-|   `-- workspace/                 # Ignored private editor documents
 |-- docs/                          # Architecture and RE notes
-|-- mk/                            # Authoring, runtime, and validation recipes
+|-- mk/                            # Variant, runtime, and validation recipes
 |-- movies/                        # FM2 inputs for automated capture
 |-- scenarios/                     # Runtime, scoring, and revision smoke cases
 |-- scripts/
-|   |-- authoring/                 # Codecs, editor models, and Studios
-|   |-- build/                     # Builds, profiles, assets, and cleanup
+|   |-- build/                     # Builds, profiles, assets, codecs, and cleanup
 |   |-- runtime/                   # Emulator capture and evidence validation
 |   |-- validation/                # Lint, symbols, release, and policy checks
 |   |-- workflow/                  # Analysis and reporting tools
 |   `-- run.py                     # Stable direct-tool dispatcher
 |-- src/
 |   |-- main.asm                   # Address-ordered ca65 entrypoint
-|   |-- expanded/nrom256.asm       # JSON-backed NROM-256 entrypoint
+|   |-- expanded/nrom256.asm       # Expanded NROM-256 entrypoint
 |   |-- variants/stage5.asm        # Isolated behavior-changing entrypoint
 |   |-- macros/                    # Byte-preserving ca65 abstractions
 |   |-- system/
@@ -162,8 +159,8 @@ pacman_src/
 ```
 
 `assets/generated/` and `build/` are generated artifacts and are not tracked.
-Private editor documents live under ignored `content/workspace/`; legacy local
-artifact directories remain ignored but are not touched by `make clean`. All
+Retrolarium keeps its edits under ignored `hack/` and its builds under
+`.retrolarium/`; legacy local artifact directories remain ignored but are not touched by `make clean`. All
 source tools under `scripts/` are tracked and grouped by responsibility, and
 the test tree mirrors those groups. Tool responsibilities, public commands,
 and test owners are pinned by `config/tooling_layout.json`; see
@@ -174,7 +171,8 @@ and test owners are pinned by `config/tooling_layout.json`; see
 
 `make help` is generated from the checked public-target registry. Use
 `make scaffold-check` for the ROM-less disposable-checkout smoke and
-`make ui-smoke` for real-window interaction coverage of all four Studios.
+`make studio-check` to open and rebuild every `pacman.rlj` revision with the
+Retrolarium kit.
 
 ```bash
 make                                    # Same as `make build`
@@ -188,18 +186,12 @@ make build-hack                         # Build the isolated default ROM-hack va
 make verify-hack                        # Require only its documented byte difference
 make validate-hack                      # Prove its stage-5 behavior in FCEUX
 make run-hack                           # Build and run the default hack
-make init-expanded-assets               # Initialize all editable local JSON once
-make build-expanded                     # Build the JSON-backed NROM-256 variant
+make expanded-assets                    # Write the expanded data from the v1.0 ROM
+make build-expanded                     # Build the NROM-256 variant
 make verify-expanded                    # Verify assets, layout, and fixed-bank operands
 make validate-expanded                  # Prove expanded assets are consumed in FCEUX
 make run-expanded                       # Build and run the NROM-256 variant
-make sound-studio                       # Open the local slot editor and piano roll
-make maze-studio                        # Open the local 27x22 CHR-backed maze editor
-make graphics-studio                    # Open the local CHR and metasprite editor
-make screen-studio                      # Open the title, text, HUD, and intermission editor
-make describe-sound SOUND_SLOT=4        # Inspect decoded musical notes
-make preview-sound SOUND_SLOT=4         # Render an ignored WAV preview
-make import-midi MIDI_FILE=x.mid        # Import monophonic MIDI to ignored JSON
+make studio-check                       # Check pacman.rlj with the Retrolarium kit
 make symbols                            # Generate Mesen/FCEUX debugger artifacts
 make test-debug-symbols                 # Test symbol parsing and conversion
 make validate-symbols                   # Prove live symbol lookup and named breakpoint

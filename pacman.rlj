@@ -1,0 +1,43 @@
+# Retrolarium Studio: open this file to edit Pac-Man.
+#
+# The studio asks which revision to edit, checks its ROM (copied next to this
+# file, never committed), runs the asset split when its outputs are missing,
+# keeps your edits in hack/<revision>/ and builds into .retrolarium/. None of
+# those are tracked: delete hack/<revision> to start over from the original.
+schema = "retrolarium.game"
+schema_version = 1
+
+[game]
+id = "pacman"
+name = "Pac-Man"
+platform = "nes"
+profile = "pacman.v1"
+
+[[revisions]]
+id = "japan-v10"
+label = "Japan · v1.0"
+rom = "Pac-Man (J) (V1.0) [!].nes"
+
+[[revisions]]
+id = "japan-v11"
+label = "Japan · v1.1"
+rom = "Pac-Man (J) (V1.1) [!].nes"
+
+# The expanded NROM-256 variant (docs/expanded_rom_assets.md): not a dump,
+# so the kit builds it from the v1.0 ROM when build/expanded/ lacks it. It
+# needs the toolchain of config/toolchain.json.
+[[revisions]]
+id = "japan-v10-nrom256"
+label = "Japan · v1.0 expanded (NROM-256)"
+rom = "build/expanded/pacman.nes"
+
+[revisions.build]
+from = "japan-v10"
+command = ["scripts/build/build_expanded_base.py", "--rom", "{rom}", "--output", "{output}"]
+
+# make split, run by the kit's Python: both revisions build from the assets
+# the v1.0 ROM splits into.
+[split]
+revision = "japan-v10"
+command = ["scripts/build/split_assets.py", "--rom", "{rom}", "--manifest", "assets/manifest.json", "--output-dir", "assets/generated"]
+check = ["scripts/build/check_assets.py", "--manifest", "assets/manifest.json", "--asset-dir", "assets/generated"]
