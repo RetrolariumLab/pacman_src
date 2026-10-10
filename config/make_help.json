@@ -26,25 +26,15 @@
         {"target": "symbols-hack", "usage": "symbols-hack", "summary": "Generate debugger symbols for the fixed-layout variant."},
         {"target": "validate-hack", "usage": "validate-hack", "summary": "Validate the fixed-layout variant live in FCEUX."},
         {"target": "run-hack", "usage": "run-hack", "summary": "Build and run the fixed-layout variant."},
-        {"target": "init-expanded-assets", "usage": "init-expanded-assets", "summary": "Initialize private editable JSON assets once."},
-        {"target": "build-expanded", "usage": "build-expanded", "summary": "Build the JSON-backed NROM-256 variant."},
+        {"target": "expanded-assets", "usage": "expanded-assets", "summary": "Write the expanded variant's data assets from the v1.0 ROM."},
+        {"target": "build-expanded", "usage": "build-expanded", "summary": "Build the NROM-256 variant that Retrolarium edits."},
         {"target": "verify-expanded", "usage": "verify-expanded", "summary": "Verify expanded assets, layout, and fixed-bank changes."},
         {"target": "symbols-expanded", "usage": "symbols-expanded", "summary": "Generate debugger symbols for the expanded variant."},
         {"target": "validate-expanded", "usage": "validate-expanded", "summary": "Validate expanded asset consumption live in FCEUX."},
-        {"target": "run-expanded", "usage": "run-expanded", "summary": "Build and run the expanded variant."}
-      ]
-    },
-    {
-      "id": "authoring",
-      "title": "Authoring tools",
-      "commands": [
-        {"target": "sound-studio", "usage": "sound-studio", "summary": "Open the sound editor and piano roll."},
-        {"target": "maze-studio", "usage": "maze-studio", "summary": "Open the CHR-backed maze editor."},
-        {"target": "graphics-studio", "usage": "graphics-studio", "summary": "Open the CHR, palette, and metasprite editor."},
-        {"target": "screen-studio", "usage": "screen-studio", "summary": "Open the screen, text, HUD, and intermission editor."},
-        {"target": "describe-sound", "usage": "describe-sound SOUND_SLOT=4", "summary": "Describe one decoded sound slot."},
-        {"target": "preview-sound", "usage": "preview-sound SOUND_SLOT=4", "summary": "Render one sound slot to a WAV preview."},
-        {"target": "import-midi", "usage": "import-midi MIDI_FILE=x.mid", "summary": "Import monophonic MIDI into editable sound JSON."}
+        {"target": "run-expanded", "usage": "run-expanded", "summary": "Build and run the expanded variant."},
+        {"target": "studio-check", "usage": "studio-check", "summary": "Open and rebuild every pacman.rlj revision with the Retrolarium kit."},
+        {"target": "source-3-audit", "usage": "source-3-audit", "summary": "Run studio-check and check the Source 3.0 manifest against the kit."},
+        {"target": "source-3-check", "usage": "source-3-check", "summary": "Run the Source 2.2 functional gate, then source-3-audit."}
       ]
     },
     {
@@ -68,9 +58,7 @@
         {"target": "validate-evidence", "usage": "validate-evidence", "summary": "Revalidate existing reconstruction evidence."},
         {"target": "test-relocation", "usage": "test-relocation", "summary": "Build and exercise the canonical symbolic relocation."},
         {"target": "help-check", "usage": "help-check", "summary": "Verify exact public-target help coverage."},
-        {"target": "scaffold-check", "usage": "scaffold-check", "summary": "Run ROM-less checks in a disposable tracked-file checkout."},
-        {"target": "ui-smoke-check", "usage": "ui-smoke-check", "summary": "Validate the workstation UI interaction contract without opening windows."},
-        {"target": "ui-smoke", "usage": "ui-smoke", "summary": "Open all four Studios and exercise required workstation actions."}
+        {"target": "scaffold-check", "usage": "scaffold-check", "summary": "Run ROM-less checks in a disposable tracked-file checkout."}
       ]
     },
     {
@@ -105,5 +93,5 @@
       ]
     }
   ],
-  "hidden_targets": ["_batch", "_canonical-movie", "_manifest", "_require-assets", "expanded-assets", "smoke-regional-revisions"]
+  "hidden_targets": ["_batch", "_canonical-movie", "_manifest", "_require-assets", "smoke-regional-revisions"]
 }

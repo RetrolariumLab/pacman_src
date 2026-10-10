@@ -33,7 +33,13 @@ def main() -> int:
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parents[2]
-    paths = {name: rooted(project_root, value) for name, value in vars(args).items()}
+    build(project_root, {name: rooted(project_root, value) for name, value in vars(args).items()})
+    print("[INFO] Run verify-expanded to enforce the reviewed fixed-bank changes.")
+    return 0
+
+
+def build(project_root: Path, paths: dict[str, Path]) -> bytes:
+    """Assemble the variant; paths holds the same names as the arguments."""
     for name in ("source", "config", "original_rom", "chr", "toolchain_manifest"):
         if not paths[name].is_file():
             fail(f"Required file not found: {paths[name]}")
@@ -63,8 +69,7 @@ def main() -> int:
 
     print(f"[OK] Built expanded ROM: {paths['output_rom']}")
     print(f"[INFO] Expanded PRG SHA1={sha1(prg)} ROM SHA1={sha1(candidate)}")
-    print("[INFO] Run verify-expanded to enforce the reviewed fixed-bank changes.")
-    return 0
+    return candidate
 
 
 if __name__ == "__main__":

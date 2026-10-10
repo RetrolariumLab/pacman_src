@@ -8,7 +8,7 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "build"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build_native import parse_ines  # noqa: E402
 

@@ -11,15 +11,15 @@ internal/compatibility target. `make scaffold-check` copies only tracked and
 non-ignored files into a disposable Git checkout, proves that no ROM, extracted
 asset, workspace, or build output crossed that boundary, and runs synthetic
 tests plus real `help-check`, `tool-list`, and `source-2-2-audit` Make commands.
-The separate `make ui-smoke` workstation gate exercises actual Studio windows;
-its contract-only `make ui-smoke-check` form is safe inside the ROM-less gate.
+Editing is Retrolarium's: `make studio-check` runs the kit's check of
+`pacman.rlj` (see [retrolarium.md](./retrolarium.md)).
 
 `config/tooling_layout.json` is the machine-readable ownership contract. Every
 tracked Python or Lua file below `scripts/` belongs to exactly one of these
 responsibilities:
 
-- `build` assembles, compares, splits, and describes cartridge artifacts;
-- `authoring` owns codecs, headless editor models, and workstation Studios;
+- `build` assembles, compares, splits, and describes cartridge artifacts, and
+  owns the data codecs the expanded build and the round trips use;
 - `validation` owns lint, identity checks, symbols, and release audits;
 - `runtime` owns emulator capture and behavioral validation;
 - `workflow` owns reverse-engineering analysis and reporting;
@@ -37,7 +37,7 @@ appear without an equally reviewable exception.
 
 ## Physical layout
 
-Tool files live under `scripts/authoring/`, `scripts/build/`,
+Tool files live under `scripts/build/`,
 `scripts/runtime/`, `scripts/validation/`, and `scripts/workflow/`. Tests mirror
 those responsibilities below `tests/`. Only the stable `scripts/run.py`
 dispatcher remains at the scripts root. Make targets and documentation use the

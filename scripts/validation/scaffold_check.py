@@ -15,7 +15,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SYNTHETIC_TESTS = (
     "tests.build.test_build_dev",
     "tests.build.test_clean_artifacts",
-    "tests.authoring.test_data_formats",
+    "tests.build.test_data_formats",
+    "tests.build.test_expanded_assets",
     "tests.validation.test_documentation_audit",
     "tests.validation.test_lint_source",
     "tests.validation.test_make_help",
@@ -23,7 +24,6 @@ SYNTHETIC_TESTS = (
     "tests.validation.test_scaffold_check",
     "tests.validation.test_source_2_2_audit",
     "tests.validation.test_tooling_layout",
-    "tests.authoring.test_ui_smoke",
 )
 
 
@@ -83,7 +83,7 @@ def validate_no_private_inputs(root: Path) -> None:
         for pattern in ("*.nes", "*.fds")
         for path in root.rglob(pattern)
     ]
-    for relative in ("assets/generated", "content/workspace", "build"):
+    for relative in ("assets/generated", "hack", ".retrolarium", "build"):
         if (root / relative).exists():
             forbidden.append(relative)
     if forbidden:
@@ -100,7 +100,6 @@ def check_scaffold(project_root: Path, python: str, make: str) -> None:
         run(["git", "-c", "core.autocrlf=false", "add", "-A"], root)
         run([make, "help-check"], root)
         run([make, "tool-list"], root)
-        run([make, "ui-smoke-check"], root)
         run([python, "-m", "unittest", *SYNTHETIC_TESTS, "-v"], root)
         run([make, "source-2-2-audit"], root)
     print(f"[OK] ROM-less scaffold passed {len(SYNTHETIC_TESTS)} synthetic test modules and public Make smokes.")

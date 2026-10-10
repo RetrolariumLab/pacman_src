@@ -16,7 +16,7 @@ class CleanArtifactsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             build = root / "build"
-            workspace = root / "content/workspace"
+            workspace = root / "hack/japan-v10"
             reference = root / "reference"
             build.mkdir()
             workspace.mkdir(parents=True)

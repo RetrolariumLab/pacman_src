@@ -122,7 +122,7 @@ def main() -> int:
     except (KeyError, TypeError, ValueError) as error:
         print(f"[ERROR] Expanded ROM validation failed: {error}")
         return 1
-    print("[OK] Expanded layout, all JSON assets, and exact fixed-bank change manifest.")
+    print("[OK] Expanded layout, all relocated assets, and exact fixed-bank change manifest.")
     return 0
 
 
