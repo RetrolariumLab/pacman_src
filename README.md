@@ -258,6 +258,13 @@ checkout or the original ROM.
 
 - `bank_FF.asm` base reference: [cyneprepou4uk/NES-Games-Disassembly - Pac-Man](https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man)
 
+## Trademarks
+
+This is an unofficial reconstruction, made for study and preservation. The game,
+its title and its characters are trademarks of their owners, who have not made,
+licensed or endorsed this project. It contains no part of the game: you need
+your own copy of Pac-Man to build anything.
+
 ## License
 
 No original ROM data is distributed with this repository. The repository does
