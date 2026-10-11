@@ -1,0 +1,36 @@
+{
+  "schema": "retrolarium.names",
+  "schema_version": 1,
+  "description": "The names inside Pac-Man, in English, for Retrolarium Studio and Kit; Retrolarium keeps none of them. guard lists the names Retrolarium's own repositories must never contain.",
+  "names": {
+    "ghosts": {
+      "0": "Akabei",
+      "1": "Pinky",
+      "2": "Aosuke",
+      "3": "Guzuta"
+    },
+    "fruits": {
+      "0": "Cherry",
+      "1": "Strawberry",
+      "2": "Orange",
+      "3": "Apple",
+      "4": "Melon",
+      "5": "Galaxian",
+      "6": "Bell",
+      "7": "Key"
+    }
+  },
+  "guard": [
+    "Akabei",
+    "Aosuke",
+    "Blinky",
+    "Clyde",
+    "Guzuta",
+    "Inky",
+    "Kimagure",
+    "Machibuse",
+    "Oikake",
+    "Otoboke",
+    "Pinky"
+  ]
+}

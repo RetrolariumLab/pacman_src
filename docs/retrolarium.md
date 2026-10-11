@@ -34,6 +34,23 @@ revisions and the asset split. Each revision offers:
 - the title, attract, HUD, pause and intermission screens, and the game text;
 - the attract demo's moves.
 
+## The game's names and tables
+
+Retrolarium keeps nothing taken from the game; this repository gives it what it
+needs. `config/names.json` holds the game's own names (the ghosts and fruits) in
+English. The studio and the kit read it when a project opens and show the names
+as they are, untranslated; without it they show numbers instead. Its `guard`
+list names what Retrolarium's own repositories must never contain.
+
+`config/game_profile.json` is the game's Retrolarium profile: its revisions with
+their hashes and, for each resource, where it lies in each revision's image and
+which codec reads it. The kit reads it when it opens `pacman.rlj` or a project
+made from it; Retrolarium keeps no copy.
+
+`config/profile_tables.json` names, by label, the tables the kit reads from the
+image built from this source; `tools/profile_tables.py` in Retrolarium Kit turns
+it into the offsets of `config/game_profile.json` for every revision.
+
 ## Checking the repository
 
 `make studio-check` runs `rltool studio check pacman.rlj`. In a throwaway copy
