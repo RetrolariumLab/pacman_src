@@ -28,6 +28,9 @@ REVISION_REQUIRE_ALL ?=
 SOURCE_2_1_MANIFEST ?= $(PROJECT_DIR)config/source_reconstruction_2_1.json
 SOURCE_2_2_MANIFEST ?= $(PROJECT_DIR)config/source_reconstruction_2_2.json
 TOOLCHAIN_MANIFEST ?= $(PROJECT_DIR)config/toolchain.json
+# The kit command; the build scripts ask it for its assemblers.
+RLTOOL ?= rltool
+export RLTOOL
 
 # Instrumented FCEUX checkout used by runtime validation and analysis.
 FCEUX_DIR ?= ../fceux_automation

@@ -11,7 +11,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from build_dev import load_toolchain_manifest, verify_bundled_tool
+from build_dev import load_toolchain_manifest, tool_path, verify_bundled_tool
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "validation"))
 
@@ -34,12 +34,12 @@ def load_verified_build_tools(
         tools: list[Path] = []
         for component_id in ("ca65", "ld65"):
             component = components[component_id]
-            if component.get("provenance") != "bundled":
+            if component.get("provenance") != "retrolarium-kit":
                 raise ValueError(
-                    f"{component_id} must use the manifest-owned bundled binary"
+                    f"{component_id} must use the assembler Retrolarium Kit ships"
                 )
             verify_bundled_tool(project_root, component_id, component)
-            tools.append((project_root / str(component["path"])).resolve())
+            tools.append(tool_path(project_root, component_id, component))
     except (OSError, ValueError) as error:
         fail(str(error))
     return tools[0], tools[1]

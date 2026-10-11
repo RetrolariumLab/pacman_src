@@ -35,16 +35,16 @@ class BuildRevisionTests(unittest.TestCase):
                 }],
                 "components": {
                     "ca65": {
-                        "path": "bin/ca65.exe", "version": "ca65 test",
+                        "version": "ca65 test", "provenance": "retrolarium-kit",
+                        "suite": "nes", "tool": "ca65", "kit_release": "test",
                         "source": "https://example.invalid/cc65",
                         "source_commit": "abc123", "binary_sha256": "0" * 64,
-                        "provenance": "bundled",
                     },
                     "ld65": {
-                        "path": "bin/ld65.exe", "version": "ld65 test",
+                        "version": "ld65 test", "provenance": "retrolarium-kit",
+                        "suite": "nes", "tool": "ld65", "kit_release": "test",
                         "source": "https://example.invalid/cc65",
                         "source_commit": "abc123", "binary_sha256": "0" * 64,
-                        "provenance": "bundled",
                     },
                     "fceux_automation": {
                         "source": "https://example.invalid/fceux",
@@ -56,9 +56,15 @@ class BuildRevisionTests(unittest.TestCase):
                 },
             }), encoding="utf-8")
 
+            # The kit hands out programs that are not the pinned build.
+            def untrusted(_root, component_id, _component):
+                return bin_dir / f"{component_id}.exe"
+
             with patch("build_native.run_tool") as run_tool, patch(
                 "build_dev.command_output"
-            ) as version_command, patch("sys.stderr", new_callable=StringIO) as stderr:
+            ) as version_command, patch("build_dev.tool_path", side_effect=untrusted), patch(
+                "build_native.tool_path", side_effect=untrusted
+            ), patch("sys.stderr", new_callable=StringIO) as stderr:
                 with self.assertRaises(SystemExit):
                     build_native.load_verified_build_tools(root, manifest)
 

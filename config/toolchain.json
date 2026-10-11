@@ -12,19 +12,23 @@
   "components": {
     "ca65": {
       "version": "ca65 V2.19 - Git 0fca835",
-      "path": "bin/ca65.exe",
+      "provenance": "retrolarium-kit",
+      "suite": "nes",
+      "tool": "ca65",
+      "kit_release": "2026.10.11",
       "source": "https://github.com/cc65/cc65",
       "source_commit": "0fca835",
-      "binary_sha256": "9109d7118ff070e78f031bee4eb776061e56b74e7c8f9f40c70fd6707ea0ac5a",
-      "provenance": "bundled"
+      "binary_sha256": "779a2a266f038cfeea4cdb3cd2cf5bbef4b602bb43560c3fd9f1b45d7bc5c776"
     },
     "ld65": {
       "version": "ld65 V2.19 - Git 0fca835",
-      "path": "bin/ld65.exe",
+      "provenance": "retrolarium-kit",
+      "suite": "nes",
+      "tool": "ld65",
+      "kit_release": "2026.10.11",
       "source": "https://github.com/cc65/cc65",
       "source_commit": "0fca835",
-      "binary_sha256": "5f68367a135c578c88744e27ba0b1234604d87ef1ff6294b46fcb031ff984db4",
-      "provenance": "bundled"
+      "binary_sha256": "06720e9200c9a2a53e049413888a6a55ee023b0801a598d4b6143caae8466813"
     },
     "fceux_automation": {
       "source": "https://github.com/oranguthang/fceux_automation.git",
