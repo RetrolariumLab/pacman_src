@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -74,7 +75,11 @@ def load_toolchain_manifest(path: Path) -> dict[str, dict[str, object]]:
             raise ValueError(f"missing provenance for {component_id}")
     for component_id in ("ca65", "ld65"):
         component = components[component_id]
-        if not isinstance(component.get("path"), str):
+        if component.get("provenance") == "retrolarium-kit":
+            for field in ("suite", "tool", "kit_release"):
+                if not isinstance(component.get(field), str) or not component[field]:
+                    raise ValueError(f"missing {field} for {component_id}")
+        elif not isinstance(component.get("path"), str):
             raise ValueError(f"missing path for {component_id}")
         if not isinstance(component.get("version"), str):
             raise ValueError(f"missing version for {component_id}")
@@ -108,10 +113,32 @@ def command_output(command: list[str], cwd: Path) -> str:
     return (completed.stdout + completed.stderr).strip()
 
 
+def tool_path(
+    project_root: Path, component_id: str, component: dict[str, object],
+) -> Path:
+    """Where a toolchain component's program is: the assembler Retrolarium
+    Kit ships (RLTOOL names the kit command, default rltool), or a path in
+    this repository."""
+    if component.get("provenance") != "retrolarium-kit":
+        return (project_root / str(component["path"])).resolve()
+    # On Windows the command keeps its quoted paths (they may hold spaces).
+    kit = [part[1:-1] if len(part) > 1 and part[0] == part[-1] == '"' else part
+           for part in shlex.split(os.environ.get("RLTOOL", "rltool"), posix=os.name != "nt")]
+    command = [*kit, "build-tools", "path", str(component["suite"]), str(component["tool"])]
+    try:
+        completed = subprocess.run(command, cwd=str(project_root), capture_output=True,
+                                   text=True, check=False)
+    except OSError as error:
+        raise ValueError(f"cannot run Retrolarium Kit for {component_id}: {error}") from error
+    if completed.returncode:
+        raise ValueError(f"Retrolarium Kit has no {component_id}: {completed.stderr.strip()}")
+    return Path(completed.stdout.strip().splitlines()[-1])
+
+
 def verify_bundled_tool(
     project_root: Path, component_id: str, component: dict[str, object],
 ) -> None:
-    path = (project_root / str(component["path"])).resolve()
+    path = tool_path(project_root, component_id, component)
     verify_file_hash(path, str(component["binary_sha256"]), component_id)
     actual_version = command_output([str(path), "--version"], project_root).splitlines()[0]
     if actual_version != component.get("version"):

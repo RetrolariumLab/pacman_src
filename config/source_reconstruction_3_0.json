@@ -94,6 +94,16 @@
       "id": "object-names",
       "kind": "source",
       "summary": "The third ghost's attract packets are named for KIMAGURE and AOSUKE (Tengen spells INKY there), the ghost slots get constants by character, and the fruit tables name their fruit."
+    },
+    {
+      "id": "kit-toolchain",
+      "kind": "toolchain",
+      "summary": "The repository no longer carries ca65 and ld65: the build asks Retrolarium Kit for the cc65 it builds and ships (the same 2.19 0fca835, pinned by size and SHA-256 in config/toolchain.json), and bin/ is gone."
+    },
+    {
+      "id": "shared-linter",
+      "kind": "tooling",
+      "summary": "make lint and make format run Retrolarium Kit's shared linter (rltool lint) over config/lint.json: the ca65 style for src and the text contract; asm_style.py and its tests move to the kit. lint_source and the documentation audit stay here."
     }
   ],
   "retrolarium": {
@@ -290,8 +300,8 @@
         "version": "ca65 V2.19 - Git 0fca835",
         "source": "https://github.com/cc65/cc65",
         "source_commit": "0fca835",
-        "binary_sha256": "9109d7118ff070e78f031bee4eb776061e56b74e7c8f9f40c70fd6707ea0ac5a",
-        "provenance": "bundled",
+        "binary_sha256": "779a2a266f038cfeea4cdb3cd2cf5bbef4b602bb43560c3fd9f1b45d7bc5c776",
+        "provenance": "retrolarium-kit",
         "verification": "make verify"
       },
       {
@@ -299,8 +309,8 @@
         "version": "ld65 V2.19 - Git 0fca835",
         "source": "https://github.com/cc65/cc65",
         "source_commit": "0fca835",
-        "binary_sha256": "5f68367a135c578c88744e27ba0b1234604d87ef1ff6294b46fcb031ff984db4",
-        "provenance": "bundled",
+        "binary_sha256": "06720e9200c9a2a53e049413888a6a55ee023b0801a598d4b6143caae8466813",
+        "provenance": "retrolarium-kit",
         "verification": "make verify"
       },
       {

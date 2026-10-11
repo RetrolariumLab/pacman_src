@@ -17,9 +17,9 @@ make trace-evidence       # focused evidence for resolved registry entries
 make test-relocation      # progressively shifted ROM and emulator gates
 make reconstruction-audit # complete Source Reconstruction 1.0 release gate
 make reconstruction-audit-2 # strict seven-revision and regional runtime gate
-make source-2-1-audit     # fast repository-layout and release-manifest contract
+make source-2-1-audit     # the 2.1 release contract, checked at its tag
 make source-2-1-check     # complete tag-ready Source Reconstruction 2.1 gate
-make source-2-1-post-tag-audit # verify annotated tag identity against HEAD
+make source-2-1-post-tag-audit # the 2.1 annotated tag's identity
 make verify-hack          # exact manifest-declared default variant difference
 make validate-hack        # default variant behavior in live FCEUX
 make verify-expanded      # all NROM-256 assets and fixed-bank operands
@@ -94,9 +94,10 @@ The revision Lua hook records raw menu/NMI/OAM facts, while the Python runner
 owns the manifest comparison and PASS/FAIL decision.
 
 `make source-2-1-check` adds both isolated variant runtimes, symbolic relocation,
-and the clean-worktree release contract. After creating the annotated tag on
-that exact commit, `make source-2-1-post-tag-audit` confirms its object type and
-that it resolves to `HEAD`.
+and the release contract. The 2.1 manifest describes the tree tagged
+`source-reconstruction-2.1`, so its audits run there, with the tag's own script,
+in a disposable clone; `make source-2-1-post-tag-audit` also confirms the tag's
+object type.
 
 ## Reconstruction evidence
 

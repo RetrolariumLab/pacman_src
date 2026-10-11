@@ -53,11 +53,13 @@ validate-symbols: build-dev symbols
 		--result "$(DEBUG_RUNTIME_RESULT)"
 
 format:
-	$(PYTHON) "$(PROJECT_DIR)scripts/validation/asm_style.py" --fix "$(PROJECT_DIR)src"
+	$(RLTOOL) lint --project "$(PROJECT_DIR)." --fix
 	$(MAKE) lint
 
+# House style (config/lint.json) from Retrolarium Kit, then the game's own
+# source and documentation checks.
 lint:
-	$(PYTHON) "$(PROJECT_DIR)scripts/validation/asm_style.py" "$(PROJECT_DIR)src"
+	$(RLTOOL) lint --project "$(PROJECT_DIR)."
 	$(PYTHON) "$(PROJECT_DIR)scripts/validation/lint_source.py"
 	$(MAKE) docs-audit
 
@@ -89,23 +91,21 @@ reconstruction-audit-2: reconstruction-audit
 	$(MAKE) verify-revisions REVISION_REQUIRE_ALL=--require-all
 	$(MAKE) smoke-revisions REVISION_REQUIRE_ALL=--require-all
 
+# The Source 2.1 manifest describes the tree tagged source-reconstruction-2.1
+# (its toolchain contract names the assemblers the repository carried then),
+# so its audits run there, by the tag's own script, in a disposable clone.
+SOURCE_2_1_TAG ?= source-reconstruction-2.1
+SOURCE_2_1_AT_TAG = $(PYTHON) "$(PROJECT_DIR)scripts/validation/tag_audit.py" --tag "$(SOURCE_2_1_TAG)" -- \
+	scripts/source_2_1_audit.py --project-root "{root}" --manifest "{root}/config/source_reconstruction_2_1.json"
+
 source-2-1-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_1_audit.py" \
-		--project-root "$(PROJECT_DIR)" \
-		--manifest "$(SOURCE_2_1_MANIFEST)"
+	$(SOURCE_2_1_AT_TAG)
 
 source-2-1-release-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_1_audit.py" \
-		--project-root "$(PROJECT_DIR)" \
-		--manifest "$(SOURCE_2_1_MANIFEST)" \
-		--require-ready
+	$(SOURCE_2_1_AT_TAG) --require-ready
 
 source-2-1-post-tag-audit:
-	$(PYTHON) "$(PROJECT_DIR)scripts/validation/source_2_1_audit.py" \
-		--project-root "$(PROJECT_DIR)" \
-		--manifest "$(SOURCE_2_1_MANIFEST)" \
-		--require-ready \
-		--verify-tag
+	$(SOURCE_2_1_AT_TAG) --require-ready --verify-tag
 
 source-2-1-check:
 	$(MAKE) reconstruction-audit-2

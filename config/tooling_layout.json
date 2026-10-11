@@ -53,7 +53,6 @@
     {
       "id": "validation",
       "paths": [
-        "scripts/validation/asm_style.py",
         "scripts/validation/debug_symbols.py",
         "scripts/validation/documentation_audit.py",
         "scripts/validation/lint_source.py",
@@ -66,7 +65,6 @@
         "scripts/validation/verify_hack.py"
       ],
       "test_owners": [
-        "tests/validation/test_asm_style.py",
         "tests/validation/test_debug_symbols.py",
         "tests/validation/test_documentation_audit.py",
         "tests/validation/test_lint_source.py",
