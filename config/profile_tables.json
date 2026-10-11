@@ -1,0 +1,57 @@
+{
+  "revisions": {
+    "japan-v10": {
+      "engine": "pacman",
+      "dbg": "build/revisions/japan_v10/pacman.dbg",
+      "offsets": "image"
+    },
+    "japan-v11": {
+      "engine": "pacman",
+      "dbg": "build/revisions/japan_v11/pacman.dbg",
+      "offsets": "image"
+    },
+    "japan-v10-nrom256": {
+      "engine": "pacman",
+      "dbg": "build/expanded/pacman.dbg",
+      "offsets": "image"
+    }
+  },
+  "engines": {
+    "pacman": [
+      {
+        "name": "note_period_base_pairs",
+        "label": "tbl_note_period_base_pairs"
+      },
+      {
+        "name": "attract_attribute_rows",
+        "after": "bra_clear_primary_attribute_table",
+        "immediate": 2
+      },
+      {
+        "name": "attract_attribute_start",
+        "after": "bra_clear_primary_attribute_table",
+        "immediate": 3
+      },
+      {
+        "name": "attract_attribute_row_length",
+        "after": "bra_clear_primary_attribute_table",
+        "immediate": 4
+      },
+      {
+        "name": "attract_attribute_step",
+        "after": "bra_clear_primary_attribute_table",
+        "immediate": 5
+      },
+      {
+        "name": "attract_attribute_footer",
+        "after": "bra_upload_attract_palette32",
+        "immediate": 3
+      },
+      {
+        "name": "attract_attribute_footer_end",
+        "after": "bra_upload_attract_palette32",
+        "immediate": 4
+      }
+    ]
+  }
+}
