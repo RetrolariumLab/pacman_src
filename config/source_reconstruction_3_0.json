@@ -7,7 +7,7 @@
   },
   "release_kind": "retrolarium",
   "tag": "source-reconstruction-3.0",
-  "status": "development",
+  "status": "tag-ready",
   "predecessor": {
     "manifest": "config/source_reconstruction_2_2.json",
     "tag": "source-reconstruction-2.2",
@@ -18,16 +18,24 @@
     "through_inclusive": "release-commit",
     "commits": [
       {
-        "commit": "5a190229bbfc8544907952440f6326ba1a4f1063",
-        "subject": "Retrolarium Studio descriptor"
-      },
-      {
-        "commit": "d9852f277b91a221ee86eb9752a43363873c0e1f",
-        "subject": "Retrolarium descriptor: views come from the kit"
-      },
-      {
-        "commit": "7ed71353d1bb08435730c340120cd7ea8db1c97b",
+        "commit": "c2fd6084018baf113e9b08022eee0676ce0f019c",
         "subject": "Source Reconstruction 3.0: editing moves to Retrolarium"
+      },
+      {
+        "commit": "d8c4d0c496a18d61149d58ac6aad9593a5f5f15a",
+        "subject": "Object names: the third ghost, ghost slots and fruit"
+      },
+      {
+        "commit": "7ec69fb924588c2651a66a8e7ae6acd6ac447105",
+        "subject": "Build and lint with Retrolarium Kit"
+      },
+      {
+        "commit": "f1151d5ca45d16d6b56207108f4da64c1f9b3416",
+        "subject": "The game's names, profile and tables for Retrolarium"
+      },
+      {
+        "commit": "03d8e0c6b900454ae05cc4305c5c7a9e1c3e1902",
+        "subject": "README: a trademark notice"
       }
     ]
   },
@@ -68,7 +76,7 @@
     {
       "id": "retrolarium-descriptor",
       "kind": "tooling",
-      "summary": "pacman.rlj names the game, its kit profile pacman.v1, the revisions it builds and its asset split; the studio views come from the kit's profile."
+      "summary": "pacman.rlj names the game, its profile pacman.v1, the revisions it builds and its asset split; the studio views come from the kit."
     },
     {
       "id": "editing-moves-to-retrolarium",
@@ -111,6 +119,11 @@
       "summary": "config/names.json keeps the game's own names, in English, and the lists that carry them; Retrolarium Studio and Kit read them when a project opens and keep none themselves. Its guard list names what Retrolarium's repositories must never contain."
     },
     {
+      "id": "game-profile",
+      "kind": "tooling",
+      "summary": "config/game_profile.json is the game's Retrolarium profile: its revisions with their hashes and where each resource lies in each image. Retrolarium Kit reads it when it opens the repository and keeps no copy."
+    },
+    {
       "id": "profile-tables",
       "kind": "tooling",
       "summary": "config/profile_tables.json names by label the tables Retrolarium Kit reads from the image built from this source; the kit's tools/profile_tables.py turns it into profile offsets."
@@ -120,10 +133,10 @@
     "descriptor": "pacman.rlj",
     "profile": "pacman.v1",
     "kit": {
-      "version": null,
-      "commit": null
+      "version": "0.5.0",
+      "commit": "53622768fae796d01e38622199c2d35563333a70"
     },
-    "studio_min_version": null,
+    "studio_min_version": "0.1.0",
     "revisions": [
       "japan-v10",
       "japan-v11",
