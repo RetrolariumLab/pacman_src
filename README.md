@@ -1,262 +1,105 @@
 # Pac-Man NES Source Reconstruction
 
-Reverse-engineering and byte-identical reconstruction of seven official NES
-Pac-Man revisions from one shared ca65 source, with Japan V1.0 retained as the
-default preservation baseline.
+The 6502 source of the Famicom Pac-Man, rebuilt from the cartridge as readable
+ca65 modules: seven official revisions assemble from one shared source, each
+byte for byte identical to its ROM, with Japan v1.0 as the default.
 
-The project is an annotated, native ca65 reconstruction of the game's single
-6502 PRG bank, plus tooling that rebuilds the ROM, compares it byte for byte
-against the original, and replays a longplay movie in an instrumented FCEUX to
-catch behavioural regressions frame by frame.
-
-**Base `bank_FF.asm` reference**: [cyneprepou4uk/NES-Games-Disassembly - Pac-Man](https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man)
+**Base `bank_FF.asm` reference**:
+[cyneprepou4uk/NES-Games-Disassembly - Pac-Man](https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man)
 
 ## Status
 
-Source Reconstruction 2.1 is the current release contract. It retains the 1.0
-preservation contract and the 2.0 authoring, seven-revision, and regional-runtime
-scope while adding stricter evidence, symbolic relocation, and a normalized
-repository interface. See
-[`docs/source_reconstruction_2_1.md`](docs/source_reconstruction_2_1.md) for the
-release contract. Its tag name is `source-reconstruction-2.1`; the preserved
-predecessor tags are `source-reconstruction-1.0` and
-`source-reconstruction-2.0`.
+Source Reconstruction 3.1. The annotated source covers every subsystem and no
+registered unknown is open ([`docs/unknowns.md`](docs/unknowns.md)). Editing
+happens in Retrolarium Studio: open `pacman.rlj` to edit the maze, round tables,
+sound, graphics, palettes, screens, text and the attract demo of v1.0, v1.1 or
+the expanded NROM-256 variant ([`docs/retrolarium.md`](docs/retrolarium.md)).
 
-Source Reconstruction 2.2 is the tag-ready compatible-minor candidate. Its project
-manifest preserves the published 2.1 tag, records the modernization delta,
-enforces newline-format-independent text and FM2 runtime inputs, records the
-reviewed task-oriented documentation corpus, authenticates every selected
-assembler and linker before use, and exposes
-`make source-2-2-functional-check` for the accepted predecessor plus the current
-delta. The corrected functional aggregate passed before the final metadata
-transition. The complete pre-tag gate is `make source-2-2-check`; it must pass
-on the exact candidate commit, and publication and tag creation remain owner
-actions.
+3.1 keeps only what builds and checks the source. The earlier releases' audits,
+runtime traces, analysis tools and the FCEUX tooling remain in the history (tags
+`source-reconstruction-1.0` to `3.0`).
 
-The annotated source covers every major subsystem, milestone 23 has resolved
-every registered unknown, and the complete validation matrix is available
-through `make source-2-1-check`. Future uncertainty remains governed by
-the evidence rules in the unknowns registry. See
-[`docs/source_reconstruction_1_0.md`](docs/source_reconstruction_1_0.md) for the
-original preservation contract and evidence summary.
+## Quick start
 
-Editing moved to Retrolarium: open `pacman.rlj` in Retrolarium Studio to edit
-the maze, round tables, sound and music, CHR and actor frames, palettes,
-screens, text and the attract demo of v1.0, v1.1 or the optional NROM-256
-expanded variant, which the studio builds from the v1.0 ROM. The repository's
-own editors were retired once the studio covered them; see
-[`docs/retrolarium.md`](docs/retrolarium.md).
+You need Python 3, GNU Make and Retrolarium Kit (`rltool` on `PATH`, or
+`RLTOOL=...`); the kit supplies the pinned ca65 and ld65 of
+`config/toolchain.json`. Copy your `Pac-Man (J) (V1.0) [!].nes` into the
+repository root, then:
 
-Seven official cartridge profiles rebuild byte-identically from the shared
-source. `make verify-revisions` checks every locally available reference, while
-`make smoke-revisions` directly boots every profile in FCEUX and validates its
-title/OAM behavior. ROM images remain local and ignored.
+```bash
+make split     # unpack the CHR, maze and audio from the ROM (once)
+make verify    # build and compare byte for byte
+```
 
-The source is split into address-ordered subsystem modules containing real 6502
-instructions and ca65 data directives. Further reverse engineering can deepen
-provisional annotations without weakening the preservation target.
+`make split` writes the ignored assets under `assets/generated/`
+(`assets/manifest.json` lists them); it overwrites them, so run it again only to
+start over. `make build` uses whatever assets are there, edited or not;
+`make verify` fails unless the ROM is identical to the original.
 
-Modules are divided at natural procedure and data boundaries and remain below
-600 lines. [`docs/source_layout.md`](docs/source_layout.md) is the detailed
-address-to-file map.
+## Targets
 
-Repeated domain operations use a small set of byte-preserving ca65 macros under
-`src/macros/`; the project deliberately avoids hiding ordinary 6502 instructions
-behind generic syntax aliases. See [`docs/macros.md`](docs/macros.md).
+```bash
+make build / verify                       # the v1.0 ROM
+make build-revision REVISION=europe       # one official revision (config/revisions.json)
+make verify-revision REVISION=europe      #   and byte for byte
+make verify-revisions                     # every revision whose ROM is here
+make build-hack / verify-hack             # the stage-5 hack (docs/rom_hack_variants.md)
+make build-expanded / verify-expanded     # the NROM-256 variant (docs/expanded_rom_assets.md)
+make build-relocated                      # every module moved by a few bytes
+make studio-check                         # open and rebuild every pacman.rlj revision
+make test                                 # the quick suite
+make test-full                            # the full suite, with MAME
+make golden                               # the longplay's reference values
+make lint / format                        # the house style (Retrolarium Kit)
+make hooks                                # the Git hooks
+make clean                                # remove build/
+```
 
-Symbols are named by program role rather than ROM address. The `sub_`,
-`handler_`, `loc_`, and `bra_` prefixes distinguish callable subroutines from
-dispatch handlers and internal control flow; see [`docs/naming.md`](docs/naming.md).
-The complete import-to-current label history is maintained separately in
-[`config/reconstruction/label_renames.json`](config/reconstruction/label_renames.json).
+## Tests
 
-`make symbols` generates native ld65 source mappings for Mesen, FCEUX ROM/RAM
-labels, breakpoint groups, and a standard watch list. See
-[`docs/debugger_workflow.md`](docs/debugger_workflow.md).
+`make test` (about half a minute) runs the unit tests of the build scripts,
+verifies every build byte for byte against the ROMs that are present (the seven
+revisions, the hack and the expanded variant), builds the relocated variant and
+runs the studio check.
 
-Focused natural and controlled FCEUX traces cover scoring, lifecycle, ghost
-release/mode changes, all intermissions, pause, player handoff, and sound byte
-classes. See [`docs/runtime_trace_scenarios.md`](docs/runtime_trace_scenarios.md).
+`make test-full` (about four minutes) adds the longplay
+`movies/pacman_j_longplay.fm2`, played in MAME on the relocated build, where
+every module sits a few bytes away from its original address, and on the
+expanded build. At its checkpoints the game's state (mode, lives, round,
+extra-life flag, score) must equal what the original ROM gives, as recorded in
+`movies/pacman_j_longplay.check.json`. Name MAME with `MAME=<path>` or
+`RETROLARIUM_MAME`.
 
-The gate for every change is `make verify`: rebuild the ROM from
-`src/main.asm` and assert byte-identity with the original. Annotation must never
-alter the assembled bytes, so any diff means the edit was wrong.
+Record the reference values with `make golden` after changing the movie or the
+cells it checks. Movies are recorded in FCEUX (`.fm2`); Retrolarium Kit plays
+them in MAME frame for frame (`rltool movie`).
 
-The repository previously also contained a C reimplementation. It was removed —
-see [`docs/postmortem.md`](docs/postmortem.md) for what was tried and why it did
-not work.
+## Layout
+
+```text
+src/            ca65 source: main.asm, the modules, macros, revisions,
+                variants/stage5.asm, expanded/nrom256.asm
+config/         revisions, linker layouts, toolchain, lint, hack and expanded
+                layouts, the Retrolarium profile and names
+assets/         manifest.json (the generated assets are ignored)
+scripts/build/  build, split, variants, relocation and verification scripts
+tests/build/    their unit tests
+movies/         the longplay and its check
+docs/           how the game works and how the source is written
+pacman.rlj      the Retrolarium project
+```
+
+`build/`, `assets/generated/`, the ROMs, and Retrolarium's `hack/` and
+`.retrolarium/` are ignored.
 
 ## Contributing
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for local-input policy, assembly naming
-and formatting rules, evidence expectations, and the validation gates required
-for source, data, or revision changes.
-
-## Quick Start
-
-```bash
-git clone <repo>
-cd pacman_src
-
-# Place the original ROM in the project root:
-#   Pac-Man (J) (V1.0) [!].nes
-
-make split
-make verify
-```
-
-A successful verification reports
-`[OK] Byte-identical ROM reproduced from native ca65 source.`
-
-Run `make split` once to validate the reference ROM and extract the ignored CHR,
-maze, and audio assets described by `assets/manifest.json`. This command is
-explicit because it overwrites those local asset files with the original data.
-
-`make build` assembles `src/main.asm` and its modules directly with ca65/ld65.
-It only checks that all required assets exist and never extracts or overwrites
-them, so locally edited assets can be used for ROM hacks.
-`make verify` performs the same native build and fails unless the result is
-byte-identical to the reference ROM.
-
-## Project Structure
-
-```text
-pacman_src/
-|-- .editorconfig                  # Cross-editor text and ASM indentation rules
-|-- CONTRIBUTING.md                # Change policy and validation workflow
-|-- assets/
-|   |-- manifest.json              # Tracked extraction ranges and checksums
-|   `-- generated/                 # Ignored CHR, maze, and audio payloads
-|-- bin/                           # ca65 / ld65
-|-- build/                         # Generated ROM and linker artifacts
-|-- config/                        # Emulator/reference/linker configuration
-|   `-- linker/                    # ld65 layouts
-|-- docs/                          # Architecture and RE notes
-|-- mk/                            # Variant, runtime, and validation recipes
-|-- movies/                        # FM2 inputs for automated capture
-|-- scenarios/                     # Runtime, scoring, and revision smoke cases
-|-- scripts/
-|   |-- build/                     # Builds, profiles, assets, codecs, and cleanup
-|   |-- runtime/                   # Emulator capture and evidence validation
-|   |-- validation/                # Lint, symbols, release, and policy checks
-|   |-- workflow/                  # Analysis and reporting tools
-|   `-- run.py                     # Stable direct-tool dispatcher
-|-- src/
-|   |-- main.asm                   # Address-ordered ca65 entrypoint
-|   |-- expanded/nrom256.asm       # Expanded NROM-256 entrypoint
-|   |-- variants/stage5.asm        # Isolated behavior-changing entrypoint
-|   |-- macros/                    # Byte-preserving ca65 abstractions
-|   |-- system/
-|   |-- game/
-|   |-- rendering/
-|   |-- audio/
-|   |-- data/
-|   |-- memory/
-|   `-- revisions/
-|-- tests/                         # Mirrors the script responsibility groups
-|-- Makefile
-`-- Pac-Man (J) (V1.0) [!].nes     # Original ROM (not distributed)
-```
-
-`assets/generated/` and `build/` are generated artifacts and are not tracked.
-Retrolarium keeps its edits under ignored `hack/` and its builds under
-`.retrolarium/`; legacy local artifact directories remain ignored but are not touched by `make clean`. All
-source tools under `scripts/` are tracked and grouped by responsibility, and
-the test tree mirrors those groups. Tool responsibilities, public commands,
-and test owners are pinned by `config/tooling_layout.json`; see
-[`docs/tooling_layout.md`](docs/tooling_layout.md). See
-[`docs/assets.md`](docs/assets.md) for the source-versus-asset policy.
-
-## Make Targets
-
-`make help` is generated from the checked public-target registry. Use
-`make scaffold-check` for the ROM-less disposable-checkout smoke and
-`make studio-check` to open and rebuild every `pacman.rlj` revision with the
-Retrolarium kit.
-
-```bash
-make                                    # Same as `make build`
-make build                              # Build the native ca65 ROM
-make verify                             # Build and require byte-identity
-make build-revision REVISION=europe     # Build one official revision
-make verify-revision REVISION=europe    # Verify one official revision
-make verify-revisions                   # Verify every available official revision
-make smoke-revisions                    # Build and boot every official revision in FCEUX
-make build-hack                         # Build the isolated default ROM-hack variant
-make verify-hack                        # Require only its documented byte difference
-make validate-hack                      # Prove its stage-5 behavior in FCEUX
-make run-hack                           # Build and run the default hack
-make expanded-assets                    # Write the expanded data from the v1.0 ROM
-make build-expanded                     # Build the NROM-256 variant
-make verify-expanded                    # Verify assets, layout, and fixed-bank operands
-make validate-expanded                  # Prove expanded assets are consumed in FCEUX
-make run-expanded                       # Build and run the NROM-256 variant
-make studio-check                       # Check pacman.rlj with the Retrolarium kit
-make symbols                            # Generate Mesen/FCEUX debugger artifacts
-make test-debug-symbols                 # Test symbol parsing and conversion
-make validate-symbols                   # Prove live symbol lookup and named breakpoint
-make format                             # Normalize ca65 assembly source style
-make lint                               # Check assembly, naming, docs, and Python syntax
-make test                               # Run all focused Python workflow tests
-make roundtrip-formats                  # Decode/encode six binary format families
-make reconstruction-audit               # Run the complete Source Reconstruction 1.0 gate
-make reconstruction-audit-2             # Run the strict Source Reconstruction 2.0 gate
-make source-2-1-audit                    # Check the Source 2.1 repository contract
-make source-2-1-check                    # Run the tag-ready Source 2.1 gate
-make source-2-1-post-tag-audit           # Verify the annotated Source 2.1 tag
-make trace-scoring                      # Capture semantic scoring events
-make validate-scoring-trace             # Revalidate an existing scoring trace
-make trace-runtime                      # Capture and validate focused gameplay traces
-make validate-runtime-traces            # Revalidate existing gameplay traces
-make trace-evidence                     # Recapture resolved research evidence
-make validate-evidence                  # Revalidate existing evidence
-make test-relocation                    # Shift modules and run FCEUX regression gates
-make run                                # Build and run the ROM in FCEUX
-make split                              # Extract CHR, maze, and audio from the original ROM
-make build-dev                          # Check tools and clone/build FCEUX if needed
-make reference                          # Capture the reference set from the original ROM
-make analyze COUNT=32                   # Run RTS reverse-engineering analysis
-make chunk START=260 LINES=60           # Prepare a rename/analysis chunk
-make clean                              # Remove local build and analysis artifacts
-make help                               # Show the public targets
-```
-
-`make reference` is intentionally explicit because a full reference capture is
-expensive. Run it before `make analyze`. `make clean` also removes generated
-reference, diff, report, and workflow directories, but never removes the FCEUX
-checkout or the original ROM.
-
-## Working Flow
-
-1. Annotate a subsystem module under `src/` (or select a logical flattened
-   chunk with `make chunk`).
-2. Run `make verify` — it must stay byte-identical. Annotation never
-   changes assembled bytes, so any diff is a mistake in the edit.
-3. Use `make reference` and `make analyze` when runtime evidence is needed.
-
-## Tooling Requirements
-
-- Python 3
-- `ca65` / `ld65` (bundled in `bin/` and pinned by `config/toolchain.json`)
-- [`fceux_automation`](https://github.com/oranguthang/fceux_automation) — a
-  fork of FCEUX with headless capture, reference comparison and state dumping,
-  cloned and built at the pinned source commit by `make build-dev`
-- MSBuild / Visual Studio 2022 (to build `fceux_automation` on Windows)
-
-## Project Boundaries
-
-- The unknowns registry preserves resolved research evidence and remains the
-  canonical place for any future open findings. Neutral names are required
-  whenever evidence is incomplete instead of guessing a semantic role.
-- `make verify` permanently represents the byte-identical Japan V1.0 baseline.
-  Behavior-changing work is already supported through the isolated fixed-size
-  workflow in [`docs/rom_hack_variants.md`](docs/rom_hack_variants.md) and the
-  NROM-256 JSON asset pipeline in
-  [`docs/expanded_rom_assets.md`](docs/expanded_rom_assets.md).
+See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Credits
 
-- `bank_FF.asm` base reference: [cyneprepou4uk/NES-Games-Disassembly - Pac-Man](https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man)
+- `bank_FF.asm` base reference:
+  [cyneprepou4uk/NES-Games-Disassembly - Pac-Man](https://github.com/cyneprepou4uk/NES-Games-Disassembly/tree/main/Pac-Man)
 
 ## Trademarks
 
@@ -269,5 +112,5 @@ your own copy of Pac-Man to build anything.
 
 No original ROM data is distributed with this repository. The repository does
 not currently grant an open-source license for project-authored files; see
-[`docs/licensing.md`](docs/licensing.md) for the distribution boundary and
-third-party provenance. Original game rights remain with their respective owners.
+[`docs/licensing.md`](docs/licensing.md). Original game rights remain with their
+respective owners.

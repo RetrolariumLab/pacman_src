@@ -39,8 +39,8 @@ byte-identical. A second maze, longer sound, and relocated stage, graphics,
 palette, and screen data need additional capacity, so the project isolates them in the separate
 `src/expanded/nrom256.asm` entrypoint and
 `config/linker/nrom256_expanded.cfg` layout. The relocated data lives in the added PRG bank; the fixed bank continues to use shared game source and a
-manifest-reviewed operand allowlist. Output, symbols, verification, and FCEUX
-runtime evidence remain separate from the default build.
+manifest-reviewed operand allowlist. Its output and verification remain
+separate from the default build.
 
 Post-link patching was rejected because it would hide executable changes from
 source and symbols. Enlarging the preservation build would break its container
@@ -54,8 +54,6 @@ or profile-aware authoring for other official profiles.
 ```text
 make build-expanded
 make verify-expanded
-make validate-expanded
-make run-expanded
 ```
 
 `make expanded-assets` (run by the build) writes the data, as the v1.0 ROM
@@ -81,18 +79,6 @@ pins the image's SHA-256.
   operand bytes, two active-sound-table bytes,
   forty-four screen-table operand bytes, and two maze-pointer bytes
   changed in the fixed bank, with every other byte preserved.
-
-`make validate-expanded` additionally loads expanded-ROM symbols in FCEUX,
-builds a probe image in `build/expanded-probe/` whose round 2 frightened time
-is 14 (it is 6) and whose first pellet note is `$B1`, so the run can tell the
-relocated data from the original. It uses a controlled stage-index patch to
-enter stage 2, proves that the live decompressor pointer selects `$82D6`, and
-requires the second profile's frightened duration to match both expanded data
-and runtime RAM. It then requests pellet slot 04 and proves its runtime cursor
-and probed note originate from the expanded sound table at `$848F`. Finally, it
-compares all 32 bytes of live FCEUX PPU palette RAM with the relocated gameplay
-palette and the documented stage-fruit override at `$3F1D`. It also observes the first title-logo tile from `$A79E`
-at live PPU `$20E5`.
 
 ## Extending the layout
 

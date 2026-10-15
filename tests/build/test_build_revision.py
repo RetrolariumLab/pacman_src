@@ -46,13 +46,6 @@ class BuildRevisionTests(unittest.TestCase):
                         "source": "https://example.invalid/cc65",
                         "source_commit": "abc123", "binary_sha256": "0" * 64,
                     },
-                    "fceux_automation": {
-                        "source": "https://example.invalid/fceux",
-                        "source_commit": "d" * 40, "binary_sha256": "0" * 64,
-                        "configuration": "Release", "platform": "x64",
-                        "toolset": "v143",
-                        "provenance": "source-built external checkout",
-                    },
                 },
             }), encoding="utf-8")
 
@@ -61,8 +54,8 @@ class BuildRevisionTests(unittest.TestCase):
                 return bin_dir / f"{component_id}.exe"
 
             with patch("build_native.run_tool") as run_tool, patch(
-                "build_dev.command_output"
-            ) as version_command, patch("build_dev.tool_path", side_effect=untrusted), patch(
+                "toolchain.subprocess.run"
+            ) as version_command, patch("toolchain.tool_path", side_effect=untrusted), patch(
                 "build_native.tool_path", side_effect=untrusted
             ), patch("sys.stderr", new_callable=StringIO) as stderr:
                 with self.assertRaises(SystemExit):

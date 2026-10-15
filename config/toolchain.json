@@ -29,15 +29,6 @@
       "source": "https://github.com/cc65/cc65",
       "source_commit": "0fca835",
       "binary_sha256": "06720e9200c9a2a53e049413888a6a55ee023b0801a598d4b6143caae8466813"
-    },
-    "fceux_automation": {
-      "source": "https://github.com/oranguthang/fceux_automation.git",
-      "source_commit": "ec507d86c57acd8979547bc35e9627fb199fac9a",
-      "binary_sha256": "97aadff4970e98a413377810a296c045fab717661dd8270f84d58190f43a232e",
-      "configuration": "Release",
-      "platform": "x64",
-      "toolset": "v143",
-      "provenance": "source-built external checkout"
     }
   }
 }

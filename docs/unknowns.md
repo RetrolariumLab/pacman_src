@@ -18,18 +18,8 @@ No entries remain open after the focused milestone-23 static and runtime audit.
 New uncertainty must receive a stable ID and a bounded experiment before it is
 added here.
 
-Reproduce the evidence with:
-
-```text
-make trace-evidence
-make validate-evidence
-```
-
-The first command rebuilds the byte-identical ROM, captures a complete natural
-longplay and a controlled pause probe in FCEUX, and invokes the validator. The
-second command revalidates the ignored CSV files without starting the emulator.
-Both paths require manifest-matched scenario identities, exact frame bounds,
-declared patch addresses, and the complete pause/slot-0F/resume sequence.
+The runtime traces that resolved the entries below were captured in FCEUX by
+the tools of releases 1.0 to 3.0; they remain in the history.
 
 ## Resolved Entries
 

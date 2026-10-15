@@ -41,5 +41,4 @@ small, while their masks and destination fields have different semantics.
 3. Expansion must preserve instruction order and addressing modes exactly.
 4. Labels and branch targets must remain outside opaque macro internals unless
    local labels are essential and documented.
-5. `make verify`, `make chunk`, and the procedure manifest must continue to
-   work after adoption.
+5. `make verify` must continue to pass after adoption.

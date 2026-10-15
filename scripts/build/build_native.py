@@ -7,15 +7,50 @@ import argparse
 import hashlib
 import os
 import shutil
+import re
 import subprocess
 import sys
 from pathlib import Path
 
-from build_dev import load_toolchain_manifest, tool_path, verify_bundled_tool
+from toolchain import load_toolchain_manifest, tool_path, verify_bundled_tool
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "validation"))
+RECORD_FIELD_RE = re.compile(r'(?:^|,)([a-z]+)=("(?:[^"]|"")*"|[^,]*)')
 
-from debug_symbols import normalize_dbg_for_ines  # noqa: E402
+
+def parse_record(line: str) -> tuple[str, dict[str, str]]:
+    """One record of an ld65 debug file: its kind and its fields."""
+    kind, separator, payload = line.partition("\t")
+    if not separator:
+        return kind, {}
+    fields: dict[str, str] = {}
+    for match in RECORD_FIELD_RE.finditer(payload.rstrip("\n")):
+        value = match.group(2)
+        if value.startswith('"') and value.endswith('"'):
+            value = value[1:-1].replace('""', '"')
+        fields[match.group(1)] = value
+    return kind, fields
+
+
+def normalize_dbg_for_ines(raw_path: Path, output_path: Path, linked_prg_path: Path,
+                           output_rom_path: Path, header_size: int = 16) -> None:
+    """Retarget ld65 segment file offsets from a bare PRG to its iNES image,
+    for debuggers that load the .dbg next to the ROM."""
+    linked_names = {str(linked_prg_path), linked_prg_path.as_posix()}
+    rewritten: list[str] = []
+    segment_count = 0
+    for line in raw_path.read_text(encoding="utf-8").splitlines(keepends=True):
+        kind, fields = parse_record(line)
+        if kind == "seg" and fields.get("oname") in linked_names:
+            if "ooffs" not in fields:
+                raise ValueError("ld65 segment record is missing ooffs")
+            line = (line.replace(f'oname="{fields["oname"]}"', f'oname="{output_rom_path}"')
+                    .replace(f'ooffs={fields["ooffs"]}', f'ooffs={int(fields["ooffs"], 0) + header_size}'))
+            segment_count += 1
+        rewritten.append(line)
+    if segment_count == 0:
+        raise ValueError(f"No output segments for {linked_prg_path} in {raw_path}")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text("".join(rewritten), encoding="utf-8", newline="\n")
 
 
 PRG_SIZE = 16_384

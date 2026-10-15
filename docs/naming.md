@@ -70,9 +70,8 @@ not sufficient.
    `bra_return_from_oam_builder`.
 3. Keep state numbers and opcode values only when they are part of the decoded
    format, such as `handler_script_0a_game_over`.
-4. Preserve original-to-current names in
-   `config/reconstruction/label_renames.json`, and keep addresses in generated maps
-   rather than inline provenance comments.
+4. Keep addresses in generated maps rather than in inline comments; Git
+   history keeps the earlier names.
 5. Every rename-only change must pass `make verify`; names must never affect the
    reproduced ROM.
 
@@ -82,5 +81,4 @@ legacy `ofs_*` definitions, and address-derived identifiers. Uppercase hardware
 names remain valid because they follow the conventional register/bit-mask style
 in `src/memory/hardware.inc`. Rename a symbol only when control flow, data flow,
 encoded structure, or runtime evidence supports the new role, then run both
-`make lint` and `make verify`. Every rename must update the existing provenance
-entry; every genuinely new label must add one `project_additions` record.
+`make lint` and `make verify`.

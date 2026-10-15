@@ -61,10 +61,8 @@ After the maze, the routine writes three eight-tile bottom-banner rows from a
 small fill table at `$21D6` or `$29D6`. It writes directly to PPU and therefore
 requires rendering/vblank ownership from its caller.
 
-The maze remains a generated asset, but `make roundtrip-formats` now provides a
-checked editable JSON decode/encode path that preserves original RLE token
-boundaries. Its pointer is stored separately at the bank tail, not adjacent to
-the stream.
+The maze remains a generated asset (Retrolarium edits it). Its pointer is
+stored separately at the bank tail, not adjacent to the stream.
 
 ## Optional Expanded Stage Parameters
 
@@ -75,9 +73,7 @@ aliases redirect every round-setup consumer to the relocated tables while the
 preservation entrypoint continues to use the original `$EB42` data unchanged.
 
 The expanded layout manifest fixes both asset ranges and enumerates every
-allowed operand-byte change in the original bank. `make validate-expanded`
-also proves in FCEUX that the second profile's frightened duration is read
-from the relocated asset and reaches runtime RAM. See
+allowed operand-byte change in the original bank. See
 [Expanded NROM-256 ROM](expanded_rom_assets.md) for the build and
 layout contract.
 

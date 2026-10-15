@@ -22,7 +22,6 @@ make verify-revision REVISION=japan_revb REVISION_REFERENCE_DIR="path/to/roms"
 make verify-revision REVISION=usa_namco REVISION_REFERENCE_DIR="path/to/roms"
 make verify-revision REVISION=europe REVISION_REFERENCE_DIR="path/to/roms"
 make verify-revisions REVISION_REFERENCE_DIR="path/to/roms"
-make smoke-revisions REVISION_REFERENCE_DIR="path/to/roms"
 ```
 
 Every revision assembles the single `src/main.asm` entrypoint. The build passes
@@ -38,21 +37,12 @@ switches stage-data aliases between reference and expanded-ROM tables without
 emitting bytes of its own.
 
 The complete matrix and single-profile build runner use `config/revisions.json`
-as their canonical list of profiles, ca65 IDs, CHR sources, filenames, runtime
-scenario IDs, and full-ROM SHA-1/SHA-256 values. Its versioned profile-contract
+as their canonical list of profiles, ca65 IDs, CHR sources, filenames, and
+full-ROM SHA-1/SHA-256 values. Its versioned profile-contract
 catalogue defines the private and shared inputs, NROM-128 container layout,
 default output path and identity, and supported capabilities once; each profile
 references those contracts and only owns its variable facts. A missing local
-ROM is reported as `MISSING`; a wrong hash or non-identical build is `FAIL`. The
-revision smoke command directly builds and boots all seven profiles in FCEUX,
-reaches the title menu through generated semantic labels, confirms NMI activity,
-and verifies the full shadow-OAM initialization pattern (`$00` for the NTSC
-profiles and `$EF` for PAL).
-
-The Lua runner only captures menu, NMI, and observed OAM facts. The Python
-validator in `scripts/runtime/run_revision_smokes.py` independently compares
-that capture with `scenarios/revision_smoke.json`; changing capture code alone
-cannot redefine a passing scenario.
+ROM is reported as `MISSING`; a wrong hash or non-identical build is `FAIL`.
 
 ## Verified Local Reference Matrix
 
@@ -155,15 +145,6 @@ Analysis proceeds in this order:
    ambiguous regions;
 6. express proven differences in shared ca65 source and require a byte-exact
    build against the matching local ROM.
-
-The reproducible first-pass report is generated without copying a ROM into the
-repository:
-
-```text
-python scripts/workflow/analyze_revision_alignment.py \
-  --reference "path/to/Pac-Man (J) (V1.0) [!].nes" \
-  --candidate "path/to/Pac-Man (Unl) (Tengen) [!].nes"
-```
 
 Sequence alignment already accounts for 92.5% to 95.8% of each regional PRG.
 The licensed and unlicensed Tengen PRGs match in 16,328 of 16,384 aligned

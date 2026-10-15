@@ -1,0 +1,75 @@
+{
+  "schema": "retrolarium.movie-check",
+  "schema_version": 1,
+  "movie": "pacman_j_longplay.fm2",
+  "cells": {
+    "game_mode": {
+      "address": "0x0047"
+    },
+    "lives": {
+      "address": "0x0067"
+    },
+    "stage": {
+      "address": "0x0068"
+    },
+    "extra_life_awarded": {
+      "address": "0x006B"
+    },
+    "score": {
+      "address": "0x0070",
+      "length": 7
+    }
+  },
+  "frames": [
+    20000,
+    40000,
+    60000,
+    80000,
+    100000,
+    "end"
+  ],
+  "expected": {
+    "20000": {
+      "game_mode": "00",
+      "lives": "03",
+      "stage": "00",
+      "extra_life_awarded": "00",
+      "score": "08080000000000"
+    },
+    "40000": {
+      "game_mode": "00",
+      "lives": "04",
+      "stage": "05",
+      "extra_life_awarded": "01",
+      "score": "04020901000000"
+    },
+    "60000": {
+      "game_mode": "00",
+      "lives": "04",
+      "stage": "0b",
+      "extra_life_awarded": "01",
+      "score": "08020305000000"
+    },
+    "80000": {
+      "game_mode": "00",
+      "lives": "04",
+      "stage": "10",
+      "extra_life_awarded": "01",
+      "score": "04080800010000"
+    },
+    "100000": {
+      "game_mode": "01",
+      "lives": "01",
+      "stage": "00",
+      "extra_life_awarded": "00",
+      "score": "03030000000000"
+    },
+    "end": {
+      "game_mode": "00",
+      "lives": "00",
+      "stage": "00",
+      "extra_life_awarded": "00",
+      "score": "03030000000000"
+    }
+  }
+}

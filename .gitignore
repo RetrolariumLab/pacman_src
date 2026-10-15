@@ -7,16 +7,13 @@
 *.dbg
 *.lbl
 
-# Runtime/build temp workspace
+# Temporary workspace
 tmp/
 *.nes
 *.chr
 
 # Private documents of the editors Retrolarium replaced
 /content/workspace/
-
-# Optional local analysis dump
-listing.asm
 
 # Python
 __pycache__/
@@ -26,12 +23,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-reference
-diffs
-
-/reports
-/workflow
-/reference_projects
 /hacks/local/
 
 # Retrolarium Studio: the generated project, builds and caches, and the edits

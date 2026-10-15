@@ -15,15 +15,12 @@ the original round-init increment. This changes no code size or addresses.
 ```text
 make build-hack
 make verify-hack
-make validate-hack
-make run-hack
 ```
 
 `make verify-hack` compares the complete candidate ROM against the original and
 accepts exactly the byte declared in `config/hack_variants.json`: PRG offset
 `$09CE` changes from `$FF` to `$04`. Any additional PRG, CHR, or header change
-fails. `make validate-hack` also replays the standard movie in FCEUX and proves
-through semantic symbols that the first round enters stage 5.
+fails.
 
 `HACK_CHR` may point at an explicitly edited 8 KiB CHR file for exploratory
 builds. Such a custom build is intentionally outside the default manifest and
@@ -37,7 +34,8 @@ variant declaration.
 3. Write outputs below a variant-specific build directory.
 4. Declare and review every expected byte difference.
 5. Run `make verify` as well as the variant-specific checks.
-6. Add runtime evidence when a byte-level assertion does not prove behavior.
+6. Play the longplay on the variant (`rltool movie check`) when a byte-level
+   assertion does not prove behavior.
 
 The original 16 KiB PRG has no free space. Same-size operand/table replacements
 fit the current layout. Larger changes use the separately documented NROM-256

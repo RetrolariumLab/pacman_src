@@ -101,8 +101,8 @@ using their cached tiles and slot masks.
 `ram_personal_release_latch` is cleared at round init and set to one at a
 personal pellet threshold. It remains set until the next round setup, supplies
 the even-phase mode mask, and gates ordinary phase reversals. Frightened-mode
-reversals remain eligible because their full mask takes precedence. The focused
-trace establishes this lifetime and both consumers under resolved `RAM-003`.
+reversals remain eligible because their full mask takes precedence. Resolved
+`RAM-003` records this lifetime and both consumers.
 
 ## House Release Paths
 
@@ -130,5 +130,4 @@ must not be treated as the release-state array itself.
 - Preserve candidate filtering, reverse exclusion, ranking LUT, and fallback order.
 - Keep house coordinates, release scan order, counters, and threshold equality
   comparisons byte-exact.
-- Revalidate `RAM-003` with `make trace-evidence` after changing release or
-  mode-transition logic.
+- Run `make test-full` after changing release or mode-transition logic.

@@ -41,8 +41,8 @@ handler_demo_entry:
   see `naming.md` for the accepted prefixes.
 - Preserve the declared case of constants and operands.
 - Keep every active colon label unique across all ASM and INC modules.
-- Keep historical names in `../config/reconstruction/label_renames.json`, not in repeated
-  inline `was:` comments.
+- Do not keep historical names in inline `was:` comments; Git history holds
+  them.
 
 ## Comments
 
