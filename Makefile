@@ -168,6 +168,13 @@ help:
 		--project-root "$(PROJECT_DIR)" \
 		--manifest "$(PROJECT_DIR)config/make_help.json"
 
+# `make hooks`, once per clone, makes Git check every commit and push for stop
+# words and run `make lint` first (Retrolarium Kit's rltool hooks; the
+# stop-word list lives outside the repositories).
+.PHONY: hooks
+hooks:
+	$(RLTOOL) hooks install --project .
+
 # Extract local ROM payloads before tools inspect or assemble the source.
 .PHONY: _rom_assets
 _rom_assets:
