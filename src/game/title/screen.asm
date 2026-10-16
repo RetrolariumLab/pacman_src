@@ -71,11 +71,7 @@ bra_draw_next_logo_row:
     STA zp_work3
 ; Stream one title logo row tile sequence
 bra_stream_logo_row_tiles:
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_title_logo_tiles,Y
-.else
     LDA tbl_title_logo_tiles,Y
-.endif
     STA PPUDATA
     INY
     DEC zp_work3
@@ -102,27 +98,15 @@ bra_stream_logo_row_tiles:
 ; Draw next title text packet header+payload
 bra_draw_next_logo_text_packet:
     LDA PPUSTATUS
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_title_logo_text_packets,Y
-.else
     LDA tbl_title_logo_text_packets,Y
-.endif
     STA PPUADDR
     INY
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_title_logo_text_packets,Y
-.else
     LDA tbl_title_logo_text_packets,Y
-.endif
     STA PPUADDR
     INY
 ; Stream text payload bytes until FF terminator
 bra_stream_logo_text_until_ff:
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_title_logo_text_packets,Y
-.else
     LDA tbl_title_logo_text_packets,Y
-.endif
     CMP #con_ppu_buffer_end
     BEQ bra_advance_to_next_logo_text_packet
     STA PPUDATA
@@ -141,11 +125,7 @@ sub_upload_title_attribute_table:
     LDY #$00
 ; Upload next title attribute byte
 bra_upload_next_attribute_byte:
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_title_attribute_bytes,Y
-.else
     LDA tbl_title_attribute_bytes,Y
-.endif
     STA PPUDATA
     INY
 .ifdef PACMAN_REVISION_TENGEN
@@ -312,11 +292,7 @@ handler_script02_title_menu_idle:
     LDY #$00
 ; Copy title menu prompt packet into main PPU buffer
 bra_copy_menu_prompt_to_ppu_buffer:
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_menu_prompt_tiles,Y
-.else
     LDA tbl_ppu_cmd_player_count_prompt,Y
-.endif
     STA ram_ppu_buffer_main,Y
     INY
     CMP #$FF
@@ -367,17 +343,9 @@ bra_handle_select_toggle:
     INX
 ; Select glyph pair index for 1P/2P prompt
 bra_select_player_glyph_index:
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_player_count_glyph_pair,X
-.else
     LDA tbl_player_count_glyph_pair,X
-.endif
     STA ram_ppu_buffer_main + $02
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_player_count_glyph_pair + $01,X
-.else
     LDA tbl_player_count_glyph_pair + $01,X
-.endif
     STA ram_ppu_buffer_main + $06
     LDA #$22
     STA ram_ppu_buffer_main

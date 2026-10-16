@@ -1,18 +1,10 @@
 ; OAM construction and actor sprite tile/attribute tables
 
-.ifdef PACMAN_EXPANDED_ACTORS
-tbl_active_actor_sprite_tiles = tbl_expanded_actor_sprite_tiles
-tbl_active_actor_alt_sprite_tiles = tbl_expanded_actor_alt_sprite_tiles
-tbl_active_actor_sprite_attrs = tbl_expanded_actor_sprite_attrs
-tbl_active_actor_alt_sprite_attrs = tbl_expanded_actor_alt_sprite_attrs
-tbl_active_oam_quad_offsets = tbl_expanded_oam_quad_offsets
-.else
 tbl_active_actor_sprite_tiles = tbl_actor_sprite_tiles
 tbl_active_actor_alt_sprite_tiles = tbl_actor_alt_sprite_tiles
 tbl_active_actor_sprite_attrs = tbl_actor_sprite_attrs
 tbl_active_actor_alt_sprite_attrs = tbl_actor_alt_sprite_attrs
 tbl_active_oam_quad_offsets = tbl_oam_quad_offsets
-.endif
 
 ; Inputs: six staged actor positions, sprite-set indices, and actor attributes
 ; Outputs: 24 four-byte entries in ram_oam; zero position axes map to $FF

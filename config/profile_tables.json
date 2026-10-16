@@ -9,11 +9,6 @@
       "engine": "pacman",
       "dbg": "build/revisions/japan_v11/pacman.dbg",
       "offsets": "image"
-    },
-    "japan-v10-nrom256": {
-      "engine": "pacman",
-      "dbg": "build/expanded/pacman.dbg",
-      "offsets": "image"
     }
   },
   "engines": {

@@ -109,17 +109,9 @@ bra_advance_substate_after_wait:
 ; Build next attract/demo PPU update packet (and optional sprite strip)
 sub_build_attract_ppu_packet:
     LDY ram_shared_state_0
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_attract_text_ptr_table,Y
-.else
     LDA tbl_attract_ppu_packet_ptrs,Y
-.endif
     STA zp_work0
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_attract_text_ptr_table + $01,Y
-.else
     LDA tbl_attract_ppu_packet_ptrs + $01,Y
-.endif
     STA zp_work1
     LDY #$00
 ; Copy attract PPU packet bytes into main PPU buffer
@@ -273,11 +265,7 @@ bra_write_eight_attr_bytes:
     LDY #$00
 ; Upload 32-byte attract palette block
 bra_upload_attract_palette32:
-    .ifdef PACMAN_EXPANDED_PALETTES
-        LDA tbl_expanded_attract_bg_spr_palette,Y
-    .else
-        LDA tbl_attract_bg_spr_palette,Y
-    .endif
+    LDA tbl_attract_bg_spr_palette,Y
     STA PPUDATA
     INY
     CPY #$20

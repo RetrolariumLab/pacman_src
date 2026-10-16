@@ -47,13 +47,10 @@
 
 - [multi_revision_builds.md](./multi_revision_builds.md): the seven official
   revisions from one source.
-- [rom_hack_variants.md](./rom_hack_variants.md): isolated optional builds and
-  their declared differences.
-- [expanded_rom_assets.md](./expanded_rom_assets.md): the NROM-256 variant.
 - [assets.md](./assets.md): the generated assets and how they are extracted.
 
 ## Checks
 
 `make test` must pass after every change: among other things it rebuilds the
 v1.0 ROM and requires it byte for byte. `make test-full` also plays the longplay
-in MAME on moved and expanded builds (see the README).
+in MAME on a moved build (see the README).

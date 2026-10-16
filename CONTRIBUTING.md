@@ -28,9 +28,8 @@ make test
 ```
 
 Run `make test-full` (MAME) after changing control flow, state machines or
-anything timing-sensitive. Behaviour-changing work belongs to the hack or the
-expanded entrypoints (`docs/rom_hack_variants.md`,
-`docs/expanded_rom_assets.md`) and must not weaken the default build. Data is
+anything timing-sensitive. Behaviour-changing work must not weaken the default
+build. Data is
 edited in Retrolarium Studio (`docs/retrolarium.md`).
 
 `make hooks` installs Git hooks that check commits and pushes for words that

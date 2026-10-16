@@ -45,11 +45,7 @@ bra_wait_vblank_set_flag:
     LDY #$00
 ; Upload sprite palette for intro/demo setup
 bra_upload_demo_sprite_palette:
-.ifdef PACMAN_EXPANDED_PALETTES
-    LDA tbl_expanded_intro_sprite_palette,Y
-.else
     LDA tbl_intro_sprite_palette,Y
-.endif
 .ifdef PACMAN_REVISION_RAM_PALETTES
     STA ram_sprite_palette_update,Y
 .else

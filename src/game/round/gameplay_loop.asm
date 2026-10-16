@@ -49,13 +49,7 @@ bra_clear_player_runtime_block:
     STA ram_sfx_plr_ready + $01
 ; Reset stage/high-score related counters before loop
 bra_reset_stage_counters:
-.ifdef PACMAN_HACK_START_STAGE
-    .assert PACMAN_HACK_START_STAGE >= 1, error, "hack start stage must be at least 1"
-    .assert PACMAN_HACK_START_STAGE <= 255, error, "hack start stage must fit one byte"
-    LDA #(PACMAN_HACK_START_STAGE - 1)
-.else
     LDA #$FF
-.endif
     STA ram_stage_p1
     STA ram_stage_p2
     STA ram_ppu_buffer_hiscore
@@ -149,11 +143,7 @@ bra_store_pause_ppu_addr:
 bra_select_pause_text_variant:
 ; Copy pause/on-off tile sequence into PPU packet
 bra_copy_pause_tiles:
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_pause_tiles,X
-.else
     LDA tbl_pause_text_tiles,X
-.endif
     STA ram_ppu_buffer_main + con_ppu_command_address_size,Y
     INX
     INY

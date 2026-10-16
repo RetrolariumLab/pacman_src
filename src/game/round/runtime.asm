@@ -85,11 +85,7 @@ bra_find_ppu_terminator:
 bra_append_frightened_cmd_if_empty:
 ; Copy frightened palette command sequence into PPU buffer
 bra_copy_frightened_palette_cmd:
-    .ifdef PACMAN_EXPANDED_PALETTES
-        LDA tbl_expanded_frightened_palette_cmd,X
-    .else
-        LDA tbl_frightened_palette_cmd,X
-    .endif
+    LDA tbl_frightened_palette_cmd,X
     STA ram_ppu_buffer_main,Y
     INY
     INX

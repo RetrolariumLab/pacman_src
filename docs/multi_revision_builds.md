@@ -32,9 +32,7 @@ not accepted.
 
 `src/revisions/profile_ids.inc` owns the profile constants and derives the broader
 Tengen, RAM-palette, and late-Namco feature flags used by shared conditional
-source. `src/data/active_tables.inc` is separate from revision selection: it
-switches stage-data aliases between reference and expanded-ROM tables without
-emitting bytes of its own.
+source.
 
 The complete matrix and single-profile build runner use `config/revisions.json`
 as their canonical list of profiles, ca65 IDs, CHR sources, filenames, and

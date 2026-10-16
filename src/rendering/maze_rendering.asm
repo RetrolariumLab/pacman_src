@@ -17,23 +17,16 @@ sub_decompress_and_upload_maze_layout:
     STA zp_work2
 ; Select base nametable for maze upload by active player
 bra_select_maze_target_nametable:
-.ifdef PACMAN_EXPANDED_MULTI_MAZE
-    JSR sub_select_expanded_maze
-    .repeat 7
-        NOP
-    .endrepeat
+.ifdef PACMAN_REVISION_LATE_NAMCO
+    LDA tbl_namco_maze_rle_stream_ptr + $01
+    STA zp_work1
+    LDA tbl_namco_maze_rle_stream_ptr
 .else
-    .ifdef PACMAN_REVISION_LATE_NAMCO
-        LDA tbl_namco_maze_rle_stream_ptr + $01
-        STA zp_work1
-        LDA tbl_namco_maze_rle_stream_ptr
-    .else
-        LDA tbl_maze_rle_stream_ptr + $01
-        STA zp_work1
-        LDA tbl_maze_rle_stream_ptr
-    .endif
-    STA zp_work0
+    LDA tbl_maze_rle_stream_ptr + $01
+    STA zp_work1
+    LDA tbl_maze_rle_stream_ptr
 .endif
+    STA zp_work0
     LDX #$1B
     LDY #$00
 ; Upload next compressed maze row

@@ -32,8 +32,6 @@ tbl_namco_maze_rle_stream_ptr:
 tbl_maze_rle_stream_ptr:
 .ifdef PACMAN_REVISION_LATE_NAMCO
     .word vec_nmi_handler
-.elseif .defined(PACMAN_EXPANDED_MAZE)
-    .word tbl_expanded_maze_rle_stream
 .else
     .word tbl_maze_rle_stream
 .endif

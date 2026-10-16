@@ -13,13 +13,6 @@ over from the original.
 | ------------------- | -------------------------------------------- | ------------------------------------------------- |
 | `japan-v10`         | `Pac-Man (J) (V1.0) [!].nes`                 | The original NROM-128 layout, fixed capacities.   |
 | `japan-v11`         | `Pac-Man (J) (V1.1) [!].nes`                 | The same, for the v1.1 revision.                  |
-| `japan-v10-nrom256` | `build/expanded/pacman.nes`, built from v1.0 | The [expanded variant](./expanded_rom_assets.md). |
-
-The expanded revision is not a dump: the studio builds it from the v1.0 ROM with
-`scripts/build/build_expanded_base.py` when the image is missing, which needs
-the pinned toolchain of `config/toolchain.json`. Its second maze, its sound
-streams (8 KiB instead of the original's packed slots) and its relocated tables
-are what the expanded layout makes room for.
 
 ## What is edited
 

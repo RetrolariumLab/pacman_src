@@ -64,19 +64,6 @@ requires rendering/vblank ownership from its caller.
 The maze remains a generated asset (Retrolarium edits it). Its pointer is
 stored separately at the bank tail, not adjacent to the stream.
 
-## Optional Expanded Stage Parameters
-
-The NROM-256 entrypoint places this entire stage-parameter family at
-`$81A0..$82D5` in the added PRG bank, where Retrolarium edits it as the round
-tables of the expanded revision. Build-time
-aliases redirect every round-setup consumer to the relocated tables while the
-preservation entrypoint continues to use the original `$EB42` data unchanged.
-
-The expanded layout manifest fixes both asset ranges and enumerates every
-allowed operand-byte change in the original bank. See
-[Expanded NROM-256 ROM](expanded_rom_assets.md) for the build and
-layout contract.
-
 ## Padding and Fixed Tail
 
 The sound assets end at `$F427`. `unused_bank_padding` emits `$FF` from `$F428`

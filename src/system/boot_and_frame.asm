@@ -361,11 +361,7 @@ bra_copy_tengen_initial_palettes:
     LDY #$00
 ; Upload 16-byte title background palette
 bra_upload_background_palette:
-    .ifdef PACMAN_EXPANDED_PALETTES
-        LDA tbl_expanded_title_background_palette,Y
-    .else
-        LDA tbl_title_background_palette,Y
-    .endif
+    LDA tbl_title_background_palette,Y
     STA PPUDATA
     INY
     CPY #$10

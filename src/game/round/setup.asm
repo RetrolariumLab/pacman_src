@@ -48,11 +48,7 @@ bra_copy_tengen_round_palette:
     LDY #$00
 ; Upload gameplay palette
 bra_upload_round_palette:
-    .ifdef PACMAN_EXPANDED_PALETTES
-        LDA tbl_expanded_round_gameplay_palette,Y
-    .else
-        LDA tbl_round_gameplay_palette,Y
-    .endif
+    LDA tbl_round_gameplay_palette,Y
     STA PPUDATA
     INY
     CPY #$20
@@ -100,7 +96,7 @@ bra_calc_stage_table_offset:
 bra_stage_offset_ready:
     STA zp_work0
     TAX
-    LDA off_active_stage_profiles,X
+    LDA tbl_stage_param_index_stream,X
     TAX
     LDA #$00
     CLC
@@ -116,25 +112,25 @@ bra_param_block_base_ready:
     LDX #$00
 ; Copy level parameter block to runtime RAM 009F..00B4
 bra_copy_level_param_block:
-    LDA off_active_level_parameter_blocks,Y
+    LDA tbl_level_param_blocks_22bytes,Y
     STA ram_level_parameters,X
     INX
     INY
     CPX #con_level_parameter_block_size
     BNE bra_copy_level_param_block
     LDX zp_work0
-    LDA off_active_stage_profiles,X
+    LDA tbl_stage_param_index_stream,X
     ASL
     ASL
     ASL
     TAX
     LDY #$00
     STY ram_scatter_chase_phase
-    LDA off_active_speed_timer_blocks,X
+    LDA tbl_speed_timer_blocks_8bytes,X
     STA ram_scatter_chase_timer
 ; Copy 8-byte timer/speed block to runtime RAM 0097..009E
 bra_copy_timer_block:
-    LDA off_active_speed_timer_blocks,X
+    LDA tbl_speed_timer_blocks_8bytes,X
     STA ram_scatter_chase_durations,Y
     INX
     INY
@@ -142,24 +138,24 @@ bra_copy_timer_block:
     BNE bra_copy_timer_block
     INC zp_work0
     LDX zp_work0
-    LDA off_active_stage_profiles,X
+    LDA tbl_stage_param_index_stream,X
     STA ram_frightened_duration
     INC zp_work0
     LDX zp_work0
-    LDA off_active_stage_profiles,X
+    LDA tbl_stage_param_index_stream,X
     ASL  ; multiply index by con_dot_threshold_pair_size
     TAX
-    LDA off_active_dot_threshold_pairs,X
+    LDA tbl_dot_counter_threshold_pairs,X
     STA ram_personal_release_thresholds
     INX
-    LDA off_active_dot_threshold_pairs,X
+    LDA tbl_dot_counter_threshold_pairs,X
     STA ram_personal_release_thresholds + $01
     INC zp_work0
     LDA ram_round_restart_flag
     BEQ bra_load_release_targets_from_table
     LDX #$0C
     LDY #$00
-    LDA off_active_restart_release_target - $0C,X
+    LDA tbl_release_target_special_case_quad - $0C,X
     STA ram_ghost_release_targets,Y
     INY
     INX
@@ -171,7 +167,7 @@ bra_copy_timer_block:
 bra_adjust_release_targets_by_pellets:
     LDA zp_work1
     CLC
-    ADC off_active_restart_release_target - $0C,X
+    ADC tbl_release_target_special_case_quad - $0C,X
     STA ram_ghost_release_targets,Y
     INY
     INX
@@ -181,14 +177,14 @@ bra_adjust_release_targets_by_pellets:
 ; Load default release target counters from table
 bra_load_release_targets_from_table:
     LDX zp_work0
-    LDA off_active_stage_profiles,X
+    LDA tbl_stage_param_index_stream,X
     ASL
     ASL  ; multiply index by con_release_target_record_size
     TAX
     LDY #$00
 ; Copy 4-byte release target set to RAM 008F..0092
 bra_copy_release_target_quad:
-    LDA off_active_ghost_release_targets,X
+    LDA tbl_ghost_release_target_quads,X
     STA ram_ghost_release_targets,Y
     INX
     INY
@@ -232,11 +228,11 @@ bra_finalize_round_runtime:
     STA ram_global_release_target
     INC zp_work0
     LDX zp_work0
-    LDA off_active_stage_profiles,X
+    LDA tbl_stage_param_index_stream,X
     STA ram_stage_param_index
     INC zp_work0
     LDX zp_work0
-    LDA off_active_stage_profiles,X
+    LDA tbl_stage_param_index_stream,X
     STA ram_release_interval_seconds
     LDA ram_level_parameters + $06
     STA ram_pacman_move_fraction
@@ -265,11 +261,7 @@ bra_finalize_round_runtime:
 bra_select_hud_packet:
 ; Copy HUD PPU packet into RAM buffer
 bra_copy_hud_ppu_packet:
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_hud_player_packets,Y
-.else
     LDA tbl_hud_ppu_packets_by_player,Y
-.endif
     STA ram_ppu_buffer_hud,X
     INY
     INX

@@ -12,8 +12,10 @@ byte for byte identical to its ROM, with Japan v1.0 as the default.
 Source Reconstruction 3.1. The annotated source covers every subsystem and no
 registered unknown is open ([`docs/unknowns.md`](docs/unknowns.md)). Editing
 happens in Retrolarium Studio: open `pacman.rlj` to edit the maze, round tables,
-sound, graphics, palettes, screens, text and the attract demo of v1.0, v1.1 or
-the expanded NROM-256 variant ([`docs/retrolarium.md`](docs/retrolarium.md)).
+sound, graphics, palettes, screens, text and the attract demo of v1.0 or v1.1
+([`docs/retrolarium.md`](docs/retrolarium.md)). Expanded ROMs and hacks return
+with extended editing in Retrolarium in a later release; 3.0 had an expanded
+NROM-256 variant and a stage-5 hack.
 
 3.1 keeps only what builds and checks the source. The earlier releases' audits,
 runtime traces, analysis tools and the FCEUX tooling remain in the history (tags
@@ -43,8 +45,6 @@ make build / verify                       # the v1.0 ROM
 make build-revision REVISION=europe       # one official revision (config/revisions.json)
 make verify-revision REVISION=europe      #   and byte for byte
 make verify-revisions                     # every revision whose ROM is here
-make build-hack / verify-hack             # the stage-5 hack (docs/rom_hack_variants.md)
-make build-expanded / verify-expanded     # the NROM-256 variant (docs/expanded_rom_assets.md)
 make build-relocated                      # every module moved by a few bytes
 make studio-check                         # open and rebuild every pacman.rlj revision
 make test                                 # the quick suite
@@ -59,13 +59,11 @@ make clean                                # remove build/
 
 `make test` (about half a minute) runs the unit tests of the build scripts,
 verifies every build byte for byte against the ROMs that are present (the seven
-revisions, the hack and the expanded variant), builds the relocated variant and
-runs the studio check.
+revisions), builds the relocated variant and runs the studio check.
 
 `make test-full` (about four minutes) adds the longplay
 `movies/pacman_j_longplay.fm2`, played in MAME on the relocated build, where
-every module sits a few bytes away from its original address, and on the
-expanded build. At its checkpoints the game's state (mode, lives, round,
+every module sits a few bytes away from its original address. At its checkpoints the game's state (mode, lives, round,
 extra-life flag, score) must equal what the original ROM gives, as recorded in
 `movies/pacman_j_longplay.check.json`. Name MAME with `MAME=<path>` or
 `RETROLARIUM_MAME`.
@@ -78,9 +76,8 @@ them in MAME frame for frame (`rltool movie`).
 
 ```text
 src/            ca65 source: main.asm, the modules, macros, revisions,
-                variants/stage5.asm, expanded/nrom256.asm
-config/         revisions, linker layouts, toolchain, lint, hack and expanded
-                layouts, the Retrolarium profile and names
+config/         revisions, linker layout, toolchain, lint, the Retrolarium
+                profile and names
 assets/         manifest.json (the generated assets are ignored)
 scripts/build/  build, split, variants, relocation and verification scripts
 tests/build/    their unit tests

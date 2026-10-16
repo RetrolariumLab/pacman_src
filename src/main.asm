@@ -11,7 +11,6 @@
 .include "macros/ppu.inc"
 .include "macros/hud.inc"
 .include "macros/actors.inc"
-.include "data/active_tables.inc"
 
 .include "system/boot_and_frame.asm"
 .include "game/title/screen.asm"

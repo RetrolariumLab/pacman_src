@@ -7,11 +7,7 @@ bra_next_hud_block_page:
     LDY #$00
 ; Stream one HUD block packet to PPU
 bra_stream_hud_block_packet:
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_hud_blocks,Y
-.else
     LDA tbl_hud_block_packets,Y
-.endif
     CPX #$00
     BNE bra_write_hud_block_addr_hi
     ADC #$07
@@ -19,27 +15,15 @@ bra_stream_hud_block_packet:
 bra_write_hud_block_addr_hi:
     STA PPUADDR
     INY
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_hud_blocks,Y
-.else
     LDA tbl_hud_block_packets,Y
-.endif
     STA PPUADDR
     INY
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_hud_blocks,Y
-.else
     LDA tbl_hud_block_packets,Y
-.endif
     STA zp_work0
 ; Write HUD block payload bytes
 bra_write_hud_block_payload:
     INY
-.ifdef PACMAN_EXPANDED_SCREENS
-    LDA tbl_expanded_hud_blocks,Y
-.else
     LDA tbl_hud_block_packets,Y
-.endif
     STA PPUDATA
     DEC zp_work0
     BNE bra_write_hud_block_payload
@@ -281,11 +265,7 @@ bra_upload_fruit_palette_color:
 ; Clamp fruit color index by stage
 bra_clamp_fruit_color_index:
     TAY
-.ifdef PACMAN_EXPANDED_PALETTES
-    LDA tbl_expanded_stage_fruit_palette_color,Y
-.else
     LDA tbl_stage_fruit_palette_color,Y
-.endif
 .ifdef PACMAN_REVISION_RAM_PALETTES
     STA ram_sprite_palette_update + $0D
     LDA #$0F

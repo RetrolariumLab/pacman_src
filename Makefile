@@ -22,8 +22,6 @@ REVISION_MANIFEST ?= $(PROJECT_DIR)config/revisions.json
 REVISION ?= $(shell $(PYTHON) "$(PROJECT_DIR)scripts/build/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --print-default)
 REVISION_REQUIRE_ALL ?=
 LONGPLAY_CHECK ?= $(PROJECT_DIR)movies/pacman_j_longplay.check.json
-EXPANDED_DIR ?= $(BUILD_DIR)/expanded
-EXPANDED_ASSET_DIR ?= $(EXPANDED_DIR)/assets
 RELOCATED_DIR ?= $(BUILD_DIR)/relocated
 
 # One build of a main source: $(call native,<source>,<output folder>,<flags>)
@@ -35,7 +33,6 @@ native = $(PYTHON) "$(PROJECT_DIR)scripts/build/build_native.py" \
 		--output-rom "$(2)/pacman.nes" --toolchain-manifest "$(TOOLCHAIN_MANIFEST)" $(3)
 
 .PHONY: all build verify build-revision verify-revision verify-revisions split \
-	build-hack verify-hack expanded-assets build-expanded verify-expanded \
 	build-relocated studio-check test test-full golden lint format hooks clean help \
 	_require-assets
 .DEFAULT_GOAL := build
@@ -75,48 +72,6 @@ _require-assets:
 	$(PYTHON) "$(PROJECT_DIR)scripts/build/check_assets.py" \
 		--manifest "$(ASSET_MANIFEST)" --asset-dir "$(GENERATED_ASSET_DIR)"
 
-# The stage-5 hack (docs/rom_hack_variants.md).
-build-hack: _require-assets
-	$(call native,$(PROJECT_DIR)src/variants/stage5.asm,$(BUILD_DIR)/hack)
-
-verify-hack: build-hack
-	$(PYTHON) "$(PROJECT_DIR)scripts/build/verify_hack.py" \
-		--original "$(ORIGINAL_ROM)" --candidate "$(BUILD_DIR)/hack/pacman.nes" \
-		--manifest "$(PROJECT_DIR)config/hack_variants.json" --variant default
-
-# The expanded NROM-256 variant (docs/expanded_rom_assets.md), the
-# japan-v10-nrom256 revision of pacman.rlj.
-expanded-assets: _require-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/build/expanded_assets.py" \
-		--original-rom "$(ORIGINAL_ROM)" \
-		--maze-source "$(GENERATED_ASSET_DIR)/maze/maze.rle" \
-		--asset-manifest "$(ASSET_MANIFEST)" --asset-dir "$(GENERATED_ASSET_DIR)" \
-		--output-dir "$(EXPANDED_ASSET_DIR)"
-
-build-expanded: expanded-assets
-	$(PYTHON) "$(PROJECT_DIR)scripts/build/build_expanded.py" \
-		--source "$(PROJECT_DIR)src/expanded/nrom256.asm" \
-		--config "$(PROJECT_DIR)config/linker/nrom256_expanded.cfg" \
-		--original-rom "$(ORIGINAL_ROM)" --chr "$(GENERATED_CHR)" \
-		--object "$(EXPANDED_DIR)/pacman.o" --prg "$(EXPANDED_DIR)/pacman.prg" \
-		--labels "$(EXPANDED_DIR)/pacman.lbl" --map "$(EXPANDED_DIR)/pacman.map" \
-		--debug-info "$(EXPANDED_DIR)/pacman.dbg" --output-rom "$(EXPANDED_DIR)/pacman.nes" \
-		--toolchain-manifest "$(TOOLCHAIN_MANIFEST)"
-
-verify-expanded: build-expanded
-	$(PYTHON) "$(PROJECT_DIR)scripts/build/verify_expanded.py" \
-		--original "$(ORIGINAL_ROM)" --candidate "$(EXPANDED_DIR)/pacman.nes" \
-		--maze-original "$(GENERATED_ASSET_DIR)/maze/maze.rle" \
-		--maze-stage2 "$(EXPANDED_ASSET_DIR)/maze.rle" \
-		--stage "$(EXPANDED_ASSET_DIR)/stage_parameters.bin" \
-		--sound-pointers "$(EXPANDED_ASSET_DIR)/sound_pointers.bin" \
-		--sound-streams "$(EXPANDED_ASSET_DIR)/sound_streams.bin" \
-		--actors "$(EXPANDED_ASSET_DIR)/actor_sprites.bin" \
-		--palettes "$(EXPANDED_ASSET_DIR)/palettes.bin" \
-		--screens "$(EXPANDED_ASSET_DIR)/screens.bin" \
-		--expected-chr "$(GENERATED_CHR)" \
-		--layout "$(PROJECT_DIR)config/expanded_layout.json"
-
 # Every module moved one byte further than the one before (scripts/build/relocate.py).
 build-relocated: _require-assets
 	$(PYTHON) "$(PROJECT_DIR)scripts/build/relocate.py" \
@@ -132,15 +87,13 @@ studio-check: _require-assets
 # byte against the ROMs that are here, the relocated build and the studio check.
 test: _require-assets
 	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)tests" -p "test_*.py"
-	$(MAKE) --no-print-directory verify verify-revisions verify-hack verify-expanded \
-		build-relocated studio-check
+	$(MAKE) --no-print-directory verify verify-revisions build-relocated studio-check
 
 # The full suite: the quick one, then the longplay in MAME on the relocated
-# and the expanded builds, compared with what the original ROM gives
+# build, compared with what the original ROM gives
 # (movies/pacman_j_longplay.check.json, written by `make golden`).
 test-full: test
 	$(RLTOOL) movie check "$(LONGPLAY_CHECK)" --rom "$(RELOCATED_DIR)/pacman.nes" --mame "$(MAME)"
-	$(RLTOOL) movie check "$(LONGPLAY_CHECK)" --rom "$(EXPANDED_DIR)/pacman.nes" --mame "$(MAME)"
 
 # What the original ROM gives at the longplay's checkpoints.
 golden:
@@ -167,8 +120,6 @@ help:
 	@echo "  make build / verify    build the v1.0 ROM / and compare it byte for byte"
 	@echo "  make build-revision REVISION=<id> / verify-revision / verify-revisions"
 	@echo "                         the other revisions of config/revisions.json"
-	@echo "  make build-hack / verify-hack          the stage-5 hack"
-	@echo "  make build-expanded / verify-expanded  the expanded NROM-256 variant"
 	@echo "  make build-relocated   every module moved by a few bytes"
 	@echo "  make studio-check      open and rebuild every pacman.rlj revision"
 	@echo "  make test              unit tests and every build (about half a minute)"

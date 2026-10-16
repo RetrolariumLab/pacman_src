@@ -73,6 +73,4 @@ revision selection lives under `src/revisions/`:
 - `constants.inc` defines verified gameplay and data-format constants.
 
 These includes emit no bytes and are loaded by `src/main.asm` before macros and
-address-ordered ROM modules. `src/data/active_tables.inc` also emits no bytes;
-it aliases stage-data consumers to either the reference tables or the expanded
-bank selected by `PACMAN_EXPANDED_STAGE`.
+address-ordered ROM modules.

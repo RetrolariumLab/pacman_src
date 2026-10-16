@@ -229,11 +229,7 @@ bra_find_ppu_buffer_end_for_palette_cmd:
 bra_adjust_palette_cmd_offset:
 ; Append frightened palette command bytes
 bra_append_frightened_palette_cmd:
-    .ifdef PACMAN_EXPANDED_PALETTES
-        LDA tbl_expanded_frightened_palette_cmd_alt,X
-    .else
-        LDA tbl_frightened_palette_cmd_alt,X
-    .endif
+    LDA tbl_frightened_palette_cmd_alt,X
     STA ram_ppu_buffer_main,Y
     INY
     INX
