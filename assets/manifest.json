@@ -1,172 +1,527 @@
 {
+  "schema": "retrolarium.assets",
   "schema_version": 1,
-  "reference_rom": {
-    "sha1": "adb4d7d7d28c89ca177aad231e0fdad992c0fbfb",
-    "prg_cpu_base": "0xC000",
-    "prg_size": 16384,
-    "chr_size": 8192
-  },
+  "output": "assets/generated",
+  "images": [
+    {
+      "id": "japan-v10",
+      "file": "Pac-Man (J) (V1.0) [!].nes",
+      "size": 24592,
+      "sha1": "adb4d7d7d28c89ca177aad231e0fdad992c0fbfb"
+    },
+    {
+      "id": "japan-v11",
+      "file": "Pac-Man (J) (V1.1) [!].nes",
+      "size": 24592,
+      "sha1": "b8be2bffb4592873cc211becb529bf64071c7f90"
+    },
+    {
+      "id": "japan-revb",
+      "file": "Pac-Man (Japan) (En) (Rev B).nes",
+      "size": 24592,
+      "sha1": "8b874a704e37557941179b232bac41644f6d01fc"
+    },
+    {
+      "id": "usa-tengen-unlicensed",
+      "file": "Pac-Man (Unl) (Tengen) [!].nes",
+      "size": 24592,
+      "sha1": "f1d9eb92f931ed925bd6119d00d1023a45da583f"
+    },
+    {
+      "id": "usa-tengen",
+      "file": "Pac-Man (U) (Tengen) [!].nes",
+      "size": 24592,
+      "sha1": "727176933c25de055e7daa92e8b943f67cae4d9b"
+    },
+    {
+      "id": "usa-namco",
+      "file": "Pac-Man (U) (Namco) [!].nes",
+      "size": 24592,
+      "sha1": "e7d818e128593109b5c480497a050facc0744f1b"
+    },
+    {
+      "id": "europe",
+      "file": "Pac-Man (E) [!].nes",
+      "size": 24592,
+      "sha1": "feb45bcbcd2326c14280db17330b665ec6adc0cc"
+    }
+  ],
   "assets": [
     {
-      "path": "chr/pacman.chr",
-      "region": "chr",
+      "path": "header/pacman.hdr",
+      "image": "japan-v10",
       "offset": 0,
+      "size": 16,
+      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
+    },
+    {
+      "path": "chr/pacman.chr",
+      "image": "japan-v10",
+      "offset": 16400,
       "size": 8192,
       "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
     },
     {
       "path": "maze/maze.rle",
-      "region": "prg",
-      "address": "0xEC78",
+      "image": "japan-v10",
+      "offset": 11400,
       "size": 416,
       "sha1": "2076e1963bc3a0665cc0f831c459041fa88aea15"
     },
     {
       "path": "audio/slot02_extra_life.bin",
-      "region": "prg",
-      "address": "0xF0AE",
+      "image": "japan-v10",
+      "offset": 12478,
       "size": 21,
       "sha1": "02559cea99dca72bfc6d71372f628c52708e7cf2"
     },
     {
       "path": "audio/slot06_fruit.bin",
-      "region": "prg",
-      "address": "0xF0C3",
+      "image": "japan-v10",
+      "offset": 12499,
       "size": 43,
       "sha1": "bbc36fd670e8f94ba555819ff93aa1f5e18effed"
     },
     {
       "path": "audio/slot0a_release_counter_hi.bin",
-      "region": "prg",
-      "address": "0xF0EE",
+      "image": "japan-v10",
+      "offset": 12542,
       "size": 43,
       "sha1": "9acde125daaf2a550b74c94567cbbe5e24fea013"
     },
     {
       "path": "audio/slot0b_release_counter_mid.bin",
-      "region": "prg",
-      "address": "0xF119",
+      "image": "japan-v10",
+      "offset": 12585,
       "size": 35,
       "sha1": "4ffe59ffaad0a89f089fa2959cd2a2bbb679fe96"
     },
     {
       "path": "audio/slot0c_release_counter_lo.bin",
-      "region": "prg",
-      "address": "0xF13C",
+      "image": "japan-v10",
+      "offset": 12620,
       "size": 31,
       "sha1": "f8c055fa7c17a9ac1300a26e8e520f88916514eb"
     },
     {
       "path": "audio/slot09_ghost_house_release_marker.bin",
-      "region": "prg",
-      "address": "0xF15B",
+      "image": "japan-v10",
+      "offset": 12651,
       "size": 21,
       "sha1": "0ec572675bc67c19b42099b1625051fefa2b3bb8"
     },
     {
       "path": "audio/slot07_eat_ghost.bin",
-      "region": "prg",
-      "address": "0xF170",
+      "image": "japan-v10",
+      "offset": 12672,
       "size": 35,
       "sha1": "b1de03e6f56d84a9af4a8ada7d8d472bc5222803"
     },
     {
       "path": "audio/slot0d_intermission_flag_a.bin",
-      "region": "prg",
-      "address": "0xF193",
+      "image": "japan-v10",
+      "offset": 12707,
       "size": 115,
       "sha1": "add1b15ec35c2486066c0ff4e304451fec3c9687"
     },
     {
       "path": "audio/slot0e_intermission_flag_b.bin",
-      "region": "prg",
-      "address": "0xF206",
+      "image": "japan-v10",
+      "offset": 12822,
       "size": 163,
       "sha1": "4cc966dc22215368b4db8d7bd72fc465ff78ab5f"
     },
     {
       "path": "audio/slot08_ghost_house_state6_marker.bin",
-      "region": "prg",
-      "address": "0xF2A9",
+      "image": "japan-v10",
+      "offset": 12985,
       "size": 31,
       "sha1": "63bd01654f58df414ec9002232ed4498b7b3e94a"
     },
     {
       "path": "audio/slot03_death.bin",
-      "region": "prg",
-      "address": "0xF2C8",
+      "image": "japan-v10",
+      "offset": 13016,
       "size": 143,
       "sha1": "3e1348fdc92ced363c4c09dbd879d47955131b6a"
     },
     {
       "path": "audio/slot00_player_ready_channel_a.bin",
-      "region": "prg",
-      "address": "0xF357",
+      "image": "japan-v10",
+      "offset": 13159,
       "size": 73,
       "sha1": "61d00aa2d29897a8ba3ba526b58d0701fc9a0e0e"
     },
     {
       "path": "audio/slot01_player_ready_channel_b.bin",
-      "region": "prg",
-      "address": "0xF3A0",
+      "image": "japan-v10",
+      "offset": 13232,
       "size": 43,
       "sha1": "f5eb941fb8a277fece9bccb3623959ca3a7f1e04"
     },
     {
       "path": "audio/slot04_pellet_even.bin",
-      "region": "prg",
-      "address": "0xF3CB",
+      "image": "japan-v10",
+      "offset": 13275,
       "size": 17,
       "sha1": "8ae630e4d5551ca3ab7b89760d2a888985e7cfdc"
     },
     {
       "path": "audio/slot05_pellet_odd.bin",
-      "region": "prg",
-      "address": "0xF3DC",
+      "image": "japan-v10",
+      "offset": 13292,
       "size": 17,
       "sha1": "3b6feb300fcce8204b1a873eba6d11a1b1906afa"
     },
     {
       "path": "audio/slot0f_pause_toggle.bin",
-      "region": "prg",
-      "address": "0xF3ED",
+      "image": "japan-v10",
+      "offset": 13309,
       "size": 59,
       "sha1": "8288cae3927ee26d0dd5414897d0aa473f25532a"
     },
     {
-      "path": "palettes/attract-namco.bin",
-      "size": 32,
-      "sha1": "2ea21de027701c59a6ece5b276aa6d26cf1bcaff",
-      "region": "prg",
-      "address": "0xC5B3"
-    },
-    {
-      "path": "palettes/intermission-sprites.bin",
+      "path": "revisions/japan-v10/header.bin",
+      "image": "japan-v10",
+      "offset": 0,
       "size": 16,
-      "sha1": "b42defaad586242cededcab18d77d4c0df1545b3",
-      "region": "prg",
-      "address": "0xE73B"
+      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
     },
     {
-      "path": "palettes/round.bin",
-      "size": 32,
-      "sha1": "d1255c3b4d259ccacea58a784d504080211ab24e",
-      "region": "prg",
-      "address": "0xD060"
+      "path": "revisions/japan-v10/chr.bin",
+      "image": "japan-v10",
+      "offset": 16400,
+      "size": 8192,
+      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
     },
     {
-      "path": "palettes/title-background.bin",
+      "path": "revisions/japan-v11/header.bin",
+      "image": "japan-v11",
+      "offset": 0,
       "size": 16,
-      "sha1": "ec25cd088056307b15869ede32e09480ed07142a",
-      "region": "prg",
-      "address": "0xC395"
+      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
+    },
+    {
+      "path": "revisions/japan-v11/chr.bin",
+      "image": "japan-v11",
+      "offset": 16400,
+      "size": 8192,
+      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
+    },
+    {
+      "path": "revisions/japan-revb/header.bin",
+      "image": "japan-revb",
+      "offset": 0,
+      "size": 16,
+      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
+    },
+    {
+      "path": "revisions/japan-revb/chr.bin",
+      "image": "japan-revb",
+      "offset": 16400,
+      "size": 8192,
+      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
+    },
+    {
+      "path": "revisions/usa-tengen-unlicensed/header.bin",
+      "image": "usa-tengen-unlicensed",
+      "offset": 0,
+      "size": 16,
+      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
+    },
+    {
+      "path": "revisions/usa-tengen-unlicensed/chr.bin",
+      "image": "usa-tengen-unlicensed",
+      "offset": 16400,
+      "size": 8192,
+      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
+    },
+    {
+      "path": "revisions/usa-tengen/header.bin",
+      "image": "usa-tengen",
+      "offset": 0,
+      "size": 16,
+      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
+    },
+    {
+      "path": "revisions/usa-tengen/chr.bin",
+      "image": "usa-tengen",
+      "offset": 16400,
+      "size": 8192,
+      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
+    },
+    {
+      "path": "revisions/usa-namco/header.bin",
+      "image": "usa-namco",
+      "offset": 0,
+      "size": 16,
+      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
+    },
+    {
+      "path": "revisions/usa-namco/chr.bin",
+      "image": "usa-namco",
+      "offset": 16400,
+      "size": 8192,
+      "sha1": "259b4d580d2fc11d5a61ad85f9fb717489986454"
+    },
+    {
+      "path": "revisions/europe/header.bin",
+      "image": "europe",
+      "offset": 0,
+      "size": 16,
+      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
+    },
+    {
+      "path": "revisions/europe/chr.bin",
+      "image": "europe",
+      "offset": 16400,
+      "size": 8192,
+      "sha1": "6ab2a6cfd59e4e1fe9d8c5da6722bb5a6a173861"
     },
     {
       "path": "title/logo-tiles.bin",
+      "image": "japan-v10",
+      "offset": 687,
       "size": 138,
-      "sha1": "42099a7bf62e02a54e70705d6823cc308900ecea",
-      "region": "prg",
-      "address": "0xC29F"
+      "sha1": "42099a7bf62e02a54e70705d6823cc308900ecea"
+    },
+    {
+      "path": "title/logo-tiles.bin",
+      "image": "japan-v11",
+      "offset": 687,
+      "size": 138,
+      "sha1": "42099a7bf62e02a54e70705d6823cc308900ecea"
+    },
+    {
+      "path": "title/logo-tiles.bin",
+      "image": "japan-revb",
+      "offset": 781,
+      "size": 138,
+      "sha1": "42099a7bf62e02a54e70705d6823cc308900ecea"
+    },
+    {
+      "path": "title/logo-tiles.bin",
+      "image": "usa-tengen-unlicensed",
+      "offset": 781,
+      "size": 138,
+      "sha1": "42099a7bf62e02a54e70705d6823cc308900ecea"
+    },
+    {
+      "path": "title/logo-tiles.bin",
+      "image": "usa-tengen",
+      "offset": 781,
+      "size": 138,
+      "sha1": "42099a7bf62e02a54e70705d6823cc308900ecea"
+    },
+    {
+      "path": "title/logo-tiles.bin",
+      "image": "usa-namco",
+      "offset": 822,
+      "size": 138,
+      "sha1": "42099a7bf62e02a54e70705d6823cc308900ecea"
+    },
+    {
+      "path": "title/logo-tiles.bin",
+      "image": "europe",
+      "offset": 801,
+      "size": 138,
+      "sha1": "42099a7bf62e02a54e70705d6823cc308900ecea"
+    },
+    {
+      "path": "palettes/title-background.bin",
+      "image": "japan-v10",
+      "offset": 933,
+      "size": 16,
+      "sha1": "ec25cd088056307b15869ede32e09480ed07142a"
+    },
+    {
+      "path": "palettes/title-background.bin",
+      "image": "japan-v11",
+      "offset": 933,
+      "size": 16,
+      "sha1": "ec25cd088056307b15869ede32e09480ed07142a"
+    },
+    {
+      "path": "palettes/title-background.bin",
+      "image": "japan-revb",
+      "offset": 1027,
+      "size": 16,
+      "sha1": "ec25cd088056307b15869ede32e09480ed07142a"
+    },
+    {
+      "path": "palettes/title-background.bin",
+      "image": "usa-tengen-unlicensed",
+      "offset": 1058,
+      "size": 16,
+      "sha1": "ec25cd088056307b15869ede32e09480ed07142a"
+    },
+    {
+      "path": "palettes/title-background.bin",
+      "image": "usa-tengen",
+      "offset": 1058,
+      "size": 16,
+      "sha1": "ec25cd088056307b15869ede32e09480ed07142a"
+    },
+    {
+      "path": "palettes/title-background.bin",
+      "image": "usa-namco",
+      "offset": 1103,
+      "size": 16,
+      "sha1": "ec25cd088056307b15869ede32e09480ed07142a"
+    },
+    {
+      "path": "palettes/title-background.bin",
+      "image": "europe",
+      "offset": 1058,
+      "size": 16,
+      "sha1": "ec25cd088056307b15869ede32e09480ed07142a"
+    },
+    {
+      "path": "palettes/round.bin",
+      "image": "japan-v10",
+      "offset": 4208,
+      "size": 32,
+      "sha1": "d1255c3b4d259ccacea58a784d504080211ab24e"
+    },
+    {
+      "path": "palettes/round.bin",
+      "image": "japan-v11",
+      "offset": 4208,
+      "size": 32,
+      "sha1": "d1255c3b4d259ccacea58a784d504080211ab24e"
+    },
+    {
+      "path": "palettes/round.bin",
+      "image": "japan-revb",
+      "offset": 4323,
+      "size": 32,
+      "sha1": "d1255c3b4d259ccacea58a784d504080211ab24e"
+    },
+    {
+      "path": "palettes/round.bin",
+      "image": "usa-tengen-unlicensed",
+      "offset": 4320,
+      "size": 32,
+      "sha1": "d1255c3b4d259ccacea58a784d504080211ab24e"
+    },
+    {
+      "path": "palettes/round.bin",
+      "image": "usa-tengen",
+      "offset": 4320,
+      "size": 32,
+      "sha1": "d1255c3b4d259ccacea58a784d504080211ab24e"
+    },
+    {
+      "path": "palettes/round.bin",
+      "image": "usa-namco",
+      "offset": 4385,
+      "size": 32,
+      "sha1": "d1255c3b4d259ccacea58a784d504080211ab24e"
+    },
+    {
+      "path": "palettes/round.bin",
+      "image": "europe",
+      "offset": 4357,
+      "size": 32,
+      "sha1": "d1255c3b4d259ccacea58a784d504080211ab24e"
+    },
+    {
+      "path": "palettes/intermission-sprites.bin",
+      "image": "japan-v10",
+      "offset": 10059,
+      "size": 16,
+      "sha1": "b42defaad586242cededcab18d77d4c0df1545b3"
+    },
+    {
+      "path": "palettes/intermission-sprites.bin",
+      "image": "japan-v11",
+      "offset": 10059,
+      "size": 16,
+      "sha1": "b42defaad586242cededcab18d77d4c0df1545b3"
+    },
+    {
+      "path": "palettes/intermission-sprites.bin",
+      "image": "japan-revb",
+      "offset": 10113,
+      "size": 16,
+      "sha1": "b42defaad586242cededcab18d77d4c0df1545b3"
+    },
+    {
+      "path": "palettes/intermission-sprites.bin",
+      "image": "usa-tengen-unlicensed",
+      "offset": 10110,
+      "size": 16,
+      "sha1": "b42defaad586242cededcab18d77d4c0df1545b3"
+    },
+    {
+      "path": "palettes/intermission-sprites.bin",
+      "image": "usa-tengen",
+      "offset": 10110,
+      "size": 16,
+      "sha1": "b42defaad586242cededcab18d77d4c0df1545b3"
+    },
+    {
+      "path": "palettes/intermission-sprites.bin",
+      "image": "usa-namco",
+      "offset": 10175,
+      "size": 16,
+      "sha1": "b42defaad586242cededcab18d77d4c0df1545b3"
+    },
+    {
+      "path": "palettes/intermission-sprites.bin",
+      "image": "europe",
+      "offset": 10147,
+      "size": 16,
+      "sha1": "b42defaad586242cededcab18d77d4c0df1545b3"
+    },
+    {
+      "path": "palettes/attract-tengen.bin",
+      "image": "usa-tengen-unlicensed",
+      "offset": 1626,
+      "size": 32,
+      "sha1": "84effe1542c5996158a48236bce3b2ff77b28052"
+    },
+    {
+      "path": "palettes/attract-tengen.bin",
+      "image": "usa-tengen",
+      "offset": 1626,
+      "size": 32,
+      "sha1": "84effe1542c5996158a48236bce3b2ff77b28052"
+    },
+    {
+      "path": "palettes/attract-namco.bin",
+      "image": "japan-v10",
+      "offset": 1475,
+      "size": 32,
+      "sha1": "2ea21de027701c59a6ece5b276aa6d26cf1bcaff"
+    },
+    {
+      "path": "palettes/attract-namco.bin",
+      "image": "japan-v11",
+      "offset": 1475,
+      "size": 32,
+      "sha1": "2ea21de027701c59a6ece5b276aa6d26cf1bcaff"
+    },
+    {
+      "path": "palettes/attract-namco.bin",
+      "image": "japan-revb",
+      "offset": 1579,
+      "size": 32,
+      "sha1": "2ea21de027701c59a6ece5b276aa6d26cf1bcaff"
+    },
+    {
+      "path": "palettes/attract-namco.bin",
+      "image": "usa-namco",
+      "offset": 1655,
+      "size": 32,
+      "sha1": "2ea21de027701c59a6ece5b276aa6d26cf1bcaff"
+    },
+    {
+      "path": "palettes/attract-namco.bin",
+      "image": "europe",
+      "offset": 1610,
+      "size": 32,
+      "sha1": "2ea21de027701c59a6ece5b276aa6d26cf1bcaff"
     }
   ]
 }

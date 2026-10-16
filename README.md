@@ -29,12 +29,13 @@ You need Python 3, GNU Make and Retrolarium Kit (`rltool` on `PATH`, or
 repository root, then:
 
 ```bash
-make split     # unpack the CHR, maze and audio from the ROM (once)
+make split     # cut the header, CHR, maze and audio out of the ROMs (once)
 make verify    # build and compare byte for byte
 ```
 
-`make split` writes the ignored assets under `assets/generated/`
-(`assets/manifest.json` lists them); it overwrites them, so run it again only to
+`make split` (`rltool assets split`, Retrolarium Kit) writes the ignored assets
+under `assets/generated/` from every ROM that is here; `assets/manifest.json`
+names the ROMs and the assets. It overwrites them, so run it again only to
 start over. `make build` uses whatever assets are there, edited or not;
 `make verify` fails unless the ROM is identical to the original.
 
@@ -42,7 +43,7 @@ start over. `make build` uses whatever assets are there, edited or not;
 
 ```bash
 make build / verify                       # the v1.0 ROM
-make build-revision REVISION=europe       # one official revision (config/revisions.json)
+make build-revision REVISION=europe       # one official revision (assets/manifest.json)
 make verify-revision REVISION=europe      #   and byte for byte
 make verify-revisions                     # every revision whose ROM is here
 make build-relocated                      # every module moved by a few bytes

@@ -23,9 +23,8 @@ id = "japan-v11"
 label = "Japan · v1.1"
 rom = "Pac-Man (J) (V1.1) [!].nes"
 
-# make split, run by the kit's Python: both revisions build from the assets
-# the v1.0 ROM splits into.
+# The assets both revisions build from: the kit cuts them out of the v1.0 ROM
+# by assets/manifest.json, as `make split` does.
 [split]
 revision = "japan-v10"
-command = ["scripts/build/split_assets.py", "--rom", "{rom}", "--manifest", "assets/manifest.json", "--output-dir", "assets/generated"]
-check = ["scripts/build/check_assets.py", "--manifest", "assets/manifest.json", "--asset-dir", "assets/generated"]
+manifest = "assets/manifest.json"

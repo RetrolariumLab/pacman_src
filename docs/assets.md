@@ -13,7 +13,7 @@ thresholds, pointer tables, note periods, and hardware vectors.
 Extract data when it is an opaque authored asset without a trustworthy editor
 or encoder. The current generated set is:
 
-- the 8 KiB CHR-ROM;
+- the 16-byte iNES header and the 8 KiB CHR-ROM;
 - the 416-byte compressed maze stream at `EC78..EE17`;
 - sixteen sound command streams at `F0AE..F427`.
 
@@ -22,10 +22,12 @@ listing. It is represented by a single ca65 `.res` directive.
 
 ## Manifest and Output
 
-[`assets/manifest.json`](../assets/manifest.json) is tracked and records the
-required ROM SHA-1 plus every source address, size, and output checksum.
-`make split` validates all of those values before writing files under
-`assets/generated/`. That directory is ignored by Git but deliberately
+[`assets/manifest.json`](../assets/manifest.json) (`retrolarium.assets`) is
+tracked: it names every revision's ROM by file, size and SHA-1, and every asset
+by the ROM it comes from, its file offset, size and SHA-1. `make split`
+(`rltool assets split`) checks all of those before writing files under
+`assets/generated/`; besides the v1.0 assets it writes each revision's header
+and CHR to `assets/generated/revisions/<id>/`. That directory is ignored by Git but deliberately
 preserved by `make clean`, because it may contain local ROM-hack edits.
 
 Generated files are consumed with `.incbin` by `src/data/maze.asm` and

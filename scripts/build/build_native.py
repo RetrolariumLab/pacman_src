@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Build the native modular ca65 source and optionally verify the ROM."""
+"""Build the native modular ca65 source into a ROM: the header and CHR come
+from the split assets (rltool assets split); rltool assets verify compares
+the result with the original."""
 
 from __future__ import annotations
 
@@ -156,47 +158,17 @@ def assemble_prg(
     return prg
 
 
-def parse_ines(data: bytes) -> tuple[bytes, bytes, bytes]:
-    if len(data) < 16 or data[:4] != b"NES\x1a":
-        fail("Reference ROM is not valid iNES")
-    trainer_size = 512 if data[6] & 0x04 else 0
-    prg_size = data[4] * PRG_SIZE
-    chr_size = data[5] * 8_192
-    prg_offset = 16 + trainer_size
-    return (
-        data[:16],
-        data[prg_offset : prg_offset + prg_size],
-        data[prg_offset + prg_size : prg_offset + prg_size + chr_size],
-    )
-
-
-def first_diff(left: bytes, right: bytes) -> int | None:
-    for index, (a, b) in enumerate(zip(left, right)):
-        if a != b:
-            return index
-    return min(len(left), len(right)) if len(left) != len(right) else None
-
-
-def sha1(data: bytes) -> str:
-    return hashlib.sha1(data).hexdigest()
-
-
 def rooted(project_root: Path, value: str) -> Path:
     path = Path(value)
     return path if path.is_absolute() else project_root / path
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     parser.add_argument("--source", default="src/main.asm")
     parser.add_argument("--config", default="config/linker/nrom128_prg_only.cfg")
-    parser.add_argument("--original-rom", default="Pac-Man (J) (V1.0) [!].nes")
+    parser.add_argument("--header", default="assets/generated/header/pacman.hdr")
     parser.add_argument("--chr", default="assets/generated/chr/pacman.chr")
-    parser.add_argument(
-        "--chr-from-reference",
-        action="store_true",
-        help="Reuse CHR from the local reference ROM instead of a separate asset file",
-    )
     parser.add_argument("--object", default="build/pacman.o")
     parser.add_argument("--prg", default="build/pacman.prg")
     parser.add_argument("--labels", default="build/pacman.lbl")
@@ -220,68 +192,42 @@ def main() -> int:
         default=[],
         help="Add a ca65 include directory; may be repeated",
     )
-    parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parents[2]
     source = rooted(project_root, args.source)
     config = rooted(project_root, args.config)
-    original_rom = rooted(project_root, args.original_rom)
+    header_path = rooted(project_root, args.header)
     chr_path = rooted(project_root, args.chr)
-    object_path = rooted(project_root, args.object)
-    prg_path = rooted(project_root, args.prg)
-    labels_path = rooted(project_root, args.labels)
-    map_path = rooted(project_root, args.map)
-    debug_path = rooted(project_root, args.debug_info)
     output_rom = rooted(project_root, args.output_rom)
-    toolchain_manifest = rooted(project_root, args.toolchain_manifest)
-    required_paths = [source, config, original_rom]
-    if not args.chr_from_reference:
-        required_paths.append(chr_path)
-    for path in required_paths:
+    for path in (source, config, header_path, chr_path):
         if not path.is_file():
-            fail(f"Required file not found: {path}")
+            fail(f"Required file not found: {path}" + (" (run make split)" if "generated" in path.parts else ""))
 
-    reference = original_rom.read_bytes()
-    header, original_prg, original_chr = parse_ines(reference)
-    chr_data = original_chr if args.chr_from_reference else chr_path.read_bytes()
-    if len(chr_data) != len(original_chr):
-        fail(
-            f"Generated CHR must be {len(original_chr)} bytes, "
-            f"got {len(chr_data)}"
-        )
+    header = header_path.read_bytes()
+    chr_data = chr_path.read_bytes()
+    if len(header) != 16 or header[:4] != b"NES\x1a":
+        fail(f"{header_path} is not an iNES header")
+    if len(chr_data) != header[5] * 8_192:
+        fail(f"{chr_path} must be {header[5] * 8_192} bytes, got {len(chr_data)}")
     prg = assemble_prg(
         project_root,
         source,
         config,
-        object_path,
-        prg_path,
-        labels_path,
-        map_path,
-        debug_path,
+        rooted(project_root, args.object),
+        rooted(project_root, args.prg),
+        rooted(project_root, args.labels),
+        rooted(project_root, args.map),
+        rooted(project_root, args.debug_info),
         output_rom,
+        expected_prg_size=header[4] * PRG_SIZE,
         defines=args.define,
         include_dirs=[rooted(project_root, value) for value in args.include_dir],
-        toolchain_manifest=toolchain_manifest,
+        toolchain_manifest=rooted(project_root, args.toolchain_manifest),
     )
-    candidate = header + prg + chr_data
     output_rom.parent.mkdir(parents=True, exist_ok=True)
-    output_rom.write_bytes(candidate)
-
-    print(f"[OK] Built native ROM: {output_rom}")
-    print(f"[INFO] PRG SHA1 orig={sha1(original_prg)} cand={sha1(prg)}")
-    print(f"[INFO] ROM SHA1 orig={sha1(reference)} cand={sha1(candidate)}")
-    if candidate == reference:
-        print("[OK] Byte-identical ROM reproduced from native ca65 source.")
-        return 0
-
-    difference = first_diff(candidate, reference)
-    if difference is not None:
-        level = "FAIL" if args.verify else "WARN"
-        print(f"[{level}] First ROM difference at file offset 0x{difference:06X}")
-    if args.verify:
-        return 1
-    print("[WARN] ROM differs from the reference; verification was not requested.")
+    output_rom.write_bytes(header + prg + chr_data)
+    print(f"[OK] Built {output_rom} (SHA-1 {hashlib.sha1(header + prg + chr_data).hexdigest()})")
     return 0
 
 

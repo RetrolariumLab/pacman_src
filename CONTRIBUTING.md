@@ -10,7 +10,7 @@ Use a legally obtained Japan v1.0 ROM (SHA-1
 ROM images, extracted assets, object files or anything under `assets/generated/`
 or `build/` to Git. The tracked `.fm2` movie holds controller input, not game
 data. The other official revisions' ROMs are optional; their names are in
-`config/revisions.json` and `docs/multi_revision_builds.md`.
+`assets/manifest.json` and `docs/multi_revision_builds.md`.
 
 ## Source changes
 

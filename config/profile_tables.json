@@ -2,12 +2,12 @@
   "revisions": {
     "japan-v10": {
       "engine": "pacman",
-      "dbg": "build/revisions/japan_v10/pacman.dbg",
+      "dbg": "build/revisions/japan-v10/pacman.dbg",
       "offsets": "image"
     },
     "japan-v11": {
       "engine": "pacman",
-      "dbg": "build/revisions/japan_v11/pacman.dbg",
+      "dbg": "build/revisions/japan-v11/pacman.dbg",
       "offsets": "image"
     }
   },
