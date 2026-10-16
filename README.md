@@ -51,6 +51,7 @@ make studio-check                         # open and rebuild every pacman.rlj re
 make test                                 # the quick suite
 make test-full                            # the full suite, with MAME
 make golden                               # the longplay's reference values
+make play MOVIE=longplay                  # watch a movie in MAME
 make lint / format                        # the house style (Retrolarium Kit)
 make hooks                                # the Git hooks
 make clean                                # remove build/
@@ -66,12 +67,18 @@ revisions), builds the relocated variant and runs the studio check.
 `movies/pacman_j_longplay.fm2`, played in MAME on the relocated build, where
 every module sits a few bytes away from its original address. At its checkpoints the game's state (mode, lives, round,
 extra-life flag, score) must equal what the original ROM gives, as recorded in
-`movies/pacman_j_longplay.check.json`. Name MAME with `MAME=<path>` or
-`RETROLARIUM_MAME`.
+`movies/pacman_j_longplay.check.json`. Name MAME once with `rltool movie mame <path>`
+(or `MAME=<path>`).
 
 Record the reference values with `make golden` after changing the movie or the
 cells it checks. Movies are recorded in FCEUX (`.fm2`); Retrolarium Kit plays
 them in MAME frame for frame (`rltool movie`).
+
+`make play MOVIE=longplay` shows a movie in a MAME window at the game's
+speed, on the relocated build (or on `ROM=<image>`), and compares its cells
+with the original's once the window is closed; in MAME, F10 lifts the speed
+limit and Insert fast-forwards. `FRAMES=<frame>` closes MAME at that frame, `CLOSE=1`
+when the movie ends. `make play` alone plays `longplay`.
 
 ## Layout
 

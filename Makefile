@@ -7,7 +7,8 @@ PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 # The kit command; the build asks it for its assemblers.
 RLTOOL ?= rltool
 export RLTOOL
-# MAME for `make test-full` and `make golden`.
+# MAME for `make test-full`, `make golden` and `make play`; with none named,
+# the one `rltool movie mame <path>` remembered.
 MAME ?= $(RETROLARIUM_MAME)
 
 # The private assets: assets/manifest.json names the ROMs and what `make split`
@@ -32,8 +33,11 @@ PACMAN_REVISION_japan-revb := 4
 PACMAN_REVISION_usa-namco := 5
 PACMAN_REVISION_europe := 6
 REVISION_DIR = $(BUILD_DIR)/revisions/$(REVISION)
-# The movies test-full plays, in this order: a TAS first, then the longplay.
-MOVIE_CHECKS ?= $(PROJECT_DIR)movies/pacman_j_longplay.check.json
+# The movies by name (make play MOVIE=<name>); test-full plays them in this
+# order: the TAS first, then the longplay, then the attract mode.
+MOVIE_longplay := $(PROJECT_DIR)movies/pacman_j_longplay.check.json
+MOVIES := longplay
+MOVIE_CHECKS := $(foreach movie,$(MOVIES),$(MOVIE_$(movie)))
 RELOCATED_DIR ?= $(BUILD_DIR)/relocated
 RELOCATED_ROM ?= $(RELOCATED_DIR)/pacman.nes
 
@@ -48,7 +52,7 @@ native = $(PYTHON) "$(PROJECT_DIR)scripts/build/build_native.py" \
 BASE_HEADER := $(GENERATED_ASSET_DIR)/header/pacman.hdr
 BASE_CHR := $(GENERATED_ASSET_DIR)/chr/pacman.chr
 
-.PHONY: all build verify build-revision verify-revision verify-revisions split \
+.PHONY: play all build verify build-revision verify-revision verify-revisions split \
 	build-relocated studio-check test test-full golden lint format hooks clean help \
 	_require-assets
 .DEFAULT_GOAL := build
@@ -106,6 +110,24 @@ test-full: test
 golden:
 	$(RLTOOL) movie golden $(MOVIE_CHECKS) --rom "$(ORIGINAL_ROM)" --mame "$(MAME)"
 
+# Watch a movie in a MAME window at the game's speed, on the relocated build
+# or on ROM=<image>; once the window is closed, its cells are compared with
+# the original's. In MAME, F10 lifts the speed limit and Insert fast-forwards.
+#   make play MOVIE=<name> [ROM=<image>] [FRAMES=<frame>] [CLOSE=1]
+# FRAMES closes MAME at that frame (only the start of the movie), CLOSE=1 when
+# the movie ends (else it stays open to play on, the credits say).
+MOVIE ?= $(firstword $(MOVIES))
+PLAY_ROM = $(if $(filter command line,$(origin ROM)),$(ROM),$(RELOCATED_ROM))
+ifneq ($(filter play,$(MAKECMDGOALS)),)
+ifeq ($(MOVIE_$(MOVIE)),)
+$(error unknown MOVIE "$(MOVIE)": this game has $(MOVIES))
+endif
+endif
+
+play: $(if $(filter command line,$(origin ROM)),,build-relocated)
+	$(RLTOOL) movie play $(MOVIE_$(MOVIE)) --rom "$(PLAY_ROM)" --mame "$(MAME)" \
+		$(if $(FRAMES),--stop-at $(FRAMES)) $(if $(CLOSE),--close)
+
 lint:
 	$(RLTOOL) lint --only assembly --only text --project "$(PROJECT_DIR)."
 
@@ -132,6 +154,7 @@ help:
 	@echo "  make test              unit tests and every build (about half a minute)"
 	@echo "  make test-full         test, then the longplay in MAME (MAME=<path>)"
 	@echo "  make golden            record the longplay's checkpoints from the original"
+	@echo "  make play MOVIE=longplay watch a movie in MAME (ROM=<image> for another build)"
 	@echo "  make lint / format     the house style (Retrolarium Kit)"
 	@echo "  make hooks             install the Git hooks (stop words, lint before commits)"
 	@echo "  make clean             remove build/"
