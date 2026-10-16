@@ -21,8 +21,10 @@ GENERATED_CHR ?= $(GENERATED_ASSET_DIR)/chr/pacman.chr
 REVISION_MANIFEST ?= $(PROJECT_DIR)config/revisions.json
 REVISION ?= $(shell $(PYTHON) "$(PROJECT_DIR)scripts/build/revision_profiles.py" --manifest "$(REVISION_MANIFEST)" --print-default)
 REVISION_REQUIRE_ALL ?=
-LONGPLAY_CHECK ?= $(PROJECT_DIR)movies/pacman_j_longplay.check.json
+# The movies test-full plays, in this order: a TAS first, then the longplay.
+MOVIE_CHECKS ?= $(PROJECT_DIR)movies/pacman_j_longplay.check.json
 RELOCATED_DIR ?= $(BUILD_DIR)/relocated
+RELOCATED_ROM ?= $(RELOCATED_DIR)/pacman.nes
 
 # One build of a main source: $(call native,<source>,<output folder>,<flags>)
 native = $(PYTHON) "$(PROJECT_DIR)scripts/build/build_native.py" \
@@ -89,15 +91,15 @@ test: _require-assets
 	$(PYTHON) -m unittest discover -s "$(PROJECT_DIR)tests" -p "test_*.py"
 	$(MAKE) --no-print-directory verify verify-revisions build-relocated studio-check
 
-# The full suite: the quick one, then the longplay in MAME on the relocated
-# build, compared with what the original ROM gives
-# (movies/pacman_j_longplay.check.json, written by `make golden`).
+# The full suite: the quick one, then the movies in MAME on the relocated
+# build in turn (the first that differs stops it), compared with what the
+# original ROM gives (movies/*.check.json, written by `make golden`).
 test-full: test
-	$(RLTOOL) movie check "$(LONGPLAY_CHECK)" --rom "$(RELOCATED_DIR)/pacman.nes" --mame "$(MAME)"
+	$(RLTOOL) movie check $(MOVIE_CHECKS) --rom "$(RELOCATED_ROM)" --mame "$(MAME)"
 
-# What the original ROM gives at the longplay's checkpoints.
+# What the original ROM gives at the movies' checkpoints.
 golden:
-	$(RLTOOL) movie golden "$(LONGPLAY_CHECK)" --rom "$(ORIGINAL_ROM)" --mame "$(MAME)"
+	$(RLTOOL) movie golden $(MOVIE_CHECKS) --rom "$(ORIGINAL_ROM)" --mame "$(MAME)"
 
 lint:
 	$(RLTOOL) lint --only assembly --only text --project "$(PROJECT_DIR)."
