@@ -116,12 +116,12 @@ sub_build_attract_ppu_packet:
     LDY #$00
 ; Copy attract PPU packet bytes into main PPU buffer
 bra_copy_ppu_packet_to_buffer:
-    LDA (zp_work0),Y  ; data from 0x0005E3
+    LDA (zp_work0),Y
     STA ram_ppu_buffer_main,Y
     INY
     CMP #con_ppu_buffer_end
     BNE bra_copy_ppu_packet_to_buffer
-    LDA (zp_work0),Y  ; data from 0x0005E3 (last byte)
+    LDA (zp_work0),Y  ; the byte after the end token
     BEQ bra_copy_optional_sprite_strip
     RTS
 ; Copy optional sprite strip payload after packet terminator
@@ -312,12 +312,9 @@ tbl_attract_ppu_packet_ptrs:
     .word off_attract_text_name_guzuta
     .word off_attract_text_points_table
 
-; Keep this data adjacent to the indexed lookup above if the block is moved
-; code always reads next byte after FF via 0x000514
-; and checks if it is 00 or not
-; recommended to place additional FF or 01 or whatever byte after each chunk of data
-; so it will be pairs of FF + 00 and FF + FF
-; currently only FF + 00 pairs exist
+; Each packet is a big-endian PPU address, tile bytes (ASCII letters and
+; digits are their own tiles) and the end token $FF. The copier then reads the
+; byte after the $FF: $00 also copies the sprite strip, anything else returns
 ; Attract packet: header CHARACTER/NICKNAME
 off_attract_text_header_character_nickname:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
@@ -491,11 +488,11 @@ off_attract_text_points_table:
     .byte $00, $23, $4C, $23, $24, $25, $26, $27, $28, $29, $2A, $2B
     .byte $FF  ; end token
 .endif
-; Legacy file offset $05F7 maps to CPU $C5E7, the first packet above
 
 ; Sprite strip data used by optional attract packet payload
 tbl_attract_sprite_strip_data:
-; reading 4 lines bytes each time, start line depends on 0x000519
+; Four lines of four bytes each time; bra_copy_optional_sprite_strip picks
+; the first line from ram_shared_state_0
 .ifdef PACMAN_REVISION_TENGEN
     .byte $48, $1C, $40, $46
     .byte $48, $1B, $40, $4E

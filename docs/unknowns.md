@@ -8,15 +8,13 @@ and the canonical backlog for any future uncertainty in the target
 plausible interpretation is not enough to rename a symbol or resolve an entry.
 
 Statuses are `open`, `testing`, `resolved`, `unused`, and `confirmed bug`.
-Confidence describes a hypothesis, not mechanically observed facts. Source
-annotations use `!(OBS)`, `!(ASSUME)`, `!(WHY?)`, `!(UNKNOWN)`, `!(BUG?)`, and
-`!(UNUSED)`.
+Confidence describes a hypothesis, not mechanically observed facts.
+Source comments that cite an entry start with `!(OBS)` or `!(UNUSED)`.
 
 ## Open Registry
 
-No entries remain open after the focused milestone-23 static and runtime audit.
-New uncertainty must receive a stable ID and a bounded experiment before it is
-added here.
+No entry is open. New uncertainty gets a stable ID and a bounded experiment
+before it is added here.
 
 The runtime traces that resolved the entries below were captured in FCEUX by
 the tools of releases 1.0 to 3.0; they remain in the history.

@@ -350,91 +350,91 @@
             "fields": [
               {
                 "name": "byte_00",
-                "label": "+$00"
+                "label": "Pac-Man, frightened, floor (1/256 px)"
               },
               {
                 "name": "byte_01",
-                "label": "+$01"
+                "label": "Pac-Man, frightened, floor (px)"
               },
               {
                 "name": "byte_02",
-                "label": "+$02"
+                "label": "Pac-Man, frightened, pellet (1/256 px)"
               },
               {
                 "name": "byte_03",
-                "label": "+$03"
+                "label": "Pac-Man, frightened, pellet (px)"
               },
               {
                 "name": "byte_04",
-                "label": "+$04"
+                "label": "Pac-Man, frightened, power pellet (1/256 px)"
               },
               {
                 "name": "byte_05",
-                "label": "+$05"
+                "label": "Pac-Man, frightened, power pellet (px)"
               },
               {
                 "name": "byte_06",
-                "label": "+$06"
+                "label": "Pac-Man, floor (1/256 px)"
               },
               {
                 "name": "byte_07",
-                "label": "+$07"
+                "label": "Pac-Man, floor (px)"
               },
               {
                 "name": "byte_08",
-                "label": "+$08"
+                "label": "Pac-Man, pellet (1/256 px)"
               },
               {
                 "name": "byte_09",
-                "label": "+$09"
+                "label": "Pac-Man, pellet (px)"
               },
               {
                 "name": "byte_10",
-                "label": "+$0A"
+                "label": "Pac-Man, power pellet (1/256 px)"
               },
               {
                 "name": "byte_11",
-                "label": "+$0B"
+                "label": "Pac-Man, power pellet (px)"
               },
               {
                 "name": "byte_12",
-                "label": "+$0C"
+                "label": "Ghost 0, first threshold (1/256 px)"
               },
               {
                 "name": "byte_13",
-                "label": "+$0D"
+                "label": "Ghost 0, first threshold (px)"
               },
               {
                 "name": "byte_14",
-                "label": "+$0E"
+                "label": "Ghost 0, second threshold (1/256 px)"
               },
               {
                 "name": "byte_15",
-                "label": "+$0F"
+                "label": "Ghost 0, second threshold (px)"
               },
               {
                 "name": "byte_16",
-                "label": "+$10"
+                "label": "Ghosts (1/256 px)"
               },
               {
                 "name": "byte_17",
-                "label": "+$11"
+                "label": "Ghosts (px)"
               },
               {
                 "name": "byte_18",
-                "label": "+$12"
+                "label": "Ghosts, frightened (1/256 px)"
               },
               {
                 "name": "byte_19",
-                "label": "+$13"
+                "label": "Ghosts, frightened (px)"
               },
               {
                 "name": "byte_20",
-                "label": "+$14"
+                "label": "Ghosts, tunnel (1/256 px)"
               },
               {
                 "name": "byte_21",
-                "label": "+$15"
+                "label": "Ghosts, tunnel (px)"
               }
             ]
           }

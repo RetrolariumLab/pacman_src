@@ -20,8 +20,9 @@ house, release-counter, and intermission markers.
 
 ## Channel Record Layout
 
-There are 16 eight-byte records beginning at `ram_sound_channel_state` (`$0625`).
-The last record begins at `$069D` and its duration byte ends the span at `$06A4`:
+There are 16 eight-byte records beginning at `ram_sound_channel_state`: `$0625`
+in v1.0 and `$0620` in every other revision (`src/memory/ram.inc`). The 128
+bytes end at `$06A4` in v1.0 and `$069F` elsewhere:
 
 | Offset | Role |
 | --- | --- |
@@ -33,10 +34,10 @@ The last record begins at `$069D` and its duration byte ends the span at `$06A4`
 | `+5,+6` | little-endian stream cursor |
 | `+7` | remaining duration |
 
-Older address comments that show `$0620` as the record base are stale by five
-bytes; the named RAM symbol and indexed accesses are authoritative. The stream
-prologue initializes `+0`, `+1`, `+2`, and `+4`; pitch decoding supplies `+3`
-and the low timer bits in `+4`.
+A stream begins with a four-byte prologue, read when its request first turns
+the record on: the channel state (`$01-$04` claims the first pulse, the second
+pulse, the triangle or the noise register quad), then the values for `+1`,
+`+2` and `+4`. Pitch decoding supplies `+3` and the low timer bits in `+4`.
 
 ## Frame Update and Arbitration
 
@@ -80,9 +81,9 @@ decoding in the same frame:
 | Opcode | Effect |
 | --- | --- |
 | `F0` | clear request and channel state, advance to next logical slot |
-| `F1` | replace low six bits of record `+1` |
-| `F2` | replace bits 4-5 of record `+1` |
-| `F3` | replace low nibble of record `+1` |
+| `F1 vv` | record `+1` = (`+1` AND `$3F`) OR `vv`: bits 6-7, the pulse duty, when `vv` uses only those |
+| `F2 vv` | record `+1` = (`+1` AND `$CF`) OR `vv`: bits 4-5 |
+| `F3 vv` | record `+1` = (`+1` AND `$F0`) OR `vv`: the low nibble, the volume |
 | `F4` | replace record `+2` |
 | `F5` | replace record `+4` |
 | `F6` | replace record `+1` |
@@ -107,7 +108,8 @@ asset manifest. Editing the pointer table or decoder remains source work.
 ## Preservation Invariants
 
 - Keep 16 request slots and 16 channel records at stride eight.
-- Treat `$0625`, not stale raw-address comments, as the channel-record base.
+- Address the channel records through `ram_sound_channel_state`; its address
+  differs between revisions.
 - Preserve pre-pass scan order, claim mapping, carry-dependent promotion, and
   immediate four-register writes.
 - Preserve stream prologue and byte-class grammar exactly.

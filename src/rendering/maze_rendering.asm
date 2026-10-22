@@ -6,14 +6,14 @@
 ; Side effects: direct PPU writes; token high bits encode run length minus one
 ; Clobbers: A, X, Y and zp_work0..zp_work5
 sub_decompress_and_upload_maze_layout:
-    LDA #$20  ; 2040
+    LDA #$20
     STA zp_work2
     LDA #$40
     STA zp_work3
     LDA ram_game_mode
     AND ram_current_player
     BEQ bra_select_maze_target_nametable
-    LDA #$28  ; 2840
+    LDA #$28
     STA zp_work2
 ; Select base nametable for maze upload by active player
 bra_select_maze_target_nametable:
@@ -38,12 +38,12 @@ bra_upload_next_maze_row:
 bra_decode_next_maze_rle_token:
     LDA #$00
     STA zp_work5
-    LDA (zp_work0),Y  ; data from 0x002C88
+    LDA (zp_work0),Y
     ASL
     ROL zp_work5
     ASL
     ROL zp_work5
-    LDA (zp_work0),Y  ; data from 0x002C88
+    LDA (zp_work0),Y
     AND #$3F
 ; Write decoded RLE run to PPU
 bra_write_maze_rle_run:
@@ -68,14 +68,14 @@ bra_continue_maze_row_decode:
     DEX
     BNE bra_upload_next_maze_row
     LDY #$02
-    LDA #$21  ; 21D6
+    LDA #$21
     STA zp_work0
     LDA #$D6
     STA zp_work1
     LDA ram_game_mode
     AND ram_current_player
     BEQ bra_select_bottom_banner_nametable
-    LDA #$29  ; 29D6
+    LDA #$29
     STA zp_work0
 ; Select bottom banner nametable by active player
 bra_select_bottom_banner_nametable:

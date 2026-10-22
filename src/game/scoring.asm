@@ -134,7 +134,7 @@ bra_play_pellet_sfx_and_score:
     AND #$01
     TAY
     LDA #$01
-    STA ram_sfx_eat_pellet,Y  ; 0604 0605
+    STA ram_sfx_eat_pellet,Y
     JMP loc_add_points_and_update_score_buffers
 
 ; Tile+points pairs for eaten pellet types
@@ -269,13 +269,13 @@ bra_process_reversal_for_active_ghosts:
     AND #con_direction_mask
     STA zp_work4
     LDY #$00
-    LDA (zp_work2),Y  ; 001E 0022 0026 002A
+    LDA (zp_work2),Y
     LDY #$02
-    ORA (zp_work2),Y  ; 0020 0024 0028 002C
+    ORA (zp_work2),Y
     AND #$07
     BNE bra_store_reversed_direction
     LDY zp_work4
-    LDA (zp_work0),Y  ; 022F 0230 0231 0232 0233 0234 0235 0236 0237 0238 0239 023A 023B 023C 023D 023E
+    LDA (zp_work0),Y
     AND #$F8
     BNE bra_next_ghost_for_reversal
 ; Store reversed direction for current ghost

@@ -12,17 +12,17 @@ sub_update_intermission_actor_positions:
 ; Iterate to next actor slot
 bra_loop_update_next_actor:
     LDY #$00
-    LDA (zp_work2),Y  ; 0274 0278 027C 0280 0284
+    LDA (zp_work2),Y
     BEQ bra_advance_actor_pointer
     INY
-    LDA (zp_work0),Y  ; 001B 001F 0023 0027 002B
+    LDA (zp_work0),Y
     CLC
-    ADC (zp_work2),Y  ; 0275 0279 027D 0281 0285
-    STA (zp_work2),Y  ; 0275 0279 027D 0281 0285
+    ADC (zp_work2),Y
+    STA (zp_work2),Y
     DEY
-    LDA (zp_work0),Y  ; 001A 001E 0022 0026 002A
-    ADC (zp_work2),Y  ; 0274 0278 027C 0280 0284
-    STA (zp_work2),Y  ; 0274 0278 027C 0280 0284
+    LDA (zp_work0),Y
+    ADC (zp_work2),Y
+    STA (zp_work2),Y
     CMP #$C0
     BCC bra_actor_in_visible_range
 ; Mark actor attribute when crossing horizontal boundary
@@ -41,18 +41,18 @@ bra_actor_in_visible_range:
 ; Continue with staged-X offscreen bounds checks
 bra_continue_actor_bounds_check:
     LDY #$00
-    LDA (zp_work2),Y  ; 0274 0278 027C 0280 0284
+    LDA (zp_work2),Y
     CMP #$FC
     BCC bra_actor_not_outside_vertical_bounds
 ; Reset offscreen actor position and velocity
 bra_loop_reset_offscreen_actor:
     LDA #$00
-    STA (zp_work2),Y  ; 0274 0278 027C 0280 0284
-    STA (zp_work0),Y  ; 001A 001E 0022 0026 002A
+    STA (zp_work2),Y
+    STA (zp_work0),Y
     INY
-    STA (zp_work0),Y  ; 001B 001F 0023 0027 002B
+    STA (zp_work0),Y
     INY
-    STA (zp_work2),Y  ; 0276 027A 027E 0282 0286
+    STA (zp_work2),Y
     BNE bra_advance_actor_pointer
 ; Actor remains within staged-X bounds
 bra_actor_not_outside_vertical_bounds:

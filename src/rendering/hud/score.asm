@@ -65,7 +65,7 @@ sub_write_6digit_score_to_ppu:
     LDY #$05
 ; Skip leading zeros while writing score digits
 bra_skip_leading_zeros_in_score:
-    LDA (ram_score_hud_value_ptr),Y  ; 0064 0065 0066 0071 0072 0073 0074 0075 0081 0082 0083 0084 0085
+    LDA (ram_score_hud_value_ptr),Y
     AND #$0F
     BNE bra_emit_score_digit_tile
     LDA #con_tile_space
@@ -75,7 +75,7 @@ bra_skip_leading_zeros_in_score:
     BEQ bra_write_last_digit_and_suffix  ; jmp
 ; Write remaining score digits
 bra_write_remaining_score_digits:
-    LDA (ram_score_hud_value_ptr),Y  ; 0062 0063 0064 0071 0072 0073 0081 0082
+    LDA (ram_score_hud_value_ptr),Y
 ; Emit one score digit tile
 bra_emit_score_digit_tile:
     JSR sub_digit_to_score_tile
@@ -85,7 +85,7 @@ bra_emit_score_digit_tile:
 ; Write least-significant digit and trailing zero tile
 bra_write_last_digit_and_suffix:
 ; Y = 00
-    LDA (ram_score_hud_value_ptr),Y  ; 0061 0070 0080
+    LDA (ram_score_hud_value_ptr),Y
     JSR sub_digit_to_score_tile
     STA PPUDATA
     LDA #con_tile_score_zero

@@ -11,7 +11,7 @@ handler_script06_post_eat_pause:
     BNE bra_run_post_eat_updates
     LDA #$02
     STA ram_post_eat_pause_timer
-    LDA #con_game_script_pause
+    LDA #con_game_script_playing
     STA ram_script
     LDA #con_ghost_state_eaten_score
     LDX #$FE

@@ -73,10 +73,17 @@ or more commands:
 [PPU address high][PPU address low][payload bytes...][$00] ... [$FF]
 ```
 
-`$00` ends one command and `$FF` ends the entire stream. Once consumed, `$FF`
-is stored at the first byte. Payload therefore cannot represent tile `$00` in
-this format. Producers that append commands must preserve an existing final
-`$FF` and enough room for the new command.
+`$00` ends one command and `$FF` ends the entire stream, also in place of a
+command's `$00` or as its address high byte. Once consumed, `$FF` is stored at
+the first byte. A payload therefore cannot hold tile `$00` or `$FF`. Producers
+that append commands must preserve an existing final `$FF` and enough room for
+the new command.
+
+The title and attract text uses a second form, copied into the buffer by
+`game/title/attract_intro.asm`: a big-endian PPU address (`.dbyt`), tile
+bytes, and `$FF`. ASCII letters, digits and the space are their own tiles.
+The copier reads the byte after the `$FF`: `$00` also copies a 16-byte sprite
+strip into OAM, anything else ends the packet.
 
 ## Preservation Invariants
 
@@ -85,6 +92,6 @@ this format. Producers that append commands must preserve an existing final
 - Preserve overlap scan order and arithmetic carry behavior.
 - Emit six groups of four OAM entries with the existing offset and mode tables.
 - Preserve demo-mode HUD suppression and player-two nametable selection.
-- Never place `$00` in a generic PPU-command payload; retain `$00` command and
-  `$FF` stream terminators.
+- Never place `$00` or `$FF` in a generic PPU-command payload; retain `$00`
+  command and `$FF` stream terminators.
 - Restore scroll and PPUCTRL after NMI PPU reads/writes.

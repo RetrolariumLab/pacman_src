@@ -4,11 +4,11 @@
 Working glossary for the most important RAM fields used by `src/main.asm`.
 
 ## Fields
-| Field | Hypothesized Meaning | Key Usage Sites | Confidence | Notes |
+| Field | Meaning | Key Usage Sites | Confidence | Notes |
 |---|---|---|---|---|
 | `ram_script` | Current title-flow or gameplay script state | `bra_dispatch_current_script`, `tbl_gameplay_script_handlers` | High | Semantic `con_title_script_*` and `con_game_script_*` constants reflect the active dispatcher. |
 | `ram_flag_demo` | Demo/autoplay mode flag | `loc_enter_gameplay_session`, `sub_update_pacman_movement` | High | Gates input path and some script transitions. |
-| `ram_flag_pause` | Pause toggle state | `handler_script04_pause_handler` | High | Also drives PAUSE text packet variant. |
+| `ram_flag_pause` | Pause toggle state | `handler_script04_playing` | High | Also drives PAUSE text packet variant. |
 | `ram_stage_p1` / `ram_stage_p2` | Current stage counters per player | `handler_script00_round_init`, stage-clear/game-over flows | High | Used as table index drivers for level params. |
 | `ram_lives_p1` / `ram_lives_p2` | Lives counters | ready/death/game-over scripts (`CA9D..CDFF`) | High | Preserve exact decrement/handoff timing. |
 | `ram_pellet_cnt_p1` | Remaining pellets (or inverse counter basis) | `D0EF..D2FA`, pellet and release logic | High | Affects release targets and fruit checks. |

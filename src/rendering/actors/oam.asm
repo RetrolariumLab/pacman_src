@@ -24,7 +24,7 @@ loc_next_sprite_group:
 ; Build OAM quad entries for current group
 loc_build_oam_quad_loop:
     LDY #$02
-    LDA (zp_work0),Y  ; 0276 027A 027E 0282 0286 028A
+    LDA (zp_work0),Y
     BNE bra_apply_y_offset
 .if PACMAN_REVISION = REVISION_EUROPE
     LDA #$EF
@@ -67,7 +67,7 @@ bra_compose_sprite_set2:
 ; Write OAM X coordinates for current quad pass
 loc_write_oam_quad_x_pass:
     LDY #$00
-    LDA (zp_work0),Y  ; 0274 0278 027C 0280 0284 0288
+    LDA (zp_work0),Y
     BNE bra_apply_x_offset
     LDA #$FF
     BNE bra_store_oam_x  ; jmp

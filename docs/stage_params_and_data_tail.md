@@ -25,8 +25,27 @@ two differently sized tables.
 ## Runtime Table Copies
 
 The field-0 ID is multiplied by 22 and copies a complete level block to
-`ram_level_parameters` (`$009F..$00B4`). Its fixed-point pairs feed Pac-Man and
-ghost normal, frightened, tunnel, and related speed paths.
+`ram_level_parameters` (`$009F..$00B4`): eleven little-endian speeds, the low
+byte in 1/256 pixel and the high byte in whole pixels per frame.
+
+| Offset | RAM name | Speed |
+| --- | --- | --- |
+| `+$00` | `ram_pacman_frightened_floor_speed` | Pac-Man on a floor tile while ghosts are frightened |
+| `+$02` | `ram_pacman_frightened_pellet_speed` | Pac-Man on a pellet tile while ghosts are frightened |
+| `+$04` | `ram_pacman_frightened_power_speed` | Pac-Man on a power-pellet tile while ghosts are frightened |
+| `+$06` | `ram_pacman_floor_speed` | Pac-Man on a floor tile otherwise, and at round start |
+| `+$08` | `ram_pacman_pellet_speed` | Pac-Man on a pellet tile otherwise |
+| `+$0A` | `ram_pacman_power_pellet_speed` | Pac-Man on a power-pellet tile otherwise |
+| `+$0C` | `ram_ghost0_normal_speed_*` | ghost 0 after its first personal dot threshold |
+| `+$0E` | `ram_ghost0_second_speed_*` | ghost 0 after its second threshold |
+| `+$10` | `ram_ghost_normal_speed_*` | the other ghosts, and ghost 0 until its first threshold |
+| `+$12` | `ram_ghost_frightened_speed_*` | a frightened ghost |
+| `+$14` | `ram_ghost_tunnel_speed_*` | a ghost in the side tunnels |
+
+`loc_select_speed_profile` picks Pac-Man's speed;
+`sub_select_ghost_speed_vector` and the release checks in
+`game/round/runtime.asm` pick the ghosts'. The European release scales all
+five blocks for 50 Hz.
 
 The same field-0 ID is multiplied by eight and copies an eight-byte window to
 `ram_scatter_chase_durations` (`$0097..$009E`), with its first byte also seeding
@@ -44,8 +63,8 @@ slots initially enter exiting-house state; the second becomes the global target.
 
 ## Maze RLE Format and Upload
 
-`tbl_maze_rle_stream` is generated as `assets/generated/maze/maze.rle` and
-included at `$EC78`. Each token is:
+`tbl_maze_rle_stream` comes from v1.0 (`make split`) and every revision
+includes it (at `$EC78` in v1.0). Each token is:
 
 ```text
 bits 7..6: run length minus one (0..3 means 1..4 tiles)
@@ -54,7 +73,8 @@ bits 5..0: tile ID
 
 `sub_decompress_and_upload_maze_layout` decodes exactly 27 rows of 22 tiles,
 starting at PPU `$2040` for player one or `$2840` for player two. Row addresses
-advance by `$20`. The stream cursor is a pointer plus Y index; when Y wraps, the
+advance by `$20`. A run must not cross a row end: a row ends only when its tile
+count reaches exactly zero, so a crossing run writes on past it. The stream cursor is a pointer plus Y index; when Y wraps, the
 pointer high byte increments.
 
 After the maze, the routine writes three eight-tile bottom-banner rows from a
@@ -66,17 +86,23 @@ stored separately at the bank tail, not adjacent to the stream.
 
 ## Padding and Fixed Tail
 
-The sound assets end at `$F427`. `unused_bank_padding` emits `$FF` from `$F428`
-through `$FFF7`. The linker expression `.res $FFF8 - *, $FF` makes any growth in
-earlier modules reduce this padding while preserving the next fixed address.
+In v1.0 the sound assets end at `$F427`, and `unused_bank_padding` emits `$FF`
+from there through `$FFF7`. The expression `.res $FFF8 - *, $FF` makes any
+growth in earlier modules reduce this padding while preserving the next fixed
+address. The revisions differ at the tail:
 
-At `$FFF8`, `tbl_maze_rle_stream_ptr` stores the little-endian pointer to the
-generated maze. The separate `VECTORS` segment then occupies `$FFFA..$FFFF`:
+| Revisions | Tail |
+| --- | --- |
+| v1.0, v1.1, Rev B, unlicensed Tengen | `$FF` up to `$FFF8`, where `tbl_maze_rle_stream_ptr` points to the maze |
+| licensed Tengen | the same, but a reset trampoline at `$FF00` (`vec_tengen_licensed_reset_entry`, two extra vblank waits), and the reset vector points to it |
+| Namco's USA, European | the maze pointer at `$FFF6` (`tbl_namco_maze_rle_stream_ptr`); the word at `$FFF8` holds `vec_nmi_handler` |
+
+The separate `VECTORS` segment then occupies `$FFFA..$FFFF`:
 
 | Address | Vector |
 | --- | --- |
 | `$FFFA` | `vec_nmi_handler` |
-| `$FFFC` | `vec_reset_entry` |
+| `$FFFC` | `vec_reset_entry` (licensed Tengen: `vec_tengen_licensed_reset_entry`) |
 | `$FFFE` | `vec_irq_handler` |
 
 The linker configuration fixes `BANK_FF` to `$C000..$FFF9` and `VECTORS` to the
@@ -90,5 +116,6 @@ last six bytes. Overflow fails linking rather than silently shifting vectors.
 - Keep 22/8/2/4-byte multipliers and copy sizes exact.
 - Preserve restart adjustment arithmetic and release-queue initialization order.
 - Keep maze tokens limited to 1..4 repeats of a six-bit tile, with 27x22 output.
-- Keep the maze asset manifest-verified and referenced by the pointer at `$FFF8`.
-- Preserve `$FF` fill through `$FFF7` and all three fixed vectors.
+- Keep the maze asset manifest-verified and referenced by the tail pointer
+  (`$FFF8`, or `$FFF6` in the late Namco releases).
+- Preserve the `$FF` fill and all three fixed vectors.

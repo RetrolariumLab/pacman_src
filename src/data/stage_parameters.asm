@@ -2,187 +2,53 @@
 
 ; Stage-driven index stream selecting parameter groups (step size 6 in round-init)
 tbl_stage_param_index_stream:
-; Read as a 6-byte stage profile:
-; [0]=shared level-block/timing-window id, [1]=frightened duration,
-; [2]=dot-threshold pair id, [3]=release-target block id,
-; [4]=fruit/bonus stage group, [5]=release interval seconds
-; 00
-    .byte $00  ; 0x000EC7 0x000EE5
-    .byte $07  ; 0x000F05
-    .byte $00  ; 0x000F0E
-    .byte $00  ; 0x000F4A
-    .byte $00  ; 0x000F92
-    .byte $04  ; 0x000F9B
-; 06
-    .byte $01
-    .byte $06
-    .byte $01
-    .byte $01
-    .byte $01
-    .byte $04
-; 0C
-    .byte $01
-    .byte $04
-    .byte $02
-    .byte $02
-    .byte $02
-    .byte $03
-; 12
-    .byte $02
-    .byte $03
-    .byte $02
-    .byte $02
-    .byte $02
-    .byte $03
-; 18
-    .byte $02
-    .byte $02
-    .byte $02
-    .byte $02
-    .byte $03
-    .byte $03
-; 1E
-    .byte $03
-    .byte $05
-    .byte $03
-    .byte $02
-    .byte $03
-    .byte $03
-; 24
-    .byte $03
-    .byte $02
-    .byte $03
-    .byte $02
-    .byte $04
-    .byte $03
-; 2A
-    .byte $03
-    .byte $02
-    .byte $03
-    .byte $02
-    .byte $04
-    .byte $03
-; 30
-    .byte $03
-    .byte $01
-    .byte $04
-    .byte $02
-    .byte $05
-    .byte $03
-; 36
-    .byte $03
-    .byte $05
-    .byte $04
-    .byte $02
-    .byte $05
-    .byte $03
-; 3C
-    .byte $03
-    .byte $02
-    .byte $04
-    .byte $02
-    .byte $06
-    .byte $03
-; 42
-    .byte $03
-    .byte $01
-    .byte $05
-    .byte $02
-    .byte $06
-    .byte $03
-; 48
-    .byte $03
-    .byte $01
-    .byte $05
-    .byte $02
-    .byte $07
-    .byte $03
-; 4E
-    .byte $03
-    .byte $03
-    .byte $05
-    .byte $02
-    .byte $07
-    .byte $03
-; 54
-    .byte $03
-    .byte $01
-    .byte $06
-    .byte $02
-    .byte $07
-    .byte $03
-; 5A
-    .byte $03
-    .byte $01
-    .byte $06
-    .byte $02
-    .byte $07
-    .byte $03
-; 60
-    .byte $03
-    .byte $00
-    .byte $06
-    .byte $02
-    .byte $07
-    .byte $03
-; 66
-    .byte $03
-    .byte $01
-    .byte $06
-    .byte $02
-    .byte $07
-    .byte $03
-; 6C
-    .byte $03
-    .byte $00
-    .byte $06
-    .byte $02
-    .byte $07
-    .byte $03
-; 72
-    .byte $03
-    .byte $00
-    .byte $06
-    .byte $02
-    .byte $07
-    .byte $03
-; 78
-    .byte $03
-    .byte $00
-    .byte $06
-    .byte $02
-    .byte $07
-    .byte $03
-; 7E
-    .byte $04
-    .byte $00
-    .byte $06
-    .byte $02
-    .byte $07
-    .byte $03
-; 84
-    .byte $04
-    .byte $00
-    .byte $06
-    .byte $02
-    .byte $07
-    .byte $03
-; Level parameter blocks copied to runtime RAM 009F..00B4 (22 bytes each)
+; One 6-byte record per round; the stage counter stops at $16, so round 23 also
+; serves every later round:
+; level block and timing window id, frightened duration, dot-threshold pair
+; id, release-target quad id, fruit/bonus group, release interval in seconds
+    .byte $00, $07, $00, $00, $00, $04  ; round 1
+    .byte $01, $06, $01, $01, $01, $04  ; round 2
+    .byte $01, $04, $02, $02, $02, $03  ; round 3
+    .byte $02, $03, $02, $02, $02, $03  ; round 4
+    .byte $02, $02, $02, $02, $03, $03  ; round 5
+    .byte $03, $05, $03, $02, $03, $03  ; round 6
+    .byte $03, $02, $03, $02, $04, $03  ; round 7
+    .byte $03, $02, $03, $02, $04, $03  ; round 8
+    .byte $03, $01, $04, $02, $05, $03  ; round 9
+    .byte $03, $05, $04, $02, $05, $03  ; round 10
+    .byte $03, $02, $04, $02, $06, $03  ; round 11
+    .byte $03, $01, $05, $02, $06, $03  ; round 12
+    .byte $03, $01, $05, $02, $07, $03  ; round 13
+    .byte $03, $03, $05, $02, $07, $03  ; round 14
+    .byte $03, $01, $06, $02, $07, $03  ; round 15
+    .byte $03, $01, $06, $02, $07, $03  ; round 16
+    .byte $03, $00, $06, $02, $07, $03  ; round 17
+    .byte $03, $01, $06, $02, $07, $03  ; round 18
+    .byte $03, $00, $06, $02, $07, $03  ; round 19
+    .byte $03, $00, $06, $02, $07, $03  ; round 20
+    .byte $03, $00, $06, $02, $07, $03  ; round 21
+    .byte $04, $00, $06, $02, $07, $03  ; round 22
+    .byte $04, $00, $06, $02, $07, $03  ; round 23
+
+; Level parameter blocks copied to ram_level_parameters, eleven speeds each
+; (low byte 1/256 pixel, high byte whole pixels, per frame): Pac-Man while
+; ghosts are frightened on floor, pellet and power-pellet tiles; the same
+; three otherwise; ghost 0 after its first and second dot threshold; ghosts'
+; normal, frightened and tunnel speeds
 tbl_level_param_blocks_22bytes:
-; 009F 00A0 00A1 00A2 00A3 00A4 00A5 00A6 00A7 00A8 00A9 00AA 00AB 00AC 00AD 00AE 00AF 00B0 00B1 00B2 00B3 00B4
 .if PACMAN_REVISION = REVISION_EUROPE
 ; PAL timing equivalents of the five NTSC movement profiles below
-    .byte $FA, $00, $E6, $00, $C0, $00, $D3, $00, $C0, $00, $9A, $00, $C0, $00, $D3, $00, $AD, $00, $60, $00, $60, $00  ; 00
-    .byte $FA, $00, $E6, $00, $C0, $00, $D3, $00, $C0, $00, $9A, $00, $D3, $00, $E6, $00, $C0, $00, $60, $00, $60, $00  ; 01
-    .byte $20, $01, $0D, $01, $E6, $00, $0D, $01, $FA, $00, $D3, $00, $0D, $01, $20, $01, $FA, $00, $86, $00, $86, $00  ; 02
-    .byte $33, $01, $20, $01, $FA, $00, $33, $01, $20, $01, $FA, $00, $33, $01, $46, $01, $20, $01, $9A, $00, $9A, $00  ; 03
-    .byte $33, $01, $20, $01, $FA, $00, $33, $01, $20, $01, $FA, $00, $5A, $01, $6D, $01, $46, $01, $9A, $00, $9A, $00  ; 04
+    .word $00FA, $00E6, $00C0, $00D3, $00C0, $009A, $00C0, $00D3, $00AD, $0060, $0060  ; 00
+    .word $00FA, $00E6, $00C0, $00D3, $00C0, $009A, $00D3, $00E6, $00C0, $0060, $0060  ; 01
+    .word $0120, $010D, $00E6, $010D, $00FA, $00D3, $010D, $0120, $00FA, $0086, $0086  ; 02
+    .word $0133, $0120, $00FA, $0133, $0120, $00FA, $0133, $0146, $0120, $009A, $009A  ; 03
+    .word $0133, $0120, $00FA, $0133, $0120, $00FA, $015A, $016D, $0146, $009A, $009A  ; 04
 .else
-    .byte $D0, $00, $C0, $00, $A0, $00, $B0, $00, $A0, $00, $80, $00, $A0, $00, $B0, $00, $90, $00, $50, $00, $50, $00  ; 00
-    .byte $D0, $00, $C0, $00, $A0, $00, $B0, $00, $A0, $00, $80, $00, $B0, $00, $C0, $00, $A0, $00, $50, $00, $50, $00  ; 01
-    .byte $F0, $00, $E0, $00, $C0, $00, $E0, $00, $D0, $00, $B0, $00, $E0, $00, $F0, $00, $D0, $00, $70, $00, $70, $00  ; 02
-    .byte $00, $01, $F0, $00, $D0, $00, $00, $01, $F0, $00, $D0, $00, $00, $01, $10, $01, $F0, $00, $80, $00, $80, $00  ; 03
-    .byte $00, $01, $F0, $00, $D0, $00, $00, $01, $F0, $00, $D0, $00, $20, $01, $30, $01, $10, $01, $80, $00, $80, $00  ; 04
+    .word $00D0, $00C0, $00A0, $00B0, $00A0, $0080, $00A0, $00B0, $0090, $0050, $0050  ; 00
+    .word $00D0, $00C0, $00A0, $00B0, $00A0, $0080, $00B0, $00C0, $00A0, $0050, $0050  ; 01
+    .word $00F0, $00E0, $00C0, $00E0, $00D0, $00B0, $00E0, $00F0, $00D0, $0070, $0070  ; 02
+    .word $0100, $00F0, $00D0, $0100, $00F0, $00D0, $0100, $0110, $00F0, $0080, $0080  ; 03
+    .word $0100, $00F0, $00D0, $0100, $00F0, $00D0, $0120, $0130, $0110, $0080, $0080  ; 04
 .endif
 
 ; Per-level speed/timer control windows copied to RAM 0097..009E

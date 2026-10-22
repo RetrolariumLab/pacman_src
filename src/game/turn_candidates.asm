@@ -15,7 +15,7 @@ sub_collect_valid_turn_candidates:
     INY  ; 00
 ; Scan neighbor tiles for passable candidates
 bra_scan_neighbor_tiles:
-    LDA (zp_work0),Y  ; 022F 0230 0231 0232 0233 0234 0235 0236 0237 0238 0239 023A 023B 023C 023D 023E
+    LDA (zp_work0),Y
     CMP zp_work9
     BEQ bra_store_candidate_direction
     AND #$F8

@@ -46,7 +46,7 @@ con_title_script_namco_delay            = $06
 ; Values are byte offsets into tbl_gameplay_script_handlers
 con_game_script_round_init              = $00
 con_game_script_round_ready             = $02
-con_game_script_pause                   = $04
+con_game_script_playing                 = $04
 con_game_script_post_eat_pause          = $06
 con_game_script_death                   = $08
 con_game_script_game_over               = $0A

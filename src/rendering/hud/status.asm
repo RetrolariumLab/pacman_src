@@ -219,11 +219,11 @@ bra_accumulate_history_mask:
     INX
     DEC zp_work2
     BPL bra_draw_next_fruit_history_icon
-    LDX #$23  ; 23E5
+    LDX #$23
     LDA ram_game_mode
     AND ram_current_player
     BEQ bra_init_history_mask_upload
-    LDX #$2B  ; 2BE5
+    LDX #$2B
 ; Initialize PPU upload for fruit history mask
 bra_init_history_mask_upload:
     STX PPUADDR

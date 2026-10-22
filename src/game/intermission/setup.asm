@@ -71,11 +71,11 @@ bra_upload_demo_sprite_palette:
 ; Side effects: direct PPU writes; caller must own rendering/vblank timing
 ; Clobbers: A, X and zp_work0..zp_work3; Y is preserved
 sub_clear_playfield_and_walls:
-    LDX #$20  ; 2000
+    LDX #$20
     LDA ram_game_mode
     AND ram_current_player
     BEQ bra_select_playfield_nametable
-    LDX #$28  ; 2800
+    LDX #$28
 ; Select active playfield nametable for current player
 bra_select_playfield_nametable:
     LDA PPUSTATUS
@@ -130,11 +130,11 @@ bra_clear_attribute_block:
     RTS
 ; Draw center marker tile for mode 2
 bra_draw_center_marker_if_mode2:
-    LDX #$22  ; 2230
+    LDX #$22
     LDA ram_game_mode
     AND ram_current_player
     BEQ bra_select_center_marker_nametable
-    LDX #$2A  ; 2A30
+    LDX #$2A
 ; Select nametable for center marker
 bra_select_center_marker_nametable:
     LDA PPUSTATUS

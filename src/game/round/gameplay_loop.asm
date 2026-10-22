@@ -96,7 +96,7 @@ bra_dispatch_current_script:
 tbl_gameplay_script_handlers:
     .word handler_script00_round_init  ; con_game_script_round_init
     .word handler_script02_round_ready  ; con_game_script_round_ready
-    .word handler_script04_pause_handler  ; con_game_script_pause
+    .word handler_script04_playing  ; con_game_script_playing
     .word handler_script06_post_eat_pause  ; con_game_script_post_eat_pause
     .word handler_script08_death_sequence  ; con_game_script_death
     .word handler_script_0a_game_over  ; con_game_script_game_over
@@ -108,7 +108,7 @@ tbl_gameplay_script_handlers:
 ; Input: controller edge state, pause state, and live round state
 ; Side effects: may toggle pause/SFX/PPU text; when unpaused, runs the ordered
 ; gameplay update chain. Returns only through the NMI wait loop
-handler_script04_pause_handler:
+handler_script04_playing:
     LDA ram_sfx_pause_toggle
     BEQ bra_check_pause_start_edge
     JMP loc_gameplay_mainloop_wait_nmi
@@ -122,11 +122,11 @@ bra_check_pause_start_edge:
     LDA ram_pause_start_latch
     BEQ bra_run_frame_when_no_new_start
     INC ram_flag_pause
-    LDX #$22  ; 2237
+    LDX #$22
     LDA ram_game_mode
     AND ram_current_player
     BEQ bra_store_pause_ppu_addr
-    LDX #$2A  ; 2A37
+    LDX #$2A
 ; Store selected nametable address for PAUSE text packet
 bra_store_pause_ppu_addr:
     STX ram_ppu_buffer_main

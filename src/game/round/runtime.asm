@@ -274,15 +274,15 @@ bra_scan_collision_candidates:
     BNE bra_advance_collision_candidate
     LDY #$00
     LDA ram_obj_pos_X_hi
-    CMP (zp_work0),Y  ; 001E 0022 0026 002A 002E
+    CMP (zp_work0),Y
     BCS bra_abs_dx_subtract_alt
-    LDA (zp_work0),Y  ; 001E 0022 0026 002A 002E
+    LDA (zp_work0),Y
     SEC
     SBC ram_obj_pos_X_hi
     BCS bra_check_dx_window
 ; Compute alternate X distance branch
 bra_abs_dx_subtract_alt:
-    SBC (zp_work0),Y  ; 001E 0022 0026 002A 002E
+    SBC (zp_work0),Y
 ; Reject candidate when X distance is too large
 bra_check_dx_window:
     CMP #$0A
@@ -290,15 +290,15 @@ bra_check_dx_window:
     STA zp_work3
     LDY #$02
     LDA ram_obj_pos_Y_hi
-    CMP (zp_work0),Y  ; 0020 0024 0028 002C 0030
+    CMP (zp_work0),Y
     BCS bra_abs_dy_subtract_alt
-    LDA (zp_work0),Y  ; 0020 0024 0028 002C 0030
+    LDA (zp_work0),Y
     SEC
     SBC ram_obj_pos_Y_hi
     BCS bra_check_dy_window
 ; Compute alternate Y distance branch
 bra_abs_dy_subtract_alt:
-    SBC (zp_work0),Y  ; 0020 0024 0028 002C 0030
+    SBC (zp_work0),Y
 ; Reject candidate when Y distance is too large
 bra_check_dy_window:
     CMP #$0A

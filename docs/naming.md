@@ -17,13 +17,13 @@ prefix states how a code label is entered:
 | `bra_` | Internal branch target within a routine or handler |
 | `vec_` | CPU vector entry point |
 
-The source currently enforces this distinction: every `sub_` symbol has a
-direct `JSR` caller, and every direct `JSR` target uses the `sub_` prefix.
+The source follows this distinction: every `sub_` symbol has a direct `JSR`
+caller, and every direct `JSR` target uses the `sub_` prefix.
 
 Every colon label must begin with one of the code or data prefixes documented
 on this page and use lowercase snake_case. Empty components, doubled
 underscores, leading or trailing underscores, uppercase letters, and unprefixed
-legacy names are rejected. This rule applies to labels only; uppercase hardware
+legacy names are not used. This rule applies to labels only; uppercase hardware
 and assembly-time constants keep their declared convention. Every colon label
 must also be unique across the source tree.
 
@@ -75,10 +75,10 @@ not sufficient.
 5. Every rename-only change must pass `make verify`; names must never affect the
    reproduced ROM.
 
-The vocabulary is mandatory for every active colon label. `make lint` rejects
-malformed or duplicate labels, lowercase definitions outside this vocabulary,
-legacy `ofs_*` definitions, and address-derived identifiers. Uppercase hardware
-names remain valid because they follow the conventional register/bit-mask style
+The vocabulary is mandatory for every active colon label. Nothing checks it
+automatically: `make lint` checks layout and comments, not names, so keep the
+vocabulary and the `sub_`/`JSR` pairing by hand. Uppercase hardware names
+remain valid because they follow the conventional register/bit-mask style
 in `src/memory/hardware.inc`. Rename a symbol only when control flow, data flow,
-encoded structure, or runtime evidence supports the new role, then run both
-`make lint` and `make verify`.
+encoded structure, or runtime evidence supports the new role, then run `make
+test`.

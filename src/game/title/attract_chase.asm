@@ -430,8 +430,9 @@ bra_next_runner_tile_slot:
 
 ; Animation LUT used by chase scene update
 tbl_chase_anim_lut:
-; indexes 08, 09, 12 and 13 are read via 0x00096F
-; other indexes are read via 0x000954
+; Indexes 08, 09, 12 and 13 are the ghost tiles (read after
+; bra_select_chomp_toggle); the others are Pac-Man's frames (read after
+; bra_store_anim_bank_offset)
     .byte $04  ; 00
     .byte $04  ; 01
     .byte $04  ; 02

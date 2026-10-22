@@ -26,7 +26,7 @@ sub_clear_sound_engine_state:
     LDA #$00
 ; Clear 16-byte SFX request/state area
 bra_loop_clear_sfx_request_slots:
-    STA (ram_sfx_request_ptr),Y  ; 0600 0601 0602 0603 0604 0605 0606 0607 0608 0609 060A 060B 060C 060D 060E 060F
+    STA (ram_sfx_request_ptr),Y
     INY
     CPY #con_sound_channel_count
     BNE bra_loop_clear_sfx_request_slots
@@ -73,17 +73,17 @@ bra_loop_scan_channel_command_slots:
     SBC #$05
     TAY
     LDA #$01
-    STA (ram_sound_work_ptr),Y  ; 00F8 00F9 00FA
+    STA (ram_sound_work_ptr),Y
     JMP loc_advance_channel_prepass_entry
 ; Handle 01..04 channel request with deduplication
 bra_handle_low_priority_channel_request:
     SEC
     SBC #$01
     TAY
-    LDA (ram_sound_work_ptr),Y  ; 00F8 00F9 00FA
+    LDA (ram_sound_work_ptr),Y
     BNE bra_advance_channel_prepass
     LDA #$01
-    STA (ram_sound_work_ptr),Y  ; 00F8 00F9 00FA
+    STA (ram_sound_work_ptr),Y
     TYA
     TAX
     ADC #$04
@@ -100,7 +100,7 @@ bra_loop_write_apu_register_quad:
     PHA
     INY
     LDA (ram_sound_channel_ptr),Y  ; record +1 through +4 APU register quad
-    STA (ram_apu_register_ptr,X)  ; 4000 4001 4002 4003 4004 4005 4006 4007 4008 4009 400A 400B
+    STA (ram_apu_register_ptr,X)
     INC ram_apu_register_ptr
     PLA
     SEC
@@ -122,7 +122,7 @@ loc_advance_channel_prepass_entry:
 ; Main per-channel sound stream update loop
 loc_sound_channel_main_loop:
     LDY ram_sound_channel_index
-    LDA (ram_sfx_request_ptr),Y  ; 0600 0601 0602 0603 0604 0605 0606 0607 0608 0609 060A 060B 060C 060D 060E 060F
+    LDA (ram_sfx_request_ptr),Y
     BNE bra_channel_has_active_stream
     JMP loc_advance_to_next_sound_channel_entry
 ; Channel has pending stream; update countdown or decode
@@ -133,7 +133,7 @@ bra_channel_has_active_stream:
     LDA ram_sound_channel_index
     ASL
     TAY
-    LDA (ram_sfx_stream_table_ptr),Y  ; low pointers 0x00309E
+    LDA (ram_sfx_stream_table_ptr),Y
     PHA
     LDA ram_sound_channel_offset
     ADC #$05
@@ -144,7 +144,7 @@ bra_channel_has_active_stream:
     ASL
     ADC #$01
     TAY
-    LDA (ram_sfx_stream_table_ptr),Y  ; high pointers 0x00309E
+    LDA (ram_sfx_stream_table_ptr),Y
     PHA
     LDA ram_sound_channel_offset
     ADC #$06
@@ -288,7 +288,7 @@ tbl_sound_control_opcode_handlers:
 ; !(OBS) Only F0, F2, F3, and F5 occur as opcodes in all 16 decoded streams. See resolved SND-002
 ; F1, F4, and F6 handlers are dormant; F7-FF alias the F0 handler
     .word handler_00_turn_sound_off  ; con_sound_opcode_stop
-    .word handler_ctrl01_set_channel_reg1_low6  ; never used
+    .word handler_ctrl01_set_channel_reg1_high2  ; never used
     .word handler_ctrl02_set_channel_reg1_mid2  ; con_sound_opcode_set_reg1_mid2
     .word handler_ctrl03_set_channel_reg1_low4  ; con_sound_opcode_set_reg1_low4
     .word handler_ctrl04_set_channel_reg2_raw  ; never used
@@ -325,13 +325,13 @@ handler_0e_unused_alias_turn_sound_off:
 handler_0f_unused_alias_turn_sound_off:
     LDY ram_sound_channel_index
     LDA #$00
-    STA (ram_sfx_request_ptr),Y  ; 0600 0601 0602 0603 0604 0605 0606 0607 0608 0609 060A 060B 060C 060D 060E 060F
+    STA (ram_sfx_request_ptr),Y
     LDY ram_sound_channel_offset
     STA (ram_sound_channel_ptr),Y  ; record +0 channel state
     JMP loc_advance_to_next_sound_channel_entry
 
-; Control F1: update channel register byte1 low 6 bits
-handler_ctrl01_set_channel_reg1_low6:
+; Control F1: update channel register byte1 bits 6-7 (pulse duty)
+handler_ctrl01_set_channel_reg1_high2:
     JSR sub_fetch_stream_byte_and_advance_ptr
     PHA
     LDA ram_sound_channel_offset
@@ -354,12 +354,12 @@ handler_ctrl02_set_channel_reg1_mid2:
     CLC
     ADC #$01
     TAY
-    LDA (ram_sound_channel_ptr),Y  ; 0639
+    LDA (ram_sound_channel_ptr),Y
     AND #$CF
-    STA (ram_sound_channel_ptr),Y  ; 0639
+    STA (ram_sound_channel_ptr),Y
     PLA
-    ORA (ram_sound_channel_ptr),Y  ; 0639
-    STA (ram_sound_channel_ptr),Y  ; 0639
+    ORA (ram_sound_channel_ptr),Y
+    STA (ram_sound_channel_ptr),Y
     JMP loc_decode_sound_stream_byte
 
 ; Control F3: update channel register byte1 low nibble
@@ -370,12 +370,12 @@ handler_ctrl03_set_channel_reg1_low4:
     CLC
     ADC #$01
     TAY
-    LDA (ram_sound_channel_ptr),Y  ; 0639
+    LDA (ram_sound_channel_ptr),Y
     AND #$F0
-    STA (ram_sound_channel_ptr),Y  ; 0639
+    STA (ram_sound_channel_ptr),Y
     PLA
-    ORA (ram_sound_channel_ptr),Y  ; 0639
-    STA (ram_sound_channel_ptr),Y  ; 0639
+    ORA (ram_sound_channel_ptr),Y
+    STA (ram_sound_channel_ptr),Y
     JMP loc_decode_sound_stream_byte
 
 ; Control F4: write raw value into channel register byte2
@@ -399,7 +399,7 @@ handler_ctrl05_set_channel_reg4_raw:
     ADC #$04
     TAY
     PLA
-    STA (ram_sound_channel_ptr),Y  ; 063C 0644 064C 065C 069C
+    STA (ram_sound_channel_ptr),Y
     JMP loc_decode_sound_stream_byte
 
 ; Control F6: write raw value into channel register byte1
@@ -430,7 +430,7 @@ sub_fetch_stream_byte_and_advance_ptr:
     STA ram_sound_work_ptr + $01
 ; !(OBS) PHA/PLA is functionally redundant but retained for timing/layout. See resolved CODE-004
     LDX #$00
-    LDA (ram_sound_work_ptr,X)  ; data from 0x00309E
+    LDA (ram_sound_work_ptr,X)
     PHA
     LDA ram_sound_work_ptr
     DEY
@@ -465,9 +465,8 @@ tbl_sfx_stream_table_ptr:
 
 ; SFX stream pointer table (16 entries)
 tbl_sfx_stream_ptr_table:
-; bytes from data chunks are read via 0x003070
-; Slot semantics are mapped from writers into ram_sfx slots 0600..060F
-; Milestone-23 tracing confirms same-index activation for all 16 request slots
+; Slot semantics are mapped from writers into the ram_sfx request slots; a
+; request in slot n plays stream n (SND-001)
     .word off_sfx_slot_00_player_ready_channel_a
     .word off_sfx_slot_01_player_ready_channel_b
     .word off_sfx_slot02_extra_life

@@ -92,10 +92,10 @@ handler_step_lo_pos_axis_alt:
     LDY #$01
 ; Apply low-byte additive step
 bra_apply_lo_step_add:
-    LDA (zp_work2),Y  ; 001F 0021 0023 0025 0027 0029 002B 002D
+    LDA (zp_work2),Y
     CLC
     ADC ram_ghost_move_fraction,X
-    STA (zp_work2),Y  ; 001F 0021 0023 0025 0027 0029 002B 002D
+    STA (zp_work2),Y
     LDA #$00
     ADC ram_ghost_move_pixels,X
     STA ram_movement_step_budget
@@ -111,10 +111,10 @@ handler_step_lo_neg_axis_alt:
     LDY #$01
 ; Apply low-byte subtractive step
 bra_apply_lo_step_sub:
-    LDA (zp_work2),Y  ; 001F 0021 0023 0025 0027 0029 002B 002D
+    LDA (zp_work2),Y
     SEC
     SBC ram_ghost_move_fraction,X
-    STA (zp_work2),Y  ; 001F 0021 0023 0025 0027 0029 002B 002D
+    STA (zp_work2),Y
     LDA #$00
     BCS bra_fold_borrow_into_hi_steps
     LDA #$01
@@ -176,23 +176,23 @@ bra_prepare_x_axis_update:
     LDY #$00
 ; Apply high-byte axis delta
 bra_apply_hi_axis_delta:
-    LDA (zp_work2),Y  ; 001E 0020 0022 0024 0026 0028 002A 002C
+    LDA (zp_work2),Y
     CLC
     ADC zp_work5
-    STA (zp_work2),Y  ; 001E 0020 0022 0024 0026 0028 002A 002C
+    STA (zp_work2),Y
     LDY #$00
-    LDA (zp_work2),Y  ; 001E 0022 0026 002A
+    LDA (zp_work2),Y
     CMP #$0A
     BNE bra_check_right_wrap_candidate
     LDA #$BF
-    STA (zp_work2),Y  ; 001E 0022 0026 002A
+    STA (zp_work2),Y
     BNE bra_set_tunnel_palette_bit  ; jmp
 ; Check right tunnel wrap candidate
 bra_check_right_wrap_candidate:
     CMP #$C0
     BNE bra_check_tunnel_palette_window
     LDA #$0B
-    STA (zp_work2),Y  ; 001E 0022 0026 002A
+    STA (zp_work2),Y
     BNE bra_set_tunnel_palette_bit  ; jmp
 ; Check tunnel palette range window
 bra_check_tunnel_palette_window:
@@ -218,20 +218,20 @@ bra_apply_ghost_palette_flag:
     ORA zp_work5
     STA ram_spr_pal + $01,Y
     LDY #$00
-    LDA (zp_work2),Y  ; 001E 0022 0026 002A
+    LDA (zp_work2),Y
     LDY #$02
-    ORA (zp_work2),Y  ; 0020 0024 0028 002C
+    ORA (zp_work2),Y
     AND #$07
     BEQ bra_check_house_entry_trigger
     JMP loc_step_hi_budget_loop
 ; Check ghost-house entry trigger point
 bra_check_house_entry_trigger:
     LDY #$00
-    LDA (zp_work2),Y  ; 001E 0022 0026 002A
+    LDA (zp_work2),Y
     CMP #$60
     BNE bra_handle_state06_targeting
     LDY #$02
-    LDA (zp_work2),Y  ; 0020 0024 0028 002C
+    LDA (zp_work2),Y
     CMP #$70
     BNE bra_handle_state06_targeting
     LDA #con_ghost_state_exiting_house
@@ -347,7 +347,7 @@ bra_try_next_exit_seed:
     LDA zp_work5
     AND #con_direction_mask
     TAY
-    LDA (zp_work0),Y  ; 022F 0230 0231 0232 0233 0234 0235 0236 0237 0238 0239 023A 023B 023C 023D 023E
+    LDA (zp_work0),Y
     AND #$F8
     BNE bra_scan_open_exits
     LDA zp_work5
@@ -445,7 +445,7 @@ bra_rank_direction_candidates:
     STY zp_work5
     LDA ram_ghost_target_x
     SEC
-    SBC (zp_work2),Y  ; 001E 0022 0026 002A
+    SBC (zp_work2),Y
     BCS bra_store_abs_dx
     STA zp_work8
     LDA #$00
@@ -461,7 +461,7 @@ bra_store_abs_dx:
     LDA ram_ghost_target_y
     LDY #$02
     SEC
-    SBC (zp_work2),Y  ; 0020 0024 0028 002C
+    SBC (zp_work2),Y
     BCS bra_store_abs_dy
     STA zp_work8
     LDA #$00

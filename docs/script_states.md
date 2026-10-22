@@ -16,7 +16,7 @@ and separate `con_title_script_*` constants.
 |---|---|---|
 | `con_game_script_round_init` (`00`) | `handler_script00_round_init` | Round/session init, table loads, HUD/maze setup. |
 | `con_game_script_round_ready` (`02`) | `handler_script02_round_ready` | READY pre-control countdown and text sprites. |
-| `con_game_script_pause` (`04`) | `handler_script04_pause_handler` | Main active gameplay frame loop and pause gate. |
+| `con_game_script_playing` (`04`) | `handler_script04_playing` | Main active gameplay frame loop and pause gate. |
 | `con_game_script_post_eat_pause` (`06`) | `handler_script06_post_eat_pause` | Short freeze after an eaten-ghost score popup. |
 | `con_game_script_death` (`08`) | `handler_script08_death_sequence` | Death animation and life/player handoff. |
 | `con_game_script_game_over` (`0A`) | `handler_script_0a_game_over` | GAME OVER composition, timeout, and exit. |
@@ -65,7 +65,7 @@ and separate `con_title_script_*` constants.
 
 ## Invariants to Preserve
 1. Keep script values as even byte offsets and preserve dispatch table order.
-2. Treat `con_game_script_pause` as the main frame driver: timers, pellets,
+2. Treat `con_game_script_playing` as the main frame driver: timers, pellets,
    Pac-Man movement, ghost updates, collision, and sprite preparation execute in
    that order when not paused.
 3. `con_game_script_post_eat_pause` is a restricted update window: only pellet

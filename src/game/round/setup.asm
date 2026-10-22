@@ -278,11 +278,11 @@ bra_copy_anim_palette_defaults:
     LDY #$00
 ; Normalize blinking power pellet tile IDs for gameplay
 bra_normalize_power_pellet_tiles:
-    LDA ram_power_pellet_tile_p1,Y  ; 006C 006D 006E 006F
+    LDA ram_power_pellet_tile_p1,Y
     CMP #con_tile_power_pellet_hidden
     BNE bra_next_power_pellet_slot
     LDA #con_tile_power_pellet_visible
-    STA ram_power_pellet_tile_p1,Y  ; 006C 006D 006E 006F
+    STA ram_power_pellet_tile_p1,Y
 ; Advance to next power-pellet tile slot
 bra_next_power_pellet_slot:
     INY
@@ -299,11 +299,11 @@ bra_next_power_pellet_slot:
 
 ; Fill a center nametable strip (spaces + separator tiles) used during round setup
 sub_fill_center_strip_tiles:
-    LDY #$22  ; 2256
+    LDY #$22
     LDA ram_current_player
     AND ram_game_mode
     BEQ bra_center_strip_addr_ready
-    LDY #$2A  ; 2A56
+    LDY #$2A
 ; Center-strip base nametable address selected
 bra_center_strip_addr_ready:
     STY zp_work0

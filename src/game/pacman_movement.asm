@@ -40,7 +40,7 @@ loc_apply_requested_direction:
     AND #$07
     BNE bra_accept_turn_or_reverse
     LDY ram_direction_1
-    LDA ram_obj_ppu_tile_direction,Y  ; 022B 022C 022D 022E
+    LDA ram_obj_ppu_tile_direction,Y
     AND #$F0
     BNE bra_validate_requested_direction
 ; Accept requested direction when legal/aligned
@@ -51,7 +51,7 @@ bra_accept_turn_or_reverse:
 ; Validate requested direction against tile blockers
 bra_validate_requested_direction:
     LDX ram_direction_1
-    LDA ram_obj_ppu_tile_direction,X  ; 022B 022C 022D 022E
+    LDA ram_obj_ppu_tile_direction,X
     AND #$F0
     BEQ bra_select_speed_profile_entry
 ; Fallback to current direction when no valid input
@@ -84,9 +84,9 @@ bra_choose_speed_from_tile:
     DEX
 ; Load per-direction movement delta from runtime table
 bra_load_movement_delta:
-    LDA ram_level_parameters,X  ; 009F 00A5
+    LDA ram_level_parameters,X
     STA ram_pacman_move_fraction
-    LDA ram_level_parameters + $01,X  ; 00A0 00A6
+    LDA ram_level_parameters + $01,X
     STA ram_pacman_move_pixels
     LDA ram_direction_2
     ASL
@@ -112,10 +112,10 @@ handler_pos_lo_01_left:
     LDX #$00  ; obj_pos_X_lo
 ; Move on negative axis using low-byte position
 bra_move_negative_axis_lo:
-    LDA ram_obj_position + $01,X  ; 001B 001D
+    LDA ram_obj_position + $01,X
     SEC
     SBC ram_pacman_move_fraction
-    STA ram_obj_position + $01,X  ; 001B 001D
+    STA ram_obj_position + $01,X
     LDA #$00
     BCS bra_fold_borrow_into_step_count
     LDA #$01
@@ -134,10 +134,10 @@ handler_pos_lo_02_down:
     LDX #$02  ; obj_pos_Y_lo
 ; Shared entry for right/down low-byte movement path
 bra_move_positive_axis_lo:
-    LDA ram_obj_position + $01,X  ; 001B 001D
+    LDA ram_obj_position + $01,X
     CLC
     ADC ram_pacman_move_fraction
-    STA ram_obj_position + $01,X  ; 001B 001D
+    STA ram_obj_position + $01,X
     LDA #$00
     ADC ram_pacman_move_pixels
     STA ram_movement_step_budget
@@ -177,20 +177,20 @@ handler_pos_hi_02_down:
     STX zp_work1
 ; Move on positive axis (right/down) and align at junctions
 bra_move_positive_axis_hi:
-    LDA ram_obj_position,X  ; 001A 001C
+    LDA ram_obj_position,X
     CLC
     ADC #$01
-    STA ram_obj_position,X  ; 001A 001C
+    STA ram_obj_position,X
     AND #$04
     BNE bra_apply_tunnel_wrap_and_turn
     LDX zp_work1
-    LDA ram_obj_ppu_tile_direction,X  ; 022D 022E
+    LDA ram_obj_ppu_tile_direction,X
     AND #$F0
     BEQ bra_apply_tunnel_wrap_and_turn
     LDX zp_work0
-    LDA ram_obj_position,X  ; 001A 001C
+    LDA ram_obj_position,X
     AND #$FC
-    STA ram_obj_position,X  ; 001A 001C
+    STA ram_obj_position,X
     BNE bra_apply_tunnel_wrap_and_turn  ; jmp
 
 handler_pos_hi_01_left:
@@ -207,22 +207,22 @@ handler_pos_hi_00_up:
     STA zp_work1
 ; Move on negative axis (up/left) and align at junctions
 bra_move_negative_axis_hi:
-    LDA ram_obj_position,X  ; 001A 001C
+    LDA ram_obj_position,X
     SEC
     SBC #$01
-    STA ram_obj_position,X  ; 001A 001C
+    STA ram_obj_position,X
     AND #$04
     BEQ bra_apply_tunnel_wrap_and_turn
     LDX zp_work1
-    LDA ram_obj_ppu_tile_direction,X  ; 022B 022C
+    LDA ram_obj_ppu_tile_direction,X
     AND #$F0
     BEQ bra_apply_tunnel_wrap_and_turn
     LDX zp_work0
-    LDA ram_obj_position,X  ; 001A 001C
+    LDA ram_obj_position,X
     CLC
     ADC #$04
     AND #$FC
-    STA ram_obj_position,X  ; 001A 001C
+    STA ram_obj_position,X
 ; Apply tunnel palette/wrap logic and commit queued turns
 bra_apply_tunnel_wrap_and_turn:
     LDA ram_obj_pos_X_hi

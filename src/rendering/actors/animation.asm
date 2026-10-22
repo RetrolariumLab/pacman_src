@@ -15,7 +15,7 @@ sub_update_pacman_anim_frame:
     AND #$07
     BNE bra_advance_anim_phase_counter
     LDY ram_direction_2
-    LDA ram_obj_ppu_tile_direction,Y  ; 022B 022C 022D 022E
+    LDA ram_obj_ppu_tile_direction,Y
     AND #$F0
     BEQ bra_advance_anim_phase_counter
     LDA ram_pacman_anim_phase
@@ -180,15 +180,15 @@ loc_overlap_resolution_loop:
     BNE bra_next_overlap_candidate
     LDY #$00
     LDA ram_spr_pos_X_hi
-    CMP (zp_work0),Y  ; 0278 027C 0280 0284
+    CMP (zp_work0),Y
     BCS bra_abs_dx_alt
-    LDA (zp_work0),Y  ; 0278 027C 0280 0284
+    LDA (zp_work0),Y
     SEC
     SBC ram_spr_pos_X_hi
     BCS bra_check_overlap_dx
 ; Alternate absolute X difference branch
 bra_abs_dx_alt:
-    SBC (zp_work0),Y  ; 0278 027C 0280 0284
+    SBC (zp_work0),Y
 ; Check overlap X threshold
 bra_check_overlap_dx:
     CMP #$19
@@ -196,15 +196,15 @@ bra_check_overlap_dx:
     STA zp_work4
     LDY #$02
     LDA ram_spr_pos_Y_hi
-    CMP (zp_work0),Y  ; 027A 027E 0282 0286
+    CMP (zp_work0),Y
     BCS bra_abs_dy_alt
-    LDA (zp_work0),Y  ; 027A 027E 0282 0286
+    LDA (zp_work0),Y
     SEC
     SBC ram_spr_pos_Y_hi
     BCS bra_check_overlap_dy
 ; Alternate absolute Y difference branch
 bra_abs_dy_alt:
-    SBC (zp_work0),Y  ; 027A 027E 0282 0286
+    SBC (zp_work0),Y
 ; Check overlap Y threshold
 bra_check_overlap_dy:
     CMP #$19
@@ -221,15 +221,15 @@ bra_check_overlap_dy:
     LDA ram_actor_sprite_attrs
     STA zp_work6
     LDY #$00
-    LDA (zp_work0),Y  ; 0278 027C 0280 0284
+    LDA (zp_work0),Y
     STA ram_spr_pos_X_hi
     LDA zp_work3
-    STA (zp_work0),Y  ; 0278 027C 0280 0284
+    STA (zp_work0),Y
     LDY #$02
-    LDA (zp_work0),Y  ; 027A 027E 0282 0286
+    LDA (zp_work0),Y
     STA ram_spr_pos_Y_hi
     LDA zp_work4
-    STA (zp_work0),Y  ; 027A 027E 0282 0286
+    STA (zp_work0),Y
     LDX zp_work2
     LDA ram_actor_sprite_set + $01,X
     STA ram_actor_sprite_set

@@ -13,11 +13,11 @@ sub_select_ghost_speed_vector:
     CMP #con_ghost_state_returning_eyes
     BEQ bra_apply_eyes_speed
     LDY #$02
-    LDA (zp_work2),Y  ; 0020 0024 0028 002C
+    LDA (zp_work2),Y
     CMP #$70
     BNE bra_select_scatter_or_chase_speed
     LDY #$00
-    LDA (zp_work2),Y  ; 001E 0022 0026 002A
+    LDA (zp_work2),Y
     CMP #$90
     BCS bra_apply_tunnel_speed
     CMP #$30
@@ -95,7 +95,7 @@ handler_state02_exit_house:
     STA zp_work5
     LDA #$80
     STA zp_work6
-    LDA (zp_work2),Y  ; 001E 0022 0026 002A
+    LDA (zp_work2),Y
     CMP #$60
     BEQ bra_transition_to_state04
     BCC bra_choose_exit_left_or_up
@@ -109,28 +109,28 @@ bra_choose_exit_left_or_up:
 bra_store_exit_direction:
     STA ram_ghost_direction,X
     LDY #$01
-    LDA (zp_work2),Y  ; 0027 002B
+    LDA (zp_work2),Y
     CLC
     ADC zp_work6
-    STA (zp_work2),Y  ; 0027 002B
+    STA (zp_work2),Y
     LDY #$00
-    LDA (zp_work2),Y  ; 0026 002A
+    LDA (zp_work2),Y
     ADC zp_work5
-    STA (zp_work2),Y  ; 0026 002A
+    STA (zp_work2),Y
     RTS
 ; Transition ghost from state 02 to state 04
 bra_transition_to_state04:
     LDA #con_direction_up
     STA ram_ghost_direction,X
     LDY #$03
-    LDA (zp_work2),Y  ; 0021 0025 0029 002D
+    LDA (zp_work2),Y
     SEC
     SBC #< $0080
-    STA (zp_work2),Y  ; 0021 0025 0029 002D
+    STA (zp_work2),Y
     LDY #$02
-    LDA (zp_work2),Y  ; 0020 0024 0028 002C
+    LDA (zp_work2),Y
     SBC #> $0080
-    STA (zp_work2),Y  ; 0020 0024 0028 002C
+    STA (zp_work2),Y
     CMP #$58
     BEQ bra_finish_exit_house_transition
     RTS
@@ -167,14 +167,14 @@ handler_house_move_up_phase:
 ; House transition phase: move down
 handler_house_move_down_phase:
     LDY #$03
-    LDA (zp_work2),Y  ; 0025 0029 002D
+    LDA (zp_work2),Y
     CLC
     ADC zp_work6
-    STA (zp_work2),Y  ; 0025 0029 002D
+    STA (zp_work2),Y
     LDY #$02
-    LDA (zp_work2),Y  ; 0024 0028 002C
+    LDA (zp_work2),Y
     ADC zp_work5
-    STA (zp_work2),Y  ; 0024 0028 002C
+    STA (zp_work2),Y
     CMP #$69
     BCS bra_check_house_transition_bounds
     LDA #$02
@@ -284,5 +284,5 @@ bra_set_release_marker_by_pellets:
 ; Commit selected release marker flag
 bra_commit_release_marker:
     LDA #$01
-    STA ram_sfx_release_counter_hi,Y  ; 060A 060B 060C
+    STA ram_sfx_release_counter_hi,Y
     RTS
