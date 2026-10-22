@@ -85,7 +85,7 @@ profile-check:
 	$(RLTOOL) profile tables --check $(foreach revision,$(PRESENT),--revision $(revision))
 
 lint:
-	$(RLTOOL) lint --only assembly --only text
+	$(RLTOOL) lint
 
 format:
 	$(RLTOOL) lint --fix
