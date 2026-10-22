@@ -1,7 +1,7 @@
 {
   "schema": "retrolarium.movie-check",
   "schema_version": 1,
-  "movie": "pacman_j_longplay.fm2",
+  "movie": "longplay.rlmovie",
   "cells": {
     "game_mode": {
       "address": "0x0047"

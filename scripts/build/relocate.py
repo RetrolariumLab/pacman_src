@@ -64,15 +64,28 @@ def relocate(main_source: Path, output: Path) -> list[tuple[str, int]]:
     return [(f"src/{module}", shift) for shift, module in enumerate(modules[:-1], 1)]
 
 
+def relocate_entry(entry: Path, output_dir: Path) -> list[tuple[str, int]]:
+    """Relocate the main source a revision's entry file includes, and write
+    the entry file beside it, including the relocated copy."""
+    main_source = entry.resolve().parent.parent / "main.asm"
+    shifts = relocate(main_source, output_dir / "main.asm")
+    text = entry.read_text(encoding="utf-8")
+    if text.count('.include "../main.asm"') != 1:
+        raise ValueError(f"{entry} must include ../main.asm once")
+    text = text.replace('.include "../main.asm"', '.include "main.asm"')
+    text = text.replace('.include "profile_ids.inc"', '.include "revisions/profile_ids.inc"')
+    (output_dir / entry.name).write_text(text, encoding="utf-8", newline="\n")
+    return shifts
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
-    parser.add_argument("--main", type=Path, required=True, help="src/main.asm")
-    parser.add_argument("--output", type=Path, required=True, help="the relocated main source")
+    parser.add_argument("--entry", type=Path, required=True, help="src/revisions/<id>.asm")
+    parser.add_argument("--output-dir", type=Path, required=True, help="the folder of the relocated source")
     args = parser.parse_args()
-    shifts = relocate(args.main, args.output)
+    shifts = relocate_entry(args.entry, args.output_dir)
     print(f"[OK] Relocated source: {len(shifts)} modules moved by 1 to {shifts[-1][1]} bytes.")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

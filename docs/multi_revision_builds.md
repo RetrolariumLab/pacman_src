@@ -1,54 +1,38 @@
 # Official ROM Revision Builds
 
-The shared source supports verified official Pac-Man ROM revisions without
-weakening the Japan V1.0 reference build. ROM images remain local inputs and
-are never distributed by this repository.
+The shared source builds all seven official Pac-Man revisions, each byte for
+byte. ROM images remain local inputs and are never distributed by this
+repository; `assets/manifest.json` names each by file, size and SHA-1 (its
+image id is the revision's name).
 
-Every revision builds from its own iNES header and CHR, which `make split`
-cuts out of that revision's ROM into `assets/generated/revisions/<id>/`
-(`assets/manifest.json`); nothing regional enters the repository.
+All revisions share one iNES header, which the source writes. `make split`
+cuts three CHRs (v1.0's, which five revisions share, Namco's USA one and the
+European one) and v1.0's maze and sound streams, which every revision takes.
+So every build needs the v1.0 ROM, plus the revision's own ROM for Namco's USA
+and the European release.
 
 ## Build Interface
 
-The default `make build` and `make verify` commands always target Japan V1.0.
-An official revision is selected explicitly:
+`make build` and `make verify` take `REVISION=<id>` (v1.0 unless given) and
+build `src/revisions/<id>.asm`, which sets `PACMAN_REVISION` and includes
+`src/main.asm`; `make verify-revisions` verifies every revision whose ROM is
+here. Revision differences must be represented as semantic source
+alternatives: text, constants, RAM layout, code, tables, or vectors. Raw
+binary patches are not accepted.
 
-```text
-make build-revision REVISION=japan-v11
-make verify-revision REVISION=japan-v11
-make verify-revisions
-```
+`src/revisions/profile_ids.inc` names the revisions, and
+`src/revisions/derived_flags.inc` derives the broader Tengen, RAM-palette, and
+late-Namco feature flags used by shared conditional source.
 
-Every revision assembles the single `src/main.asm` entrypoint. The build passes
-the selected `PACMAN_REVISION` profile to ca65 as a compile-time definition.
-Revision differences must be represented as semantic source alternatives:
-text, constants, RAM layout, code, tables, or vectors. Raw binary patches are
-not accepted.
-
-`src/revisions/profile_ids.inc` owns the profile constants and derives the broader
-Tengen, RAM-palette, and late-Namco feature flags used by shared conditional
-source.
-
-`assets/manifest.json` names each revision's ROM by file, size and SHA-1 (its
-image id is the revision's name), and the Makefile maps each to its
-`PACMAN_REVISION` value. `make verify-revision` builds one and compares it with
-its ROM through `rltool assets verify`; `make verify-revisions` does so for
-every revision whose ROM is here.
-
-## Verified Local Reference Matrix
-
-These hashes were calculated from clean GoodNES `[!]` images. Full-ROM hashes
-include the 16-byte iNES header.
-
-| Profile | GoodNES filename | PRG CRC32 | PRG SHA-1 | CHR CRC32 | Full ROM SHA-1 | Build status |
-| --- | --- | --- | --- | --- | --- | --- |
-| `japan-v10` | `Pac-Man (J) (V1.0) [!].nes` | `BB1B591B` | `20f0fc7664983b5d4f166866302f1ad20efb727d` | `49ABEEE6` | `adb4d7d7d28c89ca177aad231e0fdad992c0fbfb` | byte-identical |
-| `japan-v11` | `Pac-Man (J) (V1.1) [!].nes` | `2BF9D836` | `160920895ec9ff4ed832cd16c9b2be5352feebae` | `49ABEEE6` | `b8be2bffb4592873cc211becb529bf64071c7f90` | byte-identical |
-| `japan-revb` | `Pac-Man (Japan) (En) (Rev B).nes` | `B6214FA9` | `1b66f8ac67c1e72ca4ec97494fb06aaeb05cd68d` | `49ABEEE6` | `8b874a704e37557941179b232bac41644f6d01fc` | byte-identical |
-| `europe` | `Pac-Man (E) [!].nes` | `6FA1193B` | `8fef2bdce0c0be2ece67b26587aa22097ba3c9cf` | `19C4AA76` | `feb45bcbcd2326c14280db17330b665ec6adc0cc` | byte-identical |
-| `usa-namco` | `Pac-Man (U) (Namco) [!].nes` | `347D7D34` | `aa1bba9a243c70eb4e9928b5efec9d4877579d08` | `ED9E2130` | `e7d818e128593109b5c480497a050facc0744f1b` | byte-identical |
-| `usa-tengen` | `Pac-Man (U) (Tengen) [!].nes` | `E35321BC` | `5dd6d83b9827793f1da12923f2212e4d7502cf9a` | `49ABEEE6` | `727176933c25de055e7daa92e8b943f67cae4d9b` | byte-identical |
-| `usa-tengen-unlicensed` | `Pac-Man (Unl) (Tengen) [!].nes` | `7154ACB5` | `799b199bdb43fe5f97a37bd37294802515a13dfa` | `49ABEEE6` | `f1d9eb92f931ed925bd6119d00d1023a45da583f` | byte-identical |
+| Revision | ROM | CHR |
+| --- | --- | --- |
+| `japan-v10` | `Pac-Man (J) (V1.0) [!].nes` | v1.0 |
+| `japan-v11` | `Pac-Man (J) (V1.1) [!].nes` | v1.0 |
+| `japan-revb` | `Pac-Man (Japan) (En) (Rev B).nes` | v1.0 |
+| `usa-tengen-unlicensed` | `Pac-Man (Unl) (Tengen) [!].nes` | v1.0 |
+| `usa-tengen` | `Pac-Man (U) (Tengen) [!].nes` | v1.0 |
+| `usa-namco` | `Pac-Man (U) (Namco) [!].nes` | its own |
+| `europe` | `Pac-Man (E) [!].nes` | its own |
 
 ## Revision Family Tree
 
@@ -120,24 +104,12 @@ to `$EF` during boot, title, READY, round setup, and normal gameplay. Five
 movement profiles are scaled for the 50 Hz frame rate. These differences remain
 semantic source alternatives, and the complete European ROM is byte-identical.
 
-## Structural Comparison Method
+## Structural Comparison
 
-A raw same-offset diff is not a useful measure for the regional releases. A
-small insertion or reordered table changes later instruction operands,
-pointers, and branch destinations even when gameplay logic is unchanged.
-
-Analysis proceeds in this order:
-
-1. align identical PRG byte blocks independently of their original offsets;
-2. transfer known V1.0 code/data boundaries and semantic symbols;
-3. normalize control-flow operands and compare instruction sequences;
-4. separate relocated code from changed text, graphics, timing, and logic;
-5. use runtime code/data coverage and an interactive disassembler only for
-   ambiguous regions;
-6. express proven differences in shared ca65 source and require a byte-exact
-   build against the matching local ROM.
-
-Sequence alignment already accounts for 92.5% to 95.8% of each regional PRG.
+A raw same-offset diff is not a useful measure for the regional releases: a
+small insertion changes later operands, pointers and branch targets even when
+the logic is unchanged. Aligned, 92.5% to 95.8% of each regional PRG matches
+v1.0.
 The licensed and unlicensed Tengen PRGs match in 16,328 of 16,384 aligned
 bytes. Their 56 real byte differences are the Nintendo license text, a small
 licensed boot stub at `$FF00`, and its reset-vector selection.

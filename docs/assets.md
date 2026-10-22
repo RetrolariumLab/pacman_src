@@ -10,12 +10,16 @@ Keep data in ASM when its fields are understood and a contributor can edit it
 meaningfully. This includes stage profiles, speed/timer blocks, release
 thresholds, pointer tables, note periods, and hardware vectors.
 
-Extract data when it is an opaque authored asset without a trustworthy editor
-or encoder. The current generated set is:
+Graphics, the maze and the sound streams are the game's authored content;
+they come from your ROM rather than from this repository. Retrolarium Studio
+edits them (`pacman.maze-rle.v1`, `pacman.sound-streams.v1`). The current
+generated set is:
 
-- the 16-byte iNES header and the 8 KiB CHR-ROM;
+- the 8 KiB CHR-ROM of v1.0, Namco's USA release and the European release;
 - the 416-byte compressed maze stream at `EC78..EE17`;
 - sixteen sound command streams at `F0AE..F427`.
+
+The iNES header is source (`src/main.asm`).
 
 The large unused `FF` bank tail is neither an asset nor a checked-in byte
 listing. It is represented by a single ca65 `.res` directive.
@@ -26,12 +30,11 @@ listing. It is represented by a single ca65 `.res` directive.
 tracked: it names every revision's ROM by file, size and SHA-1, and every asset
 by the ROM it comes from, its file offset, size and SHA-1. `make split`
 (`rltool assets split`) checks all of those before writing files under
-`assets/generated/`; besides the v1.0 assets it writes each revision's header
-and CHR to `assets/generated/revisions/<id>/`. That directory is ignored by Git but deliberately
+`assets/generated/`. That directory is ignored by Git but deliberately
 preserved by `make clean`, because it may contain local ROM-hack edits.
 
-Generated files are consumed with `.incbin` by `src/data/maze.asm` and
-`src/audio/streams.asm`. Labels remain in ASM, so code and pointer tables stay
+Generated files are consumed with `.incbin` by `src/main.asm` (CHR),
+`src/data/maze.asm` and `src/audio/streams.asm`. Labels remain in ASM, so code and pointer tables stay
 navigable even though the payloads are local artifacts.
 
 ## Build Behavior
@@ -47,7 +50,3 @@ and `make verify` only check that every manifest path exists; they never compare
 or replace asset contents. If any file is absent, they fail with a message to
 run `make split`. This makes it safe to edit extracted data for ROM hacks and
 rebuild repeatedly without losing those changes.
-
-If the maze format later receives a tested decoder/encoder and a readable
-source representation, replace only `maze.rle` with that generated workflow.
-Byte identity remains the acceptance gate.

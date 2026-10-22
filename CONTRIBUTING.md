@@ -5,11 +5,10 @@ build must stay byte for byte identical to the Japan v1.0 ROM.
 
 ## Local inputs
 
-Use a legally obtained Japan v1.0 ROM (SHA-1
-`adb4d7d7d28c89ca177aad231e0fdad992c0fbfb`) and run `make split` once. Never add
-ROM images, extracted assets, object files or anything under `assets/generated/`
-or `build/` to Git. The tracked `.fm2` movie holds controller input, not game
-data. The other official revisions' ROMs are optional; their names are in
+Use a legally obtained Japan v1.0 ROM (`assets/manifest.json` gives its name
+and hash) and run `make split` once. Never add ROM images, extracted assets,
+object files or anything under `assets/generated/` or `build/` to Git. The
+tracked movie holds controller input, not game data. The other official revisions' ROMs are optional; their names are in
 `assets/manifest.json` and `docs/multi_revision_builds.md`.
 
 ## Source changes
@@ -29,8 +28,9 @@ make test
 
 Run `make test-full` (MAME) after changing control flow, state machines or
 anything timing-sensitive. Behaviour-changing work must not weaken the default
-build. Data is
-edited in Retrolarium Studio (`docs/retrolarium.md`).
+build. Data is edited in Retrolarium Studio (`docs/retrolarium.md`). Write ROM
+addresses as labels, never as numbers: a table or pointer named by its address
+breaks as soon as anything before it moves, and `make test-full` will show it.
 
 `make hooks` installs Git hooks that check commits and pushes for words that
 must not be published and run `make lint` before each commit.

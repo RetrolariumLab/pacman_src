@@ -1,9 +1,23 @@
-; Pac-Man (NES) multi-revision native ca65 source entrypoint
-; Module order is ROM order and must not change
+; Pac-Man (NES) source, assembled through a revision's entry file,
+; src/revisions/<id>.asm; module order is ROM order
 
 .setcpu "6502"
 
-.include "revisions/profile_ids.inc"
+.ifndef PACMAN_REVISION
+    .error "assemble a revision's entry file, src/revisions/<id>.asm"
+.endif
+
+.include "revisions/derived_flags.inc"
+
+.segment "HEADER"
+
+    .byte "NES", $1A  ; iNES magic
+    .byte $01  ; one 16 KiB PRG-ROM bank
+    .byte $01  ; one 8 KiB CHR-ROM bank
+    .byte $00  ; mapper 0, horizontal mirroring
+    .byte $00  ; upper mapper bits
+    .byte $00, $00, $00, $00, $00, $00, $00, $00
+
 .include "memory/ram.inc"
 .include "memory/hardware.inc"
 .include "memory/constants.inc"
@@ -42,3 +56,14 @@
 .include "audio/engine.asm"
 .include "audio/streams.asm"
 .include "data/tail_and_vectors.asm"
+
+; The CHR, cut from the ROMs (make split): Namco's USA and the European
+; release have their own, the other revisions share v1.0's
+.segment "CHR"
+.if PACMAN_REVISION = REVISION_USA_NAMCO
+    .incbin "assets/generated/chr/usa-namco.chr"
+.elseif PACMAN_REVISION = REVISION_EUROPE
+    .incbin "assets/generated/chr/europe.chr"
+.else
+    .incbin "assets/generated/chr/pacman.chr"
+.endif

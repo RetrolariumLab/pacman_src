@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "build"))
 
-from relocate import relocate  # noqa: E402
+from relocate import relocate, relocate_entry  # noqa: E402
 
 
 class RelocateTests(unittest.TestCase):
@@ -37,6 +37,27 @@ class RelocateTests(unittest.TestCase):
             self.assertEqual('.include "memory.inc"\n.include "first.asm"\n    .byte $EA\n'
                              '.include "second.asm"\n.include "data/tail_and_vectors.asm"\n',
                              read_source_text(output))
+
+    def test_an_entry_file_includes_the_relocated_main_source(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "src"
+            (source / "data").mkdir(parents=True)
+            (source / "revisions").mkdir()
+            (source / "first.asm").write_text('.segment "BANK_FF"\n.org $C000\n', encoding="utf-8")
+            (source / "data" / "tail_and_vectors.asm").write_text("", encoding="utf-8")
+            (source / "main.asm").write_text('.include "first.asm"\n.include "data/tail_and_vectors.asm"\n',
+                                             encoding="utf-8")
+            entry = source / "revisions" / "europe.asm"
+            entry.write_text('.include "profile_ids.inc"\nPACMAN_REVISION = 6\n\n.include "../main.asm"\n',
+                             encoding="utf-8")
+            output = root / "out"
+
+            relocate_entry(entry, output)
+
+            self.assertEqual('.include "revisions/profile_ids.inc"\nPACMAN_REVISION = 6\n\n.include "main.asm"\n',
+                             read_source_text(output / "europe.asm"))
+            self.assertTrue((output / "main.asm").exists())
 
     def test_a_source_without_the_tail_is_refused(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

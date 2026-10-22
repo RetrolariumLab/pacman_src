@@ -22,9 +22,6 @@ Each boundary, explicitly:
 | Imported disassembly-derived labels and notes | `unknown` | The imported baseline (see the README's credits) requires its own review |
 | User-supplied ROMs and extracted inputs | `private_user_supplied` | Never distributed by this repository |
 
-`config/toolchain.json` pins the cc65 versions and binary hashes. Those
-technical identities are independent of the licensing classification.
-
 Any future license decision must be explicit in a dedicated license file and
 must account separately for project-authored work, third-party tools, imported
 documentation, and rights in the original game data.

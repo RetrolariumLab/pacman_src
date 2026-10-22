@@ -48,18 +48,25 @@
   ],
   "assets": [
     {
-      "path": "header/pacman.hdr",
-      "image": "japan-v10",
-      "offset": 0,
-      "size": 16,
-      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
-    },
-    {
       "path": "chr/pacman.chr",
       "image": "japan-v10",
       "offset": 16400,
       "size": 8192,
       "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
+    },
+    {
+      "path": "chr/usa-namco.chr",
+      "image": "usa-namco",
+      "offset": 16400,
+      "size": 8192,
+      "sha1": "259b4d580d2fc11d5a61ad85f9fb717489986454"
+    },
+    {
+      "path": "chr/europe.chr",
+      "image": "europe",
+      "offset": 16400,
+      "size": 8192,
+      "sha1": "6ab2a6cfd59e4e1fe9d8c5da6722bb5a6a173861"
     },
     {
       "path": "maze/maze.rle",
@@ -179,104 +186,6 @@
       "offset": 13309,
       "size": 59,
       "sha1": "8288cae3927ee26d0dd5414897d0aa473f25532a"
-    },
-    {
-      "path": "revisions/japan-v10/header.bin",
-      "image": "japan-v10",
-      "offset": 0,
-      "size": 16,
-      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
-    },
-    {
-      "path": "revisions/japan-v10/chr.bin",
-      "image": "japan-v10",
-      "offset": 16400,
-      "size": 8192,
-      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
-    },
-    {
-      "path": "revisions/japan-v11/header.bin",
-      "image": "japan-v11",
-      "offset": 0,
-      "size": 16,
-      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
-    },
-    {
-      "path": "revisions/japan-v11/chr.bin",
-      "image": "japan-v11",
-      "offset": 16400,
-      "size": 8192,
-      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
-    },
-    {
-      "path": "revisions/japan-revb/header.bin",
-      "image": "japan-revb",
-      "offset": 0,
-      "size": 16,
-      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
-    },
-    {
-      "path": "revisions/japan-revb/chr.bin",
-      "image": "japan-revb",
-      "offset": 16400,
-      "size": 8192,
-      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
-    },
-    {
-      "path": "revisions/usa-tengen-unlicensed/header.bin",
-      "image": "usa-tengen-unlicensed",
-      "offset": 0,
-      "size": 16,
-      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
-    },
-    {
-      "path": "revisions/usa-tengen-unlicensed/chr.bin",
-      "image": "usa-tengen-unlicensed",
-      "offset": 16400,
-      "size": 8192,
-      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
-    },
-    {
-      "path": "revisions/usa-tengen/header.bin",
-      "image": "usa-tengen",
-      "offset": 0,
-      "size": 16,
-      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
-    },
-    {
-      "path": "revisions/usa-tengen/chr.bin",
-      "image": "usa-tengen",
-      "offset": 16400,
-      "size": 8192,
-      "sha1": "6255630a4d5634f1f03cbfb6266bf8c5f307205e"
-    },
-    {
-      "path": "revisions/usa-namco/header.bin",
-      "image": "usa-namco",
-      "offset": 0,
-      "size": 16,
-      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
-    },
-    {
-      "path": "revisions/usa-namco/chr.bin",
-      "image": "usa-namco",
-      "offset": 16400,
-      "size": 8192,
-      "sha1": "259b4d580d2fc11d5a61ad85f9fb717489986454"
-    },
-    {
-      "path": "revisions/europe/header.bin",
-      "image": "europe",
-      "offset": 0,
-      "size": 16,
-      "sha1": "97254cf87c26ffc6aa2147f3666ea72ba51e2e7e"
-    },
-    {
-      "path": "revisions/europe/chr.bin",
-      "image": "europe",
-      "offset": 16400,
-      "size": 8192,
-      "sha1": "6ab2a6cfd59e4e1fe9d8c5da6722bb5a6a173861"
     },
     {
       "path": "title/logo-tiles.bin",
