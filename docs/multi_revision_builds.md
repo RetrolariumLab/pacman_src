@@ -2,37 +2,37 @@
 
 The shared source builds all seven official Pac-Man revisions, each byte for
 byte. ROM images remain local inputs and are never distributed by this
-repository; `assets/manifest.json` names each by file, size and SHA-1 (its
-image id is the revision's name).
+repository; `assets/manifest.json` names each by file, size and SHA-1 (its image
+id is the revision's name).
 
-All revisions share one iNES header, which the source writes. `make split`
-cuts three CHRs (v1.0's, which five revisions share, Namco's USA one and the
-European one) and v1.0's maze and sound streams, which every revision takes.
-So every build needs the v1.0 ROM, plus the revision's own ROM for Namco's USA
-and the European release.
+All revisions share one iNES header, which the source writes. `make split` cuts
+three CHRs (v1.0's, which five revisions share, Namco's USA one and the European
+one) and v1.0's maze and sound streams, which every revision takes. So every
+build needs the v1.0 ROM, plus the revision's own ROM for Namco's USA and the
+European release.
 
 ## Build Interface
 
 `make build` and `make verify` take `REVISION=<id>` (v1.0 unless given) and
 build `src/revisions/<id>.asm`, which sets `PACMAN_REVISION` and includes
 `src/main.asm`; `make verify-revisions` verifies every revision whose ROM is
-here. Revision differences must be represented as semantic source
-alternatives: text, constants, RAM layout, code, tables, or vectors. Raw
-binary patches are not accepted.
+here. Revision differences must be represented as semantic source alternatives:
+text, constants, RAM layout, code, tables, or vectors. Raw binary patches are
+not accepted.
 
 `src/revisions/profile_ids.inc` names the revisions, and
 `src/revisions/derived_flags.inc` derives the broader Tengen, RAM-palette, and
 late-Namco feature flags used by shared conditional source.
 
-| Revision | ROM | CHR |
-| --- | --- | --- |
-| `japan-v10` | `Pac-Man (J) (V1.0) [!].nes` | v1.0 |
-| `japan-v11` | `Pac-Man (J) (V1.1) [!].nes` | v1.0 |
-| `japan-revb` | `Pac-Man (Japan) (En) (Rev B).nes` | v1.0 |
-| `usa-tengen-unlicensed` | `Pac-Man (Unl) (Tengen) [!].nes` | v1.0 |
-| `usa-tengen` | `Pac-Man (U) (Tengen) [!].nes` | v1.0 |
-| `usa-namco` | `Pac-Man (U) (Namco) [!].nes` | its own |
-| `europe` | `Pac-Man (E) [!].nes` | its own |
+| Revision                | ROM                                | CHR     |
+| ----------------------- | ---------------------------------- | ------- |
+| `japan-v10`             | `Pac-Man (J) (V1.0) [!].nes`       | v1.0    |
+| `japan-v11`             | `Pac-Man (J) (V1.1) [!].nes`       | v1.0    |
+| `japan-revb`            | `Pac-Man (Japan) (En) (Rev B).nes` | v1.0    |
+| `usa-tengen-unlicensed` | `Pac-Man (Unl) (Tengen) [!].nes`   | v1.0    |
+| `usa-tengen`            | `Pac-Man (U) (Tengen) [!].nes`     | v1.0    |
+| `usa-namco`             | `Pac-Man (U) (Namco) [!].nes`      | its own |
+| `europe`                | `Pac-Man (E) [!].nes`              | its own |
 
 ## Revision Family Tree
 
@@ -70,8 +70,8 @@ The arrows and nesting are intentionally conservative. Japan V1.1 is a direct
 eight-byte refinement of V1.0, and licensed Tengen is a small, clearly bounded
 variant of the unlicensed Tengen program. Rev B, Tengen, and the 1993 Namco
 releases share later architecture, but are shown as sibling branches where the
-binary evidence does not establish a unique chronological parent. USA Namco
-and Europe are likewise sibling regional variants of their shared 1993 branch.
+binary evidence does not establish a unique chronological parent. USA Namco and
+Europe are likewise sibling regional variants of their shared 1993 branch.
 
 ## Proven Japan V1.1 Differences
 
@@ -81,14 +81,14 @@ Japan V1.1 changes eight PRG bytes in two semantic locations:
   preserving the packet length;
 - one operand byte moves `ram_sound_channel_state` from `$0625` to `$0620`.
 
-Both alternatives live in shared source and are selected by
-`PACMAN_REVISION`. There is no post-link patching.
+Both alternatives live in shared source and are selected by `PACMAN_REVISION`.
+There is no post-link patching.
 
-Japan Rev B belongs to the later regional code family rather than being a
-small continuation of Japan V1.1. It shares the RAM-backed palette queues and
-related rendering paths with Tengen, while retaining the Japanese title and
-attract text, controller mask, and maze blank tile. Its attract attribute
-table and corrected `CHARACTER` heading are selected independently.
+Japan Rev B belongs to the later regional code family rather than being a small
+continuation of Japan V1.1. It shares the RAM-backed palette queues and related
+rendering paths with Tengen, while retaining the Japanese title and attract
+text, controller mask, and maze blank tile. Its attract attribute table and
+corrected `CHARACTER` heading are selected independently.
 
 The USA Namco release is another member of the later regional family. It adds
 Namco's 1993 title sequence and localized ghost names, uses a dedicated title
@@ -109,8 +109,7 @@ semantic source alternatives, and the complete European ROM is byte-identical.
 A raw same-offset diff is not a useful measure for the regional releases: a
 small insertion changes later operands, pointers and branch targets even when
 the logic is unchanged. Aligned, 92.5% to 95.8% of each regional PRG matches
-v1.0.
-The licensed and unlicensed Tengen PRGs match in 16,328 of 16,384 aligned
+v1.0. The licensed and unlicensed Tengen PRGs match in 16,328 of 16,384 aligned
 bytes. Their 56 real byte differences are the Nintendo license text, a small
 licensed boot stub at `$FF00`, and its reset-vector selection.
 

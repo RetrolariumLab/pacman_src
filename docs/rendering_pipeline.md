@@ -8,8 +8,8 @@ PPU buffers during vblank.
 ## Per-Frame Order
 
 On an unpaused gameplay frame, movement precedes animation. After collision
-handling, `sub_prepare_sprite_positions` copies object records to sprite staging,
-may reorder an overlapping ghost ahead of Pac-Man, rebuilds tile-probe
+handling, `sub_prepare_sprite_positions` copies object records to sprite
+staging, may reorder an overlapping ghost ahead of Pac-Man, rebuilds tile-probe
 addresses, and tail-jumps to OAM composition. At the next NMI:
 
 1. the previously built shadow OAM page is transferred by OAM DMA;
@@ -23,10 +23,10 @@ between mainline and NMI code.
 
 ## Actor Animation Selection
 
-Pac-Man's base frame is derived from direction. Its phase normally advances
-each update; when centered against a blocked forward tile, only the low two
-phase bits are reused, preserving the stopped-mouth behavior. A six-entry phase
-LUT and two terminal closed-mouth phases produce the final frame index.
+Pac-Man's base frame is derived from direction. Its phase normally advances each
+update; when centered against a blocked forward tile, only the low two phase
+bits are reused, preserving the stopped-mouth behavior. A six-entry phase LUT
+and two terminal closed-mouth phases produce the final frame index.
 
 Ghost animation uses bit 3 of the global frame counter as a two-frame phase.
 Each slot is dispatched by ghost state:
@@ -41,8 +41,8 @@ Each slot is dispatched by ghost state:
 Thirty-six bytes of object positions are copied to `ram_spr_position`. The
 routine then scans selected non-frightened ghost staging records against
 Pac-Man. Candidates pass X/Y windows below 25 pixels and a preserved narrow
-combined-distance gate. On the first accepted overlap, position, sprite-set,
-and attribute records are swapped so OAM ordering changes together. As in the
+combined-distance gate. On the first accepted overlap, position, sprite-set, and
+attribute records are swapped so OAM ordering changes together. As in the
 gameplay collision check, the original carry behavior is part of the gate and
 must not be replaced by a generic distance helper without trace evidence.
 
@@ -66,8 +66,8 @@ use, and updates the blinking 1UP field every eight frames. Demo mode skips
 those HUD paths.
 
 Power-pellet marker tiles are always written to four fixed addresses selected
-for the active player's nametable. The generic main buffer then contains zero
-or more commands:
+for the active player's nametable. The generic main buffer then contains zero or
+more commands:
 
 ```text
 [PPU address high][PPU address low][payload bytes...][$00] ... [$FF]
@@ -80,10 +80,10 @@ that append commands must preserve an existing final `$FF` and enough room for
 the new command.
 
 The title and attract text uses a second form, copied into the buffer by
-`game/title/attract_intro.asm`: a big-endian PPU address (`.dbyt`), tile
-bytes, and `$FF`. ASCII letters, digits and the space are their own tiles.
-The copier reads the byte after the `$FF`: `$00` also copies a 16-byte sprite
-strip into OAM, anything else ends the packet.
+`game/title/attract_intro.asm`: a big-endian PPU address (`.dbyt`), tile bytes,
+and `$FF`. ASCII letters, digits and the space are their own tiles. The copier
+reads the byte after the `$FF`: `$00` also copies a 16-byte sprite strip into
+OAM, anything else ends the packet.
 
 ## Preservation Invariants
 

@@ -5,11 +5,12 @@ build must stay byte for byte identical to the Japan v1.0 ROM.
 
 ## Local inputs
 
-Use a legally obtained Japan v1.0 ROM (`assets/manifest.json` gives its name
-and hash) and run `make split` once. Never add ROM images, extracted assets,
-object files or anything under `assets/generated/` or `build/` to Git. The
-tracked movie holds controller input, not game data. The other official revisions' ROMs are optional; their names are in
-`assets/manifest.json` and `docs/multi_revision_builds.md`.
+Use a legally obtained Japan v1.0 ROM (`assets/manifest.json` gives its name and
+hash) and run `make split` once. Never add ROM images, extracted assets, object
+files or anything under `assets/generated/` or `build/` to Git. The tracked
+movie holds controller input, not game data. The other official revisions' ROMs
+are optional; their names are in `assets/manifest.json` and
+`docs/multi_revision_builds.md`.
 
 ## Source changes
 

@@ -37,9 +37,9 @@ the v1.0 ROM is needed for any build; the others are optional.
 
 `make split` (`rltool assets split`, Retrolarium Kit) writes the ignored assets
 under `assets/generated/` from every ROM that is here; `assets/manifest.json`
-names the ROMs and the assets. It overwrites them, so run it again only to
-start over. `make build` uses whatever assets are there, edited or not;
-`make verify` fails unless the ROM is identical to the original.
+names the ROMs and the assets. It overwrites them, so run it again only to start
+over. `make build` uses whatever assets are there, edited or not; `make verify`
+fails unless the ROM is identical to the original.
 
 ## Targets
 
@@ -59,9 +59,9 @@ make lint / format / hooks / clean
 
 ## Tests
 
-`make test` (about half a minute) runs the unit test of the relocation
-script, verifies every revision whose ROM is here byte for byte, builds the
-relocated v1.0, checks the profile's table places and runs the studio check.
+`make test` (about half a minute) runs the unit test of the relocation script,
+verifies every revision whose ROM is here byte for byte, builds the relocated
+v1.0, checks the profile's table places and runs the studio check.
 
 `make test-full` (about four minutes) adds the longplay
 `movies/longplay.rlmovie`, played in MAME on the relocated build, where every
@@ -74,11 +74,11 @@ Record the reference values with `make golden` after changing the movie or the
 cells it checks. The longplay was recorded in FCEUX and converted
 (`rltool movie convert`); Retrolarium Kit plays it in MAME frame for frame.
 
-`make play MOVIE=longplay` shows a movie in a MAME window at the game's
-speed, on the relocated build (or on `ROM=<image>`), and compares its cells
-with the original's once the window is closed; in MAME, F10 lifts the speed
-limit and Insert fast-forwards. `FRAMES=<frame>` closes MAME at that frame, `CLOSE=1`
-when the movie ends. `make play` alone plays `longplay`.
+`make play MOVIE=longplay` shows a movie in a MAME window at the game's speed,
+on the relocated build (or on `ROM=<image>`), and compares its cells with the
+original's once the window is closed; in MAME, F10 lifts the speed limit and
+Insert fast-forwards. `FRAMES=<frame>` closes MAME at that frame, `CLOSE=1` when
+the movie ends. `make play` alone plays `longplay`.
 
 ## Layout
 

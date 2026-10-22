@@ -10,10 +10,10 @@ Keep data in ASM when its fields are understood and a contributor can edit it
 meaningfully. This includes stage profiles, speed/timer blocks, release
 thresholds, pointer tables, note periods, and hardware vectors.
 
-Graphics, the maze and the sound streams are the game's authored content;
-they come from your ROM rather than from this repository. Retrolarium Studio
-edits them (`pacman.maze-rle.v1`, `pacman.sound-streams.v1`). The current
-generated set is:
+Graphics, the maze and the sound streams are the game's authored content; they
+come from your ROM rather than from this repository. Retrolarium Studio edits
+them (`pacman.maze-rle.v1`, `pacman.sound-streams.v1`). The current generated
+set is:
 
 - the 8 KiB CHR-ROM of v1.0, Namco's USA release and the European release;
 - the 416-byte compressed maze stream at `EC78..EE17`;
@@ -30,12 +30,12 @@ listing. It is represented by a single ca65 `.res` directive.
 tracked: it names every revision's ROM by file, size and SHA-1, and every asset
 by the ROM it comes from, its file offset, size and SHA-1. `make split`
 (`rltool assets split`) checks all of those before writing files under
-`assets/generated/`. That directory is ignored by Git but deliberately
-preserved by `make clean`, because it may contain local ROM-hack edits.
+`assets/generated/`. That directory is ignored by Git but deliberately preserved
+by `make clean`, because it may contain local ROM-hack edits.
 
 Generated files are consumed with `.incbin` by `src/main.asm` (CHR),
-`src/data/maze.asm` and `src/audio/streams.asm`. Labels remain in ASM, so code and pointer tables stay
-navigable even though the payloads are local artifacts.
+`src/data/maze.asm` and `src/audio/streams.asm`. Labels remain in ASM, so code
+and pointer tables stay navigable even though the payloads are local artifacts.
 
 ## Build Behavior
 

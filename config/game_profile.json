@@ -5,15 +5,7 @@
   "profile_version": 1,
   "name": "Pac-Man (NES)",
   "platform": "nes",
-  "capabilities": [
-    "levels",
-    "graphics",
-    "animations",
-    "palettes",
-    "screens",
-    "text",
-    "audio"
-  ],
+  "capabilities": ["levels", "graphics", "animations", "palettes", "screens", "text", "audio"],
   "revisions": [
     {
       "id": "japan-v10",
@@ -74,7 +66,12 @@
         "width": 22,
         "height": 27,
         "pellet_count_offsets": [3736, 3889, 4492],
-        "power_pellets": [[3, 2], [3, 20], [20, 2], [20, 20]]
+        "power_pellets": [
+          [3, 2],
+          [3, 20],
+          [20, 2],
+          [20, 20]
+        ]
       }
     },
     {
@@ -113,11 +110,11 @@
           "size": 24
         },
         "fixed_blocks": [
-          {"key": "menu_prompt", "label": "Menu prompt", "file_offset": 1117, "size": 8},
-          {"key": "player_count_glyphs", "label": "Player-count glyphs", "file_offset": 1125, "size": 3},
-          {"key": "hud_blocks", "label": "HUD blocks", "file_offset": 9414, "size": 23},
-          {"key": "hud_player_packets", "label": "HUD player packets", "file_offset": 4190, "size": 18},
-          {"key": "pause_tiles", "label": "Pause visible/blank packets", "file_offset": 2721, "size": 12}
+          { "key": "menu_prompt", "label": "Menu prompt", "file_offset": 1117, "size": 8 },
+          { "key": "player_count_glyphs", "label": "Player-count glyphs", "file_offset": 1125, "size": 3 },
+          { "key": "hud_blocks", "label": "HUD blocks", "file_offset": 9414, "size": 23 },
+          { "key": "hud_player_packets", "label": "HUD player packets", "file_offset": 4190, "size": 18 },
+          { "key": "pause_tiles", "label": "Pause visible/blank packets", "file_offset": 2721, "size": 12 }
         ],
         "attract": {
           "pointer_file_offset": 1507,
@@ -125,41 +122,128 @@
           "payload_sizes": [21, 11, 8, 11, 7, 11, 8, 11, 8, 31]
         },
         "intermission_visual": [
-          {"key": "cycle_tiles", "file_offset": 10858, "size": 8, "allowed_values": []},
-          {"key": "cycle_pattern_indexes", "file_offset": 10949, "size": 8, "allowed_values": [0, 4, 8]},
-          {"key": "banner_tile_quads", "file_offset": 10957, "size": 12, "allowed_values": []}
+          { "key": "cycle_tiles", "file_offset": 10858, "size": 8, "allowed_values": [] },
+          { "key": "cycle_pattern_indexes", "file_offset": 10949, "size": 8, "allowed_values": [0, 4, 8] },
+          { "key": "banner_tile_quads", "file_offset": 10957, "size": 12, "allowed_values": [] }
         ],
         "read_only_tables": [
-          {"key": "scene_dispatch", "cpu_address": 59241, "kind": "words", "count": 3},
-          {"key": "scene_0_states", "cpu_address": 59262, "kind": "words", "count": 4},
-          {"key": "scene_1_states", "cpu_address": 59490, "kind": "words", "count": 3},
-          {"key": "scene_2_states", "cpu_address": 59657, "kind": "words", "count": 4},
-          {"key": "animation_scene_dispatch", "cpu_address": 59951, "kind": "words", "count": 3},
-          {"key": "animation_scene_0_states", "cpu_address": 59972, "kind": "words", "count": 4},
-          {"key": "animation_scene_1_states", "cpu_address": 60120, "kind": "words", "count": 3},
-          {"key": "animation_scene_2_states", "cpu_address": 60168, "kind": "words", "count": 4}
+          { "key": "scene_dispatch", "cpu_address": 59241, "kind": "words", "count": 3 },
+          { "key": "scene_0_states", "cpu_address": 59262, "kind": "words", "count": 4 },
+          { "key": "scene_1_states", "cpu_address": 59490, "kind": "words", "count": 3 },
+          { "key": "scene_2_states", "cpu_address": 59657, "kind": "words", "count": 4 },
+          { "key": "animation_scene_dispatch", "cpu_address": 59951, "kind": "words", "count": 3 },
+          { "key": "animation_scene_0_states", "cpu_address": 59972, "kind": "words", "count": 4 },
+          { "key": "animation_scene_1_states", "cpu_address": 60120, "kind": "words", "count": 3 },
+          { "key": "animation_scene_2_states", "cpu_address": 60168, "kind": "words", "count": 4 }
         ],
         "encoding": {
           "characters": " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.;",
-          "codes": [32, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 46, 59],
+          "codes": [
+            32, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90,
+            48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 46, 59
+          ],
           "case_fold": "upper",
           "padding": 32
         },
         "text_fields": [
-          {"key": "title-one-player", "label": "Title: 1 PLAYER", "path": ["title_packets", 1, "bytes"], "start": 2, "width": 8},
-          {"key": "title-two-players", "label": "Title: 2 PLAYERS", "path": ["title_packets", 2, "bytes"], "start": 0, "width": 9},
-          {"key": "title-copyright", "label": "Title: copyright line", "path": ["title_packets", 4, "bytes"], "start": 1, "width": 20},
-          {"key": "title-rights", "label": "Title: rights line", "path": ["title_packets", 5, "bytes"], "start": 0, "width": 19},
-          {"key": "attract-header", "label": "Attract: character header", "path": ["attract_packets", 0, "bytes"], "start": 0, "width": 21},
-          {"key": "attract-nickname-1", "label": "Attract: ghost 1 nickname", "path": ["attract_packets", 1, "bytes"], "start": 0, "width": 11},
-          {"key": "attract-name-1", "label": "Attract: ghost 1 name", "path": ["attract_packets", 2, "bytes"], "start": 1, "width": 6},
-          {"key": "attract-nickname-2", "label": "Attract: ghost 2 nickname", "path": ["attract_packets", 3, "bytes"], "start": 0, "width": 11},
-          {"key": "attract-name-2", "label": "Attract: ghost 2 name", "path": ["attract_packets", 4, "bytes"], "start": 1, "width": 5},
-          {"key": "attract-nickname-4", "label": "Attract: ghost 4 nickname", "path": ["attract_packets", 7, "bytes"], "start": 0, "width": 11},
-          {"key": "attract-name-4", "label": "Attract: ghost 4 name", "path": ["attract_packets", 8, "bytes"], "start": 1, "width": 6},
-          {"key": "points-ten", "label": "Attract: 10 PTS", "path": ["attract_packets", 9, "bytes"], "start": 2, "width": 6},
-          {"key": "points-fifty", "label": "Attract: 50 PTS", "path": ["attract_packets", 9, "bytes"], "start": 13, "width": 6},
-          {"key": "pause", "label": "Gameplay: PAUSE", "path": ["fixed_blocks", "pause_tiles"], "start": 0, "width": 5}
+          {
+            "key": "title-one-player",
+            "label": "Title: 1 PLAYER",
+            "path": ["title_packets", 1, "bytes"],
+            "start": 2,
+            "width": 8
+          },
+          {
+            "key": "title-two-players",
+            "label": "Title: 2 PLAYERS",
+            "path": ["title_packets", 2, "bytes"],
+            "start": 0,
+            "width": 9
+          },
+          {
+            "key": "title-copyright",
+            "label": "Title: copyright line",
+            "path": ["title_packets", 4, "bytes"],
+            "start": 1,
+            "width": 20
+          },
+          {
+            "key": "title-rights",
+            "label": "Title: rights line",
+            "path": ["title_packets", 5, "bytes"],
+            "start": 0,
+            "width": 19
+          },
+          {
+            "key": "attract-header",
+            "label": "Attract: character header",
+            "path": ["attract_packets", 0, "bytes"],
+            "start": 0,
+            "width": 21
+          },
+          {
+            "key": "attract-nickname-1",
+            "label": "Attract: ghost 1 nickname",
+            "path": ["attract_packets", 1, "bytes"],
+            "start": 0,
+            "width": 11
+          },
+          {
+            "key": "attract-name-1",
+            "label": "Attract: ghost 1 name",
+            "path": ["attract_packets", 2, "bytes"],
+            "start": 1,
+            "width": 6
+          },
+          {
+            "key": "attract-nickname-2",
+            "label": "Attract: ghost 2 nickname",
+            "path": ["attract_packets", 3, "bytes"],
+            "start": 0,
+            "width": 11
+          },
+          {
+            "key": "attract-name-2",
+            "label": "Attract: ghost 2 name",
+            "path": ["attract_packets", 4, "bytes"],
+            "start": 1,
+            "width": 5
+          },
+          {
+            "key": "attract-nickname-4",
+            "label": "Attract: ghost 4 nickname",
+            "path": ["attract_packets", 7, "bytes"],
+            "start": 0,
+            "width": 11
+          },
+          {
+            "key": "attract-name-4",
+            "label": "Attract: ghost 4 name",
+            "path": ["attract_packets", 8, "bytes"],
+            "start": 1,
+            "width": 6
+          },
+          {
+            "key": "points-ten",
+            "label": "Attract: 10 PTS",
+            "path": ["attract_packets", 9, "bytes"],
+            "start": 2,
+            "width": 6
+          },
+          {
+            "key": "points-fifty",
+            "label": "Attract: 50 PTS",
+            "path": ["attract_packets", 9, "bytes"],
+            "start": 13,
+            "width": 6
+          },
+          {
+            "key": "pause",
+            "label": "Gameplay: PAUSE",
+            "path": ["fixed_blocks", "pause_tiles"],
+            "start": 0,
+            "width": 5
+          }
         ]
       }
     },
@@ -204,7 +288,12 @@
         "file_offset": 1475,
         "size": 32,
         "entries": 32,
-        "mirror_pairs": [[0, 16], [4, 20], [8, 24], [12, 28]]
+        "mirror_pairs": [
+          [0, 16],
+          [4, 20],
+          [8, 24],
+          [12, 28]
+        ]
       }
     },
     {
@@ -216,7 +305,12 @@
         "file_offset": 4208,
         "size": 32,
         "entries": 32,
-        "mirror_pairs": [[0, 16], [4, 20], [8, 24], [12, 28]]
+        "mirror_pairs": [
+          [0, 16],
+          [4, 20],
+          [8, 24],
+          [12, 28]
+        ]
       }
     },
     {
@@ -279,7 +373,7 @@
       "kind": "demo",
       "codec": "pacman.attract-demo.v1",
       "capacity_policy": "fixed",
-      "parameters": {"script_cpu": 54385, "table_cpu": 54410, "pairs": 28}
+      "parameters": { "script_cpu": 54385, "table_cpu": 54410, "pairs": 28 }
     },
     {
       "id": "round-profiles",
@@ -317,14 +411,14 @@
                 "label": "Fruit",
                 "names": "fruits",
                 "choices": [
-                  {"value": 0, "label": "Fruit 0"},
-                  {"value": 1, "label": "Fruit 1"},
-                  {"value": 2, "label": "Fruit 2"},
-                  {"value": 3, "label": "Fruit 3"},
-                  {"value": 4, "label": "Fruit 4"},
-                  {"value": 5, "label": "Fruit 5"},
-                  {"value": 6, "label": "Fruit 6"},
-                  {"value": 7, "label": "Fruit 7"}
+                  { "value": 0, "label": "Fruit 0" },
+                  { "value": 1, "label": "Fruit 1" },
+                  { "value": 2, "label": "Fruit 2" },
+                  { "value": 3, "label": "Fruit 3" },
+                  { "value": 4, "label": "Fruit 4" },
+                  { "value": 5, "label": "Fruit 5" },
+                  { "value": 6, "label": "Fruit 6" },
+                  { "value": 7, "label": "Fruit 7" }
                 ]
               },
               {
@@ -522,12 +616,7 @@
       "capacity_policy": "fixed",
       "parameters": {
         "records": 4,
-        "record_labels": [
-          "Set 0",
-          "Set 1",
-          "Set 2",
-          "Restart"
-        ],
+        "record_labels": ["Set 0", "Set 1", "Set 2", "Restart"],
         "tables": [
           {
             "file_offset": 11384,
@@ -560,13 +649,13 @@
       "capacity_policy": "fixed",
       "parameters": {
         "tables": {
-          "note_period_base_pairs": {"file_offset": 12420, "size": 24},
-          "attract_attribute_rows": {"file_offset": 1405, "size": 1},
-          "attract_attribute_start": {"file_offset": 1409, "size": 1},
-          "attract_attribute_row_length": {"file_offset": 1411, "size": 1},
-          "attract_attribute_step": {"file_offset": 1420, "size": 1},
-          "attract_attribute_footer": {"file_offset": 1459, "size": 1},
-          "attract_attribute_footer_end": {"file_offset": 1470, "size": 1}
+          "note_period_base_pairs": { "file_offset": 12420, "size": 24 },
+          "attract_attribute_rows": { "file_offset": 1405, "size": 1 },
+          "attract_attribute_start": { "file_offset": 1409, "size": 1 },
+          "attract_attribute_row_length": { "file_offset": 1411, "size": 1 },
+          "attract_attribute_step": { "file_offset": 1420, "size": 1 },
+          "attract_attribute_footer": { "file_offset": 1459, "size": 1 },
+          "attract_attribute_footer_end": { "file_offset": 1470, "size": 1 }
         }
       }
     }

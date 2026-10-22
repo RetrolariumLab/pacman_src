@@ -9,13 +9,13 @@ ROM byte for byte.
 
 ## Current Macros
 
-| Macro | Purpose | Current uses |
-|---|---|---:|
-| `LoadPointer destination, source` | Load a little-endian 16-bit address into a zero-page pointer | 15 |
-| `SetPpuAddress address` | Reset the PPU latch and select a fixed VRAM address | 10 |
-| `SetPpuAddressFrom source` | Select a VRAM address stored high-byte first in two RAM bytes | 8 |
-| `PrepareScoreHud address, stride` | Initialize the score-HUD destination and row step | 2 |
-| `ComposeActorOamEntry tiles, attrs` | Emit the shared OAM tile/attribute composition block | 4 |
+| Macro                               | Purpose                                                       | Current uses |
+| ----------------------------------- | ------------------------------------------------------------- | -----------: |
+| `LoadPointer destination, source`   | Load a little-endian 16-bit address into a zero-page pointer  |           15 |
+| `SetPpuAddress address`             | Reset the PPU latch and select a fixed VRAM address           |           10 |
+| `SetPpuAddressFrom source`          | Select a VRAM address stored high-byte first in two RAM bytes |            8 |
+| `PrepareScoreHud address, stride`   | Initialize the score-HUD destination and row step             |            2 |
+| `ComposeActorOamEntry tiles, attrs` | Emit the shared OAM tile/attribute composition block          |            4 |
 
 The indexed power-pellet PPU-address write remains explicit because its two
 table operands do not match the consecutive-RAM form.
@@ -30,8 +30,8 @@ table operands do not match the consecutive-RAM form.
   clearer when visible;
 - unresolved code whose apparent abstraction is still a hypothesis.
 
-In particular, zeroing several unrelated fields remains ordinary 6502 code.
-The sound control handlers also remain explicit for now: their common setup is
+In particular, zeroing several unrelated fields remains ordinary 6502 code. The
+sound control handlers also remain explicit for now: their common setup is
 small, while their masks and destination fields have different semantics.
 
 ## Review Checklist

@@ -11,13 +11,13 @@ Four ghost slots use even offsets `0, 2, 4, 6` in interleaved state/direction
 arrays. The update loop also advances a tile pointer, position pointer, and
 one-bit slot mask. Each state value is an even byte offset into a word table:
 
-| State | Meaning | Main update behavior |
-| --- | --- | --- |
-| `con_ghost_state_in_house` | waiting/bouncing in house | vertical two-phase house motion |
-| `con_ghost_state_exiting_house` | queued for release | align to house exit, move up, become active |
-| `con_ghost_state_active` | normal/frightened maze actor | speed, fixed-point movement, targeting, turns |
-| `con_ghost_state_returning_eyes` | eaten eyes returning | fixed fast speed and house-door target |
-| `con_ghost_state_eaten_score` | score-popup freeze | no movement |
+| State                            | Meaning                      | Main update behavior                          |
+| -------------------------------- | ---------------------------- | --------------------------------------------- |
+| `con_ghost_state_in_house`       | waiting/bouncing in house    | vertical two-phase house motion               |
+| `con_ghost_state_exiting_house`  | queued for release           | align to house exit, move up, become active   |
+| `con_ghost_state_active`         | normal/frightened maze actor | speed, fixed-point movement, targeting, turns |
+| `con_ghost_state_returning_eyes` | eaten eyes returning         | fixed fast speed and house-door target        |
+| `con_ghost_state_eaten_score`    | score-popup freeze           | no movement                                   |
 
 The reduced update used during post-eat pause dispatches movement only for
 returning eyes; every other state is a no-op. This lets previously eaten eyes
@@ -59,19 +59,19 @@ normal profile used by the other slots.
 
 For an active ghost, mode priority is:
 
-- frightened bit set: choose a legal non-reverse exit using the frame counter
-  as a deterministic seed;
+- frightened bit set: choose a legal non-reverse exit using the frame counter as
+  a deterministic seed;
 - its bit set in `ram_shared_state_0`: use the slot-specific chase formula;
 - otherwise: use its fixed corner target.
 
 The chase formulas are expressed in world coordinates:
 
-| Slot | Target formula |
-| --- | --- |
-| 0 | Pac-Man position |
-| 1 | Pac-Man position plus a 24-pixel offset in Pac-Man's direction |
-| 2 | `2 * Pac-Man - slot0 ghost position` on both axes |
-| 3 | Pac-Man when either axis is at least 32 pixels away; otherwise seeded legal-exit selection |
+| Slot | Target formula                                                                             |
+| ---- | ------------------------------------------------------------------------------------------ |
+| 0    | Pac-Man position                                                                           |
+| 1    | Pac-Man position plus a 24-pixel offset in Pac-Man's direction                             |
+| 2    | `2 * Pac-Man - slot0 ghost position` on both axes                                          |
+| 3    | Pac-Man when either axis is at least 32 pixels away; otherwise seeded legal-exit selection |
 
 Slot 3's test is axis-wise, not a radial-distance calculation. Scatter targets
 are the four fixed corner coordinates stored in slot order.
@@ -84,11 +84,11 @@ directions. With no candidate the fallback is down; with one candidate it is
 used directly.
 
 For multiple candidates, `loc_choose_next_direction` computes absolute X and Y
-deltas to the target and uses `tbl_ranked_dir_order_lut` to try the two directions
-that reduce the dominant/sign-selected axes. If neither ranked direction is
-available, it tries relative left then relative right. The LUT and fallback
-order are gameplay behavior and must not be replaced by a generic shortest-path
-algorithm.
+deltas to the target and uses `tbl_ranked_dir_order_lut` to try the two
+directions that reduce the dominant/sign-selected axes. If neither ranked
+direction is available, it tries relative left then relative right. The LUT and
+fallback order are gameplay behavior and must not be replaced by a generic
+shortest-path algorithm.
 
 ## Scatter/Chase and Reversal
 
@@ -127,7 +127,8 @@ must not be treated as the release-state array itself.
 - Preserve the main and reduced dispatchers as distinct update policies.
 - Preserve fixed-point carry/borrow and per-pixel tunnel side effects.
 - Preserve state/mode/speed priority and slot-zero's separate mutable speed.
-- Preserve candidate filtering, reverse exclusion, ranking LUT, and fallback order.
+- Preserve candidate filtering, reverse exclusion, ranking LUT, and fallback
+  order.
 - Keep house coordinates, release scan order, counters, and threshold equality
   comparisons byte-exact.
 - Run `make test-full` after changing release or mode-transition logic.

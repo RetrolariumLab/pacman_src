@@ -18,8 +18,11 @@ TAIL_MODULE = "data/tail_and_vectors.asm"
 
 
 def parse_modules(main_source: Path) -> list[str]:
-    modules = [match.group("path") for line in main_source.read_text(encoding="utf-8").splitlines()
-               if (match := INCLUDE_RE.fullmatch(line)) and match.group("path").endswith(".asm")]
+    modules = [
+        match.group("path")
+        for line in main_source.read_text(encoding="utf-8").splitlines()
+        if (match := INCLUDE_RE.fullmatch(line)) and match.group("path").endswith(".asm")
+    ]
     if len(modules) < 2 or modules[-1] != TAIL_MODULE:
         raise ValueError(f"the main source must end with {TAIL_MODULE}")
     return modules
@@ -45,8 +48,9 @@ def relocate(main_source: Path, output: Path) -> list[tuple[str, int]]:
     modules = parse_modules(main_source)
     first = output.parent / Path(modules[0]).name
     first.parent.mkdir(parents=True, exist_ok=True)
-    first.write_text(insert_origin_ea((source_root / modules[0]).read_text(encoding="utf-8")),
-                     encoding="utf-8", newline="\n")
+    first.write_text(
+        insert_origin_ea((source_root / modules[0]).read_text(encoding="utf-8")), encoding="utf-8", newline="\n"
+    )
     lines: list[str] = []
     index = 0
     for line in main_source.read_text(encoding="utf-8").splitlines():
@@ -86,6 +90,7 @@ def main() -> int:
     shifts = relocate_entry(args.entry, args.output_dir)
     print(f"[OK] Relocated source: {len(shifts)} modules moved by 1 to {shifts[-1][1]} bytes.")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

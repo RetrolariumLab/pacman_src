@@ -9,10 +9,10 @@ over from the original.
 
 ## Revisions
 
-| Revision            | ROM                                          | What it is                                        |
-| ------------------- | -------------------------------------------- | ------------------------------------------------- |
-| `japan-v10`         | `Pac-Man (J) (V1.0) [!].nes`                 | The original NROM-128 layout, fixed capacities.   |
-| `japan-v11`         | `Pac-Man (J) (V1.1) [!].nes`                 | The same, for the v1.1 revision.                  |
+| Revision    | ROM                          | What it is                                      |
+| ----------- | ---------------------------- | ----------------------------------------------- |
+| `japan-v10` | `Pac-Man (J) (V1.0) [!].nes` | The original NROM-128 layout, fixed capacities. |
+| `japan-v11` | `Pac-Man (J) (V1.1) [!].nes` | The same, for the v1.1 revision.                |
 
 ## What is edited
 
@@ -42,9 +42,9 @@ made from it; Retrolarium keeps no copy.
 
 `config/profile_tables.json` names, by label, the tables the kit reads from the
 image built from this source. `rltool profile tables` prints their offsets in
-each revision's build, the values of `config/game_profile.json`; `make
-profile-check` (part of `make test`) compares the two, so a source change that
-moves such a table fails until the profile is updated. The profile's other
+each revision's build, the values of `config/game_profile.json`;
+`make profile-check` (part of `make test`) compares the two, so a source change
+that moves such a table fails until the profile is updated. The profile's other
 offsets are not derived from labels yet.
 
 ## Studio and source
@@ -59,7 +59,8 @@ content (maze, rounds, sound, graphics, text) and the source for code.
 ## Checking the repository
 
 `make studio-check` runs `rltool studio check pacman.rlj --present`. In a
-throwaway copy of the repository it prepares every revision whose ROM is here, decodes and validates each
-document and rebuilds each revision with no edits, requiring the original ROM
-byte for byte. It needs the revisions' ROMs and the Retrolarium kit (`rltool` on
-`PATH`, or `RLTOOL=...`), and never reads or writes `hack/` or `.retrolarium/`.
+throwaway copy of the repository it prepares every revision whose ROM is here,
+decodes and validates each document and rebuilds each revision with no edits,
+requiring the original ROM byte for byte. It needs the revisions' ROMs and the
+Retrolarium kit (`rltool` on `PATH`, or `RLTOOL=...`), and never reads or writes
+`hack/` or `.retrolarium/`.

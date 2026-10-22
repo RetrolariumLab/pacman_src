@@ -55,8 +55,8 @@ handler_demo_entry:
 - Do not put a period at the end of a comment. The formatter removes terminal
   periods, while periods separating multiple sentences inside one comment are
   preserved.
-- Prefer comments that explain intent, constraints, or side effects over comments
-  that merely restate the instruction.
+- Prefer comments that explain intent, constraints, or side effects over
+  comments that merely restate the instruction.
 - Use concise `Inputs`, `Outputs`, `Side effects`, and `Clobbers` notes where a
   routine contract is useful.
 
