@@ -65,12 +65,39 @@ call sites; they do not own ROM ranges. See [macros.md](./macros.md).
 Shared address and constant definitions live under `src/memory/`, while
 revision selection lives under `src/revisions/`:
 
-- `profile_ids.inc` defines the seven official profiles and derives the
-  `PACMAN_REVISION_TENGEN`, `PACMAN_REVISION_RAM_PALETTES`, and
-  `PACMAN_REVISION_LATE_NAMCO` feature flags from `PACMAN_REVISION`;
+- `profile_ids.inc` names the seven revisions and `derived_flags.inc` derives
+  the feature flags (see Revisions below);
 - `hardware.inc` names CPU-visible NES registers and proven register bit masks;
 - `ram.inc` maps runtime RAM fields;
 - `constants.inc` defines verified gameplay and data-format constants.
 
 These includes emit no bytes and are loaded by `src/main.asm` before macros and
 address-ordered ROM modules.
+
+## Revisions
+
+Each revision has an entry file, `src/revisions/<id>.asm`, that sets
+`PACMAN_REVISION` to one of the ids of `profile_ids.inc` and includes
+`src/main.asm`; `main.asm` refuses to assemble on its own.
+`derived_flags.inc` derives the `PACMAN_REVISION_TENGEN`,
+`PACMAN_REVISION_RAM_PALETTES` and `PACMAN_REVISION_LATE_NAMCO` flags from it.
+`main.asm` writes the iNES header and includes the revision's CHR, so ld65
+links the whole image (`config/linker/nrom128.cfg`).
+
+## Where to start
+
+| Area | Entry points |
+|---|---|
+| Boot, NMI, input | `vec_reset_entry`, `vec_nmi_handler`, `loc_main_frame_bootstrap` |
+| Title, attract, demo | `tbl_script_handlers_title_flow`, `sub_draw_title_logo_and_text` |
+| Gameplay scripts | `loc_enter_gameplay_session`, `tbl_gameplay_script_handlers`, `handler_script00_round_init` |
+| Timers, release, fruit, collisions | `sub_update_round_timers_and_frightened`, `sub_queue_next_ghost_release`, `sub_check_actor_collisions` |
+| Pac-Man movement | `sub_update_pacman_movement`, `loc_apply_requested_direction` |
+| Ghosts | `sub_update_ghost_slots`, `sub_dispatch_ghost_state_handler`, `loc_choose_next_direction` |
+| Animation, OAM, PPU buffer | `sub_update_pacman_anim_frame`, `sub_build_oam_from_sprite_buffers`, `sub_write_buffer_to_ppu` |
+| Pellets, score, 1UP | `sub_check_for_eating_pellets`, `loc_add_points_and_update_score_buffers` |
+| Tiles, playfield, HUD | `sub_build_object_neighbor_ppu_positions`, `sub_clear_bg_nametables_and_attrs`, `sub_draw_score_hud_live` |
+| Intermissions | `handler_script_0e_intermission_setup`, `sub_run_intermission_scene_dispatch`, `sub_run_intermission_animation_dispatch` |
+| Sound | `sub_init_sound_engine`, `sub_update_sound_engine`, `tbl_sound_control_opcode_handlers` |
+
+The RAM fields these share are in [ram_fields.md](./ram_fields.md).

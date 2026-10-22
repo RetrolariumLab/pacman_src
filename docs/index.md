@@ -4,16 +4,13 @@
 
 - [licensing.md](./licensing.md): distribution boundary and license status.
 - [CONTRIBUTING.md](../CONTRIBUTING.md): local inputs and the change workflow.
-- [retrolarium.md](./retrolarium.md): editing in Retrolarium Studio, its three
+- [retrolarium.md](./retrolarium.md): editing in Retrolarium Studio, its two
   revisions and `make studio-check`.
-- [postmortem.md](./postmortem.md): why the earlier C reimplementation was
-  removed.
 
 ## Source
 
 - [source_layout.md](./source_layout.md): address-ordered module map and
   file-sizing rules.
-- [bank_ff_map.md](./bank_ff_map.md): top-level bank segmentation.
 - [ram_fields.md](./ram_fields.md): key RAM fields and their roles.
 - [macros.md](./macros.md): allowed ca65 abstractions.
 - [naming.md](./naming.md): symbol names and control-flow prefixes.
@@ -30,8 +27,6 @@
   probes, stepping, wrap and collisions.
 - [rendering_pipeline.md](./rendering_pipeline.md): animation, OAM composition
   and NMI PPU buffers.
-- [gameplay_feature_map.md](./gameplay_feature_map.md): levels, enemies,
-  bonuses and cutscenes.
 - [ghost_ai.md](./ghost_ai.md): ghost states, targeting, movement and update
   pipeline.
 - [score_and_bonus.md](./score_and_bonus.md): pellets, fruit, score and
