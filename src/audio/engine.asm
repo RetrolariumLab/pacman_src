@@ -200,7 +200,7 @@ loc_decode_sound_stream_byte:
     CMP #con_sound_control_min
     BCS bra_dispatch_f0_ff_control_opcode
     CMP #con_sound_duration_min
-    BCS bra_opcodes_c0_ef_fetch_channel_duration_byte_alias
+    BCS bra_c0_ef_fetch_channel_duration_alias
 ; 00-BF
     PHA
     AND #$F0
@@ -246,7 +246,7 @@ bra_00_apply_note_period_to_channel:
 ; Fetch next duration byte after note/control handling
 bra_fetch_channel_duration_byte:
 ; Alias entry for C0-EF command path to duration fetch
-bra_opcodes_c0_ef_fetch_channel_duration_byte_alias:
+bra_c0_ef_fetch_channel_duration_alias:
     JSR sub_fetch_stream_byte_and_advance_ptr
     PHA
     LDA ram_sound_channel_offset
@@ -476,7 +476,7 @@ tbl_sfx_stream_ptr_table:
     .word off_sfx_slot06_fruit
     .word off_sfx_slot07_eat_ghost
     .word off_sfx_slot08_ghost_house_state6_marker
-    .word off_sfx_slot09_ghost_house_release_marker
+    .word off_sfx09_ghost_house_release_marker
     .word off_sfx_slot_0a_release_counter_hi
     .word off_sfx_slot_0b_release_counter_mid
     .word off_sfx_slot_0c_release_counter_lo

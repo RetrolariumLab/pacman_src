@@ -173,12 +173,12 @@ handler_anim_scene01_rip_tile_toggle:
     JSR sub_anim_scene00_toggle_head_tile
     LDA ram_spr_pos_X_hi
     CMP #$7D
-    BNE bra_anim_scene01_check_second_tile_trigger
+    BNE bra_scene01_check_second_tile_trigger
     LDA #$43
     STA ram_actor_sprite_set + $02
     RTS
 ; Check second X trigger for ripped tile
-bra_anim_scene01_check_second_tile_trigger:
+bra_scene01_check_second_tile_trigger:
     CMP #$7B
     BEQ bra_anim_scene01_store_second_rip_tile
     RTS

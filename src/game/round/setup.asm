@@ -270,7 +270,7 @@ bra_copy_hud_ppu_packet:
     LDY #$00
 ; Copy default animation/sprite palette bytes
 bra_copy_anim_palette_defaults:
-    LDA tbl_round_init_anim_and_sprite_attr_defaults,Y
+    LDA tbl_round_init_anim_sprite_attr_defaults,Y
     STA ram_animation,Y  ; also ram_spr_pal
     INY
     CPY #$0C
@@ -338,7 +338,7 @@ bra_fill_center_strip_row_tiles:
 
 ; Default animation and sprite-attr bytes loaded at round start
 ; Default animation IDs + sprite attribute bytes copied to RAM 0032..003D
-tbl_round_init_anim_and_sprite_attr_defaults:
+tbl_round_init_anim_sprite_attr_defaults:
 ; animation
     .byte $04  ; 00
     .byte $0C  ; 01

@@ -19,7 +19,7 @@ off_sfx_slot_0b_release_counter_mid:
 off_sfx_slot_0c_release_counter_lo:
     .incbin "assets/generated/audio/slot0c_release_counter_lo.bin"
 
-off_sfx_slot09_ghost_house_release_marker:
+off_sfx09_ghost_house_release_marker:
     .incbin "assets/generated/audio/slot09_ghost_house_release_marker.bin"
 
 off_sfx_slot07_eat_ghost:

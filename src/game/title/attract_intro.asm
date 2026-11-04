@@ -20,14 +20,14 @@ bra_run_attract_substate:
 tbl_attract_substate_handlers:
     .word handler_attract_substate_init
     .word handler_attract_substate_wait_30f
-    .word handler_attract_substate_wait_30f_alias_04
-    .word handler_attract_substate_wait_30f_alias_06
-    .word handler_attract_substate_wait_30f_alias_08
-    .word handler_attract_substate_wait_30f_alias_0a
-    .word handler_attract_substate_wait_30f_alias_0c
-    .word handler_attract_substate_wait_30f_alias_0e
-    .word handler_attract_substate_wait_30f_alias_10
-    .word handler_attract_substate_wait_30f_alias_12
+    .word handler_attract_wait_30f_alias_04
+    .word handler_attract_wait_30f_alias_06
+    .word handler_attract_wait_30f_alias_08
+    .word handler_attract_wait_30f_alias_0a
+    .word handler_attract_wait_30f_alias_0c
+    .word handler_attract_wait_30f_alias_0e
+    .word handler_attract_wait_30f_alias_10
+    .word handler_attract_wait_30f_alias_12
     .word handler_attract_substate_wait_80f
     .word handler_attract_chase_scene
 
@@ -58,21 +58,21 @@ bra_wait_nmi_before_attract_setup:
 ; Attract substate wait loop (0x30 frames step)
 handler_attract_substate_wait_30f:
 ; Alias entry for 30-frame attract wait handler (substate 04)
-handler_attract_substate_wait_30f_alias_04:
+handler_attract_wait_30f_alias_04:
 ; Alias entry for 30-frame attract wait handler (substate 06)
-handler_attract_substate_wait_30f_alias_06:
+handler_attract_wait_30f_alias_06:
 ; Alias entry for 30-frame attract wait handler (substate 08)
-handler_attract_substate_wait_30f_alias_08:
+handler_attract_wait_30f_alias_08:
 ; Alias entry for 30-frame attract wait handler (substate 0A)
-handler_attract_substate_wait_30f_alias_0a:
+handler_attract_wait_30f_alias_0a:
 ; Alias entry for 30-frame attract wait handler (substate 0C)
-handler_attract_substate_wait_30f_alias_0c:
+handler_attract_wait_30f_alias_0c:
 ; Alias entry for 30-frame attract wait handler (substate 0E)
-handler_attract_substate_wait_30f_alias_0e:
+handler_attract_wait_30f_alias_0e:
 ; Alias entry for 30-frame attract wait handler (substate 10)
-handler_attract_substate_wait_30f_alias_10:
+handler_attract_wait_30f_alias_10:
 ; Alias entry for 30-frame attract wait handler (substate 12)
-handler_attract_substate_wait_30f_alias_12:
+handler_attract_wait_30f_alias_12:
     INC ram_shared_state_1
     LDA ram_shared_state_1
     CMP #$30
@@ -194,14 +194,14 @@ bra_upload_regional_attract_attributes:
     .endif
     BNE bra_upload_regional_attract_attributes
     LDY #$00
-    LDA off_attract_text_header_character_nickname,Y
+    LDA off_attract_text_char_nickname_header,Y
     STA PPUADDR
     INY
-    LDA off_attract_text_header_character_nickname,Y
+    LDA off_attract_text_char_nickname_header,Y
     STA PPUADDR
     INY
 bra_upload_regional_attract_header:
-    LDA off_attract_text_header_character_nickname,Y
+    LDA off_attract_text_char_nickname_header,Y
     CMP #con_ppu_buffer_end
     BEQ bra_upload_regional_attract_palette
     STA PPUDATA
@@ -301,7 +301,7 @@ tbl_attract_bg_spr_palette:
     .incbin "assets/generated/palettes/attract-namco.bin", $1C, $4  ; rom-asset .byte
 ; Pointer table to attract text/packet scripts by substate
 tbl_attract_ppu_packet_ptrs:
-    .word off_attract_text_header_character_nickname
+    .word off_attract_text_char_nickname_header
     .word off_attract_text_alias_oikake
     .word off_attract_text_name_akabei
     .word off_attract_text_alias_machibuse
@@ -316,7 +316,7 @@ tbl_attract_ppu_packet_ptrs:
 ; digits are their own tiles) and the end token $FF. The copier then reads the
 ; byte after the $FF: $00 also copies the sprite strip, anything else returns
 ; Attract packet: header CHARACTER/NICKNAME
-off_attract_text_header_character_nickname:
+off_attract_text_char_nickname_header:
 ; 00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 .ifdef PACMAN_REVISION_TENGEN
     .dbyt $20EB

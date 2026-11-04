@@ -177,7 +177,7 @@ handler_scene01_chase_rip_opening:
 tbl_scene01_state_handlers:
     .word handler_scene01_wait_enemy4_left_entry  ; con_intermission_rip_wait_enemy
     .word handler_scene01_handle_rip_transform  ; con_intermission_rip_transform
-    .word handler_scene01_blink_rip_tiles_then_finish  ; con_intermission_rip_blink
+    .word handler_scene01_blink_rip_tiles_finish  ; con_intermission_rip_blink
 
 ; Wait enemy 4 position then init chase actor for scene01
 handler_scene01_wait_enemy4_left_entry:
@@ -239,7 +239,7 @@ bra_scene01_advance_to_blink_phase:
     RTS
 
 ; Blink ripped-suit tiles, then end scene01
-handler_scene01_blink_rip_tiles_then_finish:
+handler_scene01_blink_rip_tiles_finish:
     LDA ram_actor_sprite_set
     AND #$40
     BNE bra_scene01_wait_blink_timer
