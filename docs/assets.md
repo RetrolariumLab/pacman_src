@@ -18,6 +18,8 @@ set is:
 - the 8 KiB CHR-ROM of v1.0, Namco's USA release and the European release;
 - the 416-byte compressed maze stream at `EC78..EE17`;
 - sixteen sound command streams at `F0AE..F427`.
+- the title logo tile map and the title, attract, round and intermission
+  palettes.
 
 The iNES header is source (`src/main.asm`).
 
@@ -34,8 +36,9 @@ by the ROM it comes from, its file offset, size and SHA-1. `make split`
 by `make clean`, because it may contain local ROM-hack edits.
 
 Generated files are consumed with `.incbin` by `src/main.asm` (CHR),
-`src/data/maze.asm` and `src/audio/streams.asm`. Labels remain in ASM, so code
-and pointer tables stay navigable even though the payloads are local artifacts.
+`src/data/maze.asm`, `src/audio/streams.asm` and the screen modules. Labels
+remain in ASM, so code and pointer tables stay navigable even though the
+payloads are local artifacts.
 
 ## Build Behavior
 

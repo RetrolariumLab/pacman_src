@@ -384,6 +384,41 @@
       "sha1": "b42defaad586242cededcab18d77d4c0df1545b3"
     },
     {
+      "path": "palettes/title-extra.bin",
+      "image": "japan-revb",
+      "offset": 1043,
+      "size": 16,
+      "sha1": "836a0ac470673bd20873b94310c1dcd3df9bfc92"
+    },
+    {
+      "path": "palettes/title-extra.bin",
+      "image": "usa-tengen-unlicensed",
+      "offset": 1074,
+      "size": 16,
+      "sha1": "836a0ac470673bd20873b94310c1dcd3df9bfc92"
+    },
+    {
+      "path": "palettes/title-extra.bin",
+      "image": "usa-tengen",
+      "offset": 1074,
+      "size": 16,
+      "sha1": "836a0ac470673bd20873b94310c1dcd3df9bfc92"
+    },
+    {
+      "path": "palettes/title-extra.bin",
+      "image": "usa-namco",
+      "offset": 1119,
+      "size": 16,
+      "sha1": "836a0ac470673bd20873b94310c1dcd3df9bfc92"
+    },
+    {
+      "path": "palettes/title-extra.bin",
+      "image": "europe",
+      "offset": 1074,
+      "size": 16,
+      "sha1": "836a0ac470673bd20873b94310c1dcd3df9bfc92"
+    },
+    {
       "path": "palettes/attract-tengen.bin",
       "image": "usa-tengen-unlicensed",
       "offset": 1626,

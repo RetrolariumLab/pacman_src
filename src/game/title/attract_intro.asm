@@ -285,20 +285,11 @@ bra_upload_attract_palette32:
 
 ; Attract scene BG+SPR palette block (32 bytes)
 tbl_attract_bg_spr_palette:
-; bg
-    .incbin "assets/generated/palettes/attract-namco.bin", $0, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/attract-namco.bin", $4, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/attract-namco.bin", $8, $4  ; rom-asset .byte
 .ifdef PACMAN_REVISION_TENGEN
-    .incbin "assets/generated/palettes/attract-tengen.bin", $C, $4  ; rom-asset .byte
+    .incbin "assets/generated/palettes/attract-tengen.bin"
 .else
-    .incbin "assets/generated/palettes/attract-namco.bin", $C, $4  ; rom-asset .byte
+    .incbin "assets/generated/palettes/attract-namco.bin"
 .endif
-; spr
-    .incbin "assets/generated/palettes/attract-namco.bin", $10, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/attract-namco.bin", $14, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/attract-namco.bin", $18, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/attract-namco.bin", $1C, $4  ; rom-asset .byte
 ; Pointer table to attract text/packet scripts by substate
 tbl_attract_ppu_packet_ptrs:
     .word off_attract_text_char_nickname_header

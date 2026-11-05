@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from rom_assets import read_source_text
-
 import sys
 import tempfile
 import unittest
@@ -38,11 +36,11 @@ class RelocateTests(unittest.TestCase):
             shifts = relocate(main, output)
 
             self.assertEqual([("src/first.asm", 1), ("src/second.asm", 2)], shifts)
-            self.assertIn(".org $C000\n    .byte $EA\n", read_source_text(output.parent / "first.asm"))
+            self.assertIn(".org $C000\n    .byte $EA\n", (output.parent / "first.asm").read_text())
             self.assertEqual(
                 '.include "memory.inc"\n.include "first.asm"\n    .byte $EA\n'
                 '.include "second.asm"\n.include "data/tail_and_vectors.asm"\n',
-                read_source_text(output),
+                output.read_text(),
             )
 
     def test_an_entry_file_includes_the_relocated_main_source(self) -> None:
@@ -66,7 +64,7 @@ class RelocateTests(unittest.TestCase):
 
             self.assertEqual(
                 '.include "revisions/profile_ids.inc"\nPACMAN_REVISION = 6\n\n.include "main.asm"\n',
-                read_source_text(output / "europe.asm"),
+                (output / "europe.asm").read_text(),
             )
             self.assertTrue((output / "main.asm").exists())
 

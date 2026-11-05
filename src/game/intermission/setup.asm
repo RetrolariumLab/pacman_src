@@ -147,10 +147,7 @@ bra_select_center_marker_nametable:
 
 ; Sprite palette used by intro/demo setup
 tbl_intro_sprite_palette:
-    .incbin "assets/generated/palettes/intermission-sprites.bin", $0, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/intermission-sprites.bin", $4, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/intermission-sprites.bin", $8, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/intermission-sprites.bin", $C, $4  ; rom-asset .byte
+    .incbin "assets/generated/palettes/intermission-sprites.bin"
 ; Gameplay script 10: run active intermission scene state machine
 ; Script 10: intermission runtime (cutscene actor movement + per-scene animation)
 ; Per-frame order in script10:

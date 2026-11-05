@@ -376,16 +376,7 @@ tbl_hud_ppu_packets_by_player:
 ; 32-byte gameplay palette uploaded during round init
 ; 32-byte gameplay palette (BG + SPR) uploaded at round initialization
 tbl_round_gameplay_palette:
-; background
-    .incbin "assets/generated/palettes/round.bin", $0, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/round.bin", $4, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/round.bin", $8, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/round.bin", $C, $4  ; rom-asset .byte
-; sprites
-    .incbin "assets/generated/palettes/round.bin", $10, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/round.bin", $14, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/round.bin", $18, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/round.bin", $1C, $4  ; rom-asset .byte
+    .incbin "assets/generated/palettes/round.bin"
 ; Write maze attribute bytes into both gameplay nametables
 sub_fill_maze_attr_tables:
     SetPpuAddress $23C0

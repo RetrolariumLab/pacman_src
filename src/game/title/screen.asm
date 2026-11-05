@@ -138,12 +138,7 @@ bra_upload_next_attribute_byte:
 
 ; Tile data for title logo bitmap (6 rows)
 tbl_title_logo_tiles:
-    .incbin "assets/generated/title/logo-tiles.bin", $0, $17  ; rom-asset .byte
-    .incbin "assets/generated/title/logo-tiles.bin", $17, $17  ; rom-asset .byte
-    .incbin "assets/generated/title/logo-tiles.bin", $2E, $17  ; rom-asset .byte
-    .incbin "assets/generated/title/logo-tiles.bin", $45, $17  ; rom-asset .byte
-    .incbin "assets/generated/title/logo-tiles.bin", $5C, $17  ; rom-asset .byte
-    .incbin "assets/generated/title/logo-tiles.bin", $73, $17  ; rom-asset .byte
+    .incbin "assets/generated/title/logo-tiles.bin"
 ; PPU command packets for title logo text
 tbl_title_logo_text_packets:
 .if PACMAN_REVISION = REVISION_EUROPE
@@ -264,15 +259,9 @@ tbl_title_logo_text_packets:
 
 ; Background palette for title screen
 tbl_title_background_palette:
-    .incbin "assets/generated/palettes/title-background.bin", $0, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/title-background.bin", $4, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/title-background.bin", $8, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/title-background.bin", $C, $4  ; rom-asset .byte
+    .incbin "assets/generated/palettes/title-background.bin"
 .ifdef PACMAN_REVISION_RAM_PALETTES
-    .incbin "assets/generated/palettes/attract-namco.bin", $10, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/attract-namco.bin", $14, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/attract-namco.bin", $18, $4  ; rom-asset .byte
-    .incbin "assets/generated/palettes/attract-namco.bin", $1C, $4  ; rom-asset .byte
+    .incbin "assets/generated/palettes/title-extra.bin"
 .endif
 ; Attribute bytes for title layout
 tbl_title_attribute_bytes:
